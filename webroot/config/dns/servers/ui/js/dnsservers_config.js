@@ -64,6 +64,7 @@ function dnsServersConfig() {
 function load() {
     var hashParams = arguments[0].hashParams;
     if(hashParams.tab) {
+        this.destroy();
         loadActiveDNSRecords();   
         return;         
     }
@@ -156,6 +157,7 @@ function initComponents() {
                         title: 'Active DNS Database',
                         onClick: function(rowIndex){
                             var selectedRow = $("#gridDNSServer").data("contrailGrid")._dataView.getItem(rowIndex);
+                            destroy();
                             $.bbq.pushState({ q: { tab : activeDNSHash, dns : selectedRow.dnsserver_name }});
                         }   
                     }                    
@@ -509,6 +511,7 @@ function fetchDataForGridDNSServer() {
     }
     $("#cb_gridDNSServer").attr("checked", false);
     $("#gridDNSServer").data("contrailGrid")._dataView.setData([]);
+    gridDNSServer.showGridMessage('loading');
     idCount = 0;
 	drAjaxcount++;
     ajaxParam = $("#ddDomainSwitcher").data('contrailDropdown').value() + "_" + drAjaxcount;
@@ -607,7 +610,7 @@ function successHandlerForDNSServerRow(result) {
 }
 
 function failureHandlerForDNSServer(result, cbParam) {
-    showGridMessage("#gridDNSServer", "Error in getting DNS Servers.");
+    gridDNSServer.showGridMessage('errorGettingData');
 }
 
 function closeCreateDNSServerWindow() {

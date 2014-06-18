@@ -35,6 +35,9 @@ monitorInfraComputeFlowsClass = (function() {
                 var aclUUID = $('#aclDropDown').data('contrailDropdown').value();
                 $.each(response,function(idx,obj) {
                     var rawJson = obj;
+                    if(idx != 0){
+                        aclUUID = '';
+                    }
                     ret.push({acl_uuid:aclUUID,
                         src_vn:ifNullOrEmptyObject(obj['source_vn'],noDataStr),
                         dst_vn:ifNullOrEmptyObject(obj['dest_vn'],noDataStr),
@@ -144,14 +147,14 @@ monitorInfraComputeFlowsClass = (function() {
 
                                    {
                                     field:"acl_uuid",
-                                    name:"ACL / SG UUID",
+                                    name:"ACL UUID",
                                     formatter:function(r,c,v,cd,dc){
                                         return getAclSgUuuidString(dc);
                                     },
                                     searchFn: function(data) {
                                        return getAclSgUuuidString(data);
                                     },
-                                    minWidth:260
+                                    minWidth:280
                                     },
                                    {
                                        field:"protocol",
@@ -176,7 +179,7 @@ monitorInfraComputeFlowsClass = (function() {
                                    {
                                        field:"sip",
                                        name:"Src IP",
-                                       minWidth:100
+                                       minWidth:70
                                    },
                                    {
                                        field:"src_port",
@@ -198,7 +201,7 @@ monitorInfraComputeFlowsClass = (function() {
                                    {
                                        field:"dip",
                                        name:"Dest IP",
-                                       minWidth:100
+                                       minWidth:70
                                    },
                                    {
                                        field:"dst_port",
@@ -232,7 +235,8 @@ monitorInfraComputeFlowsClass = (function() {
                         forceFitColumns: true,
                         detail:{
                             template: $("#gridsTemplateJSONDetails").html()
-                        }
+                        },
+                        sortable : false
                     },
                     dataSource : {
                         remote: {
@@ -291,14 +295,40 @@ monitorInfraComputeFlowsClass = (function() {
             if(data['acl_uuid'] != null && data['acl_uuid'] != 'All'){
                 return data['acl_uuid'];
             }
-            var aclUuid = ifNull(jsonPath(data,"$..policy..FlowAclUuid..uuid")[0],noDataStr);
-            var sgUuid = ifNull(jsonPath(data,"$..sg..FlowAclUuid..uuid")[0],noDataStr);
-            if(aclUuid != null)
-            var ret = aclUuid;
-            if(sgUuid != null && sgUuid != noDataStr){
-                ret = ret + ' / </br>' + sgUuid;
+            var aclUuidList = ifNull(jsonPath(data,"$..policy..FlowAclUuid..uuid"),noDataStr);
+            var outPolicyAclUuidList = ifNull(jsonPath(data,"$..out_policy..FlowAclUuid..uuid"),noDataStr);
+            var sgUuidList = ifNull(jsonPath(data,"$..sg..FlowAclUuid..uuid"),noDataStr);
+            var outSgUuidList = ifNull(jsonPath(data,"$..out_sg..FlowAclUuid..uuid"),noDataStr);
+            
+            var ret = '';
+            if(aclUuidList.length > 0){
+                ret += "<span class='text-info'>Policy:</span>";
             }
-            return ret;
+            $.each(aclUuidList,function(idx,aclUuid){
+                ret += "</br>" + aclUuid;
+            });
+            if(outPolicyAclUuidList.length > 0){
+                ret += (ret != '')?" </br><span class='text-info'>Out Policy:</span>" : 
+                    "<span class='text-info'>Out Policy:</span>";
+            }
+            $.each(outPolicyAclUuidList,function(idx,outPolicyAclUuid){
+                ret += "</br>" + outPolicyAclUuid;
+            });
+            if(sgUuidList.length > 0){
+                ret += (ret != '')?"</br><span class='text-info'>SG:</span>" : 
+                    "<span class='text-info'>SG:</span>";
+            }
+            $.each(sgUuidList,function(idx,sgUuid){
+                ret += "</br>" + sgUuid;
+            });
+            if(outSgUuidList.length > 0){
+                ret += (ret != '')?"</br><span class='text-info'>Out SG:</span>" : 
+                    "<span class='text-info'>Out SG:</span>";
+            }
+            $.each(outSgUuidList,function(idx,outSgUuid){
+                ret += "</br>" + outSgUuid;
+            });
+            return (ret == '')? noDataStr: ret;
         }
         function onSelectAcl() {
             var acluuid = $('#aclDropDown').data("contrailDropdown").value();

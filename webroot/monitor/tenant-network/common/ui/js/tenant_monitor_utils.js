@@ -924,7 +924,7 @@ var tenantNetworkMonitorUtils = {
         var spanWidths = ['span2','span1','span2','span2','span2','span1','span1'];
         var throughputIn = 0;
         var throughputOut = 0;
-        spanWidths = [95,35,120,230,150,150,95,85]
+        spanWidths = [235,105,35,190,110,110,95,55]
         //retArr.push({lbl:'vRouter',value:ifNull(jsonPath(d,'$..vrouter')[0],'-')});
         $.each(flattenArr(floatingIPs),function(idx,obj) {
             if(obj['ip_address'] != null)
@@ -944,8 +944,10 @@ var tenantNetworkMonitorUtils = {
             formatBytes(totalMemory*1024)});
         //Add the header
         if(interfaces.length > 0) {
-            interfaceDetails.push({lbl:'Interfaces',value:['IP Address','Label','Mac Address','Network','Traffic (In/Out)','Throughput (In/Out)','Gateway','Status'],
-                span:spanWidths,config:{labels:true}});
+          //Here the Ip Address/Mac Address wraps to next line so to avoid the background color in second line 
+          //the height property set to 40px
+            interfaceDetails.push({lbl:'Interfaces',value:['Interface UUID','IP Address /<br/> Mac Address','Label','Network','Traffic (In/Out)','Throughput (In/Out)','Gateway','Status'],
+                                    span:spanWidths,config:{labels:true,minHeight:'40px'}});
         }
         $.each(interfaces,function(idx,obj) {
             var name = obj['name'];
@@ -962,13 +964,14 @@ var tenantNetworkMonitorUtils = {
             var intfOutBw = getValueByJsonPath(currIfStatObj,'0;out_bandwidth_usage','-');
             throughputIn += getValueByJsonPath(currIfStatObj,'0;in_bandwidth_usage',0);
             throughputOut += getValueByJsonPath(currIfStatObj,'0;out_bandwidth_usage',0);
+            var uuid = obj['name'] != null ? obj['name'].split(':').pop() : '-';
             if(obj['active'] != null && obj['active'] == true)
                 intfStatus = 'Active';
             else if(obj['active'] != null && obj['active'] == false)
                 intfStatus = 'InActive';
-            intfStr[idx] = [obj['ip_address'], obj['label'],obj['mac_address'],obj['virtual_network'],
-                formatBytes(intfInBytes) + '/' + formatBytes(intfOutBytes),
-                formatBytes(intfInBw) + '/' + formatBytes(intfOutBw),ifNull(obj['gateway'],"-"),intfStatus]; 
+            intfStr[idx] = [uuid, ifNull(obj['ip_address'],'-')+" /<br/> "+ifNull(obj['mac_address'],'-'), ifNull(obj['label'],'-'),
+                           ifNull(obj['virtual_network'],'-'), formatBytes(intfInBytes) + '/' + formatBytes(intfOutBytes),
+                           formatBytes(intfInBw) + '/' + formatBytes(intfOutBw),ifNull(obj['gateway'],"-"),intfStatus]; 
             interfaceDetails.push({lbl:'',value:intfStr[idx],span:spanWidths});
         });
         retArr.push({lbl:'Throughput (In/Out)',value:formatBytes(throughputIn) + '/' +formatBytes(throughputOut)});
@@ -1668,4 +1671,46 @@ function getMultiValueStr(arr) {
     if(arr.length > 2)
         retStr += '<br/>' + contrail.format('({0} more)',arr.length-entriesToShow);
     return retStr;
+}
+
+function getSelInstanceFromDropDown() {
+    if($('#dropdownIP').length == 0)
+        return {};
+    var vmIntfObj = $('#dropdownIP').data('contrailDropdown').getSelectedData()[0];
+    return {ip:vmIntfObj['ip_address'],vnName:vmIntfObj['virtual_network']};
+}
+
+var connectedNetworkView = new connectedNetworkRenderer();
+
+function connectedNetworkRenderer() {
+  this.load = function(cfg) {
+      var obj = $.extend({},cfg);
+      var data = {stats:{},charts:{},grids:{}};
+      pushBreadcrumb([obj['fqName'] + ' <-> ' + obj['srcVN']]);
+      layoutHandler.setURLHashParams({fqName:obj['fqName'],srcVN:obj['srcVN']},{p:'mon_net_networks',merge:false,triggerHashChange:false});
+      //Show Ingress/Egress Traffic in different colors
+      data['stats'] = {
+          'list' : [
+              { lbl : contrail.format('Ingress/Egress from {0} to {1}',obj['srcVN'].split(':').pop(),obj['fqName'].split(':').pop()),field:'toNetwork'},
+              { lbl : contrail.format('Egress/Ingress from {0} to {1}',obj['fqName'].split(':').pop(),obj['srcVN'].split(':').pop()),field:'fromNetwork'}
+          ],
+          parseFn: function(response) {
+              return [{
+                  'toNetwork': contrail.format("<span class='in'>{0}</span> <span class='seperator'>/</span>" +
+                          " <span class='out'>{1}</span>",formatBytes(response['toNW']['inBytes']),formatBytes(response['toNW']['outBytes'])),
+                  'fromNetwork': contrail.format("<span class='out'>{0}</span> <span class='seperator'>/</span>" +
+                          " <span class='in'>{1}</span>",formatBytes(response['toNW']['inBytes']),formatBytes(response['toNW']['outBytes']))
+                  }]
+          }
+      }
+      template = 'connected-nw-template';
+      data['stats']['url'] = constructReqURL($.extend({},obj,{type:'summary'}));
+      data['ts-chart'] = {};
+      data['ts-chart']['url'] = constructReqURL($.extend({},obj,{widget:'flowseries'}));
+      //Render the template
+      var summaryTemplate = contrail.getTemplate4Id(template);
+      var container = cfg['container'];
+      $(container).html(summaryTemplate(obj));
+      $(container).initTemplates(data);
+  }
 }
