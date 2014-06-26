@@ -157,7 +157,6 @@ function initComponents() {
                         title: 'Active DNS Database',
                         onClick: function(rowIndex){
                             var selectedRow = $("#gridDNSServer").data("contrailGrid")._dataView.getItem(rowIndex);
-                            destroy();
                             $.bbq.pushState({ q: { tab : activeDNSHash, dns : selectedRow.dnsserver_name }});
                         }   
                     }                    
@@ -186,7 +185,7 @@ function initComponents() {
     });
 
     gridDNSServer = $("#gridDNSServer").data("contrailGrid");
-    
+
     txtDNSServerName         = $("#txtDNSServerName");
     txtDomainName            = $("#txtDomainName");
     cmbDNSForward            = $("#cmbDNSForward");
@@ -237,15 +236,12 @@ function initComponents() {
     
     windowCreateDNSServer = $("#windowCreateDNSServer");
     windowCreateDNSServer.modal({backdrop:'static', keyboard: false, show:false});
-    $("body").append(windowCreateDNSServer);    
 
     confirmDelete = $("#confirmDelete");
     confirmDelete.modal({backdrop:'static', keyboard: false, show:false});
-    $("body").append(confirmDelete);
 
     confirmDeleterow = $("#confirmDeleterow");
     confirmDeleterow.modal({backdrop:'static', keyboard: false, show:false});
-    $("body").append(confirmDeleterow);
 }
 
 function loadActiveDNSRecords() {
@@ -462,17 +458,25 @@ function populateDomains(result) {
             domains.push(tmpDomain);
         }
         $("#ddDomainSwitcher").data("contrailDropdown").setData(domains);
-        $("#ddDomainSwitcher").data("contrailDropdown").value(domains[0].value)
-        $("#ddDomainSwitcher").data("contrailDropdown").text(domains[0].text)
-	setSessionStorageForDomain();
+        var sel_domain = getSelectedDomainProjectObjNew("ddDomainSwitcher", "contrailDropdown", 'domain');                        
+        $("#ddDomainSwitcher").data("contrailDropdown").value(sel_domain)
         fetchProjects("populateProjects", "failureHandlerForDNSServer");
 		btnCreateDNSServer.attr("disabled",false);
-    }
-}
+    } else {
+        $("#gridDNSServer").data("contrailGrid")._dataView.setData([]);
+        btnCreateDNSServer.addClass('disabled-link');
+        setDomainProjectEmptyMsg('ddDomainSwitcher', 'domain');                
+        setDomainProjectEmptyMsg('ddProjectSwitcher', 'project');
+        gridDNSServer.showGridMessage("empty");
+        emptyCookie('domain');
+        emptyCookie('project');        
+    }  
+}    
 
-function handleDomains() {
-    fetchDataForGridDNSServer();
-    setSessionStorageForDomain();	
+function handleDomains(e) {
+    var dName = e.added.text;
+    setCookie("domain", dName);        
+    fetchProjects("populateProjects", "failureHandlerForDNSServer");
 }
 
 function populateProjects(result) {
@@ -480,27 +484,28 @@ function populateProjects(result) {
         var projects = [];
         for (i = 0; i < result.projects.length; i++) {
             var project = result.projects[i];
-            tempProjectDetail = {text:project.fq_name[1], value:project.uuid};
-            projects.push(tempProjectDetail);
+            //if(!checkSystemProject(project.fq_name[1])) {                                                                    
+                tempProjectDetail = {text:project.fq_name[1], value:project.uuid};
+                projects.push(tempProjectDetail);
+            //}
         }
         $("#ddProjectSwitcher").data("contrailDropdown").setData(projects);
-        setSessionStorageForProject();
+        var sel_project = getSelectedDomainProjectObjNew("ddProjectSwitcher", "contrailDropdown", 'project');
+        $("#ddProjectSwitcher").data('contrailDropdown').value(sel_project);
         $("#ddProjectSwitcher").data('contrailDropdown').hide();
-    }
+    } else {
+        //$("#gridDNSServer").data("contrailGrid")._dataView.setData([]);
+        //btnCreateDNSServer.addClass('disabled-link');
+        //gridDNSServer.showGridMessage("empty");
+        emptyCookie('project');                
+    } 
+    fetchDataForGridDNSServer();    
+}
+
+function handleProjects(e) {
+    var pname = e.added.text;
+    setCookie("project", pname);
     fetchDataForGridDNSServer();
-}
-
-function setSessionStorageForProject(){
-	sessionStorage['sel_proj'] = JSON.stringify($("#ddProjectSwitcher").data('contrailDropdown').text());	
-}
-
-function setSessionStorageForDomain(){
-	sessionStorage['sel_domain'] = JSON.stringify($("#ddDomainSwitcher").data("contrailDropdown").text());
-}
-
-function handleProjects() {
-    fetchDataForGridDNSServer();
-    setSessionStorageForProject();	
 }
 
 function fetchDataForGridDNSServer() { 
@@ -646,7 +651,8 @@ function DNSServerCreateWindow(m, selDNSName) {
     }	    
     var getAjaxs = [];
     getAjaxs[0] = $.ajax({
-        url:"/api/tenants/config/virtual-DNSs/" + $("#ddDomainSwitcher").data('contrailDropdown').value(),
+        //url:"/api/tenants/config/virtual-DNSs/" + $("#ddDomainSwitcher").data('contrailDropdown').value(),
+        url:"/api/tenants/config/virtual-DNSs",
         type:"GET"
     });
     getAjaxs[1] = $.ajax({

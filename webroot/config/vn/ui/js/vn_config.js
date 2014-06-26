@@ -68,6 +68,8 @@ function load() {
     var configTemplate = Handlebars.compile($("#vn-config-template").html());
     $(contentContainer).empty();
     $(contentContainer).html(configTemplate);
+    var createVNTemplate = Handlebars.compile($("#create-vn-template").html());
+    $('body').append(createVNTemplate);    
     currTab = 'config_networking_vn';
     init();
 }
@@ -125,7 +127,7 @@ function initComponents() {
                        if(dc.AttachedPolicies.length > 2) {
                            returnString += '<span class="moredataText">(' + 
                            (dc.AttachedPolicies.length-2) + 
-                           ' more  )</span><span class="moredata" style="display:none;"></span>';
+                           ' more)</span><span class="moredata" style="display:none;"></span>';
                        }
                     }
                     return returnString;
@@ -146,7 +148,7 @@ function initComponents() {
                        if(dc.IPBlocks.length > 2) {
                            returnString += '<span class="moredataText">(' + 
                            (dc.IPBlocks.length-2) + 
-                           ' more  )</span><span class="moredata" style="display:none;"></span>';
+                           ' more)</span><span class="moredata" style="display:none;"></span>';
                        }
                     }
                     return returnString;
@@ -238,17 +240,13 @@ function initComponents() {
     });
 
     gridVN.showGridMessage('loading');
-   
-    $('body').append($("#windowCreateVN"));
     windowCreateVN = $("#windowCreateVN");
     windowCreateVN.on("hide", closeCreateVNWindow);
     windowCreateVN.modal({backdrop:'static', keyboard: false, show:false});
 
-    $('body').append($("#confirmMainRemove"));
     confirmMainRemove = $("#confirmMainRemove");
     confirmMainRemove.modal({backdrop:'static', keyboard: false, show:false});
 
-    $('body').append($("#confirmRemove"));
     confirmRemove = $("#confirmRemove");
     confirmRemove.modal({backdrop:'static', keyboard: false, show:false});
 }
@@ -322,6 +320,9 @@ function initActions() {
     });
 
     btnCreateVNOK.click(function (a) {
+        if($(this).hasClass('disabled-link')) { 
+            return;
+        }     
         if (validate() !== true)
             return;
 
@@ -1201,14 +1202,25 @@ function populateDomains(result) {
             domains.push(tmpDomain);
         }
         $("#ddDomainSwitcher").data("contrailDropdown").setData(domains);
-        $("#ddDomainSwitcher").data("contrailDropdown").value(domains[0].value);
-    }
-    fetchProjects("populateProjects", "failureHandlerForGridVN");
+        var sel_domain = getSelectedDomainProjectObjNew("ddDomainSwitcher", "contrailDropdown", 'domain');
+        $("#ddDomainSwitcher").data("contrailDropdown").value(sel_domain);
+        fetchProjects("populateProjects", "failureHandlerForGridVN");
+    } else {
+        $("#gridVN").data("contrailGrid")._dataView.setData([]);
+        btnCreateVN.addClass('disabled-link');
+        setDomainProjectEmptyMsg('ddDomainSwitcher', 'domain');        
+        setDomainProjectEmptyMsg('ddProjectSwitcher', 'project');
+        gridVN.showGridMessage("empty");
+        emptyCookie('domain');
+        emptyCookie('project');        
+    }    
 }
 
-function handleDomains() {
+function handleDomains(e) {
     //fetchDataForGridVN();
     //Get projects for the selected domain.
+    var dName = e.added.text;
+    setCookie("domain", dName);
     fetchProjects("populateProjects", "failureHandlerForGridVN");
 }
 
@@ -1218,22 +1230,30 @@ function populateProjects(result) {
         var projects = [];
         for (i = 0; i < result.projects.length; i++) {
             var project = result.projects[i];
-            tempProjectDetail = {text:project.fq_name[1], value:project.uuid};
-            projects.push(tempProjectDetail);
+            //if(!checkSystemProject(project.fq_name[1])) {
+                tempProjectDetail = {text:project.fq_name[1], value:project.uuid};
+                projects.push(tempProjectDetail);
+            //}
         }
-        
+
         $("#ddProjectSwitcher").contrailDropdown({
             dataTextField:"text",
             dataValueField:"value",
             change:handleProjects
         });
+        btnCreateVN.removeClass('disabled-link')
+        $("#ddProjectSwitcher").data("contrailDropdown").enable(true);
         $("#ddProjectSwitcher").data("contrailDropdown").setData(projects);
-        $("#ddProjectSwitcher").data("contrailDropdown").value(projects[0].value);
-        var sel_project = getSelectedProjectObjNew("ddProjectSwitcher", "contrailDropdown");
+        var sel_project = getSelectedDomainProjectObjNew("ddProjectSwitcher", "contrailDropdown", 'project');
         $("#ddProjectSwitcher").data("contrailDropdown").value(sel_project);
-        setCookie("project", $("#ddProjectSwitcher").data("contrailDropdown").text());
+        fetchDataForGridVN();
+    } else {
+        $("#gridVN").data("contrailGrid")._dataView.setData([]);
+        btnCreateVN.addClass('disabled-link');
+        setDomainProjectEmptyMsg('ddProjectSwitcher', 'project');
+        gridVN.showGridMessage("empty");
+        emptyCookie('project');
     }
-    fetchDataForGridVN();
 }
 
 function handleProjects(e) {

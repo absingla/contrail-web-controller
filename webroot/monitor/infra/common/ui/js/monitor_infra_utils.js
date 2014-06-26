@@ -1515,20 +1515,6 @@ function summaryIpDisplay (ip,tooltip){
     return '<span title="'+ tooltip +'">' + ip + '</span>';
 }
 
-function showAdvancedDetails(){
-    $('#divBasic').hide();
-    $('#divStatus').hide();
-    $('#divAdvanced').show();
-    $('#divAdvanced').parents('.widget-box').find('.widget-header h4 .subtitle').remove();
-    $('#divAdvanced').parents('.widget-box').find('.widget-header h4').append('<span class="subtitle">(Advanced)</span>')
-}
-
-function showBasicDetails(){
-    $('#divAdvanced').hide();
-    $('#divStatus').hide();
-    $('#divBasic').show();
-    $('#divAdvanced').parents('.widget-box').find('.widget-header h4 .subtitle').remove();
-}
 
 function parseUveHistoricalValues(d,path,histPath) {
     var histData; 
@@ -1844,9 +1830,8 @@ function updateChartsForSummary(dsData, nodeType) {
 	}
     var chartsData = [{title:title,d:[{key:key,values:data}],chartOptions:{tooltipFn:tooltipFn,clickFn:clickFn,xPositive:true,addDomainBuffer:true},link:{hashParams:{p:'mon_bgp',q:{node:'vRouters'}}},widgetBoxId:'recent'}];
     var chartObj = {},nwObj = {};
-    if(!summaryChartsInitializationStatus[key]){
+    if(!isScatterChartInitialized('#' + chartId)) {
         $('#' + chartId).initScatterChart(chartsData[0]);
-        summaryChartsInitializationStatus[key] = true;
     }  else {
         chartObj['selector'] = $('#content-container').find('#' + chartId + ' > svg').first()[0];
         chartObj['data'] = [{key:key,values:data}];

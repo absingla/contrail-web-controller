@@ -70,8 +70,48 @@ function listVirtualDNSs (request, response, appData)
     
     configApiServer.apiGet(domainURL, appData,
                          function(error, data) {
-    						listVirtualDNSsCb(error, data, response, appData);
+                                               listVirtualDNSsCb(error, data, response, appData);
                          });
+}
+
+/**
+ * listVirtualDNSsFromAllDomains
+ * private function
+ * 1. Callback for listVirtualDNSs
+ * 2. Reads the response of all Virtual DNS from all domains
+ * list from config api server and sends it back to the client.
+ */
+function listVirtualDNSsFromAllDomains (request, response, appData) 
+{
+    //Get Virtuanl DNS Servers from all domains 
+    //the user has access to.
+    var vdnsURL = '/virtual-DNSs';
+    configApiServer.apiGet(vdnsURL, appData,
+        function(error, data) {
+            if (error) {
+               commonUtils.handleJSONResponse(error, response, null);
+               return;
+            }
+            if(data && data.hasOwnProperty("virtual-DNSs") && 
+                data["virtual-DNSs"].length > 0) {
+                var vdns = data["virtual-DNSs"];
+                var result = {};
+                if(vdns.length > 0) {
+                    result["virtual_DNSs"] = [];
+                }
+                for(var i=0; i<vdns.length; i++) {
+                    result["virtual_DNSs"][i] = {};
+                    result["virtual_DNSs"][i]["virtual-DNS"] = vdns[i];
+                }
+                commonUtils.handleJSONResponse(error, response, result);
+            } else {
+                var result = {
+                    "virtual_DNSs" : []
+                };
+                commonUtils.handleJSONResponse(error, response, result);
+            }
+        }
+    );
 }
 
 /**
@@ -915,50 +955,58 @@ function getDNSNodeByGeneratorsData (dnsNodes, dnsGen)
     return dnsNodes[i];
 }
 
-function getVirtualDNSSandeshRecordsSendCb (ip, req, res)
+function getVirtualDNSSandeshRecordsCB (ipObj, callback)
 {
-    var dnsName = req.param('dnsfqn');
+    var ip = ipObj['ip'];
+    var dnsName = ipObj['dnsName'];
     var dataObjArr = [];
     var reqUrl = '/Snh_ShowVirtualDnsRecords?virtual_dns=' + dnsName;
 
     commonUtils.createReqObj(dataObjArr, reqUrl);
     var dnsAgentRestApi =
         commonUtils.getRestAPIServer(ip, global.SANDESH_DNS_AGENT_PORT);
-
     async.map(dataObjArr,
               commonUtils.getServerRespByRestApi(dnsAgentRestApi, true),
               function(err, data) {
-        if (data) {
-            commonUtils.handleJSONResponse(null, res, data);
-        } else {
-            commonUtils.handleJSONResponse(null, res, []);
-        }
+        var dataObj = {'err': err, 'data': data};
+        callback(null, dataObj);
     });
 }
 
 function getVirtualDNSSandeshRecords (req, res, appData)
 {
     var dataObjArr = [];
+    var dataIPObjArr = [];
     var reqUrl = '/analytics/uves/dns-node/*';
-    commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null,
-                             opApiServer, null, appData);
-    reqUrl = '/analytics/uves/generator/*:DnsAgent:*?flat';
+    var dnsName = req.param('dnsfqn');
     commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null,
                              opApiServer, null, appData);
     async.map(dataObjArr,
               commonUtils.getServerResponseByRestApi(opApiServer, false),
-              function(err, results) {
-        var dnsNode = getDNSNodeByGeneratorsData(results[0], results[1]);
-        if (null == dnsNode) {
+              function(err, dnsNodes) {
+        var ips = jsonPath(dnsNodes, "$..self_ip_list");
+        if (!ips.length) {
             commonUtils.handleJSONResponse(null, res, []);
             return;
         }
-
-        var ips = jsonPath(dnsNode, "$..self_ip_list");
-        if (ips.length > 0) {
-            ip = ips[0][0];
+        var ipCnt = ips[0].length;
+        for (var i = 0; i < ipCnt; i++) {
+            dataIPObjArr.push({'ip': ips[0][i], 'dnsName': dnsName});
         }
-        getVirtualDNSSandeshRecordsSendCb(ip, req, res);
+        async.map(dataIPObjArr, getVirtualDNSSandeshRecordsCB, function(err, data) {
+            if ((null != err) || (null == data)) {
+                commonUtils.handleJSONResponse(null, res, []);
+                return;
+            }
+            var cnt = data.length;
+            for (var i = 0; i < cnt; i++) {
+                if ((null != data[i]) && (null == data[i]['err']) && (null != data[i]['data'])) {
+                    commonUtils.handleJSONResponse(null, res, data[i]['data']);
+                    return;
+                }
+            }
+            commonUtils.handleJSONResponse(null, res, []);
+        });
     });
 }
 
@@ -1056,3 +1104,5 @@ exports.updateVDNSRecordDelete	  = updateVDNSRecordDelete;
 exports.updateVDNSIpams           = updateVDNSIpams;
 exports.getVirtualDNSSandeshRecords = getVirtualDNSSandeshRecords;
 exports.readVirtualDNSRecords       = readVirtualDNSRecords;
+exports.listVirtualDNSsFromAllDomains = listVirtualDNSsFromAllDomains;
+
