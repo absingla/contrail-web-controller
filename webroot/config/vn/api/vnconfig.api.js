@@ -809,6 +809,18 @@ function updateRouterExternalFlag(configData, requestData) {
                 }
             }*/
         }
+        if(requestData["virtual-network"].hasOwnProperty("is_shared")) {
+           configData["virtual-network"]["is_shared"] = 
+                requestData["virtual-network"]["is_shared"];
+        } else {
+            configData["virtual-network"]["is_shared"] = false;
+        }
+        if(requestData["virtual-network"]["id_perms"].hasOwnProperty("enable")) {
+           configData["virtual-network"]["id_perms"]["enable"] = 
+                requestData["virtual-network"]["id_perms"]["enable"];
+        } else {
+            configData["virtual-network"]["id_perms"]["enable"] = false;
+        }
     }
 }
 
