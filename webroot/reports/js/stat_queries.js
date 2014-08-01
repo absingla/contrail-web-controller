@@ -16,6 +16,7 @@ function setStatValidValues(tableName, queryPrefix) {
     });
     setColumnValues('/api/admin/table/schema/' + tableName, 'selectFields', [queries[queryPrefix].whereViewModel, queries[queryPrefix].filterViewModel], 'columns', null, true);
     setValidValues('/api/admin/table/values/' + tableName + '/name', 'name', viewModels);
+    setValidValues('/api/admin/table/values/' + tableName + '/Source', 'Source', viewModels);
     //setColumnValues('/api/admin/table/schema/' + tableName, 'fields', [queries[queryPrefix].filterViewModel], 'columns', null, "all");
     //TODO: Create a cache and get the values from that cache
 };
@@ -23,6 +24,7 @@ function setStatValidValues(tableName, queryPrefix) {
 function populateStatQueryForm(queryJSON, tg, tgUnit, queryPrefix, reRunTimeRange) {
     var selectFields = queryJSON['select_fields'];
     resetTGValues(true, queryPrefix);
+    setStatQueryFromValues('/api/admin/tables', 'fromTables', queries['stat'].queryViewModel, queryJSON);
     populateTimeRange(queryPrefix, queryJSON['start_time'], queryJSON['end_time'], reRunTimeRange);
     populateSelect(queryPrefix, selectFields, []);
     populateTimeGranularity(queryPrefix, selectFields, tg, tgUnit);
@@ -109,7 +111,11 @@ function viewStatQueryResults(dataItem, params) {
         options = getDefaultOptions(queryPrefix, false);
     }
     populateStatQueryForm(queryJSON, tg, tgUnit, queryPrefix, timeObj.reRunTimeRange);
-    columnDisplayArray = query['defaultColumnDisplay'].concat(query['columnDisplay'][queryJSON.table]);
+    if(query['columnDisplay'][queryJSON.table] !== undefined){
+        columnDisplayArray = query['defaultColumnDisplay'].concat(query['columnDisplay'][queryJSON.table]);
+    } else{
+        columnDisplayArray = query['defaultColumnDisplay'];
+    }
     statQueryGridDisplay = getColumnDisplay4Grid(columnDisplayArray, selectArray);
     collapseWidget('#' + queryPrefix + '-query-widget');
     loadStatResults(options, reqQueryObj, statQueryGridDisplay);
@@ -119,15 +125,11 @@ function statQueryObj(){
     this.load = loadStatQueryObj;
     this.destroy = function() {};
 }
-function statCPUInfoObj() {
-    this.load = loadStatCPUInfo;
-    this.destroy = function() {};
-};
+
 function statQueryQueueObj() {
     this.load = loadStatQueryQueue;
     this.destroy = function() {};
 };
-
 
 function runStatQuery(queryPrefix) {
     var queryFormId = "#" + queryPrefix +"-query-form",
@@ -146,7 +148,11 @@ function runStatQuery(queryPrefix) {
         reqQueryObj.async = true;
         selectArray = parseStringToArray(select, ',');
         selectArray = selectArray.concat(query['defaultColumns']);
-        columnDisplayArray = query['defaultColumnDisplay'].concat(query['columnDisplay'][reqQueryObj.table]);
+        if(query['columnDisplay'][reqQueryObj.table] !== undefined){
+            columnDisplayArray = query['defaultColumnDisplay'].concat(query['columnDisplay'][reqQueryObj.table]);
+        } else {
+            columnDisplayArray = query['defaultColumnDisplay'];
+        }
         statQueryGridDisplay = getColumnDisplay4Grid(columnDisplayArray, selectArray);
         if (selectArray.indexOf('T=') != -1) {
             tg = $('#' + queryPrefix + '-tg-value').val();
