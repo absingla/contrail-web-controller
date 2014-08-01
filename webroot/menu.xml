@@ -670,6 +670,7 @@ and need to add the iconClass tag wherever we need to show some icons
         </item>
                 <item>
                     <label>Statistics</label>
+                    <iconClass>icon-sign-blank</iconClass>
                     <items>
                         <item>
                             <hash>query_stat_query</hash>
