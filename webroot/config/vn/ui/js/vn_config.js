@@ -845,6 +845,7 @@ function createDNSServerEntry(DNSNameServer, len) {
 
     if (null !== DNSNameServer && typeof DNSNameServer !== "undefined") {
         $(inputTxtDNSServerName).val(DNSNameServer);
+        $(inputTxtDNSServerName).addClass("textBackground");
     }
     return rootDiv;
 }
@@ -945,7 +946,7 @@ function createIPAMEntry(ipamBlock, id,element) {
 
     var inputTxtAlocPool = document.createElement("textarea");
     inputTxtAlocPool.type = "text";
-    inputTxtAlocPool.className = "span12";
+    inputTxtAlocPool.className = "span12 textareaNoresize";
     inputTxtAlocPool.col = "span12";
     inputTxtAlocPool.setAttribute("placeholder", "<start ip> - <end-ip><enter> ...");
     inputTxtAlocPool.setAttribute("title", "xxx.xxx.xxx.xxx - xxx.xxx.xxx.xxx<enter> xxx.xxx.xxx.xxx - xxx.xxx.xxx.xxx<enter>...");
@@ -1045,12 +1046,16 @@ function createIPAMEntry(ipamBlock, id,element) {
     if (null !== ipamBlock && typeof ipamBlock !== "undefined") {
         $(inputTxtIPBlock).val(ipamBlock.IPBlock);
         $(inputTxtGateway).val(ipamBlock.Gateway);
-        inputcboxDhcp.checked = ipamBlock.DHCPEnabled;
+        inputcboxDhcp.checked = ipamBlock.DHCPEnabled[0];
         $(inputTxtAlocPool).val(ipamBlock.AlocPool);
         var temp_ipam = ipamBlock.IPAM.split(":")
         $(selectIpams).data("contrailDropdown").value((temp_ipam[0]+":"+temp_ipam[1]+":"+temp_ipam[2]));
         $(selectIpams).data("contrailDropdown").enable(false);
+        $(inputcboxDhcp).attr("disabled", "disabled"); 
         $(inputTxtIPBlock).attr("disabled", "disabled"); 
+        $(inputTxtIPBlock).addClass("textBackground");
+        $(inputTxtGateway).attr("disabled", "disabled");  
+        $(inputTxtGateway).addClass("textBackground");
         $(inputTxtAlocPool).attr("disabled", "disabled");
     }    
     return rootDiv;
@@ -1800,7 +1805,7 @@ function successHandlerForGridVNRow(result) {
 
         var routeTargets = jsonPath(vn, "$.route_target_list.route_target[*]");
         if (routeTargets === false) {
-            routeTargets = "";
+            routeTargets = "-";
         }
         var sh = "Enabled";
         if(String(vn["is_shared"]) != "true") 
@@ -1848,7 +1853,6 @@ function successHandlerForGridVNRow(result) {
             if(vxlanid.trim() == "") vxlanid = "-";
             if(DNSServer.trim() == "") DNSServer = "-";
             if(hostRoutPrifix.trim() == "") hostRoutPrifix = "-";
-            if(routeTargets.trim() == "") routeTargets = "-";
         //if(vn.fq_name[1] == selectedProject){
             vnData.push({"id":idCount++, "Network":vnName, "AttachedPolicies":reorder_policies,"AttachedPoliciesTxt":reorder_policiesTxt, "IPBlocks":subnets, "HostRoutes":hostRoutPrifix, "Ipams":ipams, "FloatingIPs":fips,"allSubnets":allSubnets, "FloatingIPPools":fipoolProjects, "RouteTargets":routeTargets,"adminState":adminState, "Shared" : Shared,"External" : External, "DNSServer": DNSServer,  "ForwardingMode" : fwdMode, "VxLanId": vxlanid, "NetworkUUID":uuid,"parent_uuid":parent_uuid,"enableControles":enableControles});
         //}
@@ -2067,7 +2071,7 @@ function showVNEditWindow(mode, rowIndex) {
                         nps[nps.length] = {text:networkPolicies[i]["fq_name"][2],value:networkPolicies[i]["fq_name"].join(":")};
                     } else {
                          //var localText = networkPolicies[i]["fq_name"][2]+'('+networkPolicies[i]["fq_name"][0]+':'+networkPolicies[i]["fq_name"][0];
-                        nps[nps.length] = {text:networkPolicies[i]["fq_name"][2]+" ("+networkPolicies[i]["fq_name"][0]+":"+networkPolicies[i]["fq_name"][0]+") " ,value:networkPolicies[i]["fq_name"].join(":")};
+                        nps[nps.length] = {text:networkPolicies[i]["fq_name"][2]+" ("+networkPolicies[i]["fq_name"][0]+":"+networkPolicies[i]["fq_name"][1]+") " ,value:networkPolicies[i]["fq_name"].join(":")};
                         //nps[nps.length] = {text:localText,value:networkPolicies[i]["fq_name"].join(":")};
                         //nps[nps.length] = {text:networkPolicies[i]["fq_name"].join(":"),value:networkPolicies[i]["fq_name"].join(":")};
 

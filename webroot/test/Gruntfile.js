@@ -3,13 +3,12 @@
  */
 /*jshint node:true */
 module.exports = function( grunt ) {
-
     grunt.loadNpmTasks( "grunt-contrib-jshint" );
     grunt.loadNpmTasks( "grunt-contrib-qunit" );
     grunt.loadNpmTasks('grunt-qunit-junit');
     grunt.loadNpmTasks('grunt-karma');
     //this option is to avoid interruption of test case execution on failure of one in sequence
-    grunt.option('force',true);
+    //grunt.option('force',true);
     grunt.option('stack',true);
     //These will be included for all unit test targets
     var commonFiles = [

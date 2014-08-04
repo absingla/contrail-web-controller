@@ -13,6 +13,8 @@ var commonUtils = require(process.mainModule.exports["corePath"] +
     jsonPath = require('JSONPath').eval,
     assert = require('assert'),
     request = require('request'),
+    appErrors = require(process.mainModule.exports["corePath"] +
+                        '/src/serverroot/errors/app.errors'),
     async = require('async');
 
 function getModuleType (modName)
@@ -134,7 +136,7 @@ function getProcStateMappedModule(moduleName)
 
 function getNodeStatusByUVE (moduleName, uveData)
 {
-    var procStateList = jsonPath(uveData, "$..process_state_list");
+    var procStateList = jsonPath(uveData, "$..NodeStatus.process_info");
     if (procStateList.length == 0) {
         /* Why? */
         return 'Down';
@@ -159,39 +161,43 @@ function checkAndGetSummaryJSON (configData, uves, moduleNames)
     try {
         var uveData = uves[0]['value'];
         var cnt = uveData.length;
-        try {
-            var genInfo = uves[1]['value'];
-            var genCnt = genInfo.length;
-        } catch(e) {
-            genInfo = null;
-        }
-        var j = 0;
-        var modCnt = moduleNames.length;
-        for (var i = 0; i < cnt; i++) {
-            try {
-                name = uveData[i]['name'] + ':' + moduleNames[0];
-                resultJSON[j] = {};
-                resultJSON[j]['name'] = uveData[i]['name'];
-                resultJSON[j]['value'] = uveData[i]['value'];
-                uveData[i]['visited'] = true;
-                configIndex = doNodeExist(configData, moduleNames[0],
-                                          uveData[i]['name']);
-                if (-1 != configIndex) {
-                    resultJSON[j]['value']['ConfigData'] = configData[configIndex];
-                } else {
-                    resultJSON[j]['value']['ConfigData'] = {};
-                }
-                resultJSON[j]['nodeStatus'] = getNodeStatusByUVE(moduleNames[0],
-                                                                 uveData[i]);
-                j++;
-            } catch(e) {
-                continue;
-            }
-        }
     } catch(e) {
+        cnt = 0;
+    }
+    try {
+        var genInfo = uves[1]['value'];
+        var genCnt = genInfo.length;
+    } catch(e) {
+        genInfo = null;
+    }
+    var j = 0;
+    var modCnt = moduleNames.length;
+    for (var i = 0; i < cnt; i++) {
+        try {
+            name = uveData[i]['name'] + ':' + moduleNames[0];
+            resultJSON[j] = {};
+            resultJSON[j]['name'] = uveData[i]['name'];
+            resultJSON[j]['value'] = uveData[i]['value'];
+            uveData[i]['visited'] = true;
+            configIndex = doNodeExist(configData, moduleNames[0],
+                                      uveData[i]['name']);
+            if (-1 != configIndex) {
+                resultJSON[j]['value']['ConfigData'] = configData[configIndex];
+            } else {
+                resultJSON[j]['value']['ConfigData'] = {};
+            }
+            resultJSON[j]['nodeStatus'] = getNodeStatusByUVE(moduleNames[0],
+                                                             uveData[i]);
+            j++;
+        } catch(e) {
+            continue;
+        }
     }
     /* Now traverse Config Data, if 'visited' not found, then mark as Down */
-    cnt = configData.length;
+    cnt = 0;
+    if (null != configData) {
+        cnt = configData.length;
+    }
     var nodeFound = false;
     for (i = 0; i < cnt; i++) {
         try {
@@ -245,7 +251,7 @@ function getvRouterAsyncResp (dataObj, callback)
         async.map(dataObj, 
                   commonUtils.getServerResponseByRestApi(configApiServer, true),
                   function(err, data) {
-            callback(err, data);
+            callback(null, data);
         });
     } else {
         var postData = {};
@@ -258,7 +264,7 @@ function getvRouterAsyncResp (dataObj, callback)
         var url = '/analytics/uves/vrouter';
         opApiServer.apiPost(url, postData, dataObj['appData'], 
                             function(err, data) {
-            callback(err, data);
+            callback(null, data);
         });
     }
 }
@@ -302,7 +308,7 @@ function getvRouterSummaryConfigUVEData (configData, uuidList, nodeList, addGen,
         'VrouterAgent:total_interface_count',
         'VrouterAgent:down_interface_count', 'VrouterAgent:connected_networks',
         'VrouterAgent:control_ip', 'VrouterAgent:build_info',
-        'VrouterStatsAgent:cpu_share', 'VrouterStatsAgent:process_state_list'];
+        'VrouterStatsAgent:cpu_share', 'NodeStatus'];
     var postData = {};
     if (null != nodeList) {
         var nodeCnt = nodeList.length;

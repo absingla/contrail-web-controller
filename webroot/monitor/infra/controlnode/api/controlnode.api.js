@@ -264,7 +264,7 @@ function getControlNodeDetailConfigUVEData (configData, addGen, appData, callbac
     }
     reqUrl = '/analytics/uves/control-node';
     var postData = {};
-    postData['cfilt'] = ['BgpRouterState'];
+    postData['cfilt'] = ['BgpRouterState','NodeStatus'];
     commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_POST,
                              postData, opApiServer, null, appData);
     if (null != addGen) {
@@ -279,6 +279,12 @@ function getControlNodeDetailConfigUVEData (configData, addGen, appData, callbac
     async.map(dataObjArr,
               commonUtils.getServerResponseByRestApi(configApiServer, true),
               function(err, results) {
+        var resCnt = results.length;
+        for (var i = 0; i < resCnt; i++) {
+            if (null == results[i]) {
+                results[i] = [];
+            }
+        }
         callback(err, results, len);
     });
 }
