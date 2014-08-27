@@ -535,7 +535,7 @@ function initActions() {
                 }
             }
         }
-
+        policyConfig["network-policy"]["display_name"] = policyConfig["network-policy"]["fq_name"][policyConfig["network-policy"]["fq_name"].length-1];
         //console.log(policyConfig);
         if (txtPolicyName[0].disabled == true)
             mode = "edit";
@@ -1719,6 +1719,7 @@ function successHandlerForGridPolicyRow(result) {
             continue;
         }
         var policyName = jsonPath(policy, "$.fq_name[2]");
+        var NetworkPolicyDisplayName = policy["display_name"];
         configObj["network-policys"].push(policies[i]);
 
         if (typeof policyName === "object" && policyName.length === 1)
@@ -1757,7 +1758,7 @@ function successHandlerForGridPolicyRow(result) {
         else
             ruleDescriptions = ["-"];
 
-        policyData.push({"id":idCount++, "NetworkPolicy":policyName, "PolicyRules":ruleDescriptions, "AssociatedNetworks":networks, "PolicyUUID":uuid});
+        policyData.push({"id":idCount++, "NetworkPolicy":policyName,"NetworkPolicyDisplayName":NetworkPolicyDisplayName, "PolicyRules":ruleDescriptions, "AssociatedNetworks":networks, "PolicyUUID":uuid});
     }
 
     if(result.more == true || result.more == "true"){
@@ -2077,8 +2078,7 @@ function validate() {
                             return false;
                         }
                     }
-
-                    if(allInterface.length > 1 && allInterface[allInterface.length-1].mode != "in-network-nat"){
+                    if(inNetworkCount >= 1 &&  allInterface[allInterface.length-1].mode != "in-network-nat"){
                         showInfoWindow("Last instance should be of 'in-network-nat' service mode while applying services.", "Invalid Rule");
                         return false;
                     }

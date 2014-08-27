@@ -255,7 +255,7 @@ function validate() {
 
 function getBGPJson() {
     var bgp_params = [];
-    var name, asn, rid, addr, port, vendor, ctrlTypeFamily = [], peers = [], type, holdTime, bgpTypeFamily = [];
+    var name,display_name, asn, rid, addr, port, vendor, ctrlTypeFamily = [], peers = [], type, holdTime, bgpTypeFamily = [];
     name = $("#txtname").val().trim();
     asn = parseInt($("#txtasn").val().trim());
     rid = $("#txtrid").val().trim();
@@ -293,11 +293,11 @@ function getBGPJson() {
         for (var j = 0; j < bgpData.length; j++) {
             if(mode === "add") {
                 peers.push({"uuid":bgpData[j].uuid, "href":bgpData[j].href, "_id_params":bgpData[j]._id_params,
-                "to":["default-domain", "default-project" , "ip-fabric", "__default__", bgpData[j].name]});
+                "to":["default-domain", "default-project" , "ip-fabric", "__default__", bgpData[j].name],"display_name":bgpData[j].display_name});
             } else if(mode === "edit") {
                 if(bgpData[j].uuid !== guuid) {
                     peers.push({"uuid":bgpData[j].uuid, "href":bgpData[j].href, "_id_params":bgpData[j]._id_params,
-                    "to":["default-domain", "default-project" , "ip-fabric", "__default__", bgpData[j].name]});
+                    "to":["default-domain", "default-project" , "ip-fabric", "__default__", bgpData[j].name],"display_name":bgpData[j].display_name});
                 }
             }
         }
@@ -310,7 +310,7 @@ function getBGPJson() {
                 for (var j = 0; j < bgpData.length; j++) {
                     if (bgpData[j].name == selectdata[i].label) {
                         peers.push({"uuid":bgpData[j].uuid, "href":bgpData[j].href, "_id_params":bgpData[j]._id_params,
-                            "to":["default-domain", "default-project" , "ip-fabric", "__default__", selectdata[i].label]});
+                            "to":["default-domain", "default-project" , "ip-fabric", "__default__", selectdata[i].label],"display_name":bgpData[j].display_name});
                         break;
                     }
                 }
@@ -336,7 +336,8 @@ function getBGPJson() {
                         "hold_time":holdTime
                     },
                     "bgp_router_refs":peers,
-                    "name":name
+                    "name":name,
+                    "display_name":display_name
                 }
             };
         } else if (mode == "edit") {
@@ -360,7 +361,8 @@ function getBGPJson() {
                         "hold_time":holdTime                        
                     },
                     "bgp_router_refs":peers,
-                    "name":name
+                    "name":name,
+                    "display_name":display_name
                 }
             };
         }
@@ -382,7 +384,8 @@ function getBGPJson() {
                         "vendor":vendor,
                         "hold_time":holdTime                        
                     },
-                    "name":name
+                    "name":name,
+                    "display_name":display_name
                 }
             };
         }
@@ -406,7 +409,8 @@ function getBGPJson() {
                         "vendor":vendor,
                         "hold_time":holdTime                        
                     },
-                    "name":name
+                    "name":name,
+                    "display_name":display_name
                 }
             };
         }
@@ -555,6 +559,7 @@ function fetchData() {
                         }
                         addr_families = addr_families.toString();
                         //tbd bgp peers
+                        details.push({ "name":"Display Name", "value":d.display_name });
                         if (d.bgp_refs) {
                             peers = d.bgp_refs.toString();
                             details.push({ "name":"Peers", "value":peers });
@@ -594,6 +599,7 @@ function fetchData() {
                                 "ip":d.address,
                                 "role":role,
                                 "name":d.name,
+                                "display_name":d.display_name,
                                 "vendor":(d.vendor == null) ? "-" : d.vendor,
                                 "details":details,
                                 "detailStr":detailStr
@@ -607,6 +613,7 @@ function fetchData() {
                                 "ip":d.ip_address,
                                 "role":role,
                                 "name":d.name,
+                                "display_name":d.display_name,
                                 "vendor":(d.vendor == null) ? "-" : d.vendor,
                                 "details":details,
                                 "detailStr":detailStr

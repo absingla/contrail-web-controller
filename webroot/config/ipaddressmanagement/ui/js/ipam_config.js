@@ -47,6 +47,7 @@ function IPAMObjConfig() {
     this.failureHandlerForGridIPAM  = failureHandlerForGridIPAM;
     this.createIPAMSuccessCb        = createIPAMSuccessCb;
     this.createIPAMFailureCb        = createIPAMFailureCb;
+    this.getAllDNSServerIPs         = getAllDNSServerIPs;
     this.destroy                    = destroy;
 }
 
@@ -260,9 +261,12 @@ function initActions() {
 
     btnCreateEditipamOK.click(function (a) {
         var verify = validate();
-        if(verify === false)
+        if(verify === false) {
             return;
-
+        }
+        if(validateDNSServerIP() === false) {
+           return;
+        }
         var selectedDomaindd = $("#ddDomainSwitcher").data("contrailDropdown");
         var selectedDomain = selectedDomaindd.text();
         var selectedProjectdd = $("#ddProjectSwitcher").data("contrailDropdown");
@@ -277,7 +281,6 @@ function initActions() {
         var selectedvDNSuid = selectedvDNSdd.value();
         var ntpIp = $(txtNTPServer).val();
         var dnsMethod = $("#ddDNS").data("contrailDropdown").value();
-        var dnsIP = $(txtdnsTenant).val();
         var dns_domain = $(txtDomainName).val();
         var mode = "";
 
@@ -306,9 +309,9 @@ function initActions() {
                 ipam["network-ipam"]["network_ipam_mgmt"]["dhcp_option_list"]["dhcp_option"].push(
                     {dhcp_option_name:"15", dhcp_option_value:dns_domain});
             }
-            if (dnsMethod == "tenant-dns-server" && dnsIP.length) {
-                ipam["network-ipam"]["network_ipam_mgmt"]["ipam_dns_server"]["tenant_dns_server_address"]["ip_address"] = [];
-                ipam["network-ipam"]["network_ipam_mgmt"]["ipam_dns_server"]["tenant_dns_server_address"]["ip_address"][0] = dnsIP;
+            if (dnsMethod == "tenant-dns-server") {
+                var dnsIPs = getAllDNSServerIPs(); 
+                ipam["network-ipam"]["network_ipam_mgmt"]["ipam_dns_server"]["tenant_dns_server_address"]["ip_address"] = dnsIPs;
                 ipam["network-ipam"]["network_ipam_mgmt"]["ipam_dns_server"]["virtual_dns_server_name"] = null;
             }
 
@@ -334,7 +337,7 @@ function initActions() {
                 mode = "edit";
             else
                 mode = "add";
-
+            ipam["network-ipam"]["display_name"] = ipam["network-ipam"]["fq_name"][ipam["network-ipam"]["fq_name"].length-1];
             if (mode === "add") {
                 doAjaxCall("/api/tenants/config/ipams", "POST", JSON.stringify(ipam),
                     "createIPAMSuccessCb", "createIPAMFailureCb");
@@ -372,13 +375,7 @@ function validate() {
 
     var selectedDNS = $("#ddDNS").data("contrailDropdown");
     var selectedDNSText = selectedDNS.text();
-    if (selectedDNSText === "Tenant") {
-        temp = $(txtdnsTenant).val().trim();
-        if (temp == "" || !validip(temp.trim())) {
-            showInfoWindow("Enter valid Tenant DNS Server IP.", "Input required");
-            return false;
-        }
-    } else if(selectedDNSText === "Virtual DNS") {
+    if(selectedDNSText === "Virtual DNS") {
         var selectedDNSVirtual = $("#ddDnsVirtual").data("contrailDropdown");
         if(null === selectedDNSVirtual.text() || 
             typeof selectedDNSVirtual.text() === "undefined" ||
@@ -639,6 +636,7 @@ function successHandlerForGridIPAMRow(result) {
         if (!dnsServer.length)   dnsServer = "-";
 
         ipamData.push({"id":idCount++, "ipam_name":ipam.fq_name[2],
+            "displayName":ipam.display_name,
             "uuid":ipam.uuid, "ip_blocks": ip_blocks_obj,
             "dns":dnsServer, "ntp":ntpServer,
             "domain_Name":domainName});
@@ -667,8 +665,8 @@ function clearCreateEdit() {
     $(txtIPAMName).val("");
     txtIPAMName[0].disabled = false;
     $(txtNTPServer).val("");
-    $(txtdnsTenant).val("");
     $(txtDomainName).val("");
+    clearDNSServerIPEntry();
 }
 
 /**
@@ -700,7 +698,10 @@ function populateIpamEditWindow(rowIndex) {
         var tenantDnsIP = "";
         tenantDNSIp = selectedIpam["network_ipam_mgmt"]["ipam_dns_server"]
             ["tenant_dns_server_address"]["ip_address"];
-        txtdnsTenant.val(tenantDNSIp);
+        for(var i = 0; i < tenantDNSIp.length ; i++) {
+            var DNSIPEntry = createDNSServerIPEntry(tenantDNSIp[i], i);
+            $("#DNSServerIPTuples").append(DNSIPEntry);               
+        }
     }
     if (dnsMethod == "virtual-dns-server") {
         var virtualDnsP = "";
@@ -836,6 +837,113 @@ function createIPAMFailureCb(result) {
     gridipam.showGridMessage('loading');
     windowCreateipam.modal("hide");
     fetchDataForGridIPAM();
+}
+
+function appendDNSServerIPEntry(who, defaultRow) {
+    if(validateDNSServerIP() === false)
+        return false;
+    var DNSServerIPEntry = createDNSServerIPEntry(null, $("#DNSServerIPTuples").children().length);
+    if (defaultRow) {
+        $("#DNSServerIPTuples").prepend($(DNSServerIPEntry));
+    } else {
+        var parentEl = who.parentNode.parentNode.parentNode;
+        parentEl.parentNode.insertBefore(DNSServerIPEntry, parentEl.nextSibling);
+    }
+    scrollUp("#windowCreateipam", DNSServerIPEntry, false);
+}
+
+function deleteDNSServerIPEntry(who) {
+    var templateDiv = who.parentNode.parentNode.parentNode;
+    $(templateDiv).remove();
+    templateDiv = $();
+}
+
+function clearDNSServerIPEntry() {
+    var tuples = $("#DNSServerIPTuples").children();
+    if (tuples && tuples.length > 0) {
+        var tupleLength = tuples.length;
+        for (var i = 0; i < tupleLength; i++) {
+            $(tuples[i]).empty();
+        }
+        $(tuples).empty();
+        $("#DNSServerIPTuples").empty();
+    }
+}
+
+function createDNSServerIPEntry(DNSServerIP, len) {
+    var inputTxtDNSServerName = document.createElement("input");
+    inputTxtDNSServerName.type = "text";
+    inputTxtDNSServerName.className = "span12";
+    inputTxtDNSServerName.setAttribute("placeholder", "DNS Server IP");
+    var divDNSServerName = document.createElement("div");
+    divDNSServerName.className = "span10";
+    divDNSServerName.appendChild(inputTxtDNSServerName);
+    
+    var iBtnAddRule = document.createElement("i");
+    iBtnAddRule.className = "icon-plus";
+    iBtnAddRule.setAttribute("onclick", "appendDNSServerIPEntry(this);");
+    iBtnAddRule.setAttribute("title", "Add DNS Server IP below");
+
+    var divPullLeftMargin5Plus = document.createElement("div");
+    divPullLeftMargin5Plus.className = "pull-left margin-5";
+    divPullLeftMargin5Plus.appendChild(iBtnAddRule);
+
+    var iBtnDeleteRule = document.createElement("i");
+    iBtnDeleteRule.className = "icon-minus";
+    iBtnDeleteRule.setAttribute("onclick", "deleteDNSServerIPEntry(this);");
+    iBtnDeleteRule.setAttribute("title", "Delete DNS Server IP");
+
+    var divPullLeftMargin5Minus = document.createElement("div");
+    divPullLeftMargin5Minus.className = "pull-left margin-5";
+    divPullLeftMargin5Minus.appendChild(iBtnDeleteRule);
+
+    var divRowFluidMargin5 = document.createElement("div");
+    divRowFluidMargin5.className = "row-fluid margin-0-0-5 span10";
+    divRowFluidMargin5.appendChild(divDNSServerName);
+    divRowFluidMargin5.appendChild(divPullLeftMargin5Plus);
+    divRowFluidMargin5.appendChild(divPullLeftMargin5Minus);
+
+    var rootDiv = document.createElement("div");
+    rootDiv.id = "rule_" + len;
+    rootDiv.className = "span12 margin-0-0-5";
+    rootDiv.appendChild(divRowFluidMargin5);
+
+    if (null !== DNSServerIP && typeof DNSServerIP !== "undefined") {
+        $(inputTxtDNSServerName).val(DNSServerIP);
+        $(inputTxtDNSServerName).addClass("textBackground");
+    }
+    return rootDiv;
+}
+
+function getAllDNSServerIPs(){
+    var DNSServerIPTuples = $("#DNSServerIPTuples")[0].children;
+    var allDNSServerIPs = [];
+    if (DNSServerIPTuples && DNSServerIPTuples.length > 0) {
+        for (var i = 0; i < DNSServerIPTuples.length; i++) {
+            var DNSServerIPTuple = $($(DNSServerIPTuples[i]).find("div")[0]).children();
+            var srIpam = $(DNSServerIPTuple[0].children[0]).val();
+            allDNSServerIPs.push(srIpam);
+        }
+    }
+    return allDNSServerIPs;
+}
+
+function validateDNSServerIP(){
+    var len = $("#DNSServerIPTuples").children().length;
+    if(len > 0) {
+        for(var i=0; i<len; i++) {
+            var DNSServerIP =
+                $($($($("#DNSServerIPTuples").children()[i]).find(".span10")[0]).find("input")).val().trim();
+            if (typeof DNSServerIP === "undefined" || DNSServerIP === "") {
+                showInfoWindow("Enter DNS Server IP", "Input required");
+                return false;
+            } else if(!validip(DNSServerIP.trim())){
+                showInfoWindow("Enter valid Tenant DNS Server IP in xxx.xxx.xxx.xxx/xx format", "Invalid input in DNS Server IP");
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 function destroy() {

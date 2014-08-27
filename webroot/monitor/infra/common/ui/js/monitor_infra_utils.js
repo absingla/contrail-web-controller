@@ -629,6 +629,7 @@ var infraMonitorUtils = {
         cboMsgToTime = $('#console-to-time').data('contrailDateTimePicker');
         toTimeEle = $('#console-to-time');
         fromTimeEle = $('#console-from-time');
+        keywords = $('#console-keywords');
 
         cboTimeRange.value('custom');
         cboMsgLevel.value('5');
@@ -822,6 +823,9 @@ var infraMonitorUtils = {
             } else {
             	filterObj['toTimeUTC'] = "now";
             	filterObj['fromTimeUTC'] = "now-"+ cboTimeRange.value();//adjustDate(new Date(filterObj['toTimeUTC']), {sec:-1 * cboTimeRange.value()}).getTime();
+            }
+            if(keywords.val() != null && keywords.val() != ''){
+                filterObj['keywords'] = keywords.val();
             }
             loadSLResults({elementId:'gridConsole', btnId:'btnDisplayLogs', timeOut:60000,
                 pageSize:20, //gridHeight:500,
@@ -1686,30 +1690,6 @@ function getAllLogLevelStats(d,proc,logLevelStats){
         }
     }
     return logLevelStats;
-}
-
-function getFormattedDate(timeStamp){
-    if(!$.isNumeric(timeStamp))
-        return '';
-    else{
-    var date=new Date(timeStamp),fmtDate="",mnth,hrs,mns,secs,dte;
-    dte=date.getDate()+"";
-    if(dte.length==1)
-        dte="0"+dte;
-    mnth=parseInt(date.getMonth()+1)+"";
-    if(mnth.length==1)
-        mnth="0"+mnth;
-    hrs=parseInt(date.getHours())+"";
-    if(hrs.length==1)
-        hrs="0"+hrs;
-    mns=date.getMinutes()+"";
-    if(mns.length==1)
-        mns="0"+mns;
-    secs=date.getSeconds()+"";
-    if(secs.length==1)
-        secs="0"+secs;
-    fmtDate=date.getFullYear()+"-"+mnth+"-"+dte+"  "+hrs+":"+mns+":"+secs;
-    return fmtDate;}
 }
 
 //If current process is part of exclude process list,then return true; else return false

@@ -290,6 +290,7 @@ function initActions() {
         }
         var selectedImage = $("#ddImageName").data("contrailDropdown").value();
         var selectedScaling = $("#chkServiceEnabeling")[0].checked;
+        var availZone = $("#chkAvailZoneEnable")[0].checked;
         var selectedType = $("#ddserType").data("contrailDropdown").value();
         var selectedMode = $("#ddserMode").data("contrailDropdown").value();
         var selectedFlavour = $("#ddFlavors").data("contrailDropdown").value();
@@ -306,6 +307,7 @@ function initActions() {
             serviceTemplate["service-template"]["service_template_properties"]["service_scaling"] = selectedScaling;
             serviceTemplate["service-template"]["service_template_properties"]["service_type"] = selectedType;
             serviceTemplate["service-template"]["service_template_properties"]["service_mode"] = selectedMode;
+            serviceTemplate["service-template"]["service_template_properties"]["availability_zone_enable"] = availZone;
             serviceTemplate["service-template"]["service_template_properties"]["interface_type"] = [];
             serviceTemplate["service-template"]["service_template_properties"]["flavor"] = selectedFlavour;
             serviceTemplate["service-template"]["service_template_properties"]["ordered_interfaces"] = true;
@@ -321,6 +323,7 @@ function initActions() {
                         {"service_interface_type":interfaceType,
                             "shared_ip":interfaceIp,"static_route_enable":interfaceRout});
             }
+            serviceTemplate["service-template"]["display_name"] = serviceTemplate["service-template"]["fq_name"][serviceTemplate["service-template"]["fq_name"].length-1];
             doAjaxCall("/api/tenants/config/service-templates", "POST", JSON.stringify(serviceTemplate),
                 "createStempSuccessCb", "createStempFailureCb");
             windowCreateStemp.modal('hide');
@@ -628,7 +631,9 @@ function successHandlerForGridsTempRow(result) {
 
         svcTemplateData.push({"id":idCount++, "uuid":svcTemplate.uuid,
             "templateName":svcTemplate.name,
+            "templateDN":svcTemplate.display_name,
             "Service_Mode":ucfirst(svcTemplate.service_template_properties.service_mode),
+            "availability_zone":svcTemplate.service_template_properties.availability_zone_enable,
             "service_Type":ucfirst(svcTemplate.service_template_properties.service_type),
             "service_Scaling":svcScalingStr,
             "interface_type":(svc_interfaces.length) ? svc_interfaces : "-",
