@@ -28,7 +28,11 @@ var STATS_PROP = {
                 'outPkts':'SUM(fip_stats.out_pkts)'
                },
      };
-
+//Setting the project datasource in global obj
+globalObj['dataSources']['projectDS'] = {
+        data:null,
+        dataSource:null
+};
 function ObjectListView() {
     //Context & type 
     this.load = function(obj) {
@@ -223,13 +227,10 @@ function ObjectListView() {
             });
         } else if(objectType == 'project') {
             var projectDataSource = new ContrailDataView();
-            if(globalObj['dataSources']['projectDS'] != null)
-                globalObj['dataSources']['projectDS']['dataSource'] = projectDataSource;
-            else
-                globalObj['dataSources']['projectDS'] = {dataSource:projectDataSource};
+            globalObj['dataSources']['projectDS']['dataSource'] = projectDataSource;
             var networkDS = new SingleDataSource('networkDS');
             var result = networkDS.getDataSourceObj();
-            var projData = getProjectData(result['dataSource'].getItems(),ifNull(globalObj['dataSources']['projectDS'],{}))['projectsData'];
+            var projData = getProjectData(result['dataSource'].getItems(),globalObj['dataSources']['projectDS'])['projectsData'];
             projectDataSource.setData(projData);
             $(networkDS).on("change",function(args){
                 objListView.refreshProjectSummaryGrid(result['dataSource']);
@@ -313,7 +314,7 @@ function ObjectListView() {
      */
     this.refreshProjectSummaryGrid = function(networkdataSource) {
         //Get the latest project's data and merge into projectDataSource
-        var projData = getProjectData(networkdataSource.getItems(),ifNull(globalObj['dataSources']['projectDS'],{}))['projectsData'];
+        var projData = getProjectData(networkdataSource.getItems(),globalObj['dataSources']['projectDS'])['projectsData'];
         var projectDataSource = globalObj['dataSources']['projectDS']['dataSource'];
         projectDataSource.setData(projData);
         /*
@@ -996,15 +997,18 @@ var tenantNetworkMonitorUtils = {
         //retArr.push({lbl:'vRouter',value:ifNull(jsonPath(d,'$..vrouter')[0],'-')});
         var spanWidthsForFip = [95,250,300,110];
         retArr.push({lbl:'UUID',value:ifNull(rowData['name'],'-')});
-        retArr.push({lbl:'CPU',value:jsonPath(d,'$..cpu_one_min_avg')[0] != null ? jsonPath(d,'$..cpu_one_min_avg')[0].toFixed(2) : '-'});
+
+        if(!isVCenter())
+            retArr.push({lbl:'CPU',value:jsonPath(d,'$..cpu_one_min_avg')[0] != null ? jsonPath(d,'$..cpu_one_min_avg')[0].toFixed(2) : '-'});
         var usedMemory = ifNullOrEmptyObject(jsonPath(d,'$..rss')[0],'-');
         var totalMemory = ifNullOrEmptyObject(jsonPath(d,'$..vm_memory_quota')[0],'-');
         if(usedMemory != '-' && totalMemory != '-') {
             if(usedMemory > totalMemory)
                 usedMemory = totalMemory;
         }
-        retArr.push({lbl:'Memory (Used/Total)',value:formatBytes(usedMemory*1024) + ' / ' + 
-            formatBytes(totalMemory*1024)});
+        if(!isVCenter())
+            retArr.push({lbl:'Memory (Used/Total)',value:formatBytes(usedMemory*1024) + ' / ' + 
+                formatBytes(totalMemory*1024)});
         if(fipObjArr.length > 0) {
             fipDetails.push({lbl:'Floating IPs',value:['IP Address','Floating IP Network','Interface UUID','Traffic (In/Out)'],
                 span:spanWidthsForFip,config:{labels:true}});
@@ -1216,11 +1220,7 @@ var networkPopulateFns = {
                             kfilts.push(projObj['fq_name'].join(':') + ':*');
                             projData.push(projObj);
                             projNamesArr.push(projObj['fq_name'].join(':'));
-                            //globalObj['dataSources']['projectData'] = projData;
-                            if(globalObj['dataSources']['projectDS'] != null)
-                                globalObj['dataSources']['projectDS']['data'] = projData;
-                            else
-                                globalObj['dataSources']['projectDS'] = {data:projData};
+                            globalObj['dataSources']['projectDS']['data'] = projData;
                         });
                         obj['transportCfg'] = { 
                                 url:'/api/tenant/networking/virtual-networks/details?count='+NETWORKS_PAGINATION_CNT,
@@ -1807,8 +1807,10 @@ function getProjectData(vnData,project){
     });
     $.each(projData,function(key,obj) {
         var cfgIdx = $.inArray(key,projNamesArr);
-        $.extend(obj,{type:'project',cgrid:key,name:key,uuid:projList[cfgIdx]['uuid'],size:obj['throughput']+1,x:obj['intfCnt'],y:obj['vnCnt']});
-        projArr.push(obj);
+        if(cfgIdx > -1) {
+            $.extend(obj,{type:'project',cgrid:key,name:key,uuid:projList[cfgIdx]['uuid'],size:obj['throughput']+1,x:obj['intfCnt'],y:obj['vnCnt']});
+            projArr.push(obj);
+        }
     });
     return {projectsData:projArr,networksData:vnArr,aggData:{inBytes:inBytes,outBytes:outBytes}};
 }
