@@ -971,12 +971,15 @@ underlayView.prototype.initGraphEvents = function() {
         switch(elementType) {
             case 'contrail.PhysicalRouter':
                 var nodeDetails = clickedElement['attributes']['nodeDetails'];
+                if(nodeDetails['more_attributes']['ifTable'] == '-')
+                    nodeDetails['more_attributes']['ifTable'] = [];
                 data = {
                     host_name : ifNull(nodeDetails['name'],'-'),
                     description: ifNull(nodeDetails['more_attributes']['lldpLocSysDesc'],'-'),
-                    intfCnt   : ifNull(nodeDetails['more_attributes']['ifTable'],[]).length,
+                    intfCnt   : nodeDetails['more_attributes']['ifTable'].length,
                 };
-                data['type'] = 'node';
+                data['type'] = PROUTER;
+                data['response'] = nodeDetails;
                 _this.populateDetailsTab(data);
                 $("#underlay_topology").data('nodeType',ifNull(nodeDetails['node_type'],'-'));
                 $("#underlay_topology").data('nodeName',ifNull(nodeDetails['name'],'-'));
@@ -1755,14 +1758,82 @@ underlayView.prototype.populateDetailsTab = function(data) {
     var type = data['type'],details,content;
     $("#detailsLink").show();
     $("#underlay_tabstrip").tabs({active:2});
-    if(type == 'node') {
+    if(type == PROUTER) {
         content = {
             host_name : ifNull(data['host_name'],'-'),
             description: ifNull(data['description'],'-'),
-            intfCnt   : ifNull(data['intfCnt'],0)
+            intfCnt   : data['intfCnt']
         };
         details = Handlebars.compile($("#device-summary-template").html())(content);
         $("#detailsTab").html(details);
+        var intfDetails = [];
+        for(var i = 0; i < ifNull(data['response']['more_attributes']['ifTable'],[]).length; i++ ) {
+            var intfObj = data['response']['more_attributes']['ifTable'][i];
+            var rowObj = {
+                    ifDescr: ifNull(intfObj['ifDescr'],'-'),
+                    ifIndex: ifNull(intfObj['ifIndex'],'-'),
+                    ifInOctets: intfObj['ifInOctets'],
+                    ifOutOctets: intfObj['ifOutOctets'],
+                    ifPhysAddress: ifNull(intfObj['ifPhysAddress'],'-'),
+                    rawData: intfObj
+            };
+            intfDetails.push(rowObj);
+        }
+        var dataSource = new ContrailDataView();
+        dataSource.setData(intfDetails);
+        var columns = [{
+            field:'ifDescr',
+            name:'Name',
+            minWidth: 150,
+        },{
+            field:'ifIndex',
+            name:'Index',
+            minWidth: 150
+        },{
+            field:'bandwidth',
+            name:'Traffic (In/Out)',
+            minWidth:150,
+            formatter:function(r,c,v,cd,dc) {
+                return contrail.format("{0} / {1}",formatBytes(dc['ifInOctets']),formatBytes(dc['ifOutOctets']));
+            }
+        },{
+            field:'ifPhysAddress',
+            name:'Address',
+            minWidth:150,
+        }];
+        var selector = $("#detailsTab").find('div.contrail-grid')[0];
+        $(selector).contrailGrid({
+            header : {
+                title : {
+                    text : 'Interfaces'
+                }
+            },
+            columnHeader : {
+                columns:columns
+            },
+            body : {
+                options : {
+                    forceFitColumns: true,
+                    sortable : false
+                },
+                dataSource:{
+                    dataView:dataSource,
+                },
+                statusMessages: {
+                    loading: {
+                        text: 'Loading Interface ...',
+                    },
+                    empty: {
+                        text: 'No Interfaces to display'
+                    }, 
+                    errorGettingData: {
+                        type: 'error',
+                        iconClasses: 'icon-warning',
+                        text: 'Error in getting Data.'
+                    }
+                }
+            }
+        });
     } else if (type == 'link') {
         var endpoints = ifNull(data['endpoints'],[]);
         var sourceType = data['sourceElement']['attributes']['nodeDetails']['node_type'];
@@ -1842,31 +1913,15 @@ underlayView.prototype.populateDetailsTab = function(data) {
                     var rmtData = ifNull(rawFlowData[1],{});
                     var intfFlowData = [],lclInBytesData = [],lclOutBytesData = [],rmtInBytesData = [],rmtOutBytesData = [];
                     var lclFlows = ifNull(lclData['flow-series']['value'],[]);
-                    var rmtFlows = ifNull(rmtData['flow-series']['value'],[]),lclTitle,rmtTitle;
-                    lclTitle = contrail.format('Traffic statistics of link {0} ({1}) --> {2} ({3})',lclData['summary']['name'],
+                    var rmtFlows = ifNull(rmtData['flow-series']['value'],[]),chrtTitle;
+                    chrtTitle = contrail.format('Transmit statistics of link {0} ({1}) -- {2} ({3})',lclData['summary']['name'],
                             lclData['summary']['if_name'],rmtData['summary']['name'],rmtData['summary']['if_name']);
-                    rmtTitle = contrail.format('Traffic statistics of link {0} ({1}) --> {2} ({3})',rmtData['summary']['name'],
-                            rmtData['summary']['if_name'],lclData['summary']['name'],lclData['summary']['if_name']);
                     for(var j = 0; j < lclFlows.length; j++) {
                         var lclFlowObj = lclFlows[j];
                         lclInBytesData.push({
                             x: lclFlowObj['T='],
                             y: ifNull(lclFlowObj['SUM(ifStats.ifInUcastPkts)'],0)
                         });
-                        lclOutBytesData.push({
-                            x: lclFlowObj['T='],
-                            y: ifNull(lclFlowObj['SUM(ifStats.ifOutUcastPkts)'],0)
-                        });
-                    }
-                    var lclChartObj = {
-                            title: lclTitle,
-                            data:[{
-                                key:'Transmit',
-                                values:lclInBytesData,
-                            },{
-                                key:'Receive',
-                                values:lclOutBytesData
-                            }]
                     }
                     for(var j = 0; j < rmtFlows.length; j++) {
                         var rmtFlowObj = rmtFlows[j];
@@ -1874,27 +1929,21 @@ underlayView.prototype.populateDetailsTab = function(data) {
                             x: rmtFlowObj['T='],
                             y: ifNull(rmtFlowObj['SUM(ifStats.ifInUcastPkts)'],0)
                         });
-                        rmtOutBytesData.push({
-                            x: rmtFlowObj['T='],
-                            y: ifNull(rmtFlowObj['SUM(ifStats.ifOutUcastPkts)'],0)
-                        });
                     }
-                    var rmtChartObj = {
-                            title: rmtTitle,
+                    var chartObj = {
+                            title: chrtTitle,
                             data:[{
-                                key:'Transmit',
-                                values:rmtInBytesData,
+                                key:contrail.format('{0} ({1})',lclData['summary']['name'],lclData['summary']['if_name']),
+                                values:lclInBytesData,
                             },{
-                                key:'Receive',
-                                values:rmtOutBytesData
+                                key:contrail.format('{0} ({1})',rmtData['summary']['name'],rmtData['summary']['if_name']),
+                                values:rmtInBytesData
                             }]
                     }
                     var icontag = "<i id='prouter-ifstats-loading-0' class='icon-spinner icon-spin blue bigger-125' " +
                             "style='display: none;'></i>";
-                    $("#prouter-lclstats-widget-"+i).find('.widget-header > h4').html(icontag+lclTitle);
-                    initMemoryLineChart('#prouter-lclstats-'+i,lclChartObj['data'],{height:300});
-                    $("#prouter-rmtstats-widget-"+i).find('.widget-header > h4').html(icontag+rmtTitle);
-                    initMemoryLineChart('#prouter-rmtstats-'+i,rmtChartObj['data'],{height:300});
+                    $("#prouter-lclstats-widget-"+i).find('.widget-header > h4').html(icontag+chrtTitle);
+                    initMemoryLineChart('#prouter-lclstats-'+i,chartObj['data'],{height:300});
                 }
             } 
         }).always(function(response){
