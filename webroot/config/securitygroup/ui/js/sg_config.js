@@ -126,6 +126,9 @@ function initComponents() {
             options : {
                 forceFitColumns: true,
                 checkboxSelectable: {
+                    enableRowCheckbox: function(dc) {
+                         return (dc.sgName != "default");
+                    },
                     onNothingChecked: function(e){
                         $('#btnDeleteSG').addClass('disabled-link');
                     },
@@ -133,7 +136,34 @@ function initComponents() {
                         $('#btnDeleteSG').removeClass('disabled-link');
                     }
                 },
-                actionCell: [
+                actionCell: function(dc){
+                    if(dc.sgName != "default"){
+                        return [{
+                            title: 'Edit',
+                            iconClass: 'icon-edit',
+                            onClick: function(rowIndex){
+                                showsgEditWindow('edit',rowIndex);
+                            }
+                        },
+                        {
+                            title: 'Delete',
+                            iconClass: 'icon-trash',
+                            onClick: function(rowIndex){
+                                showRemoveWindow(rowIndex);
+                            }
+                        }];
+                    } else{
+                         return [{
+                            title: 'Edit',
+                            iconClass: 'icon-edit',
+                            onClick: function(rowIndex){
+                                showsgEditWindow('edit',rowIndex);
+                            }
+                        }];
+                    }
+                },
+
+                /*actionCell: [
                     {
                         title: 'Edit',
                         iconClass: 'icon-edit',
@@ -148,7 +178,7 @@ function initComponents() {
                             showRemoveWindow(rowIndex);
                         }
                     }
-                ],
+                ],*/
                 detail:{
                     template: $("#gridSGDetailTemplate").html()
                 }
@@ -271,11 +301,10 @@ function initActions() {
         sgConfig["security-group"]["fq_name"][2] = txtRuleName.val();
         sgConfig["security-group"]["display_name"] = txtRuleName.val();
         sgConfig["security-group"]["name"] = txtRuleName.val();
-
+        sgConfig["security-group"]["security_group_entries"] = {};
+        sgConfig["security-group"]["security_group_entries"]["policy_rule"] = [];
         var sGRuleTuples = $("#sGRuleTuples")[0].children;
         if (sGRuleTuples && sGRuleTuples.length > 0) {
-            sgConfig["security-group"]["security_group_entries"] = {};
-            sgConfig["security-group"]["security_group_entries"]["policy_rule"] = [];
             for(i = 0 ; i< sGRuleTuples.length ; i++){
                 var divid = sGRuleTuples[i].id;
                 var id = getID(divid);
@@ -342,6 +371,8 @@ function initActions() {
                         sgConfig["security-group"]["security_group_entries"]["policy_rule"][i]["src_addresses"][0]["security_group"] = remoteAddr;
                     } else if(selectedRemoteAddrType == "CIDR"){
                         sgConfig["security-group"]["security_group_entries"]["policy_rule"][i]["src_addresses"][0]["subnet"] = {};
+                        if(remoteAddr == null || remoteAddr == "")
+                            remoteAddr = "0.0.0.0/0";
                         var subnetAdd = remoteAddr.split("/")
                         if(subnetAdd[0] == "") subnetAdd[0] = "0.0.0.0";
                         sgConfig["security-group"]["security_group_entries"]["policy_rule"][i]["src_addresses"][0]["subnet"]["ip_prefix"] = subnetAdd[0];
@@ -357,6 +388,8 @@ function initActions() {
                         sgConfig["security-group"]["security_group_entries"]["policy_rule"][i]["dst_addresses"][0]["security_group"] = remoteAddr;
                     } else if(selectedRemoteAddrType == "CIDR"){
                         sgConfig["security-group"]["security_group_entries"]["policy_rule"][i]["dst_addresses"][0]["subnet"] = {};
+                        if(remoteAddr == null || remoteAddr == "")
+                            remoteAddr = "0.0.0.0/0";
                         var subnetAdd = remoteAddr.split("/")
                         if(subnetAdd[0] == "") subnetAdd[0] = "0.0.0.0";
                         sgConfig["security-group"]["security_group_entries"]["policy_rule"][i]["dst_addresses"][0]["subnet"]["ip_prefix"] = subnetAdd[0];
@@ -571,7 +604,7 @@ function createSGRuleEntry(rule, id, element,SGData) {
         }
     }
 
-    mainDS.push({text : 'CIDR', id :'subnet',  children : [{text:'Enter a CIDR', value:"0.0.0.0", disabled : true }]},
+    mainDS.push({text : 'CIDR', id :'subnet',  children : [{text:'Enter a CIDR', value:"0.0.0.0/0", disabled : true }]},
         {text : 'SecurityGroup', id : 'SecurityGroup', children : allSG});
     dsSrcDest = mainDS;
     $(remoteAddr).contrailDropdown({
@@ -1136,7 +1169,7 @@ function formateSGRule_port(port,protocal){
 
 function formateSGRule_SGText(sg){
     var sgArray = sg.split(":");
-    var returnString = " security group " + sgRuleFormat(sgArray[2]) +" ("+ sgArray[0] + sgArray[1] + ") ";
+    var returnString = " security group " + sgRuleFormat(sgArray[2]) +" ("+ sgArray[0] +":"+ sgArray[1] + ") ";
     return returnString;
 }
 
@@ -1220,6 +1253,9 @@ function showsgEditWindow(mode, rowIndex) {
             if (mode === "add") {
                 windowCreateSG.find('.modal-header-title').text('Create Security Group');
                 $(txtRuleName).focus();
+                var rule = JSON.parse('{"direction":">","protocol":"any","dst_addresses":[{"security_group":null,"subnet":{"ip_prefix":"0.0.0.0","ip_prefix_len":0}}],"dst_ports":[{"end_port":65535,"start_port":0}],"src_addresses":[{"security_group":"local","subnet":null}],"src_ports":[{"end_port":65535,"start_port":0}]}');
+                var ruleEntry = createSGRuleEntry(rule, dynamicID,"sGRuleTuples",sgData);
+                $("#sGRuleTuples").append(ruleEntry);
             } else if (mode === "edit") {
                 var selectedRow = $("#gridSG").data("contrailGrid")._dataView.getItem(rowIndex);
                 windowCreateSG.find('.modal-header-title').text('Edit Security Group ' + selectedRow.sgName);
