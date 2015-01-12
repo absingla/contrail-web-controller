@@ -228,8 +228,12 @@ function physicalInterfacesConfig() {
     function onVMISelChanges(e) {
         var ipObj = $('#ddVMI').data('contrailCombobox').getSelectedItem();
         if(typeof ipObj === 'object') {
-            $('#txtVMI').val(ipObj.ip);
-              $('#txtVMI').attr('disabled','disabled');
+            if(ipObj.ip != null) {
+                $('#txtVMI').val(ipObj.ip);
+            } else {
+                $('#txtVMI').val('');
+            }
+            $('#txtVMI').attr('disabled','disabled');
         } else {
             $('#txtVMI').val('');
             $('#txtVMI').removeAttr('disabled');
@@ -539,6 +543,12 @@ function physicalInterfacesConfig() {
                     $.when.apply($,physicalIntfsDeleteAjaxs).then(
                             function(response){
                                 //all success
+                                if(deleteVMIs.length > 0) {
+                                    deleteVirtulMachineInterfaces(deleteVMIs, deleteVMs);
+                                }
+                                if(delSubnets.length > 0) {
+                                    deleteSubnets(delSubnets);
+                                }
                                 fetchData();
                             },
                             function(){
@@ -556,12 +566,6 @@ function physicalInterfacesConfig() {
                     fetchData();
                 }
             );
-            if(deleteVMIs.length > 0) {
-                deleteVirtulMachineInterfaces(deleteVMIs, deleteVMs);
-            }
-            if(delSubnets.length > 0) {
-                deleteSubnets(delSubnets);
-            }
         }
     }
 
