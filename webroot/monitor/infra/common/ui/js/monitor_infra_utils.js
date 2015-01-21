@@ -7,7 +7,8 @@ var infraMonitorAlertUtils = {
     * Process-specific alerts
     */
     getProcessAlerts : function(data,obj,processPath) {
-        var res,filteredResponse = [],downProcess = 0; 
+        var res,filteredResponse = [],downProcess = 0,backOffProcess = 0,
+            lastExitTime,lastStopTime,strtngProcess = 0; 
         if(processPath != null)
             res = getValueByJsonPath(data['value'],processPath,[]);
         else
@@ -30,58 +31,98 @@ var infraMonitorAlertUtils = {
             }
         } else {
             for(var i=0;i<filteredResponse.length;i++) {
-            if(filteredResponse[i]['core_file_list']!=undefined && filteredResponse[i]['core_file_list'].length>0) {
-                var msg = infraAlertMsgs['PROCESS_COREDUMP'].format(filteredResponse[i]['core_file_list'].length);
-                var restartCount = ifNull(filteredResponse[i]['exit_count'],0);
-                if(restartCount > 0)
-                    msg +=", "+ infraAlertMsgs['PROCESS_RESTART'].format(restartCount);
-                alerts.push($.extend({
-                    tooltipAlert: false,
-                    sevLevel: sevLevels['INFO'],
-                    name: data['name'],
-                    pName: filteredResponse[i]['process_name'],
-                    msg: msg
-                }, infoObj));
-            }  
-            var procName = filteredResponse[i]['process_name'];
-            if (filteredResponse[i]['process_state']!='PROCESS_STATE_STOPPED' && filteredResponse[i]['process_state']!='PROCESS_STATE_RUNNING' 
-                    && filteredResponse[i]['last_exit_time'] != null){
-                downProcess++;
-                alerts.push($.extend({
-                    tooltipAlert: false,
-                    name: data['name'],
-                    pName: procName,
-                    msg: infraAlertMsgs['PROCESS_DOWN_MSG'].format(procName),
-                    timeStamp: filteredResponse[i]['last_exit_time'],
-                    sevLevel: sevLevels['ERROR']
-                }, infoObj));
-            } else if (filteredResponse[i]['process_state'] == 'PROCESS_STATE_STOPPED' && filteredResponse[i]['last_stop_time'] != null) {
-                downProcess++;
-                alerts.push($.extend({
-                    tooltipAlert: false,
-                    name: data['name'],
-                    pName: procName,
-                    msg: infraAlertMsgs['PROCESS_STOPPED'].format(procName),
-                    timeStamp: filteredResponse[i]['last_stop_time'],
-                    sevLevel: sevLevels['ERROR']
-                }, infoObj));
-                //Raise only info alert if process_state is missing for a process??
-            } else if  (filteredResponse[i]['process_state'] == null) {
-                downProcess++;
-                alerts.push($.extend({
-                    tooltipAlert: false,
-                    name: data['name'],
-                    pName: filteredResponse[i]['process_name'],
-                    msg: infraAlertMsgs['PROCESS_DOWN_MSG'].format(filteredResponse[i]['process_name']),
-                    timeStamp: filteredResponse[i]['last_exit_time'],
-                    sevLevel: sevLevels['INFO']
-                }, infoObj));
-                    msg +=", "+infraAlertMsgs['RESTARTS'].format(restartCount);
-                alerts.push($.extend({name:data['name'],pName:filteredResponse[i]['process_name'],type:'core',msg:msg},infoObj));
-            } 
+                lastExitTime =  undefined;
+                lastStopTime =  undefined;
+                if(filteredResponse[i]['core_file_list']!=undefined && filteredResponse[i]['core_file_list'].length>0) {
+                    var msg = infraAlertMsgs['PROCESS_COREDUMP'].format(filteredResponse[i]['core_file_list'].length);
+                    var restartCount = ifNull(filteredResponse[i]['exit_count'],0);
+                    if(restartCount > 0)
+                        msg +=", "+ infraAlertMsgs['PROCESS_RESTART'].format(restartCount);
+                    alerts.push($.extend({
+                        tooltipAlert: false,
+                        sevLevel: sevLevels['INFO'],
+                        name: data['name'],
+                        pName: filteredResponse[i]['process_name'],
+                        msg: msg
+                    }, infoObj));
+                }  
+                var procName = filteredResponse[i]['process_name'];
+                var procState = filteredResponse[i]['process_state'];
+                /*
+                 * Different process states and corresponding node color and message 
+                 * PROCESS_STATE_STOPPPED: red, process stopped message
+                 * PROCESS_STATE_STARTING: blue, process starting message
+                 * PROCESS_STATE_BACKOFF: orange, process down message
+                 * rest all states are with red color and process down message
+                 */
+                if (procState != null && procState != 'PROCESS_STATE_STOPPED' && procState != 'PROCESS_STATE_RUNNING' 
+                    && procState != 'PROCESS_STATE_BACKOFF' && procState != 'PROCESS_STATE_STARTING') {
+                    downProcess++;
+                    if(filteredResponse[i]['last_exit_time'] != null)
+                        lastExitTime = filteredResponse[i]['last_exit_time'];
+                    alerts.push($.extend({
+                        tooltipAlert: false,
+                        name: data['name'],
+                        pName: procName,
+                        msg: infraAlertMsgs['PROCESS_DOWN_MSG'].format(procName),
+                        timeStamp: lastExitTime,
+                        sevLevel: sevLevels['ERROR']
+                    }, infoObj));
+                } else if (procState == 'PROCESS_STATE_STOPPED') {
+                    downProcess++;
+                    if(filteredResponse[i]['last_stop_time'] != null)
+                        lastStopTime = filteredResponse[i]['last_stop_time'];
+                    alerts.push($.extend({
+                        tooltipAlert: false,
+                        name: data['name'],
+                        pName: procName,
+                        msg: infraAlertMsgs['PROCESS_STOPPED'].format(procName),
+                        timeStamp: lastStopTime,
+                        sevLevel: sevLevels['ERROR']
+                    }, infoObj));
+                } else if (procState == 'PROCESS_STATE_BACKOFF') {
+                    backOffProcess++;
+                    if(filteredResponse[i]['last_exit_time'] != null)
+                        lastExitTime = filteredResponse[i]['last_exit_time'];
+                    alerts.push($.extend({
+                        tooltipAlert: false,
+                        name: data['name'],
+                        pName: procName,
+                        msg: infraAlertMsgs['PROCESS_DOWN_MSG'].format(procName),
+                        timeStamp: lastExitTime,
+                        sevLevel: sevLevels['WARNING']
+                    }, infoObj));
+                } else if (procState == 'PROCESS_STATE_STARTING') { 
+                    strtngProcess++;
+                    alerts.push($.extend({
+                        tooltipAlert: false,
+                        name: data['name'],
+                        pName: procName,
+                        msg: infraAlertMsgs['PROCESS_STARTING_MSG'].format(procName),
+                        timeStamp: undefined, //we are not showing the time stamp for the process in 
+                        sevLevel: sevLevels['INFO'] // starting state  
+                    }, infoObj));
+                    //Raise only info alert if process_state is missing for a process??
+                } else if  (procState == null) {
+                    downProcess++;
+                    alerts.push($.extend({
+                        tooltipAlert: false,
+                        name: data['name'],
+                        pName: filteredResponse[i]['process_name'],
+                        msg: infraAlertMsgs['PROCESS_DOWN_MSG'].format(filteredResponse[i]['process_name']),
+                        timeStamp: filteredResponse[i]['last_exit_time'],
+                        sevLevel: sevLevels['INFO']
+                    }, infoObj));
+                        /*msg +=", "+infraAlertMsgs['RESTARTS'].format(restartCount);
+                    alerts.push($.extend({name:data['name'],pName:filteredResponse[i]['process_name'],type:'core',msg:msg},infoObj));*/
+                } 
             }
             if(downProcess > 0)
-                alerts.push($.extend({detailAlert:false,sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['PROCESS_DOWN'].format(downProcess)},infoObj));
+                alerts.push($.extend({detailAlert:false,sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['PROCESS_DOWN'].format(downProcess + backOffProcess)},infoObj));
+            else if(backOffProcess > 0)
+                alerts.push($.extend({detailAlert:false,sevLevel:sevLevels['WARNING'],msg:infraAlertMsgs['PROCESS_DOWN'].format(backOffProcess)},infoObj));
+            if(strtngProcess > 0)
+                alerts.push($.extend({detailAlert:false,sevLevel:sevLevels['INFO'],msg:infraAlertMsgs['PROCESS_STARTING'].format(strtngProcess)},infoObj));
         }
         return alerts.sort(dashboardUtils.sortInfraAlerts);
     },
@@ -230,7 +271,7 @@ var infraMonitorUtils = {
             var d = result[i];
             var dValue = result[i]['value'];
             obj['x'] = parseFloat(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;cpu_share','--'));
-            obj['y'] = parseInt(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo;virt','--'))/1024; //Convert to MB
+            obj['y'] = parseInt(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo;res','--'))/1024; //Convert to MB
             obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : '-';
             obj['ip'] = getValueByJsonPath(dValue,'VrouterAgent;control_ip','-');
             obj['uveIP'] = obj['ip'];
@@ -315,7 +356,7 @@ var infraMonitorUtils = {
         $.each(result,function(idx,d) {
             var obj = {};
             obj['x'] = parseFloat(jsonPath(d,'$..cpu_info.cpu_share')[0]);
-            obj['y'] = parseInt(jsonPath(d,'$..meminfo.virt')[0])/1024; //Convert to MB
+            obj['y'] = parseInt(jsonPath(d,'$..meminfo.res')[0])/1024; //Convert to MB
             obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : '-';
             obj['histCpuArr'] = parseUveHistoricalValues(d,'$..cpu_share[*].history-10');
             obj['uveIP'] = ifNull(jsonPath(d,'$..bgp_router_ip_list')[0],[]);
@@ -408,7 +449,7 @@ var infraMonitorUtils = {
         $.each(result,function(idx,d) {
             var obj = {};
             obj['x'] = parseFloat(jsonPath(d,'$..ModuleCpuState.module_cpu_info[?(@.module_id=="contrail-collector")]..cpu_share')[0]);
-            obj['y'] = parseInt(jsonPath(d,'$..ModuleCpuState.module_cpu_info[?(@.module_id=="contrail-collector")]..meminfo.virt')[0])/1024;
+            obj['y'] = parseInt(jsonPath(d,'$..ModuleCpuState.module_cpu_info[?(@.module_id=="contrail-collector")]..meminfo.res')[0])/1024;
             obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : '-';
             obj['memory'] = formatBytes(obj['y']*1024*1024);
             obj['histCpuArr'] = parseUveHistoricalValues(d,'$..collector_cpu_share[*].history-10');
@@ -468,7 +509,7 @@ var infraMonitorUtils = {
         $.each(result,function(idx,d) {
             var obj = {};
             obj['x'] = parseFloat(jsonPath(d,'$..ModuleCpuState.module_cpu_info[?(@.module_id=="contrail-api")]..cpu_share')[0]);
-            obj['y'] = parseInt(jsonPath(d,'$..ModuleCpuState.module_cpu_info[?(@.module_id=="contrail-api")]..meminfo.virt')[0])/1024;
+            obj['y'] = parseInt(jsonPath(d,'$..ModuleCpuState.module_cpu_info[?(@.module_id=="contrail-api")]..meminfo.res')[0])/1024;
             obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : '-';
             obj['memory'] = formatBytes(obj['y']*1024*1024);
             //Re-visit once average response time added for config nodes
@@ -912,6 +953,8 @@ var infraMonitorUtils = {
 function getCores(data) {
     var fileList=[],result=[];
     var fileArrList=ifNull(jsonPath(data,'$..NodeStatus.process_info[*].core_file_list'),[]);
+    var allCoresList = ifNull(jsonPath(data,'$..NodeStatus.all_core_file_list')[0],[]);
+    fileArrList = fileArrList.concat([allCoresList]);
     for(var i=0;i<fileArrList.length;i++){
         var files=fileArrList[i];
        for(var j=0;j<files.length;j++)
@@ -1820,9 +1863,9 @@ function getAnalyticsMessagesCountAndSize(d,procList){
 }
 
 function formatMemory(memory) {
-    if(memory == null || memory['virt'] == null)
+    if(memory == null || memory['res'] == null)
         return noDataStr;
-    var usedMemory = parseInt(memory['virt']) * 1024;
+    var usedMemory = parseInt(memory['res']) * 1024;
     //var totalMemory = parseInt(memory['total']) * 1024;
     return contrail.format('{0}', formatBytes(usedMemory));
 }
