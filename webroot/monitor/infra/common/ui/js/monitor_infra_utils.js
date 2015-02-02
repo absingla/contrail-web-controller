@@ -283,6 +283,7 @@ var infraMonitorUtils = {
             obj['isConfigMissing'] = $.isEmptyObject(getValueByJsonPath(dValue,'ConfigData')) ? true : false;
             obj['isUveMissing'] = ($.isEmptyObject(getValueByJsonPath(dValue,'VrouterAgent')) && $.isEmptyObject(getValueByJsonPath(dValue,'VrouterStatsAgent'))) ? true : false;
             obj['configIP'] = getValueByJsonPath(dValue,'ConfigData;virtual-router;virtual_router_ip_address','-');
+            obj['vRouterType'] = getValueByJsonPath(dValue,'ConfigData;virtual-router;virtual_router_type;0','');
             if(obj['ip'] == '-') {
                 obj['ip'] = obj['configIP'];
             }
@@ -952,7 +953,11 @@ var infraMonitorUtils = {
 
 function getCores(data) {
     var fileList=[],result=[];
-    var fileArrList=ifNull(jsonPath(data,'$..NodeStatus.process_info[*].core_file_list'),[]);
+    var fileArrList=[];
+    var procCoreList = jsonPath(data,'$..NodeStatus.process_info[*].core_file_list');
+    if(procCoreList){
+        fileArrList = ifNull(procCoreList,[]);
+    }
     var allCoresList = ifNull(jsonPath(data,'$..NodeStatus.all_core_file_list')[0],[]);
     fileArrList = fileArrList.concat([allCoresList]);
     for(var i=0;i<fileArrList.length;i++){
@@ -2015,8 +2020,8 @@ function mergeGeneratorAndPrimaryData(genDS,primaryDS,options){
         };
         updatedData.push(d);
     });
-    genDS.setItems(updatedData);
-    return {dataSource:genDS};
+    primaryDS.updateData(updatedData);
+    return {dataSource:primaryDS};
 }
 
 function getGeneratorsForInfraNodes(deferredObj,dataSource,dsName) {
