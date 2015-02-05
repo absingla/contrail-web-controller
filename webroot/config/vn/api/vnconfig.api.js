@@ -811,6 +811,15 @@ function updateVNPolicyRefs (vnConfig, response, appData)
     }
 
     vnPutData['virtual-network']['uuid'] = vnId;
+    if (null !=
+        vnSeqConfig['virtual-network']['virtual_machine_interface_back_refs']) {
+        delete
+            vnSeqConfig['virtual-network']['virtual_machine_interface_back_refs'];
+    }
+    if (null !=
+        vnSeqConfig['virtual-network']['instance_ip_back_refs']) {
+        delete vnSeqConfig['virtual-network']['instance_ip_back_refs'];
+    }
     configApiServer.apiPut(vnPutURL, vnSeqConfig, appData, function(err, data) {
         if (err) {
             commonUtils.handleJSONResponse(err, response, null);
@@ -2202,4 +2211,3 @@ exports.updateVNRouteTargets         = updateVNRouteTargets;
 exports.getSharedVirtualNetworks     = getSharedVirtualNetworks;
 exports.getExternalVirtualNetworks   = getExternalVirtualNetworks;
 exports.getPagedVirtualNetworks      = getPagedVirtualNetworks;
-
