@@ -844,6 +844,78 @@ function onClickGridLink(e,selRowDataItem){
  * Common utility functions for tenant network monitoring page
  */
 var tenantNetworkMonitorUtils = {
+    projectNetworksParseFn:function(response) {
+        var retArr = $.map(ifNull(response['data']['value'], response), function (currObject) {
+            currObject['rawData'] = $.extend(true,{},currObject);
+            currObject['url'] = '/api/tenant/networking/virtual-network/summary?fqNameRegExp=' + currObject['name'];
+            currObject['outBytes'] = '-';
+            currObject['inBytes'] = '-';
+            var inBytes = 0,outBytes = 0;
+            var statsObj = getValueByJsonPath(currObject,'value;UveVirtualNetworkAgent;vn_stats;0;StatTable.UveVirtualNetworkAgent.vn_stats',[]);
+            for(var i = 0; i < statsObj.length; i++){
+                inBytes += ifNull(statsObj[i]['SUM(vn_stats.in_bytes)'],0);
+                outBytes += ifNull(statsObj[i]['SUM(vn_stats.out_bytes)'],0);
+            }
+            if(getValueByJsonPath(currObject,'value;UveVirtualNetworkAgent;vn_stats') != null) {
+                currObject['outBytes'] = outBytes;
+                currObject['inBytes'] = inBytes;
+            }
+            currObject['instCnt'] = ifNull(jsonPath(currObject, '$..virtualmachine_list')[0], []).length;
+            currObject['inThroughput'] = ifNull(jsonPath(currObject, '$..in_bandwidth_usage')[0], 0);
+            currObject['outThroughput'] = ifNull(jsonPath(currObject, '$..out_bandwidth_usage')[0], 0);
+            return currObject;
+        });
+        return retArr;
+    },
+    projectInstanceParseFn: function(response) {
+        var retArr = $.map(ifNull(response['data']['value'],response), function (currObject, idx) {
+            var currObj = currObject['value'];
+            var intfStats = getValueByJsonPath(currObj,'VirtualMachineStats;if_stats;0;StatTable.VirtualMachineStats.if_stats',[]);
+            currObject['rawData'] = $.extend(true,{},currObj);
+            currObject['inBytes'] = '-';
+            currObject['outBytes'] = '-';
+            // If we append * wildcard stats info are not there in response,so we changed it to flat
+            currObject['url'] = '/api/tenant/networking/virtual-machine/summary?fqNameRegExp=' + currObject['name'] + '?flat';
+            currObject['vmName'] = ifNull(jsonPath(currObj, '$..vm_name')[0], '-');
+            currObject['vRouter'] = ifNull(jsonPath(currObj, '$..vrouter')[0], '-');
+            currObject['intfCnt'] = ifNull(jsonPath(currObj, '$..interface_list')[0], []).length;
+            currObject['vn'] = ifNull(jsonPath(currObj, '$..interface_list[*].virtual_network'),[]);
+            //Parse the VN only if it exists
+            if(currObject['vn'] != false)
+                currObject['vn'] = tenantNetworkMonitorUtils.formatVN(currObject['vn']);
+            currObject['ip'] = [];
+            var intfList = tenantNetworkMonitorUtils.getInstanceIntfList(currObj);
+            for(var i = 0; i < intfList.length; i++ ) {
+                if(intfList[i]['ip6_active'] == true) {
+                    if(intfList[i]['ip_address'] != '0.0.0.0')
+                        currObject['ip'].push(intfList[i]['ip_address']);
+                    if(intfList[i]['ip6_address'] != null)
+                        currObject['ip'].push(intfList[i]['ip6_address']);
+                } else {
+                    if(intfList[i]['ip_address'] != '0.0.0.0')
+                        currObject['ip'].push(intfList[i]['ip_address']);
+                }
+            }
+            var floatingIPs = ifNull(jsonPath(currObj, '$..fip_stats_list')[0], []);
+            currObject['floatingIP'] = [];
+            if(getValueByJsonPath(currObj,'VirtualMachineStats;if_stats') != null) {
+                currObject['inBytes'] = 0;
+                currObject['outBytes'] = 0;
+            }
+            $.each(floatingIPs, function(idx, fipObj){
+                currObject['floatingIP'].push(contrail.format('{0}<br/> ({1}/{2})', fipObj['ip_address'],formatBytes(ifNull(fipObj['in_bytes'],'-')),
+                    formatBytes(ifNull(fipObj['out_bytes'],'-'))));
+            });
+            $.each(intfStats, function (idx, value) {
+                currObject['inBytes'] += ifNull(value['SUM(if_stats.in_bytes)'],0);
+            });
+            $.each(intfStats, function (idx, value) {
+                currObject['outBytes'] += ifNull(value['SUM(if_stats.out_bytes)'],0);
+            });
+            return currObject;
+        });
+        return retArr;
+    },
     networkParseFn:function(response) {
         var retArr = $.map(ifNull(response['value'], response), function (currObj, idx) {
             currObj['rawData'] = $.extend(true,{},currObj);

@@ -1,0 +1,85 @@
+<!--
+ Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
+-->
+
+<script type="text/x-handlebars-template" id="core-visualization-template">
+	<div class="row-fluid visualization-container">
+		<div class="topology-visualization-canvas" style="height: 300px; overflow: hidden;">
+			<div class="topology-visualization-loading progress progress-striped active">
+  				<div class="bar" style="width: 100%;"></div>
+			</div>
+            <div id="topology" class="topology-visualization row-fluid colmask holygrail">
+			    <div class="colmid">
+			        <div class="colleft">
+			            <div class="col1wrap">
+			                <div class="col1">
+								<div id="topology-connected-elements" class="topology-visualization-connected-elements row-fluid">
+                                    <div id="topology-visualization-connected-elements-empty" class="visualization-empty hide">
+                                        <p class="">No Virtual Network Found.</p>
+                                    </div>
+								</div>
+							</div>
+			            </div>
+			            <div class="col2">
+							<div id="topology-config-elements" class="topology-visualization-config-elements row-fluid"></div>
+			            </div>
+			            <div class="col3">
+							<div id="topology-controls" class="topology-controls pull-right">
+                                <div class="topology-control-item zoom-in" title="Zoom In"><i class="icon-zoom-in"></i></div>
+								<div class="topology-control-item zoom-out" title="Zoom Out"><i class="icon-zoom-out"></i></div>
+								<div class="topology-control-item zoom-reset" title="Zoom Reset"><i class="icon-remove-circle"></i></div>
+								<div class="topology-control-item" onclick="resizeWidget(this,'#topology');" title="Expand Visualization">
+                                    <i class="icon-resize-full"></i>
+                                </div>
+                            </div>
+							<div id="topology-breadcrumb" class="hide breadcrumbs pull-right"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/x-handlebars-template" id="core-tabs-template">
+    <div id="contrail-tabs" class="row-fluid contrail-widget-tabs topology-visualization-tabs">
+        <ul>
+            {{#each this}}
+                <li><a id="{{this.elementId}}-tab-link" href="#{{this.elementId}}-tab">{{this.title}}</a></li>
+            {{/each}}
+        </ul>
+        {{#each this}}
+            <div id="{{this.elementId}}-tab">
+                <div id="{{this.elementId}}" class="{{this.viewConfig.class}}"></div>
+            </div>
+        {{/each}}
+    </div>
+</script>
+
+<script type="text/x-handlebars-template" id="core-chart-template">
+    <div class="row-fluid">
+        {{#each this.elementConfg}}
+            <div id="charts-box" class="{{#getValue "{\"1\":\"span12\",\"2\":\"span6\",\"3\":\"span4\"}" ../colCount}}{{/getValue}} widget-box transparent">
+                <div class="widget-header">
+                    <h4 class="smaller">
+                        <i id="charts-loading" class="icon-spinner icon-spin blue bigger-125"></i> {{title}}
+                    </h4>
+                    <div class="widget-toolbar pull-right">
+                        <a data-action="collapse">
+                            <i class="icon-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main" style="height:300px;">
+                        {{#IfCompare @index 1 operator='%2'}}
+                            <div class="stack-chart negate" id="{{../../id}}_{{@index}}"></div>
+                        {{else}}
+                            <div class="stack-chart" id="{{../../id}}_{{@index}}"></div>
+                        {{/IfCompare}}
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</script>
