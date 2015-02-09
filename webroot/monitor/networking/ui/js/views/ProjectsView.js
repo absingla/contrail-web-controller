@@ -35,15 +35,15 @@ define([
                     var networkRemoteConfig = {
                         url: ctwc.get(ctwc.URL_PROJECT_NETWORKS, projectFQN),
                         type: 'POST',
-                        data: {data: [{"type": "virtual-network", "cfilt": vnColumnfilters.join(',')}]}
+                        data: JSON.stringify({data: [{"type": "virtual-network", "cfilt": vnColumnfilters.join(',')}]})
                     };
 
                     var instanceRemoteConfig = {
                         url: ctwc.get(ctwc.URL_PROJECT_INSTANCES, projectUUID),
                         type: 'POST',
-                        data: {
+                        data: JSON.stringify({
                             data: [{"type": "virtual-machine", "cfilt": iColumnFilters.join(',')}]
-                        }
+                        })
                     };
 
                     cowu.renderView4Config(that.$el, null, getProjectsViewConfig(vConfig, projectFQN, networkRemoteConfig, instanceRemoteConfig));
