@@ -16,10 +16,10 @@ define([
                 projectUUID = (contrail.checkIfExist(viewConfig.hashParams.uuid)) ? viewConfig.hashParams.uuid : null;
 
 
-            that.renderProjectDropdown(domain, projectFQN, projectUUID, function(projectFQN, projectUUID) {
+            that.renderProjectDropdown(domain, projectFQN, projectUUID, function (projectFQN, projectUUID) {
                 _ignoreOnHashChange = true;
                 layoutHandler.setURLHashObj({
-                    p:'mon_net_projects-beta',
+                    p: 'mon_net_projects-beta',
                     q: {
                         fqName: projectFQN,
                         uuid: projectUUID
@@ -46,8 +46,8 @@ define([
                         projectUUID = projectList.projects[0].uuid
                     }
 
-                    var projects = $.map(projectList.projects, function(n,i){
-                        if(projectUUID == null && projectFQN == n.fq_name.join(':')) {
+                    var projects = $.map(projectList.projects, function (n, i) {
+                        if (projectUUID == null && projectFQN == n.fq_name.join(':')) {
                             projectUUID = n.uuid
                         }
 
@@ -58,10 +58,10 @@ define([
                     });
 
                     var projectDropdown = $('#projectDropdown').contrailDropdown({
-                        dataTextField:"name",
+                        dataTextField: "name",
                         dataValueField: "value",
                         data: projects,
-                        change: function(e){
+                        change: function (e) {
                             var projectFQN = $('#projectDropdown').data('contrailDropdown').text(),
                                 projectUUID = $('#projectDropdown').data('contrailDropdown').value();
 
@@ -90,23 +90,22 @@ define([
                     focusedElement: 'Project'
                 };
 
-            var vnColumnfilters = ['UveVirtualNetworkAgent:interface_list', 'UveVirtualNetworkAgent:in_bandwidth_usage', 'UveVirtualNetworkAgent:out_bandwidth_usage',
-                'UveVirtualNetworkAgent:in_bytes', 'UveVirtualNetworkAgent:out_bytes', 'UveVirtualNetworkConfig:connected_networks',
-                'UveVirtualNetworkAgent:virtualmachine_list'];
-
-            var iColumnFilters = ['UveVirtualMachineAgent:interface_list', 'UveVirtualMachineAgent:vrouter', 'UveVirtualMachineAgent:fip_stats_list'];
-
             var networkRemoteConfig = {
                 url: ctwc.get(ctwc.URL_PROJECT_NETWORKS, projectFQN),
                 type: 'POST',
-                data: JSON.stringify({data: [{"type": "virtual-network", "cfilt": vnColumnfilters.join(',')}]})
+                data: JSON.stringify({
+                    data: [{
+                        "type": ctwc.TYPE_VIRTUAL_NETWORK,
+                        "cfilt": ctwc.FILTERS_COLUMN_VN.join(',')
+                    }]
+                })
             };
 
             var instanceRemoteConfig = {
                 url: ctwc.get(ctwc.URL_PROJECT_INSTANCES, projectUUID),
                 type: 'POST',
                 data: JSON.stringify({
-                    data: [{"type": "virtual-machine", "cfilt": iColumnFilters.join(',')}]
+                    data: [{"type": ctwc.TYPE_VIRTUAL_MACHINE, "cfilt": ctwc.FILTERS_COLUMN_VM.join(',')}]
                 })
             };
 
@@ -248,7 +247,8 @@ define([
                     remote: {
                         ajaxConfig: networkRemoteConfig,
                         dataParser: tenantNetworkMonitorUtils.projectNetworksParseFn
-                    }
+                    },
+                    lazyRemote: getLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
                 }
             },
             columnHeader: {
@@ -280,7 +280,8 @@ define([
                     remote: {
                         ajaxConfig: instanceRemoteConfig,
                         dataParser: tenantNetworkMonitorUtils.projectInstanceParseFn
-                    }
+                    },
+                    lazyRemote: getLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
                 }
             },
             columnHeader: {
@@ -289,6 +290,52 @@ define([
         };
         return gridElementConfig;
     };
+
+    var getLazyRemoteConfig = function (type) {
+        return [
+            {
+                getAjaxConfig: function (responseJSON) {
+                    var uuids, lazyAjaxConfig;
+
+                    uuids = $.map(responseJSON, function (item) {
+                        return item['name'];
+                    });
+
+                    lazyAjaxConfig = {
+                        url: ctwc.URL_VM_VN_STATS,
+                        type: 'POST',
+                        data: JSON.stringify({
+                            data: {
+                                type: type,
+                                uuids: uuids.join(','),
+                                minSince: 60,
+                                useServerTime: true
+                            }
+                        })
+                    }
+                    return lazyAjaxConfig;
+                },
+                successCallback: function (response, contrailDataView) {
+                    var statDataList = tenantNetworkMonitorUtils.statsOracleParseFn(response[0], type),
+                        dataItems = contrailDataView.getItems(),
+                        statData;
+
+                    for (var j = 0; j < statDataList.length; j++) {
+                        statData = statDataList[j];
+                        for (var i = 0; i < dataItems.length; i++) {
+                            var dataItem = dataItems[i];
+                            if (statData['name'] == dataItem['name']) {
+                                dataItem['inBytes'] = ifNull(statData['inBytes'], 0);
+                                dataItem['outBytes'] = ifNull(statData['outBytes'], 0);
+                                break;
+                            }
+                        }
+                    }
+                    contrailDataView.updateData(dataItems);
+                }
+            }
+        ];
+    }
 
     return ProjectsView;
 });

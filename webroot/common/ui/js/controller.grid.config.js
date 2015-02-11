@@ -16,7 +16,7 @@ define([
                 events: {
                     onClick: onClickGridLink
                 },
-                minWidth: 400,
+                minWidth: 200,
                 searchFn: function (d) {
                     return d['name'];
                 },
@@ -26,11 +26,11 @@ define([
             {
                 field: 'instCnt',
                 name: 'Instances',
-                minWidth: 100
+                minWidth: 200
             },
             {
                 field: 'inBytes',
-                name: 'Traffic (In/Out in last 1 hr)',
+                name: 'Traffic In/Out (Last 1 Hr)',
                 minWidth: 200,
                 formatter: function (r, c, v, cd, dc) {
                     return contrail.format("{0} / {1}", formatBytes(dc['inBytes']), formatBytes(dc['outBytes']));
@@ -38,7 +38,7 @@ define([
             },
             {
                 field: 'outBytes',
-                name: 'Throughput (In/Out)',
+                name: 'Throughput In/Out',
                 minWidth: 200,
                 formatter: function (r, c, v, cd, dc) {
                     return contrail.format("{0} / {1}", formatThroughput(dc['inThroughput']), formatThroughput(dc['outThroughput']));
@@ -72,21 +72,21 @@ define([
                 formatter: function (r, c, v, cd, dc) {
                     return getMultiValueStr(dc['vn']);
                 },
-                minWidth: 220,
+                minWidth: 200,
                 searchable: true
             },
             {
                 field: 'intfCnt',
                 name: 'Interfaces',
-                minWidth: 60
+                minWidth: 100
             },
             {
                 field: 'vRouter',
-                name: 'vRouter',
+                name: 'Virtual Router',
                 formatter: function (r, c, v, cd, dc) {
                     return cellTemplateLinks({cellText: 'vRouter', tooltip: true, name: 'vRouter', rowData: dc});
                 },
-                minWidth: 80,
+                minWidth: 100,
                 events: {
                     onClick: onClickGridLink
                 },
@@ -98,23 +98,23 @@ define([
                 formatter: function (r, c, v, cd, dc) {
                     return formatIPArr(dc['ip']);
                 },
-                minWidth: 130
-            },
-            {
-                field: 'floatingIP',
-                name: 'Floating IPs (In/Out)',
-                formatter: function (r, c, v, cd, dc) {
-                    return getMultiValueStr(dc['floatingIP']);
-                },
                 minWidth: 100
             },
             {
+                field: 'floatingIP',
+                name: 'Floating IPs In/Out',
+                formatter: function (r, c, v, cd, dc) {
+                    return getMultiValueStr(dc['floatingIP']);
+                },
+                minWidth: 200
+            },
+            {
                 field: 'inBytes',
-                name: 'Traffic (In/Out) <br/> (Last 1 hr)',
+                name: 'Traffic In/Out (Last 1 Hr)',
                 formatter: function (r, c, v, cd, dc) {
                     return formatBytes(dc['inBytes']) + ' / ' + formatBytes(dc['outBytes']);
                 },
-                minWidth: 150
+                minWidth: 200
             }
         ];
     };
