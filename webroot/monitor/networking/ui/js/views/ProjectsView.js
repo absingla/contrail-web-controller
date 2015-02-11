@@ -10,50 +10,109 @@ define([
         el: $(contentContainer),
 
         render: function (viewConfig) {
+            var that = this,
+                domain = cowc.DEFAULT_DOMAIN,
+                projectFQN = (contrail.checkIfExist(viewConfig.hashParams.fqName)) ? viewConfig.hashParams.fqName : null,
+                projectUUID = (contrail.checkIfExist(viewConfig.hashParams.uuid)) ? viewConfig.hashParams.uuid : null;
+
+
+            that.renderProjectDropdown(domain, projectFQN, projectUUID, function(projectFQN, projectUUID) {
+                _ignoreOnHashChange = true;
+                layoutHandler.setURLHashObj({
+                    p:'mon_net_projects-beta',
+                    q: {
+                        fqName: projectFQN,
+                        uuid: projectUUID
+                    }
+                });
+                that.renderProjectVisualization(projectFQN, projectUUID);
+            });
+
+        },
+
+        renderProjectDropdown: function (domain, projectFQN, projectUUID, changeCB) {
             var that = this;
 
             $.ajax({
-                url: networkPopulateFns.getProjectsURL('default-domain'),
+                url: networkPopulateFns.getProjectsURL(domain),
                 async: false
             }).done(function (projectList) {
                 if (projectList.projects.length > 0) {
-                    var projectFQN = projectList.projects[0].fq_name.join(':'),
-                        projectUUID = projectList.projects[0]['uuid'],
-                        vConfig = {
-                            url: ctwc.get(ctwc.URL_PROJECT_VISUALIZATION, projectFQN),
-                            selectorId: '#topology',
-                            fqName: projectFQN,
-                            focusedElement: 'Project'
+
+                    pushBreadcrumbDropdown('projectDropdown');
+
+                    if (projectFQN == null) {
+                        projectFQN = projectList.projects[0].fq_name.join(':');
+                        projectUUID = projectList.projects[0].uuid
+                    }
+
+                    var projects = $.map(projectList.projects, function(n,i){
+                        if(projectUUID == null && projectFQN == n.fq_name.join(':')) {
+                            projectUUID = n.uuid
+                        }
+
+                        return {
+                            name: n.fq_name.join(':'),
+                            value: n.uuid
                         };
+                    });
 
-                    var vnColumnfilters = ['UveVirtualNetworkAgent:interface_list', 'UveVirtualNetworkAgent:in_bandwidth_usage', 'UveVirtualNetworkAgent:out_bandwidth_usage',
-                        'UveVirtualNetworkAgent:in_bytes', 'UveVirtualNetworkAgent:out_bytes', 'UveVirtualNetworkConfig:connected_networks',
-                        'UveVirtualNetworkAgent:virtualmachine_list'];
+                    var projectDropdown = $('#projectDropdown').contrailDropdown({
+                        dataTextField:"name",
+                        dataValueField: "value",
+                        data: projects,
+                        change: function(e){
+                            var projectFQN = $('#projectDropdown').data('contrailDropdown').text(),
+                                projectUUID = $('#projectDropdown').data('contrailDropdown').value();
 
-                    var iColumnFilters = ['UveVirtualMachineAgent:interface_list', 'UveVirtualMachineAgent:vrouter', 'UveVirtualMachineAgent:fip_stats_list'];
+                            changeCB(projectFQN, projectUUID);
+                        }
+                    }).data('contrailDropdown');
 
-                    var networkRemoteConfig = {
-                        url: ctwc.get(ctwc.URL_PROJECT_NETWORKS, projectFQN),
-                        type: 'POST',
-                        data: JSON.stringify({data: [{"type": "virtual-network", "cfilt": vnColumnfilters.join(',')}]})
-                    };
+                    projectDropdown.text(projectFQN);
+                    changeCB(projectFQN, projectUUID);
 
-                    var instanceRemoteConfig = {
-                        url: ctwc.get(ctwc.URL_PROJECT_INSTANCES, projectUUID),
-                        type: 'POST',
-                        data: JSON.stringify({
-                            data: [{"type": "virtual-machine", "cfilt": iColumnFilters.join(',')}]
-                        })
-                    };
-
-                    cowu.renderView4Config(that.$el, null, getProjectsViewConfig(vConfig, projectFQN, networkRemoteConfig, instanceRemoteConfig));
                 } else {
                     that.$el.html("No Project Found");
                 }
             }).fail(function (errObj, status, errorText) {
                 that.$el.html("Error");
             });
+
+        },
+
+        renderProjectVisualization: function (projectFQN, projectUUID) {
+            var that = this,
+                vConfig = {
+                    url: ctwc.get(ctwc.URL_PROJECT_VISUALIZATION, projectFQN),
+                    selectorId: '#topology',
+                    fqName: projectFQN,
+                    focusedElement: 'Project'
+                };
+
+            var vnColumnfilters = ['UveVirtualNetworkAgent:interface_list', 'UveVirtualNetworkAgent:in_bandwidth_usage', 'UveVirtualNetworkAgent:out_bandwidth_usage',
+                'UveVirtualNetworkAgent:in_bytes', 'UveVirtualNetworkAgent:out_bytes', 'UveVirtualNetworkConfig:connected_networks',
+                'UveVirtualNetworkAgent:virtualmachine_list'];
+
+            var iColumnFilters = ['UveVirtualMachineAgent:interface_list', 'UveVirtualMachineAgent:vrouter', 'UveVirtualMachineAgent:fip_stats_list'];
+
+            var networkRemoteConfig = {
+                url: ctwc.get(ctwc.URL_PROJECT_NETWORKS, projectFQN),
+                type: 'POST',
+                data: JSON.stringify({data: [{"type": "virtual-network", "cfilt": vnColumnfilters.join(',')}]})
+            };
+
+            var instanceRemoteConfig = {
+                url: ctwc.get(ctwc.URL_PROJECT_INSTANCES, projectUUID),
+                type: 'POST',
+                data: JSON.stringify({
+                    data: [{"type": "virtual-machine", "cfilt": iColumnFilters.join(',')}]
+                })
+            };
+
+            cowu.renderView4Config(that.$el, null, getProjectsViewConfig(vConfig, projectFQN, networkRemoteConfig, instanceRemoteConfig));
         }
+
     });
 
     var getProjectsViewConfig = function (vConfig, projectFQN, networkRemoteConfig, instanceRemoteConfig) {
