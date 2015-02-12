@@ -25,7 +25,7 @@ define([
                         uuid: projectUUID
                     }
                 });
-                that.renderProjectVisualization(projectFQN, projectUUID);
+                that.renderProjectGraph(projectFQN, projectUUID);
             });
 
         },
@@ -81,10 +81,10 @@ define([
 
         },
 
-        renderProjectVisualization: function (projectFQN, projectUUID) {
+        renderProjectGraph: function (projectFQN, projectUUID) {
             var that = this,
                 vConfig = {
-                    url: ctwc.get(ctwc.URL_PROJECT_VISUALIZATION, projectFQN),
+                    url: ctwc.get(ctwc.URL_PROJECT_GRAPH, projectFQN),
                     selectorId: '#topology',
                     fqName: projectFQN,
                     focusedElement: 'Project'
@@ -123,8 +123,8 @@ define([
                     {
                         columns: [
                             {
-                                elementId: ctwl.PROJECTS_VISUALIZATION_ID,
-                                view: "VisualizationView",
+                                elementId: ctwl.PROJECTS_GRAPH_ID,
+                                view: "GraphView",
                                 viewConfig: {elementConfig: vConfig}
                             }
                         ]

@@ -43,7 +43,7 @@ define([
         var labelMap = {};
 
         this.MONITOR_PROJECTS_ID = "monitor-projects";
-        this.PROJECTS_VISUALIZATION_ID = "projects-visualization";
+        this.PROJECTS_GRAPH_ID = "projects-visualization";
         this.PROJECTS_TABS_ID = "projects-tabs";
         this.PROJECTS_PORT_DIST_ID = "projects-port-distribution";
         this.PROJECT_NETWORKS_ID = "project-networks";

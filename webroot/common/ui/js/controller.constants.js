@@ -6,7 +6,7 @@ define([
     'underscore'
 ], function (_) {
     var CTConstants = function () {
-        this.URL_PROJECT_VISUALIZATION = '/api/tenant/monitoring/project-topology?fqName={0}';
+        this.URL_PROJECT_GRAPH = '/api/tenant/monitoring/project-topology?fqName={0}';
         this.URL_PORT_DISTRIBUTION = '/api/tenant/networking/network/stats/top?minsSince=10&fqName={0}&useServerTime=true&type=port';
         this.URL_PROJECT_NETWORKS = '/api/tenant/networking/virtual-networks/details?count=50&fqn={0}';
         this.URL_PROJECT_INSTANCES = '/api/tenant/networking/virtual-machines/details?fqnUUID={0}&count=50&type=project';
