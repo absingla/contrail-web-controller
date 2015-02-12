@@ -46,6 +46,7 @@ define([
         this.PROJECTS_GRAPH_ID = "projects-visualization";
         this.PROJECTS_TABS_ID = "projects-tabs";
         this.PROJECTS_PORT_DIST_ID = "projects-port-distribution";
+        this.PORT_DIST_CHART_ID = "port-distribution-chart";
         this.PROJECT_NETWORKS_ID = "project-networks";
         this.PROJECT_INSTANCES_ID = "project-instances";
 
@@ -54,6 +55,9 @@ define([
         this.TITLE_INSTANCES = "Instances";
         this.TITLE_NETWORKS_SUMMARY = "Networks Summary";
         this.TITLE_INSTANCES_SUMMARY = "Instances Summary";
+
+        this.X_AXIS_TITLE_PORT = "Port";
+        this.Y_AXIS_TITLE_BW = "Bandwidth";
     };
     return CTLabels;
 });

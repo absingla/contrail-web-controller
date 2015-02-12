@@ -73,7 +73,7 @@ define([
                     changeCB(projectFQN, projectUUID);
 
                 } else {
-                    that.$el.html("No Project Found");
+                    that.$el.html(ctwm.NO_PROJECT_FOUND);
                 }
             }).fail(function (errObj, status, errorText) {
                 that.$el.html("Error");
@@ -137,11 +137,11 @@ define([
                                 viewConfig: {
                                     activate: function (e, ui) {
                                         var selTab = $(ui.newTab.context).text();
-                                        if (selTab == 'Port Distribution') {
+                                        if (selTab == ctwl.TITLE_PORT_DISTRIBUTION) {
                                             $('#' + ctwl.PROJECTS_PORT_DIST_ID).find('svg').trigger('refresh');
-                                        } else if (selTab == 'Networks') {
+                                        } else if (selTab == ctwl.TITLE_NETWORKS) {
                                             $('#' + ctwl.PROJECT_NETWORKS_ID).data('contrailGrid').refreshView();
-                                        } else if (selTab == 'Instances') {
+                                        } else if (selTab == ctwl.TITLE_INSTANCES) {
                                             $('#' + ctwl.PROJECT_INSTANCES_ID).data('contrailGrid').refreshView();
                                         }
                                     },
@@ -151,7 +151,7 @@ define([
                                             title: ctwl.TITLE_PORT_DISTRIBUTION,
                                             view: "ChartView",
                                             viewConfig: {
-                                                class: "port-distribution-chart",
+                                                class: ctwl.PORT_DIST_CHART_ID,
                                                 url: ctwc.get(ctwc.URL_PORT_DISTRIBUTION, projectFQN),
                                                 renderFn: 'initScatterChart',
                                                 parseFn: function (response) {
@@ -180,7 +180,7 @@ define([
                                                         xLblFormat: d3.format(''),
                                                         yDataType: 'bytes',
                                                         fqName: projectFQN,
-                                                        yLbl: 'Bandwidth',
+                                                        yLbl: ctwl.Y_AXIS_TITLE_BW,
                                                         link: {
                                                             hashParams: {
                                                                 q: {
@@ -192,8 +192,8 @@ define([
                                                             }
                                                         },
                                                         chartOptions: {tooltipFn: tenantNetworkMonitor.portTooltipFn},
-                                                        title: 'Port Distribution',
-                                                        xLbl: 'Port'
+                                                        title: ctwl.TITLE_PORT_DISTRIBUTION,
+                                                        xLbl: ctwl.X_AXIS_TITLE_PORT
                                                     }
                                                     return retObj;
                                                 }
