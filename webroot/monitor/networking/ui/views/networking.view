@@ -2,18 +2,18 @@
  Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
 -->
 
-<script type="text/x-handlebars-template" id="core-visualization-template">
+<script type="text/x-handlebars-template" id="core-networking-graph-template">
 	<div class="row-fluid visualization-container">
 		<div class="topology-visualization-canvas" style="height: 300px; overflow: hidden;">
 			<div class="topology-visualization-loading progress progress-striped active">
   				<div class="bar" style="width: 100%;"></div>
 			</div>
-            <div id="topology" class="topology-visualization row-fluid colmask holygrail">
+            <div id="networking-graph" class="topology-visualization row-fluid colmask holygrail">
 			    <div class="colmid">
 			        <div class="colleft">
 			            <div class="col1wrap">
 			                <div class="col1">
-								<div id="topology-connected-elements" class="topology-visualization-connected-elements row-fluid">
+								<div id="graph-connected-elements" class="topology-visualization-connected-elements row-fluid">
                                     <div id="topology-visualization-connected-elements-empty" class="visualization-empty hide">
                                         <p class="">No Virtual Network Found.</p>
                                     </div>
@@ -21,10 +21,10 @@
 							</div>
 			            </div>
 			            <div class="col2">
-							<div id="topology-config-elements" class="topology-visualization-config-elements row-fluid"></div>
+							<div id="graph-config-elements" class="topology-visualization-config-elements row-fluid"></div>
 			            </div>
 			            <div class="col3">
-							<div id="topology-controls" class="topology-controls pull-right">
+							<div id="graph-controls" class="topology-controls pull-right">
                                 <div class="topology-control-item zoom-in" title="Zoom In"><i class="icon-zoom-in"></i></div>
 								<div class="topology-control-item zoom-out" title="Zoom Out"><i class="icon-zoom-out"></i></div>
 								<div class="topology-control-item zoom-reset" title="Zoom Reset"><i class="icon-remove-circle"></i></div>
@@ -32,7 +32,7 @@
                                     <i class="icon-resize-full"></i>
                                 </div>
                             </div>
-							<div id="topology-breadcrumb" class="hide breadcrumbs pull-right"></div>
+							<div id="graph-breadcrumb" class="hide breadcrumbs pull-right"></div>
 						</div>
 					</div>
 				</div>

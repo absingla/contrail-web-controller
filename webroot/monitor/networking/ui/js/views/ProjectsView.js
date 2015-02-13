@@ -85,7 +85,6 @@ define([
             var that = this,
                 vConfig = {
                     url: ctwc.get(ctwc.URL_PROJECT_GRAPH, projectFQN),
-                    selectorId: '#topology',
                     fqName: projectFQN,
                     focusedElement: 'Project'
                 };
@@ -124,7 +123,8 @@ define([
                         columns: [
                             {
                                 elementId: ctwl.PROJECTS_GRAPH_ID,
-                                view: "GraphView",
+                                view: "NetworkingGraphView",
+                                app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {elementConfig: vConfig}
                             }
                         ]

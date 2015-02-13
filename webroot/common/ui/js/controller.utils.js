@@ -3,8 +3,9 @@
  */
 
 define([
-    'underscore'
-], function (_) {
+    'underscore',
+    'monitor/networking/ui/js/views/NetworkingGraphView'
+], function (_, NetworkingGraphView) {
     var CTUtils = function () {
         var self = this;
 
@@ -42,7 +43,18 @@ define([
                 //If title is clickable
             });
         };
-    };
+
+        self.renderView = function (viewName, parentElement, model, viewAttributes) {
+            var elementView;
+
+            switch (viewName) {
+                case "NetworkingGraphView":
+                    elementView = new NetworkingGraphView({ el: parentElement, model: model, attributes: viewAttributes });
+                    elementView.render();
+                    break;
+            }
+        };
+    }
 
     return CTUtils;
 });
