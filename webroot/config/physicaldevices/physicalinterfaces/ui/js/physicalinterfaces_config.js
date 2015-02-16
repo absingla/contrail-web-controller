@@ -425,8 +425,16 @@ function physicalInterfacesConfig() {
                     },
                     function(){
                         //failure
+                        var r = arguments;
+                        showInfoWindow(r[0].responseText,r[2]);
+                        fetchData();
                     }
                 );
+            }).fail(function(){
+                 //failure
+                 var r = arguments;
+                 showInfoWindow(r[0].responseText,r[2]);
+                 fetchData();
             });
             
         }
@@ -569,7 +577,16 @@ function physicalInterfacesConfig() {
                             "subnet_uuid": input.subnetId
                         }
                     ],
-                    "virtual_machine_interface_device_owner" : ""
+                    "virtual_machine_interface_device_owner" : "",
+                    "security_group_refs" : [
+                        {
+                            "to" :[
+                                curDomain,
+                                curProject,
+                                "default"
+                            ]
+                        }
+                    ]
                 }
             };
         } else {
@@ -597,7 +614,16 @@ function physicalInterfacesConfig() {
                             "subnet_uuid": input.subnetId
                         }
                     ],
-                    "virtual_machine_interface_device_owner" : ""
+                    "virtual_machine_interface_device_owner" : "",
+                    "security_group_refs" : [
+                        {
+                            "to" :[
+                                curDomain,
+                                curProject,
+                                "default"
+                            ]
+                        }
+                    ]
                 }
             };
         }
@@ -979,6 +1005,7 @@ function physicalInterfacesConfig() {
     
     /** Assumes the mac to be in the form "aa:bb:cc:dd:ee:ff (1.1.1.1)" */
     function getMacFromText(mac){
+        mac = mac.trim();
         if(mac != null) {
             if(mac.indexOf('(') != -1) {
                 mac = mac.split(' ')[0];
@@ -1181,7 +1208,7 @@ function physicalInterfacesConfig() {
                 $("[id$=serverMac]").data('contrailCombobox').enable(false);
             }
         } else {
-            doAjaxCall('/api/tenants/config/virtual-network-internals/' + id,'GET', null, 'successHandlerForVNInternals', 'failureHandlerForVNInternals', null, null);
+            doAjaxCall('/api/tenants/config/virtual-network-internals/' + id,'GET', null, 'successHandlerForVNInternals', 'failureHandlerForVNInternals', null, null, 300000);
         }
     }
     
@@ -1251,7 +1278,7 @@ function physicalInterfacesConfig() {
     function fetchData() {
         gridPhysicalInterfaces._dataView.setData([]);
         gridPhysicalInterfaces.showGridMessage('loading');
-        doAjaxCall('/api/tenants/config/physical-interfaces/' + currentUUID,'GET', null, 'successHandlerForPhysicalInterfaces', 'failureHandlerForPhysicalInterfaces', null, null);
+        doAjaxCall('/api/tenants/config/physical-interfaces/' + currentUUID,'GET', null, 'successHandlerForPhysicalInterfaces', 'failureHandlerForPhysicalInterfaces', null, null, 300000);
     }
     
     window.successHandlerForPhysicalInterfaces =  function(result) {
@@ -1420,12 +1447,13 @@ function physicalInterfacesConfig() {
             for(var i =0; i < inf['vmi_details'].length ; i++){
                 var vmiDetail = inf['vmi_details'][i];
                 if(vmiDetail != null) {
+                    var macAddr = vmiDetail.mac[0] != null ? vmiDetail.mac[0].trim() : '';
                     if(vmiDetail.ip[0] != null) {
-                        vmiIP = vmiDetail.ip[0];
+                        vmiIP = vmiDetail.ip[0].trim();
                         vmiIPs.push(vmiIP);
-                        vmiDetails = vmiDetail.mac[0] +' ('+ vmiIP + ')';
+                        vmiDetails = macAddr +' ('+ vmiIP + ')';
                     } else {
-                        vmiDetails = vmiDetail.mac[0] ;
+                        vmiDetails = macAddr;
                     }
                     vmiDetailsArray.push(vmiDetails);
                     vmiUUID.push(vmiDetail['vmi_uuid']);
