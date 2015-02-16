@@ -2,28 +2,51 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 
-var projectsPageLoader = new ProjectsPageLoader();
+var nmPageLoader = new NetworkMonitoringLoader();
 
-function ProjectsPageLoader() {
+function NetworkMonitoringLoader() {
     this.load = function (paramObject) {
-        var currMenuObj = globalObj.currMenuObj,
+        var self = this, currMenuObj = globalObj.currMenuObj,
+            hashParams = paramObject['hashParams'],
             rootDir = currMenuObj['resources']['resource'][0]['rootDir'],
-            pathClustersView = rootDir + '/js/views/ProjectsView.js',
-            hashParams = paramObject['hashParams'];
+            pathMNView = rootDir + '/js/views/MonitorNetworkingView.js',
+            renderFn = paramObject['function'];
 
         check4CTInit(function () {
-            requirejs([pathClustersView], function (ProjectsView) {
-                var projectsView = new ProjectsView();
-                projectsView.render({hashParams: hashParams});
-            });
+            if (self.nmView == null) {
+                requirejs([pathMNView], function (nmView) {
+                    self.nmView = new nmView();
+                    self.renderView(renderFn, hashParams);
+                });
+            } else {
+                self.renderView(renderFn, hashParams);
+            }
         });
     };
-    this.updateViewByHash = function (hashObj, lastHashObj) {
-        this.load({hashParams: hashObj});
-    };
+    this.renderView = function (renderFn, hashParams) {
+        switch (renderFn) {
+            case 'renderProject':
+                this.nmView.renderProject({hashParams: hashParams});
+                break;
+
+            case 'renderNetworkList':
+                this.nmView.renderNetworkList({hashParams: hashParams});
+                break;
+
+            case 'renderInstanceList':
+                this.nmView.renderInstanceList({hashParams: hashParams});
+                break;
+        }
+    },
+
+        this.updateViewByHash = function (hashObj, lastHashObj) {
+            this.load({hashParams: hashObj});
+        };
+
     this.destroy = function () {
     };
 };
+
 
 function check4CTInit(callback) {
     if (!ctInitComplete) {

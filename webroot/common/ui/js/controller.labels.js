@@ -43,12 +43,17 @@ define([
         var labelMap = {};
 
         this.MONITOR_PROJECTS_ID = "monitor-projects";
-        this.PROJECTS_GRAPH_ID = "projects-visualization";
-        this.PROJECTS_TABS_ID = "projects-tabs";
-        this.PROJECTS_PORT_DIST_ID = "projects-port-distribution";
+        this.MONITOR_NETWORKS_ID = "monitor-networks";
+        this.MONITOR_INSTANCES_ID = "monitor-instances";
+        this.PROJECT_GRAPH_ID = "project-graph";
+        this.PROJECT_DETAILS_ID = "project-details";
+        this.PROJECT_TABS_ID = "project-tabs";
+        this.PROJECT_PORT_DIST_ID = "project-port-distribution";
         this.PORT_DIST_CHART_ID = "port-distribution-chart";
         this.PROJECT_NETWORKS_ID = "project-networks";
+        this.PROJECT_NETWORK_GRID_ID = "project-network-grid";
         this.PROJECT_INSTANCES_ID = "project-instances";
+        this.PROJECT_INSTANCE_GRID_ID = "project-instance-grid";
 
         this.TITLE_PORT_DISTRIBUTION = "Port Distribution";
         this.TITLE_NETWORKS = "Networks";
