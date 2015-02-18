@@ -1,0 +1,26 @@
+<!-- Copyright (c) 2014 Juniper Networks, Inc. All rights reserved. -->
+
+<urlLists>
+    <!-- Define module name here which is being referenced in the generated file -->
+    <require>
+        <define>parseURLReq</define>
+        <path>process.mainModule.exports["corePath"] + '/src/serverroot/common/parseURLRequire'</path>
+    </require>
+    <require>
+        <define>monNetApi</define>
+        <path>./monitor.networking.api</path>
+    </require>
+    <item>
+        <url>/api/tenant/monitoring/network-graph</url>
+        <method>get</method>
+        <feature>monitoring</feature>
+        <callback>monNetApi.getNetworkTreeTopology</callback>
+    </item>
+    <item>
+        <url>/api/tenant/monitoring/project-graph</url>
+        <method>get</method>
+        <feature>monitoring</feature>
+        <callback>monNetApi.getProjectTreeTopology</callback>
+    </item>
+</urlLists>
+

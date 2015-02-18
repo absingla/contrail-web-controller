@@ -36,9 +36,7 @@ define([
 
             connectedGraphModel.fetchData(function (directedGraphSize) {
                 $(selectorId).parent().find('.topology-visualization-loading').remove();
-                if (directedGraphSize != null) {
 
-                }
                 connectedGraphView.setDimensions((($(selectorId).width() > directedGraphSize.width) ? $(selectorId).width() : directedGraphSize.width) + GRAPH_MARGIN, directedGraphSize.height + GRAPH_MARGIN, 1);
                 $(connectedSelectorId).data('actual-size', directedGraphSize);
                 $(connectedSelectorId).data('offset', {x: 0, y: 0});
@@ -47,9 +45,9 @@ define([
                     connectedGraph: connectedGraphModel,
                     connectedPaper: connectedGraphView
                 };
+
                 $(selectorId).data('joint-object', jointObject);
                 adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
-
             });
         },
 
@@ -65,8 +63,7 @@ define([
                 width: 150
             });
 
-            configGraphModel.fetchData(function () {
-            });
+            configGraphModel.fetchData(function () {});
         }
     });
 
