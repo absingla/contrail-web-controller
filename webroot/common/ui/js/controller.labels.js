@@ -40,7 +40,21 @@ define([
             return label;
         };
 
-        var labelMap = {};
+        var labelMap = {
+
+            /* Network Details */
+            name: 'Name',
+            connected_networks: 'Connected Networks',
+            ingress_flow_count: 'Ingress Flow Count',
+            egress_flow_count: 'Egress Flow Count',
+            acl: 'ACL',
+            total_acl_rules: 'Total ACL Rules',
+            interface_list: 'Interfaces',
+            in_bytes: 'Traffic In',
+            out_bytes: 'Traffic Out',
+            virtualmachine_list: 'Instances'
+
+        };
 
         this.MONITOR_PROJECTS_ID = "monitor-projects";
         this.MONITOR_NETWORKS_ID = "monitor-networks";
@@ -59,7 +73,10 @@ define([
         this.TITLE_NETWORKS = "Networks";
         this.TITLE_INSTANCES = "Instances";
         this.TITLE_NETWORKS_SUMMARY = "Networks Summary";
+        this.TITLE_NETWORK_DETAILS = "Network Details";
         this.TITLE_INSTANCES_SUMMARY = "Instances Summary";
+
+        this.TITLE_TRAFFIC_DETAILS = "Traffic Details";
 
         this.X_AXIS_TITLE_PORT = "Port";
         this.Y_AXIS_TITLE_BW = "Bandwidth";

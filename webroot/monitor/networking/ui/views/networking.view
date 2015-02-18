@@ -83,3 +83,7 @@
         {{/each}}
     </div>
 </script>
+
+<script type="text/x-handlebars-template" id="core-loading-spinner-template">
+    <p class="loading-spinner"><i class="icon-spinner icon-spin"></i></p>
+</script>
