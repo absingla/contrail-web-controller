@@ -11,24 +11,23 @@ define([
 ], function (_, Backbone, ContrailGraphModel, Joint, GraphView) {
     var NetworkingGraphView = Backbone.View.extend({
         render: function () {
-            var vTemplate = contrail.getTemplate4Id(cowc.TMPL_NETWORKING_GRAPH_VIEW),
+            var graphTemplate = contrail.getTemplate4Id(cowc.TMPL_NETWORKING_GRAPH_VIEW),
                 viewConfig = this.attributes.viewConfig,
-                vConfig = viewConfig['elementConfig'], selectorId = '#networking-graph',
+                graphConfig = viewConfig['elementConfig'], selectorId = '#networking-graph',
                 connectedSelectorId = '#graph-connected-elements',
                 configSelectorId = '#graph-config-elements';
 
-            this.$el.html(vTemplate);
+            this.$el.html(graphTemplate);
 
-            this.renderConfigGraph(vConfig, configSelectorId);
-            this.renderConnectedGraph(vConfig, selectorId, connectedSelectorId, configSelectorId);
+            this.renderConfigGraph(graphConfig, configSelectorId);
+            this.renderConnectedGraph(graphConfig, selectorId, connectedSelectorId, configSelectorId);
         },
 
-        renderConnectedGraph: function (vConfig, selectorId, connectedSelectorId, configSelectorId) {
-            var connectedGraphModel = new ContrailGraphModel({
-                    requestConfig: vConfig,
-                    forceFit: true,
-                    generateElementsFn: getElements4ConnectedGraph
-                });
+        renderConnectedGraph: function (graphConfig, selectorId, connectedSelectorId, configSelectorId) {
+            var connectedGraphModel = new ContrailGraphModel($.extend(true, {}, graphConfig, {
+                forceFit: true,
+                generateElementsFn: getElements4ConnectedGraph
+            }));
 
             var connectedGraphView = new GraphView({
                 el: $(connectedSelectorId),
@@ -37,6 +36,9 @@ define([
 
             connectedGraphModel.fetchData(function (directedGraphSize) {
                 $(selectorId).parent().find('.topology-visualization-loading').remove();
+                if (directedGraphSize != null) {
+
+                }
                 connectedGraphView.setDimensions((($(selectorId).width() > directedGraphSize.width) ? $(selectorId).width() : directedGraphSize.width) + GRAPH_MARGIN, directedGraphSize.height + GRAPH_MARGIN, 1);
                 $(connectedSelectorId).data('actual-size', directedGraphSize);
                 $(connectedSelectorId).data('offset', {x: 0, y: 0});
@@ -45,18 +47,17 @@ define([
                     connectedGraph: connectedGraphModel,
                     connectedPaper: connectedGraphView
                 };
-
                 $(selectorId).data('joint-object', jointObject);
                 adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
+
             });
         },
 
-        renderConfigGraph: function (vConfig, configSelectorId) {
-            var configGraphModel = new ContrailGraphModel({
-                    requestConfig: vConfig,
-                    forceFit: false,
-                    generateElementsFn: getElements4ConfigGraph
-                });
+        renderConfigGraph: function (graphConfig, configSelectorId) {
+            var configGraphModel = new ContrailGraphModel($.extend(true, {}, graphConfig, {
+                forceFit: false,
+                generateElementsFn: getElements4ConfigGraph
+            }));
 
             var configGraphView = new GraphView({
                 el: $(configSelectorId),

@@ -30,7 +30,12 @@ define([
 
         renderProjectCB: function (projectFQN, projectUUID) {
             var graphConfig = {
-                url: ctwc.get(ctwc.URL_PROJECT_GRAPH, projectFQN),
+                remote: {
+                    ajaxConfig: {
+                        url: ctwc.get(ctwc.URL_PROJECT_GRAPH, projectFQN),
+                        type: 'GET'
+                    }
+                },
                 fqName: projectFQN,
                 focusedElement: 'Project'
             };
