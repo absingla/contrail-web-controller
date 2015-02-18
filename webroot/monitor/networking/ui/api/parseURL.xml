@@ -7,26 +7,32 @@
         <path>process.mainModule.exports["corePath"] + '/src/serverroot/common/parseURLRequire'</path>
     </require>
     <require>
-        <define>monNetApi</define>
-        <path>./monitor.networking.api</path>
+        <define>netGraphApi</define>
+        <path>./networking.graph.api.js</path>
     </require>
     <item>
         <url>/api/tenant/monitoring/network-connected-graph</url>
         <method>get</method>
         <feature>monitoring</feature>
-        <callback>monNetApi.getNetworkConnectedGraph</callback>
+        <callback>netGraphApi.getNetworkConnectedGraph</callback>
+    </item>
+    <item>
+        <url>/api/tenant/monitoring/network-config-graph</url>
+        <method>get</method>
+        <feature>monitoring</feature>
+        <callback>netGraphApi.getNetworkConfigGraph</callback>
     </item>
     <item>
         <url>/api/tenant/monitoring/project-connected-graph</url>
         <method>get</method>
         <feature>monitoring</feature>
-        <callback>monNetApi.getProjectConnectedGraph</callback>
+        <callback>netGraphApi.getProjectConnectedGraph</callback>
     </item>
     <item>
         <url>/api/tenant/monitoring/project-config-graph</url>
         <method>get</method>
         <feature>monitoring</feature>
-        <callback>monNetApi.getProjectConfigGraph</callback>
+        <callback>netGraphApi.getProjectConfigGraph</callback>
     </item>
 </urlLists>
 
