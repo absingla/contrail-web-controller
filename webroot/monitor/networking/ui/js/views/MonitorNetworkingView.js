@@ -29,10 +29,10 @@ define([
         },
 
         renderProjectCB: function (projectFQN, projectUUID) {
-            var graphConfig = {
+            var connectedGraph = {
                 remote: {
                     ajaxConfig: {
-                        url: ctwc.get(ctwc.URL_PROJECT_GRAPH, projectFQN),
+                        url: ctwc.get(ctwc.URL_PROJECT_CONNECTED_GRAPH, projectFQN),
                         type: 'GET'
                     }
                 },
@@ -40,7 +40,18 @@ define([
                 focusedElement: 'Project'
             };
 
-            cowu.renderView4Config(this.$el, null, getMonitorProjectConfig(graphConfig, projectFQN, projectUUID));
+            var configGraph = {
+                remote: {
+                    ajaxConfig: {
+                        url: ctwc.get(ctwc.URL_PROJECT_CONFIG_GRAPH, projectFQN),
+                        type: 'GET'
+                    }
+                },
+                fqName: projectFQN,
+                focusedElement: 'Project'
+            };
+
+            cowu.renderView4Config(this.$el, null, getMonitorProjectConfig(connectedGraph, configGraph, projectFQN, projectUUID));
         },
 
         renderNetworkList: function (projectFQN) {
@@ -104,7 +115,7 @@ define([
 
     }
 
-    var getMonitorProjectConfig = function (graphConfig, projectFQN, projectUUID) {
+    var getMonitorProjectConfig = function (connectedGraph, configGraph, projectFQN, projectUUID) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_PROJECTS_ID]),
             view: "SectionView",
@@ -116,7 +127,7 @@ define([
                                 elementId: ctwl.PROJECT_GRAPH_ID,
                                 view: "NetworkingGraphView",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {elementConfig: graphConfig}
+                                viewConfig: {connectedGraph: connectedGraph, configGraph: configGraph}
                             }
                         ]
                     },
@@ -126,7 +137,7 @@ define([
                                 elementId: ctwl.PROJECT_DETAILS_ID,
                                 view: "ProjectView",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {graphConfig: graphConfig, projectFQN: projectFQN, projectUUID: projectUUID}
+                                viewConfig: {projectFQN: projectFQN, projectUUID: projectUUID}
                             }
                         ]
                     }

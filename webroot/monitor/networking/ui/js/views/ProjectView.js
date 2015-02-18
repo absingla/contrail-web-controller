@@ -19,8 +19,7 @@ define([
     });
 
     var getProjectViewConfig = function (viewConfig) {
-        var graphConfig = viewConfig['graphConfig'],
-            projectFQN = viewConfig['projectFQN'],
+        var projectFQN = viewConfig['projectFQN'],
             projectUUID = viewConfig['projectUUID'];
 
         return {

@@ -11,16 +11,22 @@
         <path>./monitor.networking.api</path>
     </require>
     <item>
-        <url>/api/tenant/monitoring/network-graph</url>
+        <url>/api/tenant/monitoring/network-connected-graph</url>
         <method>get</method>
         <feature>monitoring</feature>
-        <callback>monNetApi.getNetworkTreeTopology</callback>
+        <callback>monNetApi.getNetworkConnectedGraph</callback>
     </item>
     <item>
-        <url>/api/tenant/monitoring/project-graph</url>
+        <url>/api/tenant/monitoring/project-connected-graph</url>
         <method>get</method>
         <feature>monitoring</feature>
-        <callback>monNetApi.getProjectTreeTopology</callback>
+        <callback>monNetApi.getProjectConnectedGraph</callback>
+    </item>
+    <item>
+        <url>/api/tenant/monitoring/project-config-graph</url>
+        <method>get</method>
+        <feature>monitoring</feature>
+        <callback>monNetApi.getProjectConfigGraph</callback>
     </item>
 </urlLists>
 

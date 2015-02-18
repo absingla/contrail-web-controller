@@ -13,14 +13,16 @@ define([
         render: function () {
             var graphTemplate = contrail.getTemplate4Id(cowc.TMPL_NETWORKING_GRAPH_VIEW),
                 viewConfig = this.attributes.viewConfig,
-                graphConfig = viewConfig['elementConfig'], selectorId = '#networking-graph',
+                connectedGraph = viewConfig['connectedGraph'],
+                configGraph = viewConfig['configGraph'],
+                selectorId = '#networking-graph',
                 connectedSelectorId = '#graph-connected-elements',
                 configSelectorId = '#graph-config-elements';
 
             this.$el.html(graphTemplate);
 
-            this.renderConfigGraph(graphConfig, configSelectorId);
-            this.renderConnectedGraph(graphConfig, selectorId, connectedSelectorId, configSelectorId);
+                this.renderConfigGraph(configGraph, configSelectorId);
+            this.renderConnectedGraph(connectedGraph, selectorId, connectedSelectorId, configSelectorId);
         },
 
         renderConnectedGraph: function (graphConfig, selectorId, connectedSelectorId, configSelectorId) {
@@ -84,18 +86,16 @@ define([
 
     var getElements4ConfigGraph = function (response, elementMap) {
         var configElements = [],
-            nodes = response['nodes'],
             collections = {},
             configData = response['configData'],
             configSVGHeight = 0;
 
-        createNodes4ConfigData(configData, nodes, collections);
+        createNodes4ConfigData(configData, collections);
 
         configSVGHeight = createCollectionElements(collections, configElements, elementMap);
 
         return {
             elements: configElements,
-            nodes: nodes,
             configSVGHeight: configSVGHeight
         };
     };
