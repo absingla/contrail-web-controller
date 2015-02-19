@@ -58,8 +58,12 @@ define([
             cowu.renderView4Config(this.$el, null, getMonitorProjectConfig(connectedGraph, configGraph, projectFQN, projectUUID));
         },
 
+        renderNetwork: function (networkFQN) {
+            cowu.renderView4Config(this.$el, null, getMonitorNetworkConfig(networkFQN));
+        },
+
         renderNetworkList: function (projectFQN) {
-            cowu.renderView4Config(this.$el, null, getNetworksConfig(projectFQN));
+            cowu.renderView4Config(this.$el, null, getNetworksListConfig(projectFQN));
         },
 
         renderInstanceList: function (projectUUID) {
@@ -150,7 +154,28 @@ define([
         }
     };
 
-    var getNetworksConfig = function () {
+    var getMonitorNetworkConfig = function (networkFQN) {
+        return {
+            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_ID]),
+            view: "SectionView",
+            viewConfig: {
+                rows: [
+                    {
+                        columns: [
+                            {
+                                elementId: ctwl.NETWORK_DETAILS_ID,
+                                view: "NetworkView",
+                                app: cowc.APP_CONTRAIL_CONTROLLER,
+                                viewConfig: {networkFQN: networkFQN}
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    };
+
+    var getNetworksListConfig = function () {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_NETWORKS_ID]),
             view: "SectionView",

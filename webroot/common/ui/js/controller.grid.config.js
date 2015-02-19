@@ -5,6 +5,12 @@
 define([
     'underscore'
 ], function (_) {
+
+    var onClickGrid = function (e,selRowDataItem){
+        var networkFQN = selRowDataItem['name'];
+        layoutHandler.setURLHashParams({fqName:networkFQN, type: "network", view: "details"}, {p:"mon_net_networks-beta", merge:false});
+    }
+
     var CTGridConfig = function () {
         this.projectNetworksColumns = [
             {
@@ -14,7 +20,7 @@ define([
                     return cellTemplateLinks({cellText: 'name', name: 'network', rowData: dc});
                 },
                 events: {
-                    onClick: onClickGridLink
+                    onClick: onClickGrid
                 },
                 minWidth: 200,
                 searchFn: function (d) {

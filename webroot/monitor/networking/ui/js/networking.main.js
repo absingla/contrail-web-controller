@@ -26,22 +26,43 @@ function NetworkMonitoringLoader() {
     this.renderView = function (renderFn, hashParams) {
         switch (renderFn) {
             case 'renderProject':
-                this.nmView.renderProject({hashParams: hashParams});
+                if (hashParams.view == "details") {
+                    this.nmView.renderProject({hashParams: hashParams});
+                } else {
+                    this.nmView.renderProject({hashParams: hashParams});
+                }
                 break;
 
-            case 'renderNetworkList':
-                this.nmView.renderNetworkList({hashParams: hashParams});
+            case 'renderNetworks':
+                if (hashParams.view == "details") {
+
+                    this.nmView.renderNetwork({hashParams: hashParams});
+                } else {
+                    this.nmView.renderNetworkList({hashParams: hashParams});
+                }
                 break;
 
             case 'renderInstanceList':
-                this.nmView.renderInstanceList({hashParams: hashParams});
+                if (hashParams.view == "details") {
+                    this.nmView.renderInstanceList({hashParams: hashParams});
+                } else {
+                    this.nmView.renderInstanceList({hashParams: hashParams});
+                }
                 break;
         }
     },
 
-        this.updateViewByHash = function (hashObj, lastHashObj) {
-            this.load({hashParams: hashObj});
-        };
+    this.updateViewByHash = function (hashObj, lastHashObj) {
+
+        if(hashObj.type == "network"){
+            renderFn = "renderNetworks";
+        } else if (hashObj.type == "project"){
+            renderFn = "renderProject"
+        } else if (hashObj.type == "network"){
+            renderFn = "renderInstanceList"
+        }
+        this.load({hashParams: hashObj, 'function': renderFn});
+    };
 
     this.destroy = function () {
     };

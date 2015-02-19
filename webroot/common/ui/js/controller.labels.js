@@ -73,8 +73,10 @@ define([
         };
 
         this.MONITOR_PROJECTS_ID = "monitor-projects";
+        this.MONITOR_NETWORK_ID = "monitor-network";
         this.MONITOR_NETWORKS_ID = "monitor-networks";
         this.MONITOR_INSTANCES_ID = "monitor-instances";
+
         this.PROJECT_GRAPH_ID = "project-graph";
         this.PROJECT_DETAILS_ID = "project-details";
         this.PROJECT_TABS_ID = "project-tabs";
@@ -84,6 +86,10 @@ define([
         this.PROJECT_NETWORK_GRID_ID = "project-network-grid";
         this.PROJECT_INSTANCES_ID = "project-instances";
         this.PROJECT_INSTANCE_GRID_ID = "project-instance-grid";
+
+        this.NETWORK_TABS_ID = "network-tabs";
+        this.NETWORK_DETAILS_ID = "network-details";
+        this.NETWORK_PORT_DIST_ID = "network-port-distribution";
 
         this.TITLE_PORT_DISTRIBUTION = "Port Distribution";
         this.TITLE_NETWORKS = "Networks";
