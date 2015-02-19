@@ -52,7 +52,23 @@ define([
             interface_list: 'Interfaces',
             in_bytes: 'Traffic In',
             out_bytes: 'Traffic Out',
-            virtualmachine_list: 'Instances'
+            virtualmachine_list: 'Instances',
+
+            /* Instance Details */
+            cpu_one_min_avg: 'CPU',
+            rss: 'Memory Used',
+            vm_memory_quota: 'Memory Total',
+            vRouter: 'Virtual Router',
+
+            /*Interface Details */
+            uuid: 'UUID',
+            mac_address: 'MAC Address',
+            ip_address: 'IPV4 Address',
+            ip6_address: 'IPV6 Address',
+            gateway: 'Gateway',
+            label: 'Label',
+            active: 'Active',
+            l2_active: 'L2 Active'
 
         };
 
@@ -75,7 +91,11 @@ define([
         this.TITLE_NETWORKS_SUMMARY = "Networks Summary";
         this.TITLE_NETWORK_DETAILS = "Network Details";
         this.TITLE_INSTANCES_SUMMARY = "Instances Summary";
+        this.TITLE_INSTANCE_DETAILS = "Instance Details";
 
+        this.TITLE_INTERFACES = "Interfaces";
+
+        this.TITLE_CPU_INFO = "CPU Info";
         this.TITLE_TRAFFIC_DETAILS = "Traffic Details";
 
         this.X_AXIS_TITLE_PORT = "Port";

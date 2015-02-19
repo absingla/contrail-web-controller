@@ -137,7 +137,7 @@ define([
 
     function getDetailTemplateConfig() {
         return {
-            templateGenerator: 'SectionTemplateGenerator',
+            templateGenerator: 'ColumnSectionTemplateGenerator',
             templateGeneratorConfig: {
                 columns: [
                     {

@@ -60,12 +60,12 @@ define([
                 },
                 cssClass: 'cell-hyperlink-blue'
             },
-            {
-                field: 'name',
-                name: 'UUID',
-                minWidth: 250,
-                searchable: true
-            },
+            //{
+            //    field: 'name',
+            //    name: 'UUID',
+            //    minWidth: 250,
+            //    searchable: true
+            //},
             {
                 field: 'vn',
                 name: 'Virtual Network',
