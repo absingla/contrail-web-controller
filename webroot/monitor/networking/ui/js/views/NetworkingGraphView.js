@@ -21,15 +21,25 @@ define([
 
             this.$el.html(graphTemplate);
 
-                this.renderConfigGraph(configGraph, configSelectorId);
+            this.renderConfigGraph(configGraph, configSelectorId);
             this.renderConnectedGraph(connectedGraph, selectorId, connectedSelectorId, configSelectorId);
         },
 
         renderConnectedGraph: function (graphConfig, selectorId, connectedSelectorId, configSelectorId) {
-            var connectedGraphModel = new ContrailGraphModel($.extend(true, {}, graphConfig, {
+            var connectedGraph = $.extend(true, {}, graphConfig, {
                 forceFit: true,
                 generateElementsFn: getElements4ConnectedGraph
-            }));
+            });
+
+            connectedGraph['getDataFromCache'] = function(uniqueKey) {
+                return nmPageLoader.nmView.graphCache[uniqueKey];
+            };
+
+            connectedGraph['setData2Cache'] = function(uniqueKey, dataObject) {
+                 nmPageLoader.nmView.graphCache[uniqueKey] = {time: $.now(), dataObject: dataObject};
+            };
+
+            var connectedGraphModel = new ContrailGraphModel(connectedGraph);
 
             var connectedGraphView = new GraphView({
                 el: $(connectedSelectorId),
@@ -54,10 +64,22 @@ define([
         },
 
         renderConfigGraph: function (graphConfig, configSelectorId) {
-            var configGraphModel = new ContrailGraphModel($.extend(true, {}, graphConfig, {
+            var configGraph = $.extend(true, {}, graphConfig, {
                 forceFit: false,
                 generateElementsFn: getElements4ConfigGraph
-            }));
+            });
+
+            configGraph['getDataFromCache'] = function(uniqueKey) {
+                return nmPageLoader.nmView.graphCache[uniqueKey];
+            };
+
+            configGraph['setData2Cache'] = function(uniqueKey, dataObject) {
+                nmPageLoader.nmView.graphCache[uniqueKey] = {time: $.now(), dataObject: dataObject};
+            };
+
+            var configGraphModel = new ContrailGraphModel(configGraph, function(uniqueKey) {
+                return nmPageLoader.mnView.graphCache[uniqueKey];
+            });
 
             var configGraphView = new GraphView({
                 el: $(configSelectorId),
@@ -154,8 +176,7 @@ define([
         $.each(elements, function (elementKey, elementValue) {
             elementValue.translate(offset.x - oldOffset.x, offset.y - oldOffset.y);
         });
-    }
-
+    };
 
     return NetworkingGraphView;
 });

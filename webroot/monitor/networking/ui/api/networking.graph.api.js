@@ -156,32 +156,6 @@ function vnOrSIConfigExist(fqName, configData) {
     return true;
 }
 
-function processNetworkConnectedGraph(fqName, uve, appData, callback) {
-    var resultJSON = [],
-        vnFound = true;
-
-    try {
-        var vnUVE = uve[0]['value'];
-        var scUVE = uve[1]['value'];
-        if ((null == vnUVE) && (null == scUVE)) {
-            vnFound = false;
-        }
-    } catch (e) {
-        vnFound = false;
-    }
-    if (false == vnFound) {
-        callback(null, resultJSON);
-        return;
-    }
-
-    parseAndGetMissingVNsUVEs(fqName, vnUVE, function (err, vnUVE) {
-        var vnResultJSON = parseVirtualNetworkUVE(fqName, vnUVE);
-        var scResultJSON = parseServiceChainUVE(fqName, vnResultJSON, scUVE);
-        scResultJSON = updateVNStatsBySIData(scResultJSON, vnUVE);
-        callback(null, scResultJSON);
-    });
-};
-
 function parseAndGetMissingVNsUVEs(fqName, vnUVE, callback) {
     var resultJSON = [];
     var insertedVNObjs = {};
@@ -694,19 +668,6 @@ function getServiceChainNode(fqName, resultJSON, scUVENode) {
     resultJSON['links'][linkCnt]['dir'] = getVNPolicyRuleDirection(scUVENode['value']['UveServiceChainData']['direction']);
 
     for (var i = 0; i < svcCnt; i++) {
-        /*
-         if (i == 0) {
-         resultJSON['links'][linkCnt] = {};
-         resultJSON['links'][linkCnt]['src'] = srcVN;
-         resultJSON['links'][linkCnt]['dst'] = services[i];
-         resultJSON['links'][linkCnt]['more_attributes'] = {};
-         } else {
-         resultJSON['links'][linkCnt + i] = {};
-         resultJSON['links'][linkCnt + i]['src'] = services[i - 1];
-         resultJSON['links'][linkCnt + i]['dst'] = services[i];
-         resultJSON['links'][linkCnt + i]['more_attributes'] = {};
-         }
-         */
         found = vnNameListed(services[i], resultJSON['nodes']);
         if (false == found) {
             resultJSON['nodes'][nodeCnt + j] = {};
@@ -714,27 +675,7 @@ function getServiceChainNode(fqName, resultJSON, scUVENode) {
             resultJSON['nodes'][nodeCnt + j]['node_type'] = global.STR_NODE_TYPE_SERVICE_CHAIN;
             j++;
         }
-        /*
-         resultJSON['links'][linkCnt + i]['dir'] =
-         getVNPolicyRuleDirection(scUVENode['value']['UveServiceChainData']['direction']);
-
-         var found = vnNameListed(services[i], resultJSON['nodes']);
-         if (false == found) {
-         resultJSON['nodes'][nodeCnt + j] = {};
-         resultJSON['nodes'][nodeCnt + j]['name'] = destVN;
-         resultJSON['nodes'][nodeCnt + j]['node_type'] = global.STR_NODE_TYPE_VIRTUAL_NETWORK;
-         j++;
-         }
-         */
     }
-    /*
-     resultJSON['links'][linkCnt + i] = {};
-     resultJSON['links'][linkCnt + i]['src'] = services[i - 1];
-     resultJSON['links'][linkCnt + i]['dst'] = destVN;
-     resultJSON['links'][linkCnt + i]['dir'] =
-     resultJSON['links'][linkCnt + i - 1]['dir'];
-     resultJSON['links'][linkCnt + i]['more_attributes'] = {};
-     */
     return resultJSON;
 }
 
@@ -876,71 +817,6 @@ function updateServiceInstanceConfigData(scResultJSON, siConfig, appData, callba
         });
 }
 
-function processNetworkConfigGraph(fqName, uve, appData, callback) {
-    var networkConfigGraph = {};
-
-    var configSI = uve[0]['service-instances'];
-
-    networkConfigGraph['configData'] = {"service-instances": configSI};
-    //updateVNNodeStatus(scResultJSON, configVN, configSI, fqName);
-    //setAssociatedPolicys4Network(fqName, scResultJSON);
-    callback(null, networkConfigGraph);
-    /*
-     updatePolicyConfigData(scResultJSON, appData, function (scResultJSON) {
-     callback(null, scResultJSON);
-     });
-     updateServiceInstanceConfigData(scResultJSON, configSI, appData, function (scResultJSON) {
-     callback(null, scResultJSON)
-     });
-     */
-}
-
-function processProjectConnectedGraph(fqName, uve, appData, callback) {
-    var resultJSON = [],
-        vnFound = true;
-
-    try {
-        var vnUVE = uve[0]['value'];
-        var scUVE = uve[1]['value'];
-        if ((null == vnUVE) && (null == scUVE)) {
-            vnFound = false;
-        }
-    } catch (e) {
-        vnFound = false;
-    }
-    if (false == vnFound) {
-        callback(null, resultJSON);
-        return;
-    }
-
-    parseAndGetMissingVNsUVEs(fqName, vnUVE, function (err, vnUVE) {
-        var vnResultJSON = parseVirtualNetworkUVE(fqName, vnUVE);
-        var scResultJSON = parseServiceChainUVE(fqName, vnResultJSON, scUVE);
-        scResultJSON = updateVNStatsBySIData(scResultJSON, vnUVE);
-        //updateVNNodeStatus(scResultJSON, configVN, configSI, fqName);
-        callback(err, scResultJSON);
-    });
-}
-
-function processProjectConfigGraph(fqName, uve, appData, callback) {
-    var configSI = uve[0]['service-instances'],
-        configNP = uve[1]['network-policys'],
-        configSG = uve[2]['security-groups'],
-        configIPAM = uve[3]['network-ipams'],
-        configGraphJSON = {};
-
-    configGraphJSON['configData'] = {
-        'network-policys': configNP,
-        'security-groups': configSG,
-        'network-ipams': configIPAM,
-        "service-instances": configSI
-    };
-
-    updatePolicyConfigData(configGraphJSON, appData, function (resultJSON) {
-        callback(null, resultJSON);
-    });
-}
-
 function isServiceVN(vnName) {
     if (null == isServiceVN) {
         return false;
@@ -957,6 +833,15 @@ function isServiceVN(vnName) {
         return false;
     }
     return true;
+}
+
+function getProjectFQN4Network(networkFQN) {
+    var networkFQNArray = networkFQN.split(":");
+    if (networkFQNArray.length == 3) {
+        return networkFQNArray[0] + ":" + networkFQNArray[1];
+    } else {
+        return null;
+    }
 }
 
 function getNetworkConnectedGraph(req, res, appData) {
@@ -986,12 +871,49 @@ function getNetworkConnectedGraph(req, res, appData) {
     reqUrl = '/virtual-networks';
     commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
 
-    async.map(dataObjArr, commonUtils.getServerResponseByRestApi(configApiServer, false), function (err, data) {
-        data[0] = makeBulkDataByFqn(fqName, data[0]);
-        processNetworkConnectedGraph(fqName, data, appData, function (err, result) {
-            result = updateMissingVNsByConfig(fqName, result, data[2]);
+    reqUrl = '/service-instances';
+    commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
+
+    async.map(dataObjArr, commonUtils.getServerResponseByRestApi(configApiServer, false), function (err, networkData) {
+        networkData[0] = makeBulkDataByFqn(fqName, networkData[0]);
+        processNetworkConnectedGraph(fqName, networkData, appData, function (err, result) {
+            result = updateMissingVNsByConfig(fqName, result, networkData[2]);
             commonUtils.handleJSONResponse(null, res, result);
         });
+    });
+};
+
+function processNetworkConnectedGraph(fqName, networkData, appData, callback) {
+    var resultJSON = [], vnFound = true;
+
+    var configVN = networkData[2]['virtual-networks'],
+        configSI = networkData[3]['service-instances'];
+
+    try {
+        var vnUVE = networkData[0]['value'],
+            scUVE = networkData[1]['value'];
+
+        if ((null == vnUVE) && (null == scUVE)) {
+            vnFound = false;
+        }
+    } catch (e) {
+        vnFound = false;
+    }
+
+    if (false == vnFound) {
+        callback(null, resultJSON);
+        return;
+    }
+
+    parseAndGetMissingVNsUVEs(fqName, vnUVE, function (err, vnUVE) {
+        var vnResultJSON = parseVirtualNetworkUVE(fqName, vnUVE),
+            scResultJSON = parseServiceChainUVE(fqName, vnResultJSON, scUVE);
+
+        scResultJSON = updateVNStatsBySIData(scResultJSON, vnUVE);
+        scResultJSON['config-data'] = {'virtual-networks': configVN, 'service-instances': configSI};
+
+        updateVNNodeStatus(scResultJSON, configVN, configSI, fqName);
+        callback(null, scResultJSON);
     });
 };
 
@@ -999,14 +921,33 @@ function getNetworkConfigGraph(req, res, appData) {
     var fqName = req.query['fqName'],
         dataObjArr = [], reqUrl;
 
-    reqUrl = '/service-instances';
+    reqUrl = '/network-policys?parent_type=project&parent_fq_name_str=' + getProjectFQN4Network(fqName);
     commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
 
-    async.map(dataObjArr, commonUtils.getServerResponseByRestApi(configApiServer, false), function (err, data) {
-        processNetworkConfigGraph(fqName, data, appData, function (err, result) {
+    async.map(dataObjArr, commonUtils.getServerResponseByRestApi(configApiServer, false), function (err, networkConfigData) {
+        processNetworkConfigGraph(fqName, networkConfigData, appData, function (err, result) {
             commonUtils.handleJSONResponse(null, res, result);
         });
     });
+}
+
+function processNetworkConfigGraph(fqName, networkData, appData, callback) {
+    var networkConfigGraph = {},
+        configPolicy = networkData[0]['network-policys'];
+
+    networkConfigGraph['configData'] = {"network-policys": configPolicy};
+    //setAssociatedPolicys4Network(fqName, scResultJSON);
+
+    callback(null, networkConfigGraph);
+
+    /*
+     updatePolicyConfigData(scResultJSON, appData, function (scResultJSON) {
+     callback(null, scResultJSON);
+     });
+     updateServiceInstanceConfigData(scResultJSON, configSI, appData, function (scResultJSON) {
+     callback(null, scResultJSON)
+     });
+     */
 }
 
 function getProjectConnectedGraph(req, res, appData) {
@@ -1036,20 +977,51 @@ function getProjectConnectedGraph(req, res, appData) {
     reqUrl = '/virtual-networks';
     commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
 
-    async.map(dataObjArr, commonUtils.getServerResponseByRestApi(configApiServer, false), function (err, data) {
-        processProjectConnectedGraph(fqName, data, appData, function (err, result) {
-            result = updateMissingVNsByConfig(fqName, result, data[2]);
+    reqUrl = '/service-instances';
+    commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
+
+    async.map(dataObjArr, commonUtils.getServerResponseByRestApi(configApiServer, false), function (err, projectData) {
+        processProjectConnectedGraph(fqName, projectData, appData, function (err, result) {
+            result = updateMissingVNsByConfig(fqName, result, projectData[2]);
             commonUtils.handleJSONResponse(null, res, result);
         });
+    });
+}
+
+function processProjectConnectedGraph(fqName, projectData, appData, callback) {
+    var resultJSON = [],
+        vnFound = true;
+
+    var configVN = projectData[2]['virtual-networks'],
+        configSI = projectData[3]['service-instances'];
+
+    try {
+        var vnUVE = projectData[0]['value'];
+        var scUVE = projectData[1]['value'];
+        if ((null == vnUVE) && (null == scUVE)) {
+            vnFound = false;
+        }
+    } catch (e) {
+        vnFound = false;
+    }
+    if (false == vnFound) {
+        callback(null, resultJSON);
+        return;
+    }
+
+    parseAndGetMissingVNsUVEs(fqName, vnUVE, function (err, vnUVE) {
+        var vnResultJSON = parseVirtualNetworkUVE(fqName, vnUVE);
+        var scResultJSON = parseServiceChainUVE(fqName, vnResultJSON, scUVE);
+        scResultJSON = updateVNStatsBySIData(scResultJSON, vnUVE);
+        scResultJSON['config-data'] = {'virtual-networks': configVN, 'service-instances': configSI};
+        updateVNNodeStatus(scResultJSON, configVN, configSI, fqName);
+        callback(err, scResultJSON);
     });
 }
 
 function getProjectConfigGraph(req, res, appData) {
     var fqName = req.query['fqName'],
         dataObjArr = [], reqUrl;
-
-    reqUrl = '/service-instances';
-    commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
 
     reqUrl = '/network-policys?parent_type=project&parent_fq_name_str=' + fqName;
     commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
@@ -1060,10 +1032,28 @@ function getProjectConfigGraph(req, res, appData) {
     reqUrl = '/network-ipams?parent_type=project&parent_fq_name_str=' + fqName;
     commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
 
-    async.map(dataObjArr, commonUtils.getServerResponseByRestApi(configApiServer, false), function (err, data) {
-        processProjectConfigGraph(fqName, data, appData, function (err, result) {
+    async.map(dataObjArr, commonUtils.getServerResponseByRestApi(configApiServer, false), function (err, projectConfigData) {
+        processProjectConfigGraph(fqName, projectConfigData, appData, function (err, result) {
             commonUtils.handleJSONResponse(null, res, result);
         });
+    });
+}
+
+
+function processProjectConfigGraph(fqName, projectConfigData, appData, callback) {
+    var configNP = projectConfigData[0]['network-policys'],
+        configSG = projectConfigData[1]['security-groups'],
+        configIPAM = projectConfigData[2]['network-ipams'],
+        configGraphJSON = {};
+
+    configGraphJSON['configData'] = {
+        'network-policys': configNP,
+        'security-groups': configSG,
+        'network-ipams': configIPAM
+    };
+
+    updatePolicyConfigData(configGraphJSON, appData, function (resultJSON) {
+        callback(null, resultJSON);
     });
 }
 

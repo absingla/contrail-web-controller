@@ -9,6 +9,8 @@ define([
     var MonitorNetworkingView = Backbone.View.extend({
         el: $(contentContainer),
 
+        graphCache: {},
+
         renderProject: function (viewConfig) {
             var self = this, domain = cowc.DEFAULT_DOMAIN,
                 projectFQN = (contrail.checkIfExist(viewConfig.hashParams.fqName)) ? viewConfig.hashParams.fqName : null,
@@ -37,6 +39,7 @@ define([
                     }
                 },
                 fqName: projectFQN,
+                uniqueKey: projectFQN + ':connected',
                 focusedElement: 'Project'
             };
 
@@ -47,7 +50,8 @@ define([
                         type: 'GET'
                     }
                 },
-                fqName: projectFQN,
+                fgName: projectFQN,
+                uniqueKey: projectFQN + ':config',
                 focusedElement: 'Project'
             };
 
