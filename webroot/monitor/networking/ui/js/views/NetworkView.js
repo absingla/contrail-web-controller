@@ -19,7 +19,8 @@ define([
 
     var getNetworkViewConfig = function (viewConfig) {
         var networkFQN = viewConfig['networkFQN'],
-            networkUUID = viewConfig['networkUUID'];
+            networkUUID = viewConfig['networkUUID'],
+            networkDetailsUrl = ctwc.get(ctwc.URL_NETWORK_SUMMARY, networkFQN);;
 
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_VIEW_ID, '-section']),
@@ -40,7 +41,17 @@ define([
                                             elementId: ctwl.NETWORK_DETAILS_ID,
                                             title: ctwl.TITLE_DETAILS,
                                             view: "DetailsView",
-                                            viewConfig: {}
+                                            viewConfig: {
+                                                ajaxConfig: {
+                                                    url: networkDetailsUrl,
+                                                    type: 'GET'
+                                                },
+                                                templateConfig: getDetailsViewTemplateConfig(),
+                                                app: cowc.APP_CONTRAIL_CONTROLLER,
+                                                dataParser: function(response) {
+                                                    return response['value'][0];
+                                                }
+                                            }
                                         },
                                         {
                                             elementId: ctwl.NETWORK_INSTANCES_ID,
@@ -60,6 +71,75 @@ define([
                 ]
             }
         }
+    };
+
+    function getDetailsViewTemplateConfig() {
+        return {
+            templateGenerator: 'ColumnSectionTemplateGenerator',
+            templateGeneratorConfig: {
+                columns: [
+                    {
+                        class: 'span6',
+                        rows: [
+                            {
+                                templateGenerator: 'BlockListTemplateGenerator',
+                                title: ctwl.TITLE_NETWORK_DETAILS,
+                                templateGeneratorConfig: [
+                                    {
+                                        key: 'value.UveVirtualNetworkConfig.connected_networks',
+                                        valueType: 'text'
+                                    },
+
+                                    {
+                                        key: 'value.UveVirtualNetworkAgent.acl',
+                                        valueType: 'text'
+                                    },
+                                    {
+                                        key: 'value.UveVirtualNetworkAgent.total_acl_rules',
+                                        valueType: 'text'
+                                    },
+                                    {
+                                        key: 'value.UveVirtualNetworkAgent.interface_list',
+                                        valueType: 'length'
+                                    },
+                                    {
+                                        key: 'value.UveVirtualNetworkAgent.virtualmachine_list',
+                                        valueType: 'text'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        class: 'span6',
+                        rows: [
+                            {
+                                templateGenerator: 'BlockListTemplateGenerator',
+                                title: ctwl.TITLE_TRAFFIC_DETAILS,
+                                templateGeneratorConfig: [
+                                    {
+                                        key: 'value.UveVirtualNetworkAgent.ingress_flow_count',
+                                        valueType: 'text'
+                                    },
+                                    {
+                                        key: 'value.UveVirtualNetworkAgent.egress_flow_count',
+                                        valueType: 'text'
+                                    },
+                                    {
+                                        key: 'value.UveVirtualNetworkAgent.in_bytes',
+                                        valueType: 'format-bytes'
+                                    },
+                                    {
+                                        key: 'value.UveVirtualNetworkAgent.out_bytes',
+                                        valueType: 'format-bytes'
+                                    },
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
     };
 
     return NetworkView;

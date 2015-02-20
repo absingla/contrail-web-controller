@@ -65,7 +65,7 @@ define([
             var connectedGraph = getGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), instanceUUID, ':connected', 'Instance'),
                 configGraph = getGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONFIG_GRAPH, networkFQN), networkFQN, ':config', 'Instance');
 
-            cowu.renderView4Config(this.$el, null, getInstanceConfig(connectedGraph, configGraph, networkFQN));
+            cowu.renderView4Config(this.$el, null, getInstanceConfig(connectedGraph, configGraph, networkFQN, instanceUUID));
         },
 
         renderInstanceList: function (projectUUID) {

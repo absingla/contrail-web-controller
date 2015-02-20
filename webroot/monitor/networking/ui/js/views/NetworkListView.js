@@ -71,7 +71,7 @@ define([
                     autoRefresh: false,
                     checkboxSelectable: false,
                     detail: {
-                        template: cowu.generateDetailTemplate(getDetailTemplateConfig(), 'controller')
+                        template: cowu.generateDetailTemplateHTML(getDetailsTemplateConfig(), cowc.APP_CONTRAIL_CONTROLLER)
                     }
                 },
                 dataSource: {
@@ -135,7 +135,7 @@ define([
         ];
     };
 
-    function getDetailTemplateConfig() {
+    function getDetailsTemplateConfig() {
         return {
             templateGenerator: 'ColumnSectionTemplateGenerator',
             templateGeneratorConfig: {
