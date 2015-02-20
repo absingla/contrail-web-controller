@@ -6,30 +6,31 @@ define([
     'underscore',
     'backbone'
 ], function (_, Backbone) {
-    var NetworkView = Backbone.View.extend({
+    var InstanceView = Backbone.View.extend({
         el: $(contentContainer),
 
         render: function () {
             var self = this,
                 viewConfig = this.attributes.viewConfig;
-            cowu.renderView4Config(self.$el, null, getNetworkViewConfig(viewConfig));
+
+            cowu.renderView4Config(self.$el, null, getInstanceViewConfig(viewConfig));
         }
 
     });
 
-    var getNetworkViewConfig = function (viewConfig) {
-        var networkFQN = viewConfig['networkFQN'],
-            networkUUID = viewConfig['networkUUID'];
+    var getInstanceViewConfig = function (viewConfig) {
+        var instanceUUID = viewConfig['instanceUUID'],
+            url = ctwc.get(ctwc.URL_INSTANCE_SUMMARY, instanceUUID);
 
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_VIEW_ID, '-section']),
+            elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_VIEW_ID, '-section']),
             view: "SectionView",
             viewConfig: {
                 rows: [
                     {
                         columns: [
                             {
-                                elementId: ctwl.NETWORK_TABS_ID,
+                                elementId: ctwl.INSTANCE_TABS_ID,
                                 view: "TabsView",
                                 viewConfig: {
                                     activate: function (e, ui) {
@@ -37,19 +38,11 @@ define([
                                     },
                                     tabs: [
                                         {
-                                            elementId: ctwl.NETWORK_DETAILS_ID,
+                                            elementId: ctwl.INSTANCE_DETAILS_ID,
                                             title: ctwl.TITLE_DETAILS,
                                             view: "DetailsView",
-                                            viewConfig: {}
-                                        },
-                                        {
-                                            elementId: ctwl.NETWORK_INSTANCES_ID,
-                                            title: ctwl.TITLE_INSTANCES,
-                                            view: "InstanceListView",
-                                            app: cowc.APP_CONTRAIL_CONTROLLER,
                                             viewConfig: {
-                                                parentUUID: networkUUID,
-                                                parentType: 'vn'
+                                                url: url
                                             }
                                         }
                                     ]
@@ -62,5 +55,5 @@ define([
         }
     };
 
-    return NetworkView;
+    return InstanceView;
 });

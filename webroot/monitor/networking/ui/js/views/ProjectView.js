@@ -23,7 +23,7 @@ define([
             projectUUID = viewConfig['projectUUID'];
 
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECTS_ID]),
+            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_VIEW_ID, '-section']),
             view: "SectionView",
             viewConfig: {
                 rows: [
@@ -49,7 +49,7 @@ define([
                                             title: ctwl.TITLE_PORT_DISTRIBUTION,
                                             view: "ChartView",
                                             viewConfig: {
-                                                class: ctwl.PORT_DIST_CHART_ID,
+                                                class: ctwl.PROJECT_PORT_DIST_CHART_ID,
                                                 url: ctwc.get(ctwc.URL_PORT_DISTRIBUTION, projectFQN),
                                                 renderFn: 'initScatterChart',
                                                 parseFn: function (response) {
@@ -103,7 +103,8 @@ define([
                                             view: "NetworkListView",
                                             app: cowc.APP_CONTRAIL_CONTROLLER,
                                             viewConfig: {
-                                                projectFQN: projectFQN
+                                                projectFQN: projectFQN,
+                                                parentType: 'project'
                                             }
                                         },
                                         {
@@ -112,7 +113,8 @@ define([
                                             view: "InstanceListView",
                                             app: cowc.APP_CONTRAIL_CONTROLLER,
                                             viewConfig: {
-                                                projectUUID: projectUUID
+                                                parentUUID: projectUUID,
+                                                parentType: 'project'
                                             }
                                         }
                                     ]

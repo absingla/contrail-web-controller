@@ -25,14 +25,14 @@ define([
                 })
             };
 
-            cowu.renderView4Config(that.$el, null, getProjectsViewConfig(networkRemoteConfig));
+            cowu.renderView4Config(that.$el, null, getNetworkListViewConfig(networkRemoteConfig));
 
         }
     });
 
-    var getProjectsViewConfig = function (networkRemoteConfig) {
+    var getNetworkListViewConfig = function (networkRemoteConfig) {
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECTS_ID]),
+            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_LIST_VIEW_ID]),
             view: "SectionView",
             viewConfig: {
                 rows: [
@@ -43,7 +43,7 @@ define([
                                 title: ctwl.TITLE_NETWORKS,
                                 view: "GridView",
                                 viewConfig: {
-                                    elementConfig: getProjectNetworksConfig(networkRemoteConfig)
+                                    elementConfig: getProjectNetworkGridConfig(networkRemoteConfig)
                                 }
                             }
                         ]
@@ -53,7 +53,7 @@ define([
         }
     };
 
-    var getProjectNetworksConfig = function (networkRemoteConfig) {
+    var getProjectNetworkGridConfig = function (networkRemoteConfig) {
         var gridElementConfig = {
             header: {
                 title: {
@@ -77,7 +77,7 @@ define([
                 dataSource: {
                     remote: {
                         ajaxConfig: networkRemoteConfig,
-                        dataParser: tenantNetworkMonitorUtils.projectNetworksParseFn
+                        dataParser: networkDataParser
                     },
                     lazyRemote: getLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
                 }
@@ -202,6 +202,30 @@ define([
                 ]
             }
         };
+    };
+
+    var networkDataParser = function(response) {
+        var retArr = $.map(ifNull(response['data']['value'], response), function (currObject) {
+            currObject['rawData'] = $.extend(true,{},currObject);
+            currObject['url'] = '/api/tenant/networking/virtual-network/summary?fqNameRegExp=' + currObject['name'];
+            currObject['outBytes'] = '-';
+            currObject['inBytes'] = '-';
+            var inBytes = 0,outBytes = 0;
+            var statsObj = getValueByJsonPath(currObject,'value;UveVirtualNetworkAgent;vn_stats;0;StatTable.UveVirtualNetworkAgent.vn_stats',[]);
+            for(var i = 0; i < statsObj.length; i++){
+                inBytes += ifNull(statsObj[i]['SUM(vn_stats.in_bytes)'],0);
+                outBytes += ifNull(statsObj[i]['SUM(vn_stats.out_bytes)'],0);
+            }
+            if(getValueByJsonPath(currObject,'value;UveVirtualNetworkAgent;vn_stats') != null) {
+                currObject['outBytes'] = outBytes;
+                currObject['inBytes'] = inBytes;
+            }
+            currObject['instCnt'] = ifNull(jsonPath(currObject, '$..virtualmachine_list')[0], []).length;
+            currObject['inThroughput'] = ifNull(jsonPath(currObject, '$..in_bandwidth_usage')[0], 0);
+            currObject['outThroughput'] = ifNull(jsonPath(currObject, '$..out_bandwidth_usage')[0], 0);
+            return currObject;
+        });
+        return retArr;
     };
 
     return NetworkListView;

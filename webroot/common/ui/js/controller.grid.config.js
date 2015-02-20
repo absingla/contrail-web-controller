@@ -6,10 +6,20 @@ define([
     'underscore'
 ], function (_) {
 
-    var onClickGrid = function (e,selRowDataItem){
-        var networkFQN = selRowDataItem['name'];
-        layoutHandler.setURLHashParams({fqName:networkFQN, type: "network", view: "details"}, {p:"mon_net_networks-beta", merge:false});
-    }
+    var onClickGrid = function (e, selRowDataItem) {
+        var name = $(e.target).attr('name'),
+            fqName, uuid, vn;
+
+        if ($.inArray(name, ['network']) > -1) {
+            fqName = selRowDataItem['name'];
+            uuid = selRowDataItem['uuid'];
+            layoutHandler.setURLHashParams({ fqName: fqName, uuid: uuid, type: "network", view: "details" }, {p: "mon_net_networks-beta", merge: false});
+        } else if ($.inArray(name, ['instance']) > -1) {
+            vn = selRowDataItem['vnFQN'];
+            uuid = selRowDataItem['name'];
+            layoutHandler.setURLHashParams({ uuid: uuid, vn: vn, type: "instance", view: "details" }, {p: "mon_net_instances-beta", merge: false});
+        }
+    };
 
     var CTGridConfig = function () {
         this.projectNetworksColumns = [
@@ -62,16 +72,10 @@ define([
                 minWidth: 150,
                 searchable: true,
                 events: {
-                    onClick: onClickGridLink
+                    onClick: onClickGrid
                 },
                 cssClass: 'cell-hyperlink-blue'
             },
-            //{
-            //    field: 'name',
-            //    name: 'UUID',
-            //    minWidth: 250,
-            //    searchable: true
-            //},
             {
                 field: 'vn',
                 name: 'Virtual Network',

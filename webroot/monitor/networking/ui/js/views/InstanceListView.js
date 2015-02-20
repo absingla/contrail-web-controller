@@ -12,24 +12,25 @@ define([
         render: function () {
             var that = this,
                 viewConfig = this.attributes.viewConfig,
-                projectUUID = viewConfig['projectUUID'];
+                parentUUID = viewConfig['parentUUID'],
+                parentType = viewConfig['parentType'];
 
             var instanceRemoteConfig = {
-                url: projectUUID != null ? ctwc.get(ctwc.URL_PROJECT_INSTANCES, projectUUID) : ctwc.URL_INSTANCES,
+                url: parentUUID != null ? ctwc.get(ctwc.URL_PROJECT_INSTANCES, parentUUID, parentType) : ctwc.URL_INSTANCES,
                 type: 'POST',
                 data: JSON.stringify({
                     data: [{"type": ctwc.TYPE_VIRTUAL_MACHINE, "cfilt": ctwc.FILTERS_COLUMN_VM.join(',')}]
                 })
             };
 
-            cowu.renderView4Config(that.$el, null, getProjectsViewConfig(instanceRemoteConfig));
+            cowu.renderView4Config(that.$el, null, getInstanceListViewConfig(instanceRemoteConfig));
 
         }
     });
 
-    var getProjectsViewConfig = function (instanceRemoteConfig) {
+    var getInstanceListViewConfig = function (instanceRemoteConfig) {
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECTS_ID]),
+            elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_LIST_VIEW_ID]),
             view: "SectionView",
             viewConfig: {
                 rows: [
@@ -74,7 +75,7 @@ define([
                 dataSource: {
                     remote: {
                         ajaxConfig: instanceRemoteConfig,
-                        dataParser: tenantNetworkMonitorUtils.projectInstanceParseFn
+                        dataParser: instanceDataParser
                     },
                     lazyRemote: getLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
                 }
@@ -248,6 +249,62 @@ define([
                 ]
             }
         };
+    };
+
+    var instanceDataParser = function(response) {
+        var retArr = $.map(ifNull(response['data']['value'],response), function (currObject, idx) {
+            var currObj = currObject['value'];
+            var intfStats = getValueByJsonPath(currObj,'VirtualMachineStats;if_stats;0;StatTable.VirtualMachineStats.if_stats',[]);
+            currObject['rawData'] = $.extend(true,{},currObj);
+            currObject['inBytes'] = '-';
+            currObject['outBytes'] = '-';
+            // If we append * wildcard stats info are not there in response,so we changed it to flat
+            currObject['url'] = '/api/tenant/networking/virtual-machine/summary?fqNameRegExp=' + currObject['name'] + '?flat';
+            currObject['vmName'] = ifNull(jsonPath(currObj, '$..vm_name')[0], '-');
+            var vRouter = getValueByJsonPath(currObj,'UveVirtualMachineAgent;vrouter');
+            currObject['vRouter'] = ifNull(tenantNetworkMonitorUtils.getDataBasedOnSource(vRouter), '-');
+            currObject['intfCnt'] = ifNull(jsonPath(currObj, '$..interface_list')[0], []).length;
+            currObject['vn'] = ifNull(jsonPath(currObj, '$..interface_list[*].virtual_network'),[]);
+            //Parse the VN only if it exists
+            if(currObject['vn'] != false) {
+                if(currObject['vn'].length != 0) {
+                    currObject['vnFQN'] = currObject['vn'][0];
+                }
+                currObject['vn'] = tenantNetworkMonitorUtils.formatVN(currObject['vn']);
+            }
+            currObject['ip'] = [];
+            var intfList = tenantNetworkMonitorUtils.getDataBasedOnSource(getValueByJsonPath(currObj,'UveVirtualMachineAgent;interface_list',[]));
+            for(var i = 0; i < intfList.length; i++ ) {
+                if(intfList[i]['ip6_active'] == true) {
+                    if(intfList[i]['ip_address'] != '0.0.0.0')
+                        currObject['ip'].push(intfList[i]['ip_address']);
+                    if(intfList[i]['ip6_address'] != null)
+                        currObject['ip'].push(intfList[i]['ip6_address']);
+                } else {
+                    if(intfList[i]['ip_address'] != '0.0.0.0')
+                        currObject['ip'].push(intfList[i]['ip_address']);
+                }
+            }
+            var fipStatsList = getValueByJsonPath(currObj,'UveVirtualMachineAgent:fip_stats_list');
+            var floatingIPs = ifNull(tenantNetworkMonitorUtils.getDataBasedOnSource(fipStatsList), []);
+            currObject['floatingIP'] = [];
+            if(getValueByJsonPath(currObj,'VirtualMachineStats;if_stats') != null) {
+                currObject['inBytes'] = 0;
+                currObject['outBytes'] = 0;
+            }
+            $.each(floatingIPs, function(idx, fipObj){
+                currObject['floatingIP'].push(contrail.format('{0}<br/> ({1}/{2})', fipObj['ip_address'],formatBytes(ifNull(fipObj['in_bytes'],'-')),
+                    formatBytes(ifNull(fipObj['out_bytes'],'-'))));
+            });
+            $.each(intfStats, function (idx, value) {
+                currObject['inBytes'] += ifNull(value['SUM(if_stats.in_bytes)'],0);
+            });
+            $.each(intfStats, function (idx, value) {
+                currObject['outBytes'] += ifNull(value['SUM(if_stats.out_bytes)'],0);
+            });
+            return currObject;
+        });
+        return retArr;
     }
 
     return InstanceListView;

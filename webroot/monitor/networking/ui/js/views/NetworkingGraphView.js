@@ -32,11 +32,11 @@ define([
             });
 
             connectedGraph['getDataFromCache'] = function(uniqueKey) {
-                return nmPageLoader.nmView.graphCache[uniqueKey];
+                return mnPageLoader.mnView.graphCache[uniqueKey];
             };
 
             connectedGraph['setData2Cache'] = function(uniqueKey, dataObject) {
-                 nmPageLoader.nmView.graphCache[uniqueKey] = {time: $.now(), dataObject: dataObject};
+                 mnPageLoader.mnView.graphCache[uniqueKey] = {time: $.now(), dataObject: dataObject};
             };
 
             var connectedGraphModel = new ContrailGraphModel(connectedGraph);
@@ -70,15 +70,15 @@ define([
             });
 
             configGraph['getDataFromCache'] = function(uniqueKey) {
-                return nmPageLoader.nmView.graphCache[uniqueKey];
+                return mnPageLoader.mnView.graphCache[uniqueKey];
             };
 
             configGraph['setData2Cache'] = function(uniqueKey, dataObject) {
-                nmPageLoader.nmView.graphCache[uniqueKey] = {time: $.now(), dataObject: dataObject};
+                mnPageLoader.mnView.graphCache[uniqueKey] = {time: $.now(), dataObject: dataObject};
             };
 
             var configGraphModel = new ContrailGraphModel(configGraph, function(uniqueKey) {
-                return nmPageLoader.mnView.graphCache[uniqueKey];
+                return mnPageLoader.mnView.graphCache[uniqueKey];
             });
 
             var configGraphView = new GraphView({

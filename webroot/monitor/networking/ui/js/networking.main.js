@@ -2,9 +2,9 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 
-var nmPageLoader = new NetworkMonitoringLoader();
+var mnPageLoader = new MonitorNetworkingLoader();
 
-function NetworkMonitoringLoader() {
+function MonitorNetworkingLoader() {
     this.load = function (paramObject) {
         var self = this, currMenuObj = globalObj.currMenuObj,
             hashParams = paramObject['hashParams'],
@@ -13,9 +13,9 @@ function NetworkMonitoringLoader() {
             renderFn = paramObject['function'];
 
         check4CTInit(function () {
-            if (self.nmView == null) {
-                requirejs([pathMNView], function (nmView) {
-                    self.nmView = new nmView();
+            if (self.mnView == null) {
+                requirejs([pathMNView], function (MonitorNetworkingView) {
+                    self.mnView = new MonitorNetworkingView();
                     self.renderView(renderFn, hashParams);
                 });
             } else {
@@ -25,41 +25,42 @@ function NetworkMonitoringLoader() {
     };
     this.renderView = function (renderFn, hashParams) {
         switch (renderFn) {
-            case 'renderProject':
+            case 'renderProjects':
                 if (hashParams.view == "details") {
-                    this.nmView.renderProject({hashParams: hashParams});
+                    this.mnView.renderProject({hashParams: hashParams});
                 } else {
-                    this.nmView.renderProject({hashParams: hashParams});
+                    this.mnView.renderProject({hashParams: hashParams});
                 }
                 break;
 
             case 'renderNetworks':
                 if (hashParams.view == "details") {
 
-                    this.nmView.renderNetwork({hashParams: hashParams});
+                    this.mnView.renderNetwork({hashParams: hashParams});
                 } else {
-                    this.nmView.renderNetworkList({hashParams: hashParams});
+                    this.mnView.renderNetworkList({hashParams: hashParams});
                 }
                 break;
 
-            case 'renderInstanceList':
+            case 'renderInstances':
                 if (hashParams.view == "details") {
-                    this.nmView.renderInstanceList({hashParams: hashParams});
+                    this.mnView.renderInstance({hashParams: hashParams});
                 } else {
-                    this.nmView.renderInstanceList({hashParams: hashParams});
+                    this.mnView.renderInstanceList({hashParams: hashParams});
                 }
                 break;
         }
     },
 
     this.updateViewByHash = function (hashObj, lastHashObj) {
+        var renderFn;
 
         if(hashObj.type == "network"){
             renderFn = "renderNetworks";
         } else if (hashObj.type == "project"){
-            renderFn = "renderProject"
-        } else if (hashObj.type == "network"){
-            renderFn = "renderInstanceList"
+            renderFn = "renderProjects"
+        } else if (hashObj.type == "instance"){
+            renderFn = "renderInstances"
         }
         this.load({hashParams: hashObj, 'function': renderFn});
     };
