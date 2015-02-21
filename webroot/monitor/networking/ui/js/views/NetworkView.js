@@ -20,7 +20,7 @@ define([
     var getNetworkViewConfig = function (viewConfig) {
         var networkFQN = viewConfig['networkFQN'],
             networkUUID = viewConfig['networkUUID'],
-            networkDetailsUrl = ctwc.get(ctwc.URL_NETWORK_SUMMARY, networkFQN);;
+            networkDetailsUrl = ctwc.get(ctwc.URL_NETWORK_SUMMARY, networkFQN);
 
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_VIEW_ID, '-section']),
@@ -35,6 +35,9 @@ define([
                                 viewConfig: {
                                     activate: function (e, ui) {
                                         var selTab = $(ui.newTab.context).text();
+                                        if (selTab == ctwl.TITLE_PORT_DISTRIBUTION) {
+                                            $('#' + ctwl.NETWORK_PORT_DIST_ID).find('svg').trigger('refresh');
+                                        }
                                     },
                                     tabs: [
                                         {
@@ -61,6 +64,61 @@ define([
                                             viewConfig: {
                                                 parentUUID: networkUUID,
                                                 parentType: 'vn'
+                                            }
+                                        },
+                                        {
+                                            elementId: ctwl.NETWORK_PORT_DIST_ID,
+                                            title: ctwl.TITLE_PORT_DISTRIBUTION,
+                                            view: "ScatterChartView",
+                                            viewConfig: {
+                                                class: "port-distribution-chart",
+                                                ajaxConfig: {
+                                                    url: ctwc.get(ctwc.URL_PORT_DISTRIBUTION, networkFQN),
+                                                    type: "GET"
+                                                },
+                                                parseFn: function (response) {
+                                                    var retObj = {
+                                                        d: [{
+                                                            key: 'Source Port',
+                                                            values: tenantNetworkMonitorUtils.parsePortDistribution(ifNull(response['sport'], []), {
+                                                                startTime: response['startTime'],
+                                                                endTime: response['endTime'],
+                                                                bandwidthField: 'outBytes',
+                                                                flowCntField: 'outFlowCount',
+                                                                portField: 'sport'
+                                                            })
+                                                        },
+                                                            {
+                                                                key: 'Destination Port',
+                                                                values: tenantNetworkMonitorUtils.parsePortDistribution(ifNull(response['dport'], []), {
+                                                                    startTime: response['startTime'],
+                                                                    endTime: response['endTime'],
+                                                                    bandwidthField: 'inBytes',
+                                                                    flowCntField: 'inFlowCount',
+                                                                    portField: 'dport'
+                                                                })
+                                                            }],
+                                                        forceX: [0, 1000],
+                                                        xLblFormat: d3.format(''),
+                                                        yDataType: 'bytes',
+                                                        fqName: networkFQN,
+                                                        yLbl: ctwl.Y_AXIS_TITLE_BW,
+                                                        link: {
+                                                            hashParams: {
+                                                                q: {
+                                                                    view: 'list',
+                                                                    type: 'network',
+                                                                    fqName: networkFQN,
+                                                                    context: 'domain'
+                                                                }
+                                                            }
+                                                        },
+                                                        chartOptions: {tooltipFn: tenantNetworkMonitor.portTooltipFn},
+                                                        title: ctwl.TITLE_PORT_DISTRIBUTION,
+                                                        xLbl: ctwl.X_AXIS_TITLE_PORT
+                                                    }
+                                                    return retObj;
+                                                }
                                             }
                                         }
                                     ]
