@@ -14,7 +14,6 @@ define([
                 viewConfig = this.attributes.viewConfig;
             cowu.renderView4Config(self.$el, null, getNetworkViewConfig(viewConfig));
         }
-
     });
 
     var getNetworkViewConfig = function (viewConfig) {
@@ -35,6 +34,11 @@ define([
                                 viewConfig: {
                                     activate: function (e, ui) {
                                         var selTab = $(ui.newTab.context).text();
+                                        if (selTab == ctwl.TITLE_INSTANCES) {
+                                            $('#' + ctwl.PROJECT_INSTANCE_GRID_ID).data('contrailGrid').refreshView();
+                                        } else if (selTab == ctwl.TITLE_TRAFFIC_STATISTICS) {
+                                            $('#' + ctwl.NETWORK_TRAFFIC_STATS_ID).find('svg').trigger('refresh');
+                                        }
                                     },
                                     tabs: [
                                         {
@@ -61,6 +65,16 @@ define([
                                             viewConfig: {
                                                 parentUUID: networkUUID,
                                                 parentType: 'vn'
+                                            }
+                                        },
+                                        {
+                                            elementId: ctwl.NETWORK_TRAFFIC_STATS_ID,
+                                            title: ctwl.TITLE_TRAFFIC_STATISTICS,
+                                            view: "LineWithFocusChartView",
+                                            viewConfig: {
+                                                url: ctwc.get(ctwc.URL_NETWORK_TRAFFIC_STATS, 60, networkFQN, 120),
+                                                parseTSChartData: 'parseTSChartData',
+                                                successHandlerTSChart: 'successHandlerTSChart'
                                             }
                                         }
                                     ]
@@ -140,6 +154,32 @@ define([
                 ]
             }
         };
+    };
+
+    function parseTSChartData(response, cbParams) {
+        var rawdata = response['flow-series'],
+            inBytes = {key:"In Bytes", values:[], color: d3_category5[0]}, outBytes = {key:"Out Bytes", values:[], color: d3_category5[1]},
+            inPackets = {key:"In Packets", values:[]}, outPackets = {key:"Out Packets", values:[]},
+            chartData = [inBytes, outBytes];
+
+        for (var i = 0; i < rawdata.length; i++) {
+            var ts = Math.floor(rawdata[i].time / 1000);
+            inBytes.values.push({x:ts, y:rawdata[i].inBytes});
+            outBytes.values.push({x:ts, y:rawdata[i].outBytes});
+            inPackets.values.push({x:ts, y:rawdata[i].inPkts});
+            outPackets.values.push({x:ts, y:rawdata[i].outPkts});
+        }
+        return chartData;
+    };
+
+    function successHandlerTSChart(data, cbParams) {
+        var selectorId = "#" + $(cbParams.selector).attr('id');
+        var options = {
+            height:300,
+            yAxisLabel: 'Bytes per 30 secs',
+            y2AxisLabel: 'Bytes per min'
+        };
+        initTrafficTSChart(selectorId, data, options, null, "formatSumBytes", "formatSumBytes");
     };
 
     return NetworkView;

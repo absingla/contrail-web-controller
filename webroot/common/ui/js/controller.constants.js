@@ -16,6 +16,9 @@ define([
         this.URL_NETWORK_SUMMARY = 'api/tenant/networking/virtual-network/summary?fqNameRegExp={0}'
         this.URL_NETWORKS_DETAILS = '/api/tenant/networking/virtual-networks/details?count=25';
 
+        this.URL_NETWORKS_DETAILS = '/api/tenant/networking/virtual-networks/details?count=25';
+        this.URL_NETWORK_TRAFFIC_STATS = '/api/tenant/networking/flow-series/vn?minsSince={0}&fqName={1}&sampleCnt={2}&useServerTime=true';
+
         this.URL_INSTANCE_SUMMARY = '/api/tenant/networking/virtual-machine/summary?fqNameRegExp={0}?flat';
         this.URL_INSTANCES = '/api/tenant/networking/virtual-machines/details?count=25';
 

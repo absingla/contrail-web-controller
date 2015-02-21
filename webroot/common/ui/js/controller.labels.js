@@ -101,6 +101,7 @@ define([
         this.NETWORK_DETAILS_ID = "network-details";
         this.NETWORK_PORT_DIST_ID = "network-port-distribution";
         this.NETWORK_INSTANCES_ID = "network-instances";
+        this.NETWORK_TRAFFIC_STATS_ID = "network-traffic-stats";
 
         this.INSTANCE_GRAPH_ID = "instance-graph";
         this.INSTANCE_TABS_ID = "instance-tabs";
@@ -118,6 +119,7 @@ define([
         this.TITLE_INTERFACES = "Interfaces";
         this.TITLE_CPU_INFO = "CPU Info";
         this.TITLE_TRAFFIC_DETAILS = "Traffic Details";
+        this.TITLE_TRAFFIC_STATISTICS = "Traffic Statistics";
         this.TITLE_PORT_DISTRIBUTION = "Port Distribution";
 
         this.X_AXIS_TITLE_PORT = "Port";

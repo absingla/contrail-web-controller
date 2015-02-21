@@ -24,7 +24,6 @@ define([
             };
 
             cowu.renderView4Config(that.$el, null, getInstanceListViewConfig(instanceRemoteConfig));
-
         }
     });
 
