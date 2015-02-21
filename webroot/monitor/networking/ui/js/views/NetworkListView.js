@@ -15,7 +15,7 @@ define([
                 projectFQN = viewConfig['projectFQN'];
 
             var networkRemoteConfig = {
-                url: projectFQN != null ? ctwc.get(ctwc.URL_PROJECT_NETWORKS, projectFQN) : ctwc.URL_NETWORKS,
+                url: projectFQN != null ? ctwc.get(ctwc.URL_PROJECT_NETWORKS, projectFQN) : ctwc.URL_NETWORKS_DETAILS,
                 type: 'POST',
                 data: JSON.stringify({
                     data: [{

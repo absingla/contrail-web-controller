@@ -16,7 +16,7 @@ define([
                 parentType = viewConfig['parentType'];
 
             var instanceRemoteConfig = {
-                url: parentUUID != null ? ctwc.get(ctwc.URL_PROJECT_INSTANCES, parentUUID, parentType) : ctwc.URL_INSTANCES,
+                url: parentUUID != null ? ctwc.get(ctwc.URL_PROJECT_INSTANCES_DETAILS, parentUUID, parentType) : ctwc.URL_INSTANCES,
                 type: 'POST',
                 data: JSON.stringify({
                     data: [{"type": ctwc.TYPE_VIRTUAL_MACHINE, "cfilt": ctwc.FILTERS_COLUMN_VM.join(',')}]

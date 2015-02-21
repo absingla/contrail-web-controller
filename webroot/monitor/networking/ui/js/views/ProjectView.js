@@ -47,11 +47,13 @@ define([
                                         {
                                             elementId: ctwl.PROJECT_PORT_DIST_ID,
                                             title: ctwl.TITLE_PORT_DISTRIBUTION,
-                                            view: "ChartView",
+                                            view: "ScatterChartView",
                                             viewConfig: {
-                                                class: ctwl.PROJECT_PORT_DIST_CHART_ID,
-                                                url: ctwc.get(ctwc.URL_PORT_DISTRIBUTION, projectFQN),
-                                                renderFn: 'initScatterChart',
+                                                class: "port-distribution-chart",
+                                                ajaxConfig: {
+                                                    url: ctwc.get(ctwc.URL_PORT_DISTRIBUTION, projectFQN),
+                                                    type: 'GET'
+                                                },
                                                 parseFn: function (response) {
                                                     var retObj = {
                                                         d: [{
