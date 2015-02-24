@@ -23,11 +23,14 @@ define([
                 })
             };
 
-            cowu.renderView4Config(that.$el, null, getInstanceListViewConfig(instanceRemoteConfig));
+            // TODO: Handle multi-tenancy
+            var ucid = (parentUUID != null) ? (parentUUID + ":" + 'virtual-machines') : "default-domain:virtual-machines";
+
+            cowu.renderView4Config(that.$el, null, getInstanceListViewConfig(instanceRemoteConfig, ucid));
         }
     });
 
-    var getInstanceListViewConfig = function (instanceRemoteConfig) {
+    var getInstanceListViewConfig = function (instanceRemoteConfig, ucid) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_LIST_VIEW_ID]),
             view: "SectionView",
@@ -40,7 +43,7 @@ define([
                                 title: ctwl.TITLE_INSTANCES,
                                 view: "GridView",
                                 viewConfig: {
-                                    elementConfig: getProjectInstancesConfig(instanceRemoteConfig)
+                                    elementConfig: getProjectInstancesConfig(instanceRemoteConfig, ucid)
                                 }
                             }
                         ]
@@ -50,7 +53,7 @@ define([
         }
     };
 
-    var getProjectInstancesConfig = function (instanceRemoteConfig) {
+    var getProjectInstancesConfig = function (instanceRemoteConfig, ucid) {
         var gridElementConfig = {
             header: {
                 title: {
@@ -76,7 +79,14 @@ define([
                         ajaxConfig: instanceRemoteConfig,
                         dataParser: instanceDataParser
                     },
-                    lazyRemote: getLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
+                    lazyRemote: getLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE),
+                    getDataFromCache: function (ucid) {
+                        return mnPageLoader.mnView.listCache[ucid];
+                    },
+                    setData2Cache: function (ucid, dataObject) {
+                        mnPageLoader.mnView.listCache[ucid] = {time: $.now(), dataObject: dataObject};
+                    },
+                    ucid: ucid
                 }
             },
             columnHeader: {
@@ -110,9 +120,9 @@ define([
                     }
                     return lazyAjaxConfig;
                 },
-                successCallback: function (response, contrailDataView) {
+                successCallback: function (response, contrailListModel) {
                     var statDataList = tenantNetworkMonitorUtils.statsOracleParseFn(response[0], type),
-                        dataItems = contrailDataView.getItems(),
+                        dataItems = contrailListModel.getItems(),
                         statData;
 
                     for (var j = 0; j < statDataList.length; j++) {
@@ -126,7 +136,7 @@ define([
                             }
                         }
                     }
-                    contrailDataView.updateData(dataItems);
+                    contrailListModel.updateData(dataItems);
                 }
             }
         ];

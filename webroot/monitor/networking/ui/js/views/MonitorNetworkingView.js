@@ -8,8 +8,9 @@ define([
 ], function (_, Backbone) {
     var MonitorNetworkingView = Backbone.View.extend({
         el: $(contentContainer),
-
         graphCache: {},
+        chartCache: {},
+        listCache: {},
 
         renderProject: function (viewConfig) {
             var self = this, domain = cowc.DEFAULT_DOMAIN,
@@ -233,7 +234,7 @@ define([
                                 viewConfig: {
                                     class: "port-distribution-chart",
                                     ajaxConfig: {
-                                        url: ctwc.get(ctwc.URL_NETWORKS_DETAILS),
+                                        url: ctwc.get(ctwc.URL_ALL_NETWORKS_DETAILS),
                                         type: "POST"
                                     },
                                     chartConfig: {
@@ -307,7 +308,7 @@ define([
                 }
             },
             fqName: fqName,
-            uniqueKey: fqName + keySuffix,
+            ucid: fqName + keySuffix,
             focusedElement: focusedElement
         };
 

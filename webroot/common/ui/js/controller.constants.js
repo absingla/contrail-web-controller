@@ -14,7 +14,7 @@ define([
         this.URL_NETWORK_CONNECTED_GRAPH = '/api/tenant/monitoring/network-connected-graph?fqName={0}';
         this.URL_NETWORK_CONFIG_GRAPH = '/api/tenant/monitoring/network-config-graph?fqName={0}';
         this.URL_NETWORK_SUMMARY = 'api/tenant/networking/virtual-network/summary?fqNameRegExp={0}'
-        this.URL_NETWORKS_DETAILS = '/api/tenant/networking/virtual-networks/details?count=25';
+        this.URL_ALL_NETWORKS_DETAILS = '/api/tenant/networking/virtual-networks/details';
 
         this.URL_NETWORKS_DETAILS = '/api/tenant/networking/virtual-networks/details?count=25';
         this.URL_NETWORK_TRAFFIC_STATS = '/api/tenant/networking/flow-series/vn?minsSince={0}&fqName={1}&sampleCnt={2}&useServerTime=true';
