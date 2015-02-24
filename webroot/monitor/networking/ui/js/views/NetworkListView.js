@@ -137,67 +137,134 @@ define([
 
     function getDetailsTemplateConfig() {
         return {
-            templateGenerator: 'ColumnSectionTemplateGenerator',
+            templateGenerator: 'RowSectionTemplateGenerator',
             templateGeneratorConfig: {
-                columns: [
+                rows: [
                     {
-                        class: 'span6',
-                        rows: [
-                            {
-                                templateGenerator: 'BlockListTemplateGenerator',
-                                title: ctwl.TITLE_NETWORK_DETAILS,
-                                templateGeneratorConfig: [
-                                    {
-                                        key: 'value.UveVirtualNetworkConfig.connected_networks',
-                                        valueType: 'text'
-                                    },
-
-                                    {
-                                        key: 'value.UveVirtualNetworkAgent.acl',
-                                        valueType: 'text'
-                                    },
-                                    {
-                                        key: 'value.UveVirtualNetworkAgent.total_acl_rules',
-                                        valueType: 'text'
-                                    },
-                                    {
-                                        key: 'value.UveVirtualNetworkAgent.interface_list',
-                                        valueType: 'length'
-                                    },
-                                    {
-                                        key: 'value.UveVirtualNetworkAgent.virtualmachine_list',
-                                        valueType: 'text'
-                                    }
-                                ]
-                            }
-                        ]
+                        templateGenerator: 'ColumnSectionTemplateGenerator',
+                        templateGeneratorConfig: {
+                            columns: [
+                                {
+                                    class: 'span6',
+                                    rows: [
+                                        {
+                                            title: ctwl.TITLE_NETWORK_DETAILS,
+                                            templateGenerator: 'BlockListTemplateGenerator',
+                                            templateGeneratorConfig: [
+                                                {
+                                                    key: 'value.UveVirtualNetworkConfig.connected_networks',
+                                                    templateGenerator: 'LinkGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'link',
+                                                        template: ctwc.URL_NETWORK,
+                                                        params: {
+                                                            fqName: 'value.UveVirtualNetworkConfig.connected_networks'
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    key: 'value.UveVirtualNetworkAgent.acl',
+                                                    templateGenerator: 'TextGenerator'
+                                                },
+                                                {
+                                                    key: 'value.UveVirtualNetworkAgent.total_acl_rules',
+                                                    templateGenerator: 'TextGenerator'
+                                                },
+                                                {
+                                                    key: 'value.UveVirtualNetworkAgent.interface_list',
+                                                    templateGenerator: 'TextGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'length'
+                                                    }
+                                                },
+                                                {
+                                                    key: 'value.UveVirtualNetworkAgent.virtualmachine_list',
+                                                    templateGenerator: 'LinkGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'link',
+                                                        template: ctwc.URL_INSTANCE,
+                                                        params: {
+                                                            vn: 'name'
+                                                        }
+                                                   }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    class: 'span6',
+                                    rows: [
+                                        {
+                                            title: ctwl.TITLE_TRAFFIC_DETAILS,
+                                            templateGenerator: 'BlockListTemplateGenerator',
+                                            templateGeneratorConfig: [
+                                                {
+                                                    key: 'value.UveVirtualNetworkAgent.ingress_flow_count',
+                                                    templateGenerator: 'TextGenerator'
+                                                },
+                                                {
+                                                    key: 'value.UveVirtualNetworkAgent.egress_flow_count',
+                                                    templateGenerator: 'TextGenerator'
+                                                },
+                                                {
+                                                    key: 'value.UveVirtualNetworkAgent.in_bytes',
+                                                    templateGenerator: 'TextGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'file-size-from-byte'
+                                                    }
+                                                },
+                                                {
+                                                    key: 'value.UveVirtualNetworkAgent.out_bytes',
+                                                    templateGenerator: 'TextGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'file-size-from-byte'
+                                                    }
+                                                },
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
                     },
                     {
-                        class: 'span6',
-                        rows: [
-                            {
-                                templateGenerator: 'BlockListTemplateGenerator',
-                                title: ctwl.TITLE_TRAFFIC_DETAILS,
-                                templateGeneratorConfig: [
-                                    {
-                                        key: 'value.UveVirtualNetworkAgent.ingress_flow_count',
-                                        valueType: 'text'
-                                    },
-                                    {
-                                        key: 'value.UveVirtualNetworkAgent.egress_flow_count',
-                                        valueType: 'text'
-                                    },
-                                    {
-                                        key: 'value.UveVirtualNetworkAgent.in_bytes',
-                                        valueType: 'format-bytes'
-                                    },
-                                    {
-                                        key: 'value.UveVirtualNetworkAgent.out_bytes',
-                                        valueType: 'format-bytes'
-                                    },
-                                ]
-                            }
-                        ]
+                        templateGenerator: 'ColumnSectionTemplateGenerator',
+                        templateGeneratorConfig: {
+                            columns: [
+                                {
+                                    class: 'span12',
+                                    rows: [
+                                        {
+                                            title: ctwl.TITLE_VRF_STATS,
+                                            key: 'value.UveVirtualNetworkAgent.vrf_stats_list',
+                                            templateGenerator: 'BlockGridTemplateGenerator',
+                                            templateGeneratorConfig: {
+                                                titleColumn: {
+                                                    key: 'name',
+                                                    templateGenerator: 'TextGenerator'
+                                                },
+                                                dataColumn: [
+                                                    {
+                                                        key: 'name',
+                                                        templateGenerator: 'TextGenerator'
+                                                    },
+                                                    {
+                                                        key: 'encaps',
+                                                        templateGenerator: 'TextGenerator'
+                                                    },
+                                                    {
+                                                        key: 'l2_encaps',
+                                                        templateGenerator: 'TextGenerator'
+                                                    }
+
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
                     }
                 ]
             }

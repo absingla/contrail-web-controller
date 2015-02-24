@@ -145,16 +145,16 @@ define([
                                     class: 'span6',
                                     rows: [
                                         {
-                                            templateGenerator: 'BlockListTemplateGenerator',
                                             title: ctwl.TITLE_INSTANCE_DETAILS,
+                                            templateGenerator: 'BlockListTemplateGenerator',
                                             templateGeneratorConfig: [
                                                 {
                                                     key: 'name',
-                                                    valueType: 'text'
+                                                    templateGenerator: 'TextGenerator'
                                                 },
                                                 {
                                                     key: 'vRouter',
-                                                    valueType: 'text'
+                                                    templateGenerator: 'TextGenerator'
                                                 }
                                             ]
                                         }
@@ -164,22 +164,26 @@ define([
                                     class: 'span6',
                                     rows: [
                                         {
-                                            templateGenerator: 'BlockListTemplateGenerator',
                                             title: ctwl.TITLE_CPU_INFO,
+                                            templateGenerator: 'BlockListTemplateGenerator',
                                             templateGeneratorConfig: [
                                                 {
                                                     key: 'value.UveVirtualMachineAgent.cpu_info.cpu_one_min_avg',
-                                                    valueType: 'text'
+                                                    templateGenerator: 'TextGenerator'
                                                 },
                                                 {
                                                     key: 'value.UveVirtualMachineAgent.cpu_info.rss',
-                                                    valueType: 'format-bytes',
-                                                    valueFormat: 'kByte'
+                                                    templateGenerator: 'TextGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'kilo-byte'
+                                                    }
                                                 },
                                                 {
                                                     key: 'value.UveVirtualMachineAgent.cpu_info.vm_memory_quota',
-                                                    valueType: 'format-bytes',
-                                                    valueFormat: 'kByte'
+                                                    templateGenerator: 'TextGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'kilo-byte'
+                                                    }
                                                 }
                                             ]
                                         }
@@ -202,40 +206,40 @@ define([
                                             templateGeneratorConfig: {
                                                 titleColumn: {
                                                     key: 'uuid',
-                                                    valueType: 'text'
+                                                    templateGenerator: 'TextGenerator'
                                                 },
                                                 dataColumn: [
                                                     {
                                                         key: 'uuid',
-                                                        valueType: 'text'
+                                                        templateGenerator: 'TextGenerator'
                                                     },
                                                     {
                                                         key: 'mac_address',
-                                                        valueType: 'text'
+                                                        templateGenerator: 'TextGenerator'
                                                     },
                                                     {
                                                         key: 'ip_address',
-                                                        valueType: 'text'
+                                                        templateGenerator: 'TextGenerator'
                                                     },
                                                     {
                                                         key: 'ip6_address',
-                                                        valueType: 'text'
+                                                        templateGenerator: 'TextGenerator'
                                                     },
                                                     {
                                                         key: 'label',
-                                                        valueType: 'text'
+                                                        templateGenerator: 'TextGenerator'
                                                     },
                                                     {
                                                         key: 'Gateway',
-                                                        valueType: 'text'
+                                                        templateGenerator: 'TextGenerator'
                                                     },
                                                     {
                                                         key: 'active',
-                                                        valueType: 'text'
+                                                        templateGenerator: 'TextGenerator'
                                                     },
                                                     {
                                                         key: 'l2_active',
-                                                        valueType: 'text'
+                                                        templateGenerator: 'TextGenerator'
                                                     }
                                                 ]
                                             }
