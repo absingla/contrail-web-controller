@@ -106,14 +106,14 @@ define([
                                                     key: 'value.UveVirtualMachineAgent.cpu_info.rss',
                                                     templateGenerator: 'TextGenerator',
                                                     templateGeneratorConfig: {
-                                                        format: 'kilo-byte'
+                                                        formatter: 'kilo-byte'
                                                     }
                                                 },
                                                 {
                                                     key: 'value.UveVirtualMachineAgent.cpu_info.vm_memory_quota',
                                                     templateGenerator: 'TextGenerator',
                                                     templateGeneratorConfig: {
-                                                        format: 'kilo-byte'
+                                                        formatter: 'kilo-byte'
                                                     }
                                                 }
                                             ]

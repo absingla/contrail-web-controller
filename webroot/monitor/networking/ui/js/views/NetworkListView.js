@@ -155,7 +155,6 @@ define([
                                                     key: 'value.UveVirtualNetworkConfig.connected_networks',
                                                     templateGenerator: 'LinkGenerator',
                                                     templateGeneratorConfig: {
-                                                        formatter: 'link',
                                                         template: ctwc.URL_NETWORK,
                                                         params: {
                                                             fqName: 'value.UveVirtualNetworkConfig.connected_networks'
@@ -211,14 +210,14 @@ define([
                                                     key: 'value.UveVirtualNetworkAgent.in_bytes',
                                                     templateGenerator: 'TextGenerator',
                                                     templateGeneratorConfig: {
-                                                        formatter: 'file-size-from-byte'
+                                                        formatter: 'byte'
                                                     }
                                                 },
                                                 {
                                                     key: 'value.UveVirtualNetworkAgent.out_bytes',
                                                     templateGenerator: 'TextGenerator',
                                                     templateGeneratorConfig: {
-                                                        formatter: 'file-size-from-byte'
+                                                        formatter: 'byte'
                                                     }
                                                 },
                                             ]
