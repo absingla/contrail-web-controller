@@ -9,9 +9,9 @@ define([
     'monitor/networking/ui/js/views/NetworkView',
     'monitor/networking/ui/js/views/NetworkListView',
     'monitor/networking/ui/js/views/InstanceView',
-    'monitor/networking/ui/js/views/InstanceListView'
-
-], function (_, NetworkingGraphView, ProjectView, NetworkView, NetworkListView, InstanceView, InstanceListView) {
+    'monitor/networking/ui/js/views/InstanceListView',
+    'monitor/networking/ui/js/views/ProjectListView'
+], function (_, NetworkingGraphView, ProjectView, NetworkView, NetworkListView, InstanceView, InstanceListView, ProjectListView) {
     var CTUtils = function () {
         var self = this;
 
@@ -81,6 +81,11 @@ define([
 
                 case "InstanceListView":
                     elementView = new InstanceListView({ el: parentElement, model: model, attributes: viewAttributes });
+                    elementView.render();
+                    break;
+
+                case "ProjectListView":
+                    elementView = new ProjectListView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
             }

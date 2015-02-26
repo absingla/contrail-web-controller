@@ -9,13 +9,10 @@ define([
     'controller-labels',
     'controller-utils',
     'controller-messages'
-], function (_, Constants, GridConfig, Labels, CTUtils, Messages) {
+], function (_, Constants, GridConfig, Labels, Utils, Messages) {
     ctwc = new Constants();
     ctwl = new Labels();
-    ctwu = new CTUtils;
+    ctwu = new Utils;
     ctwm = new Messages();
     ctwgc = new GridConfig();
-    initCTWebCache();
 });
-
-function initCTWebCache() {};

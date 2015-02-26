@@ -12,6 +12,10 @@ define([
         chartCache: {},
         listCache: {},
 
+        renderProjectList: function () {
+            cowu.renderView4Config(this.$el, null, getProjectListConfig());
+        },
+
         renderProject: function (viewConfig) {
             var self = this, domain = cowc.DEFAULT_DOMAIN,
                 projectFQN = (contrail.checkIfExist(viewConfig.hashParams.fqName)) ? viewConfig.hashParams.fqName : null,
@@ -21,10 +25,11 @@ define([
             renderProjectDropdown(domain, projectFQN, projectUUID, function (projectFQN, projectUUID) {
                 _ignoreOnHashChange = true;
                 layoutHandler.setURLHashObj({
-                    p: 'mon_net_projects-beta',
+                    p: 'mon_net_project-beta',
                     q: {
                         fqName: projectFQN,
-                        uuid: projectUUID
+                        uuid: projectUUID,
+                        view:'details'
                     }
                 });
                 self.renderProjectCB(projectFQN, projectUUID);
@@ -219,6 +224,70 @@ define([
         }
     };
 
+    var getProjectListConfig = function () {
+        return {
+            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_LIST_ID]),
+            view: "SectionView",
+            viewConfig: {
+                rows: [
+                    {
+                        columns: [
+                            {
+                                elementId: ctwl.PROJECTS_SCATTER_CHART_ID,
+                                title: ctwl.TITLE_PROJECTS,
+                                view: "ScatterChartView",
+                                viewConfig: {
+                                    class: "port-distribution-chart",
+                                    ajaxConfig: {
+                                        url: ctwc.get(ctwc.URL_ALL_NETWORKS_DETAILS),
+                                        type: "POST"
+                                    },
+                                    chartConfig: {
+
+                                    },
+                                    parseFn: function (response) {
+                                        return {
+                                            d: [{key: 'Projects', values: networksScatterChartDataParser(response['data']['value'])}],
+                                            xLbl: 'Interfaces',
+                                            yLbl: 'Networks',
+                                            forceX: [0, 5],
+                                            forceY: [0, 10],
+                                            link: {
+                                                hashParams: {
+                                                    q: {
+                                                        view: 'list',
+                                                        type: 'project',
+                                                        fqName: 'default:domain',
+                                                        context: 'domain',
+                                                        source: 'uve'
+                                                    }
+                                                },
+                                                conf: {p: 'mon_net_project', merge: false}
+                                            },
+                                            chartOptions: {tooltipFn: tenantNetworkMonitor.projectTooltipFn},
+                                            hideLoadingIcon: false
+                                        }
+                                    }
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        columns: [
+                            {
+                                elementId: ctwl.PROJECTS_ID,
+                                title: ctwl.TITLE_PROJECTS,
+                                view: "ProjectListView",
+                                app: cowc.APP_CONTRAIL_CONTROLLER,
+                                viewConfig: {parentType: 'domain'}
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    };
+
     var getNetworkListConfig = function () {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_LIST_ID]),
@@ -268,7 +337,7 @@ define([
                                 title: ctwl.TITLE_NETWORKS,
                                 view: "NetworkListView",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {projectFQN: null, parentType: 'domain'}
+                                viewConfig: {projectFQN: null, parentType: 'project'}
                             }
                         ]
                     }
@@ -308,15 +377,16 @@ define([
                 }
             },
             fqName: fqName,
-            ucid: fqName + keySuffix,
+            cacheConfig: {
+                ucid: fqName + keySuffix
+            },
             focusedElement: focusedElement
         };
 
     }
 
     function networksScatterChartDataParser(vnList) {
-        var chartData = [],
-            vnObject;
+        var chartData = [];
 
         $.each(vnList, function (idx, d) {
             var vnObject = {};

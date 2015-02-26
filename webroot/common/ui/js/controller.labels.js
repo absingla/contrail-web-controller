@@ -77,6 +77,7 @@ define([
         this.MONITOR_PROJECT_LIST_ID = "monitor-project-list";
         this.MONITOR_PROJECT_ID = "monitor-project";
         this.MONITOR_PROJECT_VIEW_ID = "monitor-project-view";
+        this.MONITOR_PROJECT_LIST_VIEW_ID = "monitor-project-list-view";
         this.MONITOR_NETWORK_LIST_ID = "monitor-network-list";
         this.MONITOR_NETWORK_LIST_VIEW_ID = "monitor-network-list-view";
         this.MONITOR_NETWORK_ID = "monitor-network";
@@ -87,15 +88,19 @@ define([
         this.MONITOR_INSTANCE_VIEW_ID = "monitor-instance-view";
 
         this.TITLE_PROJECTS = "Projects";
+        this.PROJECTS_ID = "projects";
+        this.TITLE_PROJECTS_SUMMARY = "Projects Summary";
         this.PROJECT_GRAPH_ID = "project-graph";
         this.PROJECT_DETAILS_ID = "project-details";
         this.PROJECT_TABS_ID = "project-tabs";
-        this.PROJECT_PORT_DIST_ID = "project-port-distribution";
+        this.PROJECT_INSTANCE_GRID_ID = "project-instance-grid";
+        this.PROJECTS_GRID_ID = "projects-grid";
         this.PROJECT_PORTS_SCATTER_CHART_ID = "project-ports-scatter-chart";
         this.PROJECT_NETWORKS_ID = "project-networks";
         this.PROJECT_NETWORK_GRID_ID = "project-network-grid";
         this.PROJECT_INSTANCES_ID = "project-instances";
         this.PROJECT_INSTANCE_GRID_ID = "project-instance-grid";
+        this.PROJECTS_SCATTER_CHART_ID = "projects-scatter-chart";
 
         this.NETWORK_GRAPH_ID = "network-graph";
         this.NETWORKS_SCATTER_CHART_ID = "networks-scatter-chart";

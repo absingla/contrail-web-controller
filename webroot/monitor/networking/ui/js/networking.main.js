@@ -29,7 +29,7 @@ function MonitorNetworkingLoader() {
                 if (hashParams.view == "details") {
                     this.mnView.renderProject({hashParams: hashParams});
                 } else {
-                    this.mnView.renderProject({hashParams: hashParams});
+                    this.mnView.renderProjectList({hashParams: hashParams});
                 }
                 break;
 

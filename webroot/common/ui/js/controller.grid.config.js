@@ -127,6 +127,43 @@ define([
                 minWidth: 200
             }
         ];
+
+        this.projectsColumns = [
+            {
+                field: 'name',
+                name: 'Project',
+                formatter: function (r, c, v, cd, dc) {
+                    return cellTemplateLinks({cellText: 'name', tooltip: true, name: 'project', rowData: dc});
+                },
+                minWidth: 200,
+                searchable: true,
+                events: {
+                    onClick: onClickGridLink
+                },
+                cssClass: 'cell-hyperlink-blue'
+            },
+            {
+                field: 'vnCnt',
+                name: 'Networks',
+                minWidth: 200
+            },
+            {
+                field: 'inBytes',
+                name: 'Traffic In/Out (Last 1 hr)',
+                minWidth: 200,
+                formatter: function (r, c, v, cd, dc) {
+                    return contrail.format("{0} / {1}", formatBytes(dc['inBytes']), formatBytes(dc['outBytes']));
+                }
+            },
+            {
+                field: 'outBytes',
+                name: 'Throughput In/Out',
+                minWidth: 200,
+                formatter: function (r, c, v, cd, dc) {
+                    return contrail.format("{0} / {1}", formatThroughput(dc['inThroughput']), formatThroughput(dc['outThroughput']));
+                }
+            }
+        ];
     };
 
     return CTGridConfig;

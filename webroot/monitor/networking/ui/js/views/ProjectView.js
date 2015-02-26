@@ -45,7 +45,7 @@ define([
                                     },
                                     tabs: [
                                         {
-                                            elementId: ctwl.PROJECT_PORT_DIST_ID,
+                                            elementId: ctwl.PROJECT_PORTS_SCATTER_CHART_ID,
                                             title: ctwl.TITLE_PORT_DISTRIBUTION,
                                             view: "ScatterChartView",
                                             viewConfig: {

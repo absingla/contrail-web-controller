@@ -83,13 +83,15 @@ define([
                         dataParser: networkDataParser
                     },
                     lazyRemote: getLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK),
-                    getDataFromCache: function (ucid) {
-                        return mnPageLoader.mnView.listCache[ucid];
-                    },
-                    setData2Cache: function (ucid, dataObject) {
-                        mnPageLoader.mnView.listCache[ucid] = {time: $.now(), dataObject: dataObject};
-                    },
-                    ucid: ucid
+                    cacheConfig: {
+                        getDataFromCache: function (ucid) {
+                            return mnPageLoader.mnView.listCache[ucid];
+                        },
+                        setData2Cache: function (ucid, dataObject) {
+                            mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
+                        },
+                        ucid: ucid
+                    }
                 }
             },
             columnHeader: {
