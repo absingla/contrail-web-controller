@@ -81,8 +81,8 @@ define([
             return retArr;
         };
 
-        this.projectNetworksDataParser = function (projectModel, networkModel) {
-            var projectItems = projectModel.getItems(), vnList = networkModel.getItems(),
+        this.projectNetworksDataParser = function (projectModelList, networkModel) {
+            var projectItems = projectModelList[0].getItems(), vnList = networkModel.getItems(),
                 projectMap = {}, inBytes = 0, outBytes = 0, projNameList = [];
 
             var defProjObj = {
@@ -128,7 +128,7 @@ define([
                 }
             });
 
-            projectItems = projectModel.getItems();
+            projectItems = projectModelList[0].getItems();
 
             $.each(projectItems, function(key, project) {
                 var projectName = project['name'],
@@ -142,7 +142,10 @@ define([
                     });
                 }
             });
-            projectModel.updateData(projectItems);
+
+            for(var i = 0; i < projectModelList.length; i++) {
+                projectModelList[i].updateData(projectItems);
+            }
         };
 
         this.instanceDataParser = function(response) {
