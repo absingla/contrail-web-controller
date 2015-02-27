@@ -256,6 +256,93 @@ define([
                 }
             ];
         }
+
+        this.projectFlowsColumns = [
+            {
+                field: 'destvn',
+                name: 'Destination VN',
+                minWidth: 215,
+                searchFn: function (d) {
+                    return d['destvn'];
+                },
+                searchable: true
+            },
+            {
+                field: 'sourceip',
+                name: 'Source IP',
+                minWidth: 100,
+                searchFn: function (d) {
+                    return d['sourceip'];
+                },
+                searchable: true
+            },
+            {
+                field: 'destip',
+                name: 'Destination IP',
+                minWidth: 100,
+                searchFn: function (d) {
+                    return d['destip'];
+                },
+                searchable: true
+            },
+            {
+                field: 'protocol',
+                name: 'Protocol',
+                formatter:function(r,c,v,cd,dc){
+                    return getProtocolName(dc['protocol']);
+                },
+                minWidth: 60,
+                searchFn: function (d) {
+                    return d['protocol'];
+                },
+                searchable: true
+            },
+            {
+                field: 'sport',
+                name: 'Source Port',
+                minWidth: 80,
+                searchFn: function (d) {
+                    return d['sport'];
+                },
+                searchable: true
+            },
+            {
+                field: 'dport',
+                name: 'Destination Port',
+                minWidth: 110,
+                searchFn: function (d) {
+                    return d['dport'];
+                },
+                searchable: true
+            },
+            {
+                field: 'sum_bytes',
+                name: 'Sum(Bytes)',
+                minWidth: 80,
+                searchFn: function (d) {
+                    return d['sum_bytes'];
+                },
+                searchable: true
+            },
+            {
+                field: 'sum_packets',
+                name: 'Sum(Packets)',
+                minWidth: 90,
+                searchFn: function (d) {
+                    return d['sum_packets'];
+                },
+                searchable: true
+            },
+            {
+                field: 'flow_count',
+                name: 'Flow Count',
+                minWidth: 90,
+                searchFn: function (d) {
+                    return d['flowcnt'];
+                },
+                searchable: true
+            }
+        ];
     };
 
     return CTGridConfig;

@@ -86,6 +86,8 @@ define([
         this.MONITOR_INSTANCE_LIST_VIEW_ID = "monitor-instance-list-view";
         this.MONITOR_INSTANCE_ID = "monitor-instance";
         this.MONITOR_INSTANCE_VIEW_ID = "monitor-instance-view";
+        this.MONITOR_FLOW_LIST_ID = "monitor-flow-list";
+        this.MONITOR_FLOW_LIST_VIEW_ID = "monitor-flow-list-view";
 
         this.TITLE_PROJECTS = "Projects";
         this.PROJECTS_ID = "projects";
@@ -101,6 +103,7 @@ define([
         this.PROJECT_INSTANCES_ID = "project-instances";
         this.PROJECT_INSTANCE_GRID_ID = "project-instance-grid";
         this.PROJECTS_SCATTER_CHART_ID = "projects-scatter-chart";
+        this.PROJECT_FLOW_GRID_ID = "project-flow-grid";
 
         this.NETWORK_GRAPH_ID = "network-graph";
         this.NETWORKS_SCATTER_CHART_ID = "networks-scatter-chart";
@@ -114,6 +117,9 @@ define([
         this.INSTANCE_TABS_ID = "instance-tabs";
         this.INSTANCE_DETAILS_ID = "instance-details";
 
+        this.FLOWS_SCATTER_CHART_ID = "flows-scatter-chart";
+        this.FLOWS_GRID_ID = "flows-grid";
+
         this.TITLE_NETWORKS = "Networks";
         this.TITLE_NETWORKS_SUMMARY = "Networks Summary";
         this.TITLE_NETWORK_DETAILS = "Network Details";
@@ -121,6 +127,9 @@ define([
         this.TITLE_INSTANCES = "Instances";
         this.TITLE_INSTANCES_SUMMARY = "Instances Summary";
         this.TITLE_INSTANCE_DETAILS = "Instance Details";
+
+        this.TITLE_FLOWS= "Flows";
+        this.TITLE_FLOWS_SUMMARY = "Flows Summary";
 
         this.TITLE_DETAILS = "Details";
         this.TITLE_INTERFACES = "Interfaces";
@@ -132,6 +141,9 @@ define([
 
         this.X_AXIS_TITLE_PORT = "Port";
         this.Y_AXIS_TITLE_BW = "Bandwidth";
+
+        this.SOURCE_PORT = "Source Port";
+        this.DESTINATION_PORT = "Destination Port";
     };
     return CTLabels;
 });

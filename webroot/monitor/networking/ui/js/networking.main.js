@@ -34,11 +34,16 @@ function MonitorNetworkingLoader() {
                 break;
 
             case 'renderNetworks':
-                if (hashParams.view == "details") {
-
-                    this.mnView.renderNetwork({hashParams: hashParams});
-                } else {
-                    this.mnView.renderNetworkList({hashParams: hashParams});
+                if (hashParams.type == "network") {
+                    if (hashParams.view == "details") {
+                        this.mnView.renderNetwork({hashParams: hashParams});
+                    } else {
+                        this.mnView.renderNetworkList({hashParams: hashParams});
+                    }
+                } else if (hashParams.type == "flow"){
+                    if (hashParams.view == "list") {
+                        this.mnView.renderFlowList({hashParams: hashParams});
+                    }
                 }
                 break;
 
@@ -47,6 +52,12 @@ function MonitorNetworkingLoader() {
                     this.mnView.renderInstance({hashParams: hashParams});
                 } else {
                     this.mnView.renderInstanceList({hashParams: hashParams});
+                }
+                break;
+
+            case 'renderFlows':
+                if (hashParams.view == "list") {
+                    this.mnView.renderFlowList({hashParams: hashParams});
                 }
                 break;
         }
@@ -61,6 +72,8 @@ function MonitorNetworkingLoader() {
             renderFn = "renderProjects"
         } else if (hashObj.type == "instance"){
             renderFn = "renderInstances"
+        } else if (hashObj.type == "flow"){
+            renderFn = "renderFlows"
         }
         this.load({hashParams: hashObj, 'function': renderFn});
     };
