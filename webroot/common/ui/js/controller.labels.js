@@ -111,7 +111,8 @@ define([
         this.NETWORK_DETAILS_ID = "network-details";
         this.NETWORK_PORT_DIST_ID = "network-port-distribution";
         this.NETWORK_INSTANCES_ID = "network-instances";
-        this.NETWORK_TRAFFIC_STATS_ID = "network-traffic-stats";
+        this.NETWORK_TRAFFIC_STATS_ID = "network-traffic-stats"
+        this.NETWORK_PORT_HEAT_CHART_ID = "network-port-heat-chart";
 
         this.INSTANCE_GRAPH_ID = "instance-graph";
         this.INSTANCE_TABS_ID = "instance-tabs";
@@ -138,6 +139,7 @@ define([
         this.TITLE_TRAFFIC_DETAILS = "Traffic Details";
         this.TITLE_TRAFFIC_STATISTICS = "Traffic Statistics";
         this.TITLE_PORT_DISTRIBUTION = "Port Distribution";
+        this.TITLE_PORT_MAP = "Port Map";
 
         this.X_AXIS_TITLE_PORT = "Port";
         this.Y_AXIS_TITLE_BW = "Bandwidth";

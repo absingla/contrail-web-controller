@@ -156,6 +156,17 @@ define([
                                                     return retObj;
                                                 }
                                             }
+                                        },
+                                        {
+                                            elementId: ctwl.NETWORK_PORT_HEAT_CHART_ID,
+                                            title: ctwl.TITLE_PORT_MAP,
+                                            view: "HeatChartView",
+                                            viewConfig: {
+                                                ajaxConfig: {
+                                                    url: ctwc.get(ctwc.URL_NETWORK_SUMMARY, networkFQN),
+                                                    type: 'GET'
+                                                }
+                                            }
                                         }
                                     ]
                                 }
