@@ -323,46 +323,5 @@ define([
         return chartData;
     };
 
-    function parsePortMapData (data){
-        var response=data['res'];
-        var result={};
-        var value = 0;
-        var portMap = [0,0,0,0,0,0,0,0];
-
-        //If portmap received from multiple vRouters
-        if((response instanceof Array) && (response[0] instanceof Array)) {
-            $.each(response,function(idx,obj) {
-                for(var i=0;i<8;i++) {
-                    portMap[i] |= parseInt(obj[0][i]);
-                }
-            });
-        } else if(response instanceof Array)
-            portMap = response;
-        if(portMap != null) {
-            var strPortMap = [];
-            $.each(portMap,function(idx,value) {
-                strPortMap.push((get32binary(parseInt(value))).split("").reverse().join(""));
-            });
-        }
-        //To plot in 4 rows
-        var stringPortMap = [];
-        for(var i=0,j=0;j<4;i+=2,j++)
-            stringPortMap[j] = strPortMap[i] + strPortMap[i+1]
-        var chartData = [];
-        for(var i=0;i<64;i++) {
-            for(var j=0;j<4;j++) {
-                chartData.push({
-                    x:i,
-                    y:j,
-                    value:(response == null) ? 0 : parseInt(stringPortMap[j][i])
-                });
-            }
-        }
-        result['res'] = chartData;
-        result['type'] = data['type'];
-        result['pType'] = data['pType'];
-        return result;
-    }
-
     return NetworkView;
 });
