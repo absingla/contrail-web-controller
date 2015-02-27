@@ -45,11 +45,11 @@ define([
                 minWidth: 200
             },
             {
-                field: 'inBytes',
+                field: '',
                 name: 'Traffic In/Out (Last 1 Hr)',
                 minWidth: 200,
                 formatter: function (r, c, v, cd, dc) {
-                    return contrail.format("{0} / {1}", formatBytes(dc['inBytes']), formatBytes(dc['outBytes']));
+                    return contrail.format("{0} / {1}", formatBytes(dc['inBytes60']), formatBytes(dc['outBytes60']));
                 }
             },
             {
@@ -119,10 +119,10 @@ define([
                 minWidth: 200
             },
             {
-                field: 'inBytes',
+                field: '',
                 name: 'Traffic In/Out (Last 1 Hr)',
                 formatter: function (r, c, v, cd, dc) {
-                    return formatBytes(dc['inBytes']) + ' / ' + formatBytes(dc['outBytes']);
+                    return formatBytes(dc['inBytes60']) + ' / ' + formatBytes(dc['outBytes60']);
                 },
                 minWidth: 200
             }
@@ -148,15 +148,15 @@ define([
                 minWidth: 200
             },
             {
-                field: 'inBytes',
+                field: '',
                 name: 'Traffic In/Out (Last 1 hr)',
                 minWidth: 200,
                 formatter: function (r, c, v, cd, dc) {
-                    return contrail.format("{0} / {1}", formatBytes(dc['inBytes']), formatBytes(dc['outBytes']));
+                    return contrail.format("{0} / {1}", formatBytes(dc['inBytes60']), formatBytes(dc['outBytes60']));
                 }
             },
             {
-                field: 'outBytes',
+                field: '',
                 name: 'Throughput In/Out',
                 minWidth: 200,
                 formatter: function (r, c, v, cd, dc) {
@@ -164,6 +164,98 @@ define([
                 }
             }
         ];
+
+        this.getVNDetailsLazyRemoteConfig = function(type) {
+            return [
+                {
+                    getAjaxConfig: function (responseJSON) {
+                        var uuids, lazyAjaxConfig;
+
+                        uuids = $.map(responseJSON, function (item) {
+                            return item['name'];
+                        });
+
+                        lazyAjaxConfig = {
+                            url: ctwc.URL_VM_VN_STATS,
+                            type: 'POST',
+                            data: JSON.stringify({
+                                data: {
+                                    type: type,
+                                    uuids: uuids.join(','),
+                                    minSince: 60,
+                                    useServerTime: true
+                                }
+                            })
+                        }
+                        return lazyAjaxConfig;
+                    },
+                    successCallback: function (response, contrailListModel) {
+                        var statDataList = ctwp.statsOracleParseFn(response[0], type),
+                            dataItems = contrailListModel.getItems(),
+                            statData;
+
+                        for (var j = 0; j < statDataList.length; j++) {
+                            statData = statDataList[j];
+                            for (var i = 0; i < dataItems.length; i++) {
+                                var dataItem = dataItems[i];
+                                if (statData['name'] == dataItem['name']) {
+                                    dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
+                                    dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
+                                    break;
+                                }
+                            }
+                        }
+                        contrailListModel.updateData(dataItems);
+                    }
+                }
+            ];
+        };
+
+        this.getVMDetailsLazyRemoteConfig = function (type) {
+            return [
+                {
+                    getAjaxConfig: function (responseJSON) {
+                        var uuids, lazyAjaxConfig;
+
+                        uuids = $.map(responseJSON, function (item) {
+                            return item['name'];
+                        });
+
+                        lazyAjaxConfig = {
+                            url: ctwc.URL_VM_VN_STATS,
+                            type: 'POST',
+                            data: JSON.stringify({
+                                data: {
+                                    type: type,
+                                    uuids: uuids.join(','),
+                                    minSince: 60,
+                                    useServerTime: true
+                                }
+                            })
+                        }
+                        return lazyAjaxConfig;
+                    },
+                    successCallback: function (response, contrailListModel) {
+                        var statDataList = tenantNetworkMonitorUtils.statsOracleParseFn(response[0], type),
+                            dataItems = contrailListModel.getItems(),
+                            statData;
+
+                        for (var j = 0; j < statDataList.length; j++) {
+                            statData = statDataList[j];
+                            for (var i = 0; i < dataItems.length; i++) {
+                                var dataItem = dataItems[i];
+                                if (statData['name'] == dataItem['name']) {
+                                    dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
+                                    dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
+                                    break;
+                                }
+                            }
+                        }
+                        contrailListModel.updateData(dataItems);
+                    }
+                }
+            ];
+        }
     };
 
     return CTGridConfig;

@@ -80,9 +80,9 @@ define([
                 dataSource: {
                     remote: {
                         ajaxConfig: networkRemoteConfig,
-                        dataParser: networkDataParser
+                        dataParser: ctwp.networkDataParser
                     },
-                    lazyRemote: getLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK),
+                    lazyRemote: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK),
                     cacheConfig: {
                         getDataFromCache: function (ucid) {
                             return mnPageLoader.mnView.listCache[ucid];
@@ -101,51 +101,6 @@ define([
         return gridElementConfig;
     };
 
-    var getLazyRemoteConfig = function (type) {
-        return [
-            {
-                getAjaxConfig: function (responseJSON) {
-                    var uuids, lazyAjaxConfig;
-
-                    uuids = $.map(responseJSON, function (item) {
-                        return item['name'];
-                    });
-
-                    lazyAjaxConfig = {
-                        url: ctwc.URL_VM_VN_STATS,
-                        type: 'POST',
-                        data: JSON.stringify({
-                            data: {
-                                type: type,
-                                uuids: uuids.join(','),
-                                minSince: 60,
-                                useServerTime: true
-                            }
-                        })
-                    }
-                    return lazyAjaxConfig;
-                },
-                successCallback: function (response, contrailListModel) {
-                    var statDataList = tenantNetworkMonitorUtils.statsOracleParseFn(response[0], type),
-                        dataItems = contrailListModel.getItems(),
-                        statData;
-
-                    for (var j = 0; j < statDataList.length; j++) {
-                        statData = statDataList[j];
-                        for (var i = 0; i < dataItems.length; i++) {
-                            var dataItem = dataItems[i];
-                            if (statData['name'] == dataItem['name']) {
-                                dataItem['inBytes'] = ifNull(statData['inBytes'], 0);
-                                dataItem['outBytes'] = ifNull(statData['outBytes'], 0);
-                                break;
-                            }
-                        }
-                    }
-                    contrailListModel.updateData(dataItems);
-                }
-            }
-        ];
-    };
 
     function getDetailsTemplateConfig() {
         return {
@@ -282,30 +237,5 @@ define([
         };
     };
 
-    var networkDataParser = function(response) {
-        var retArr = $.map(ifNull(response['data']['value'], response), function (currObject) {
-            currObject['rawData'] = $.extend(true,{},currObject);
-            currObject['url'] = '/api/tenant/networking/virtual-network/summary?fqNameRegExp=' + currObject['name'];
-            currObject['outBytes'] = '-';
-            currObject['inBytes'] = '-';
-            var inBytes = 0,outBytes = 0;
-            var statsObj = getValueByJsonPath(currObject,'value;UveVirtualNetworkAgent;vn_stats;0;StatTable.UveVirtualNetworkAgent.vn_stats',[]);
-            for(var i = 0; i < statsObj.length; i++){
-                inBytes += ifNull(statsObj[i]['SUM(vn_stats.in_bytes)'],0);
-                outBytes += ifNull(statsObj[i]['SUM(vn_stats.out_bytes)'],0);
-            }
-            if(getValueByJsonPath(currObject,'value;UveVirtualNetworkAgent;vn_stats') != null) {
-                currObject['outBytes'] = outBytes;
-                currObject['inBytes'] = inBytes;
-            }
-            currObject['instCnt'] = ifNull(jsonPath(currObject, '$..virtualmachine_list')[0], []).length;
-            currObject['inThroughput'] = ifNull(jsonPath(currObject, '$..in_bandwidth_usage')[0], 0);
-            currObject['outThroughput'] = ifNull(jsonPath(currObject, '$..out_bandwidth_usage')[0], 0);
-            return currObject;
-        });
-        return retArr;
-    };
-
     return NetworkListView;
-})
-;
+});

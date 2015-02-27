@@ -230,7 +230,7 @@ define([
             view: "SectionView",
             viewConfig: {
                 rows: [
-                    {
+                    /*{
                         columns: [
                             {
                                 elementId: ctwl.PROJECTS_SCATTER_CHART_ID,
@@ -271,7 +271,7 @@ define([
                                 }
                             },
                         ]
-                    },
+                    },*/
                     {
                         columns: [
                             {

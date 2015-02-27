@@ -77,9 +77,9 @@ define([
                 dataSource: {
                     remote: {
                         ajaxConfig: instanceRemoteConfig,
-                        dataParser: instanceDataParser
+                        dataParser: ctwp.instanceDataParser
                     },
-                    lazyRemote: getLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE),
+                    lazyRemote: ctwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE),
                     cacheConfig : {
                         getDataFromCache: function (ucid) {
                             return mnPageLoader.mnView.listCache[ucid];
@@ -97,52 +97,6 @@ define([
         };
         return gridElementConfig;
     };
-
-    var getLazyRemoteConfig = function (type) {
-        return [
-            {
-                getAjaxConfig: function (responseJSON) {
-                    var uuids, lazyAjaxConfig;
-
-                    uuids = $.map(responseJSON, function (item) {
-                        return item['name'];
-                    });
-
-                    lazyAjaxConfig = {
-                        url: ctwc.URL_VM_VN_STATS,
-                        type: 'POST',
-                        data: JSON.stringify({
-                            data: {
-                                type: type,
-                                uuids: uuids.join(','),
-                                minSince: 60,
-                                useServerTime: true
-                            }
-                        })
-                    }
-                    return lazyAjaxConfig;
-                },
-                successCallback: function (response, contrailListModel) {
-                    var statDataList = tenantNetworkMonitorUtils.statsOracleParseFn(response[0], type),
-                        dataItems = contrailListModel.getItems(),
-                        statData;
-
-                    for (var j = 0; j < statDataList.length; j++) {
-                        statData = statDataList[j];
-                        for (var i = 0; i < dataItems.length; i++) {
-                            var dataItem = dataItems[i];
-                            if (statData['name'] == dataItem['name']) {
-                                dataItem['inBytes'] = ifNull(statData['inBytes'], 0);
-                                dataItem['outBytes'] = ifNull(statData['outBytes'], 0);
-                                break;
-                            }
-                        }
-                    }
-                    contrailListModel.updateData(dataItems);
-                }
-            }
-        ];
-    }
 
     var getDetailsTemplateConfig = function() {
         return {
@@ -265,62 +219,6 @@ define([
             }
         };
     };
-
-    var instanceDataParser = function(response) {
-        var retArr = $.map(ifNull(response['data']['value'],response), function (currObject, idx) {
-            var currObj = currObject['value'];
-            var intfStats = getValueByJsonPath(currObj,'VirtualMachineStats;if_stats;0;StatTable.VirtualMachineStats.if_stats',[]);
-            currObject['rawData'] = $.extend(true,{},currObj);
-            currObject['inBytes'] = '-';
-            currObject['outBytes'] = '-';
-            // If we append * wildcard stats info are not there in response,so we changed it to flat
-            currObject['url'] = '/api/tenant/networking/virtual-machine/summary?fqNameRegExp=' + currObject['name'] + '?flat';
-            currObject['vmName'] = ifNull(jsonPath(currObj, '$..vm_name')[0], '-');
-            var vRouter = getValueByJsonPath(currObj,'UveVirtualMachineAgent;vrouter');
-            currObject['vRouter'] = ifNull(tenantNetworkMonitorUtils.getDataBasedOnSource(vRouter), '-');
-            currObject['intfCnt'] = ifNull(jsonPath(currObj, '$..interface_list')[0], []).length;
-            currObject['vn'] = ifNull(jsonPath(currObj, '$..interface_list[*].virtual_network'),[]);
-            //Parse the VN only if it exists
-            if(currObject['vn'] != false) {
-                if(currObject['vn'].length != 0) {
-                    currObject['vnFQN'] = currObject['vn'][0];
-                }
-                currObject['vn'] = tenantNetworkMonitorUtils.formatVN(currObject['vn']);
-            }
-            currObject['ip'] = [];
-            var intfList = tenantNetworkMonitorUtils.getDataBasedOnSource(getValueByJsonPath(currObj,'UveVirtualMachineAgent;interface_list',[]));
-            for(var i = 0; i < intfList.length; i++ ) {
-                if(intfList[i]['ip6_active'] == true) {
-                    if(intfList[i]['ip_address'] != '0.0.0.0')
-                        currObject['ip'].push(intfList[i]['ip_address']);
-                    if(intfList[i]['ip6_address'] != null)
-                        currObject['ip'].push(intfList[i]['ip6_address']);
-                } else {
-                    if(intfList[i]['ip_address'] != '0.0.0.0')
-                        currObject['ip'].push(intfList[i]['ip_address']);
-                }
-            }
-            var fipStatsList = getValueByJsonPath(currObj,'UveVirtualMachineAgent:fip_stats_list');
-            var floatingIPs = ifNull(tenantNetworkMonitorUtils.getDataBasedOnSource(fipStatsList), []);
-            currObject['floatingIP'] = [];
-            if(getValueByJsonPath(currObj,'VirtualMachineStats;if_stats') != null) {
-                currObject['inBytes'] = 0;
-                currObject['outBytes'] = 0;
-            }
-            $.each(floatingIPs, function(idx, fipObj){
-                currObject['floatingIP'].push(contrail.format('{0}<br/> ({1}/{2})', fipObj['ip_address'],formatBytes(ifNull(fipObj['in_bytes'],'-')),
-                    formatBytes(ifNull(fipObj['out_bytes'],'-'))));
-            });
-            $.each(intfStats, function (idx, value) {
-                currObject['inBytes'] += ifNull(value['SUM(if_stats.in_bytes)'],0);
-            });
-            $.each(intfStats, function (idx, value) {
-                currObject['outBytes'] += ifNull(value['SUM(if_stats.out_bytes)'],0);
-            });
-            return currObject;
-        });
-        return retArr;
-    }
 
     return InstanceListView;
 })
