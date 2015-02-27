@@ -93,6 +93,15 @@ define([
             },
             columnHeader: {
                 columns: ctwgc.projectInstancesColumns
+            },
+            footer: {
+                pager: {
+                    options: {
+                        pageSize: 25,
+                        pageSizeSelect: [25, 50, 100]
+                    }
+
+                }
             }
         };
         return gridElementConfig;
