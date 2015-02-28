@@ -89,6 +89,8 @@ define([
         this.MONITOR_FLOW_LIST_ID = "monitor-flow-list";
         this.MONITOR_FLOW_LIST_VIEW_ID = "monitor-flow-list-view";
 
+        this.DOMAINS_BREADCRUMB_DROPDOWN = "domains-breadcrumb-dropdown";
+
         this.TITLE_PROJECTS = "Projects";
         this.PROJECTS_ID = "projects";
         this.TITLE_PROJECTS_SUMMARY = "Projects Summary";
@@ -104,6 +106,7 @@ define([
         this.PROJECT_INSTANCE_GRID_ID = "project-instance-grid";
         this.PROJECTS_SCATTER_CHART_ID = "projects-scatter-chart";
         this.PROJECT_FLOW_GRID_ID = "project-flow-grid";
+        this.PROJECTS_BREADCRUMB_DROPDOWN = "projects-breadcrumb-dropdown";
 
         this.NETWORK_GRAPH_ID = "network-graph";
         this.NETWORKS_SCATTER_CHART_ID = "networks-scatter-chart";
@@ -111,8 +114,9 @@ define([
         this.NETWORK_DETAILS_ID = "network-details";
         this.NETWORK_PORT_DIST_ID = "network-port-distribution";
         this.NETWORK_INSTANCES_ID = "network-instances";
-        this.NETWORK_TRAFFIC_STATS_ID = "network-traffic-stats"
+        this.NETWORK_TRAFFIC_STATS_ID = "network-traffic-stats";
         this.NETWORK_PORT_HEAT_CHART_ID = "network-port-heat-chart";
+        this.NETWORKS_BREADCRUMB_DROPDOWN = "networks-breadcrumb-dropdown";
 
         this.INSTANCE_GRAPH_ID = "instance-graph";
         this.INSTANCE_TABS_ID = "instance-tabs";

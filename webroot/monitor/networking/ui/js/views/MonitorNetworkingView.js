@@ -4,8 +4,9 @@
 
 define([
     'underscore',
-    'backbone'
-], function (_, Backbone) {
+    'backbone',
+    '/monitor/networking/ui/js/views/BreadcrumbView.js'
+], function (_, Backbone, BreadcrumbView) {
     var MonitorNetworkingView = Backbone.View.extend({
         el: $(contentContainer),
         graphCache: {},
@@ -17,26 +18,36 @@ define([
         },
 
         renderProject: function (viewConfig) {
-            var self = this, domain = cowc.DEFAULT_DOMAIN,
-                projectFQN = (contrail.checkIfExist(viewConfig.hashParams.fqName)) ? viewConfig.hashParams.fqName : null,
-                projectUUID = (contrail.checkIfExist(viewConfig.hashParams.uuid)) ? viewConfig.hashParams.uuid : null;
+            var self = this,
+                fqName = (contrail.checkIfExist(viewConfig.hashParams.fqName) ? viewConfig.hashParams.fqName : null),
+                breadcrumbView = new BreadcrumbView();
 
+            breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (selectedValueData) {
+                contrail.setCookie(cowc.COOKIE_DOMAIN, selectedValueData.name);
 
-            renderProjectDropdown(domain, projectFQN, projectUUID, function (projectFQN, projectUUID) {
-                _ignoreOnHashChange = true;
-                layoutHandler.setURLHashObj({
-                    p: 'mon_net_project-beta',
-                    q: {
-                        fqName: projectFQN,
-                        uuid: projectUUID,
-                        view:'details'
-                    }
+                breadcrumbView.renderProjectBreadcrumbDropdown(fqName, function (selectedValueData) {
+                    self.renderProjectCB(selectedValueData);
                 });
-                self.renderProjectCB(projectFQN, projectUUID);
             });
-        },
+       },
 
-        renderProjectCB: function (projectFQN, projectUUID) {
+        renderProjectCB: function (projectObj) {
+            var self = this,
+                domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
+                projectFQN = domain + ':' + projectObj.name,
+                projectUUID = projectObj.value;
+
+            contrail.setCookie('project', projectObj.name);
+
+            _ignoreOnHashChange = true;
+            layoutHandler.setURLHashObj({
+                p: 'mon_net_projects-beta',
+                q: {
+                    fqName: projectFQN,
+                    view:'details'
+                }
+            });
+
             var connectedGraph = getGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONNECTED_GRAPH, projectFQN), projectFQN, ':connected', 'Project'),
                 configGraph = getGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONFIG_GRAPH, projectFQN), projectFQN, ':config', 'Project');
 
@@ -44,14 +55,42 @@ define([
         },
 
         renderNetwork: function (viewConfig) {
-            var self = this, domain = cowc.DEFAULT_DOMAIN,
-                networkFQN = (contrail.checkIfExist(viewConfig.hashParams.fqName)) ? viewConfig.hashParams.fqName : null,
-                networkUUID = (contrail.checkIfExist(viewConfig.hashParams.uuid)) ? viewConfig.hashParams.uuid : null;
+            var self = this,
+                fqName = (contrail.checkIfExist(viewConfig.hashParams.fqName) ? viewConfig.hashParams.fqName : null),
+                breadcrumbView = new BreadcrumbView();
 
-            if(networkUUID == null || networkUUID == '') {
-                // TODO: Network UUID should be present in url
-                networkUUID = getUUIDByName(networkFQN);
-            }
+            breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (selectedValueData) {
+                contrail.setCookie(cowc.COOKIE_DOMAIN, selectedValueData.name);
+
+                breadcrumbView.renderProjectBreadcrumbDropdown(fqName, function (projectSelectedValueData) {
+
+                    breadcrumbView.renderNetworkBreadcrumbDropdown(fqName, function (networkSelectedValueData) {
+                        self.renderNetworkCB(networkSelectedValueData);
+                    });
+                }, function (selectedValueData) {
+                    self.renderProjectCB(selectedValueData);
+                });
+            });
+        },
+
+        renderNetworkCB: function(networkObj) {
+            var self = this,
+                domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
+                project = contrail.getCookie(cowc.COOKIE_PROJECT),
+                networkFQN = domain + ':' + project + ':' + networkObj.name,
+                networkUUID = networkObj.value;
+
+            contrail.setCookie(cowc.COOKIE_VIRTUAL_NETWORK, networkObj.name);
+
+            _ignoreOnHashChange = true;
+            layoutHandler.setURLHashObj({
+                p: 'mon_net_networks-beta',
+                q: {
+                    fqName: networkFQN,
+                    view:'details',
+                    type: 'network'
+                }
+            });
 
             var connectedGraph = getGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), networkFQN, ':connected', 'Network'),
                 configGraph = getGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONFIG_GRAPH, networkFQN), networkFQN, ':config', 'Network');
@@ -64,9 +103,34 @@ define([
         },
 
         renderInstance: function (viewConfig) {
-            var self = this, domain = cowc.DEFAULT_DOMAIN,
-                networkFQN = (contrail.checkIfExist(viewConfig.hashParams.vn)) ? viewConfig.hashParams.vn : null,
+            var self = this,
+                breadcrumbView = new BreadcrumbView(),
+                fqName = (contrail.checkIfExist(viewConfig.hashParams.vn)) ? viewConfig.hashParams.vn : null,
                 instanceUUID = (contrail.checkIfExist(viewConfig.hashParams.uuid)) ? viewConfig.hashParams.uuid : null;
+
+            breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (selectedValueData) {
+                contrail.setCookie(cowc.COOKIE_DOMAIN, selectedValueData.name);
+
+                breadcrumbView.renderProjectBreadcrumbDropdown(fqName, function (projectSelectedValueData) {
+
+                    breadcrumbView.renderNetworkBreadcrumbDropdown(fqName,
+                        function (networkSelectedValueData) {
+                            self.renderInstanceCB(networkSelectedValueData, instanceUUID);
+                        }, function (networkSelectedValueData) {
+                            self.renderNetworkCB(networkSelectedValueData);
+                        }
+                    );
+                }, function (selectedValueData) {
+                    self.renderProjectCB(selectedValueData);
+                });
+            });
+        },
+
+        renderInstanceCB: function(networkObj, instanceUUID) {
+            var self = this,
+                domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
+                project = contrail.getCookie(cowc.COOKIE_PROJECT),
+                networkFQN = domain + ':' + project + ':' + networkObj.name;
 
             var connectedGraph = getGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), instanceUUID, ':connected', 'Instance'),
                 configGraph = getGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONFIG_GRAPH, networkFQN), networkFQN, ':config', 'Instance');
@@ -82,57 +146,6 @@ define([
             cowu.renderView4Config(this.$el, null, getFlowListConfig(viewConfig));
         }
     });
-
-    var renderProjectDropdown = function (domain, projectFQN, projectUUID, changeCB) {
-        var that = this;
-
-        $.ajax({
-            url: networkPopulateFns.getProjectsURL(domain),
-            async: false
-        }).done(function (projectList) {
-            if (projectList.projects.length > 0) {
-
-                pushBreadcrumbDropdown('projectDropdown');
-
-                if (projectFQN == null) {
-                    projectFQN = projectList.projects[0].fq_name.join(':');
-                    projectUUID = projectList.projects[0].uuid
-                }
-
-                var projects = $.map(projectList.projects, function (n, i) {
-                    if (projectUUID == null && projectFQN == n.fq_name.join(':')) {
-                        projectUUID = n.uuid
-                    }
-
-                    return {
-                        name: n.fq_name.join(':'),
-                        value: n.uuid
-                    };
-                });
-
-                var projectDropdown = $('#projectDropdown').contrailDropdown({
-                    dataTextField: "name",
-                    dataValueField: "value",
-                    data: projects,
-                    change: function (e) {
-                        var projectFQN = $('#projectDropdown').data('contrailDropdown').text(),
-                            projectUUID = $('#projectDropdown').data('contrailDropdown').value();
-
-                        changeCB(projectFQN, projectUUID);
-                    }
-                }).data('contrailDropdown');
-
-                projectDropdown.text(projectFQN);
-                changeCB(projectFQN, projectUUID);
-
-            } else {
-                that.$el.html(ctwm.NO_PROJECT_FOUND);
-            }
-        }).fail(function (errObj, status, errorText) {
-            that.$el.html("Error");
-        });
-
-    }
 
     var getProjectConfig = function (connectedGraph, configGraph, projectFQN, projectUUID) {
         return {
@@ -411,7 +424,7 @@ define([
                                                 chartOptions : {tooltipFn:tenantNetworkMonitor.portTooltipFn},
                                                 title        : ctwl.TITLE_PORT_DISTRIBUTION,
                                                 xLbl         : ctwl.X_AXIS_TITLE_PORT
-                                            }
+                                            };
 
                                         return retObj;
                                     }
@@ -472,7 +485,7 @@ define([
             focusedElement: focusedElement
         };
 
-    }
+    };
 
     function networksScatterChartDataParser(vnList) {
         var chartData = [];
@@ -554,7 +567,7 @@ define([
             'fqName'   : viewConfig['fqName'],
             'port'     : viewConfig['port'],
             'portType' : viewConfig['portType']
-        }
+        };
         return urlConfigObj;
     };
 
