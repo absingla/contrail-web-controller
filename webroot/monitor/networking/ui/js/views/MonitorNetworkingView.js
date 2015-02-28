@@ -144,6 +144,10 @@ define([
 
         renderFlowList: function (viewConfig) {
             cowu.renderView4Config(this.$el, null, getFlowListConfig(viewConfig));
+        },
+
+        renderFlow: function (viewConfig) {
+            cowu.renderView4Config(this.$el, null, getFlowConfig(viewConfig));
         }
     });
 
@@ -421,7 +425,28 @@ define([
                                                 fqName       : viewConfig['fqName'],
                                                 yLbl         : ctwl.Y_AXIS_TITLE_BW,
                                                 link         : {hashParams:{q:{view:'list', type:'network', fqName:viewConfig['fqName'], context:'domain'}}},
-                                                chartOptions : {tooltipFn:tenantNetworkMonitor.portTooltipFn},
+                                                chartOptions : {
+                                                    clickFn: function(chartConfig){
+                                                        var obj= {
+                                                            fqName:chartConfig['fqName'],
+                                                            port:chartConfig['range']
+                                                        };
+                                                        if(chartConfig['startTime'] != null && chartConfig['endTime'] != null) {
+                                                            obj['startTime'] = chartConfig['startTime'];
+                                                            obj['endTime'] = chartConfig['endTime'];
+                                                        }
+
+                                                        if(chartConfig['type'] == 'sport')
+                                                            obj['portType']='src';
+                                                        else if(chartConfig['type'] == 'dport')
+                                                            obj['portType']='dst';
+
+                                                        obj['type'] = "flow";
+                                                        obj['view'] = "details";
+                                                        layoutHandler.setURLHashParams(obj, {p:"mon_net_networks-beta", merge:false});
+                                                    },
+                                                    tooltipFn:tenantNetworkMonitor.portTooltipFn,
+                                                },
                                                 title        : ctwl.TITLE_PORT_DISTRIBUTION,
                                                 xLbl         : ctwl.X_AXIS_TITLE_PORT
                                             };
@@ -447,6 +472,32 @@ define([
             }
         }
     };
+
+    var getFlowConfig = function (config) {
+        var viewConfig = config['hashParams'],
+            url = constructReqURL($.extend({}, getURLConfigForGrid(viewConfig), {protocol:['tcp','icmp','udp']}));
+
+        return {
+            elementId: cowu.formatElementId([ctwl.MONITOR_FLOW_LIST_ID]),
+            view: "SectionView",
+            viewConfig: {
+                rows: [
+                    {
+                        columns: [
+                            {
+                                elementId: ctwl.FLOWS_GRID_ID,
+                                title: ctwl.TITLE_FLOWS,
+                                view: "FlowListView",
+                                app: cowc.APP_CONTRAIL_CONTROLLER,
+                                viewConfig: viewConfig
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    };
+
 
     var getInstanceListConfig = function () {
         return {

@@ -43,6 +43,8 @@ function MonitorNetworkingLoader() {
                 } else if (hashParams.type == "flow"){
                     if (hashParams.view == "list") {
                         this.mnView.renderFlowList({hashParams: hashParams});
+                    } else if (hashParams.view == "details") {
+                        this.mnView.renderFlow({hashParams: hashParams});
                     }
                 }
                 break;
@@ -58,6 +60,8 @@ function MonitorNetworkingLoader() {
             case 'renderFlows':
                 if (hashParams.view == "list") {
                     this.mnView.renderFlowList({hashParams: hashParams});
+                } else if (hashParams.view == "details") {
+                    this.mnView.renderFlow({hashParams: hashParams});
                 }
                 break;
         }
