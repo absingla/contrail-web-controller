@@ -55,7 +55,7 @@ define([
                                                 templateConfig: getDetailsViewTemplateConfig(),
                                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                                 dataParser: function (response) {
-                                                    return response['value'][0];
+                                                    return (!$.isEmptyObject(response)) ? response['value'][0] : response;
                                                 }
                                             }
                                         },
