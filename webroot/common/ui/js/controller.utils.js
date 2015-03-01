@@ -6,13 +6,14 @@ define([
     'underscore',
     'monitor/networking/ui/js/views/NetworkingGraphView',
     'monitor/networking/ui/js/views/ProjectView',
-    'monitor/networking/ui/js/views/NetworkView',
-    'monitor/networking/ui/js/views/NetworkListView',
+    'monitor/networking/ui/js/views/NetworkTabView',
+    'monitor/networking/ui/js/views/NetworkGridView',
     'monitor/networking/ui/js/views/InstanceView',
     'monitor/networking/ui/js/views/InstanceListView',
     'monitor/networking/ui/js/views/ProjectListView',
-    'monitor/networking/ui/js/views/FlowListView'
-], function (_, NetworkingGraphView, ProjectView, NetworkView, NetworkListView, InstanceView, InstanceListView, ProjectListView, FlowListView) {
+    'monitor/networking/ui/js/views/FlowListView',
+    'monitor/networking/ui/js/views/NetworkListView'
+], function (_, NetworkingGraphView, ProjectView, NetworkTabView, NetworkGridView, InstanceView, InstanceListView, ProjectListView, FlowListView, NetworkListView) {
     var CTUtils = function () {
         var self = this;
 
@@ -65,13 +66,13 @@ define([
                     elementView.render();
                     break;
 
-                case "NetworkView":
-                    elementView = new NetworkView({ el: parentElement, model: model, attributes: viewAttributes });
+                case "NetworkTabView":
+                    elementView = new NetworkTabView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
 
-                case "NetworkListView":
-                    elementView = new NetworkListView({ el: parentElement, model: model, attributes: viewAttributes });
+                case "NetworkGridView":
+                    elementView = new NetworkGridView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
 
@@ -89,8 +90,14 @@ define([
                     elementView = new ProjectListView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
+
                 case "FlowListView":
                     elementView = new FlowListView({ el: parentElement, model: model, attributes: viewAttributes });
+                    elementView.render();
+                    break;
+
+                case "NetworkListView":
+                    elementView = new NetworkListView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
             }

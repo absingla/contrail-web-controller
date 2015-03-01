@@ -6,7 +6,7 @@ define([
     'underscore',
     'backbone'
 ], function (_, Backbone) {
-    var NetworkView = Backbone.View.extend({
+    var NetworkTabView = Backbone.View.extend({
         el: $(contentContainer),
 
         render: function () {
@@ -334,5 +334,5 @@ define([
         return chartData;
     };
 
-    return NetworkView;
+    return NetworkTabView;
 });

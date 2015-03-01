@@ -124,7 +124,7 @@ define([
                                         {
                                             elementId: ctwl.PROJECT_NETWORKS_ID,
                                             title: ctwl.TITLE_NETWORKS,
-                                            view: "NetworkListView",
+                                            view: "NetworkGridView",
                                             app: cowc.APP_CONTRAIL_CONTROLLER,
                                             viewConfig: {
                                                 projectFQN: projectFQN,

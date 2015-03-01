@@ -202,7 +202,7 @@ define([
                         columns: [
                             {
                                 elementId: ctwl.MONITOR_NETWORK_VIEW_ID,
-                                view: "NetworkView",
+                                view: "NetworkTabView",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {networkFQN: networkFQN, networkUUID: networkUUID}
                             }
@@ -310,59 +310,10 @@ define([
 
     var getNetworkListConfig = function () {
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_LIST_ID]),
-            view: "SectionView",
-            viewConfig: {
-                rows: [
-                    {
-                        columns: [
-                            {
-                                elementId: ctwl.NETWORKS_SCATTER_CHART_ID,
-                                title: ctwl.TITLE_NETWORKS,
-                                view: "ScatterChartView",
-                                viewConfig: {
-                                    class: "port-distribution-chart",
-                                    ajaxConfig: {
-                                        url: ctwc.get(ctwc.URL_ALL_NETWORKS_DETAILS),
-                                        type: "POST"
-                                    },
-                                    chartConfig: {
-
-                                    },
-                                    parseFn: function (response) {
-                                        return {
-                                            d: [{key: 'Networks', values: networksScatterChartDataParser(response['data']['value'])}],
-                                            xLbl: 'Interfaces',
-                                            yLbl: 'Connected Networks',
-                                            forceX: [0, 5],
-                                            forceY: [0, 10],
-                                            link: {
-                                                hashParams: {
-                                                    q: { view: 'list', type: 'network', fqName: 'default:domain', source: 'uve', context: 'domain' }
-                                                },
-                                                conf: {p: 'mon_net_networks-beta', merge: false}
-                                            },
-                                            chartOptions: {tooltipFn: tenantNetworkMonitor.networkTooltipFn},
-                                            hideLoadingIcon: false
-                                        }
-                                    }
-                                }
-                            },
-                        ]
-                    },
-                    {
-                        columns: [
-                            {
-                                elementId: ctwl.PROJECT_NETWORKS_ID,
-                                title: ctwl.TITLE_NETWORKS,
-                                view: "NetworkListView",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {projectFQN: null, parentType: 'project'}
-                            }
-                        ]
-                    }
-                ]
-            }
+            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_PAGE_ID]),
+            view: "NetworkListView",
+            app: cowc.APP_CONTRAIL_CONTROLLER,
+            viewConfig: {}
         }
     };
 
@@ -445,7 +396,7 @@ define([
                                                         obj['view'] = "details";
                                                         layoutHandler.setURLHashParams(obj, {p:"mon_net_networks-beta", merge:false});
                                                     },
-                                                    tooltipFn:tenantNetworkMonitor.portTooltipFn,
+                                                    tooltipFn:tenantNetworkMonitor.portTooltipFn
                                                 },
                                                 title        : ctwl.TITLE_PORT_DISTRIBUTION,
                                                 xLbl         : ctwl.X_AXIS_TITLE_PORT
@@ -537,31 +488,6 @@ define([
         };
 
     };
-
-    function networksScatterChartDataParser(vnList) {
-        var chartData = [];
-
-        $.each(vnList, function (idx, d) {
-            var vnObject = {};
-            vnObject['name'] = d['name'];
-            vnObject['uuid'] = d['uuid'];
-            vnObject['project'] = vnObject['name'].split(':').slice(0, 2).join(':');
-            vnObject['intfCnt'] = ifNull(jsonPath(d, '$..interface_list')[0], []).length;
-            vnObject['vnCnt'] = ifNull(jsonPath(d, '$..connected_networks')[0], []).length;
-            vnObject['inThroughput'] = ifNull(jsonPath(d, '$..in_bandwidth_usage')[0], 0);
-            vnObject['outThroughput'] = ifNull(jsonPath(d, '$..out_bandwidth_usage')[0], 0);
-            vnObject['throughput'] = vnObject['inThroughput'] + vnObject['outThroughput'];
-            vnObject['x'] = vnObject['intfCnt'];
-            vnObject['y'] = vnObject['vnCnt'];
-            vnObject['size'] = vnObject['throughput'] + 1;
-            vnObject['type'] = 'network';
-            vnObject['inBytes'] = $.isNumeric(d['inBytes']) ? d['inBytes'] : 0;
-            vnObject['outBytes'] = $.isNumeric(d['outBytes']) ? d['outBytes'] : 0;
-            chartData.push(vnObject);
-        });
-
-        return chartData;
-    }
 
     function constructDataForPortdist (response, obj) {
         var portCF = crossfilter(response['data']), portDim, portArr = [], portGroup;

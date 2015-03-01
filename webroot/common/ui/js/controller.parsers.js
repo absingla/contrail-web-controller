@@ -264,6 +264,31 @@ define([
             result['pType'] = data['pType'];
             return result;
         };
+
+        this.networksScatterChartDataParser = function(vnList) {
+            var chartData = [];
+
+            $.each(vnList, function (idx, d) {
+                var vnObject = {};
+                vnObject['name'] = d['name'];
+                vnObject['uuid'] = d['uuid'];
+                vnObject['project'] = vnObject['name'].split(':').slice(0, 2).join(':');
+                vnObject['intfCnt'] = ifNull(jsonPath(d, '$..interface_list')[0], []).length;
+                vnObject['vnCnt'] = ifNull(jsonPath(d, '$..connected_networks')[0], []).length;
+                vnObject['inThroughput'] = ifNull(jsonPath(d, '$..in_bandwidth_usage')[0], 0);
+                vnObject['outThroughput'] = ifNull(jsonPath(d, '$..out_bandwidth_usage')[0], 0);
+                vnObject['throughput'] = vnObject['inThroughput'] + vnObject['outThroughput'];
+                vnObject['x'] = vnObject['intfCnt'];
+                vnObject['y'] = vnObject['vnCnt'];
+                vnObject['size'] = vnObject['throughput'] + 1;
+                vnObject['type'] = 'network';
+                vnObject['inBytes'] = $.isNumeric(d['inBytes']) ? d['inBytes'] : 0;
+                vnObject['outBytes'] = $.isNumeric(d['outBytes']) ? d['outBytes'] : 0;
+                chartData.push(vnObject);
+            });
+
+            return chartData;
+        }
     };
 
     return CTParsers;

@@ -70,7 +70,7 @@ define([
                     remote: {
                         ajaxConfig: projectsRemoteConfig,
                         hlRemoteConfig: getHLazyRemoteConfig(),
-                        dataParser: ctwp.projectDataParser,
+                        dataParser: ctwp.projectDataParser
                     },
                     cacheConfig: {
                         getDataFromCache: function (ucid) {

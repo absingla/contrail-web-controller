@@ -51,6 +51,8 @@ define([
         };
 
         this.TMPL_VN_PORT_HEAT_CHART = "network-port-heat-chart-template";
+
+        this.UCID_ALL_VN = "default-domain:virtual-networks";
     };
     return CTConstants;
 });
