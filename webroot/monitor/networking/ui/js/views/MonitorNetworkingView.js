@@ -151,7 +151,7 @@ define([
         }
     });
 
-    var getProjectConfig = function (connectedGraph, configGraph, projectFQN, projectUUID) {
+    function getProjectConfig(connectedGraph, configGraph, projectFQN, projectUUID) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_ID]),
             view: "SectionView",
@@ -182,7 +182,7 @@ define([
         }
     };
 
-    var getNetworkConfig = function (connectedGraph, configGraph, networkFQN, networkUUID) {
+    function getNetworkConfig(connectedGraph, configGraph, networkFQN, networkUUID) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_ID]),
             view: "SectionView",
@@ -213,7 +213,7 @@ define([
         }
     };
 
-    var getInstanceConfig = function (connectedGraph, configGraph, networkFQN, instanceUUID) {
+    function getInstanceConfig(connectedGraph, configGraph, networkFQN, instanceUUID) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_ID]),
             view: "SectionView",
@@ -244,7 +244,7 @@ define([
         }
     };
 
-    var getProjectListConfig = function () {
+    function getProjectListConfig() {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_PROJECTS_PAGE_ID]),
             view: "ProjectListView",
@@ -253,7 +253,7 @@ define([
         }
     };
 
-    var getNetworkListConfig = function () {
+    function getNetworkListConfig() {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_NETWORKS_PAGE_ID]),
             view: "NetworkListView",
@@ -262,7 +262,16 @@ define([
         }
     };
 
-    var getFlowListConfig = function (config) {
+    function getInstanceListConfig() {
+        return {
+            elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCES_PAGE_ID]),
+            view: "InstanceListView",
+            app: cowc.APP_CONTRAIL_CONTROLLER,
+            viewConfig: {}
+        }
+    };
+
+    function getFlowListConfig(config) {
         var viewConfig = config['hashParams'],
             url = constructReqURL($.extend({}, getURLConfigForGrid(viewConfig), {protocol:['tcp','icmp','udp']}));
 
@@ -369,7 +378,7 @@ define([
         }
     };
 
-    var getFlowConfig = function (config) {
+    function getFlowConfig(config) {
         var viewConfig = config['hashParams'],
             url = constructReqURL($.extend({}, getURLConfigForGrid(viewConfig), {protocol:['tcp','icmp','udp']}));
 
@@ -394,30 +403,7 @@ define([
         }
     };
 
-
-    var getInstanceListConfig = function () {
-        return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_LIST_ID]),
-            view: "SectionView",
-            viewConfig: {
-                rows: [
-                    {
-                        columns: [
-                            {
-                                elementId: ctwl.PROJECT_INSTANCES_ID,
-                                title: ctwl.TITLE_INSTANCES,
-                                view: "InstanceListView",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {projectUUID: null, parentType: 'domain'}
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-    };
-
-    var getGraphConfig = function(url, fqName, keySuffix, focusedElement) {
+    function getGraphConfig(url, fqName, keySuffix, focusedElement) {
         return {
             remote: {
                 ajaxConfig: {
@@ -479,7 +465,7 @@ define([
         return portArr;
     };
 
-    var getURLConfigForGrid = function (viewConfig) {
+    function getURLConfigForGrid(viewConfig) {
         var urlConfigObj = {
             'container': "#content-container",
             'context'  : "network",

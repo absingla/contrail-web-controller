@@ -11,8 +11,7 @@ define([
         el: $(contentContainer),
 
         render: function () {
-            var self = this,
-                viewConfig = this.attributes.viewConfig;
+            var self = this, viewConfig = this.attributes.viewConfig;
 
             var ajaxConfig = {
                 url: ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS),

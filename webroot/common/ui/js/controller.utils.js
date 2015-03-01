@@ -8,13 +8,14 @@ define([
     'monitor/networking/ui/js/views/ProjectTabView',
     'monitor/networking/ui/js/views/NetworkTabView',
     'monitor/networking/ui/js/views/NetworkGridView',
-    'monitor/networking/ui/js/views/InstanceView',
-    'monitor/networking/ui/js/views/InstanceListView',
+    'monitor/networking/ui/js/views/InstanceTabView',
+    'monitor/networking/ui/js/views/InstanceGridView',
     'monitor/networking/ui/js/views/ProjectGridView',
     'monitor/networking/ui/js/views/FlowListView',
     'monitor/networking/ui/js/views/NetworkListView',
-    'monitor/networking/ui/js/views/ProjectListView'
-], function (_, NetworkingGraphView, ProjectTabView, NetworkTabView, NetworkGridView, InstanceView, InstanceListView, ProjectGridView, FlowListView, NetworkListView, ProjectListView) {
+    'monitor/networking/ui/js/views/ProjectListView',
+    'monitor/networking/ui/js/views/InstanceListView'
+], function (_, NetworkingGraphView, ProjectTabView, NetworkTabView, NetworkGridView, InstanceTabView, InstanceGridView, ProjectGridView, FlowListView, NetworkListView, ProjectListView, InstanceListView) {
     var CTUtils = function () {
         var self = this;
 
@@ -77,13 +78,13 @@ define([
                     elementView.render();
                     break;
 
-                case "InstanceView":
-                    elementView = new InstanceView({ el: parentElement, model: model, attributes: viewAttributes });
+                case "InstanceTabView":
+                    elementView = new InstanceTabView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
 
-                case "InstanceListView":
-                    elementView = new InstanceListView({ el: parentElement, model: model, attributes: viewAttributes });
+                case "InstanceGridView":
+                    elementView = new InstanceGridView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
 
@@ -104,6 +105,11 @@ define([
 
                 case "ProjectListView":
                     elementView = new ProjectListView({ el: parentElement, model: model, attributes: viewAttributes });
+                    elementView.render();
+                    break;
+
+                case "InstanceListView":
+                    elementView = new InstanceListView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
             }

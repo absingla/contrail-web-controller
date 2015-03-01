@@ -6,7 +6,7 @@ define([
     'underscore',
     'backbone'
 ], function (_, Backbone) {
-    var InstanceView = Backbone.View.extend({
+    var InstanceTabView = Backbone.View.extend({
         el: $(contentContainer),
 
         render: function () {
@@ -185,5 +185,5 @@ define([
         };
     };
 
-    return InstanceView;
+    return InstanceTabView;
 });

@@ -6,7 +6,7 @@ define([
     'underscore',
     'backbone'
 ], function (_, Backbone) {
-    var ProjectListView = Backbone.View.extend({
+    var ProjectGridView = Backbone.View.extend({
         el: $(contentContainer),
 
         render: function () {
@@ -18,7 +18,7 @@ define([
                 type: 'GET'
             };
 
-            cowu.renderView4Config(that.$el, null, getProjectListViewConfig(projectsRemoteConfig));
+            cowu.renderView4Config(that.$el, this.model, getProjectListViewConfig(projectsRemoteConfig));
         }
     });
 
@@ -76,7 +76,7 @@ define([
                         setData2Cache: function (ucid, dataObject) {
                             mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
                         },
-                        ucid: ctwc.UCID_DEFAULT_DOMAIN_PROJECTS  // TODO: Handle multi-tenancy
+                        ucid: ctwc.UCID_DEFAULT_DOMAIN_PROJECTS + "-2" // TODO: Handle multi-tenancy
                     }
                 }
             },
@@ -87,5 +87,5 @@ define([
         return gridElementConfig;
     };
 
-    return ProjectListView;
+    return ProjectGridView;
 });

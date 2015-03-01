@@ -6,7 +6,7 @@ define([
     'underscore',
     'backbone'
 ], function (_, Backbone) {
-    var ProjectView = Backbone.View.extend({
+    var ProjectTabView = Backbone.View.extend({
         el: $(contentContainer),
 
         render: function () {
@@ -151,5 +151,5 @@ define([
         }
     };
 
-    return ProjectView;
+    return ProjectTabView;
 });

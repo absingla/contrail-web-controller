@@ -11,8 +11,7 @@ define([
         el: $(contentContainer),
 
         render: function () {
-            var self = this,
-                viewConfig = this.attributes.viewConfig;
+            var self = this, viewConfig = this.attributes.viewConfig;
 
             var ajaxConfig = {
                 url: networkPopulateFns.getProjectsURL(ctwc.DEFAULT_DOMAIN),

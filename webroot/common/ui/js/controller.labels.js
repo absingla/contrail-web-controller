@@ -85,6 +85,7 @@ define([
         this.MONITOR_NETWORK_ID = "monitor-network";
         this.MONITOR_NETWORK_VIEW_ID = "monitor-network-view";
         this.MONITOR_INSTANCE_LIST_ID = "monitor-instance-list";
+        this.MONITOR_INSTANCES_PAGE_ID = "monitor-instances-page";
         this.MONITOR_INSTANCE_LIST_VIEW_ID = "monitor-instance-list-view";
         this.MONITOR_INSTANCE_ID = "monitor-instance";
         this.MONITOR_INSTANCE_VIEW_ID = "monitor-instance-view";

@@ -23,7 +23,7 @@ define([
         this.URL_NETWORK_TRAFFIC_STATS = '/api/tenant/networking/flow-series/vn?minsSince={0}&fqName={1}&sampleCnt={2}&useServerTime=true';
 
         this.URL_INSTANCE_SUMMARY = '/api/tenant/networking/virtual-machine/summary?fqNameRegExp={0}?flat';
-        this.URL_INSTANCES = '/api/tenant/networking/virtual-machines/details?count=25';
+        this.URL_INSTANCE_DETAILS_IN_CHUNKS = '/api/tenant/networking/virtual-machines/details?count=25';
 
 
         this.URL_VM_VN_STATS = '/api/tenant/networking/stats';
@@ -55,6 +55,7 @@ define([
 
         this.DEFAULT_DOMAIN = "default-domain";
         this.UCID_ALL_VN = "all-virtual-networks";
+        this.UCID_ALL_VM = "all-virtual-machines";
         this.UCID_DEFAULT_DOMAIN_VN = this.DEFAULT_DOMAIN + ":virtual-networks";
         this.UCID_DEFAULT_DOMAIN_PROJECTS = this.DEFAULT_DOMAIN + ":projects";
     };
