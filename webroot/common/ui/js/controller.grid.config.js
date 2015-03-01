@@ -257,6 +257,39 @@ define([
             ];
         }
 
+        this.getProjectDetailsHLazyRemoteConfig = function () {
+            return {
+                remote: {
+                    ajaxConfig: {
+                        url: ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS,
+                        type: 'POST',
+                        data: JSON.stringify({
+                            data: [{
+                                "type": ctwc.TYPE_VIRTUAL_NETWORK,
+                                "cfilt": ctwc.FILTERS_COLUMN_VN.join(',')
+                            }]
+                        })
+                    },
+                    dataParser: ctwp.networkDataParser
+                },
+                vlRemoteConfig: {
+                    completeCallback: function(contrailListModel, parentListModel) {
+                        ctwp.projectNetworksDataParser(parentListModel, contrailListModel);
+                    }
+                },
+                lazyRemote: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK),
+                cacheConfig: {
+                    getDataFromCache: function (ucid) {
+                        return mnPageLoader.mnView.listCache[ucid];
+                    },
+                    setData2Cache: function (ucid, dataObject) {
+                        mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
+                    },
+                    ucid: ctwc.UCID_ALL_VN
+                }
+            };
+        };
+
         this.projectFlowsColumns = [
             {
                 field: 'destvn',

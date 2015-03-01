@@ -15,7 +15,7 @@ define([
                 viewConfig = this.attributes.viewConfig;
 
             var ajaxConfig = {
-                url: ctwc.get(ctwc.URL_NETWORKS_DETAILS),
+                url: ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS),
                 type: "POST"
             };
 
@@ -37,11 +37,11 @@ define([
             };
 
             var contrailListModel = new ContrailListModel(listModelConfig);
-            cowu.renderView4Config(this.$el, contrailListModel, getNetworkListConfig());
+            cowu.renderView4Config(this.$el, contrailListModel, getNetworkListViewConfig());
         }
     });
 
-    var getNetworkListConfig = function () {
+    var getNetworkListViewConfig = function () {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_LIST_ID]),
             view: "SectionView",
@@ -55,13 +55,7 @@ define([
                                 view: "ScatterChartView",
                                 viewConfig: {
                                     class: "port-distribution-chart",
-                                    ajaxConfig: {
-                                        url: ctwc.get(ctwc.URL_ALL_NETWORKS_DETAILS),
-                                        type: "POST"
-                                    },
-                                    chartConfig: {
-
-                                    },
+                                    chartConfig: {},
                                     parseFn: function (response) {
                                         return {
                                             d: [{key: 'Networks', values: response}],

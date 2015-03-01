@@ -77,8 +77,9 @@ define([
         this.MONITOR_PROJECT_LIST_ID = "monitor-project-list";
         this.MONITOR_PROJECT_ID = "monitor-project";
         this.MONITOR_PROJECT_VIEW_ID = "monitor-project-view";
+        this.MONITOR_PROJECTS_PAGE_ID = "monitor-projects-page";
         this.MONITOR_PROJECT_LIST_VIEW_ID = "monitor-project-list-view";
-        this.MONITOR_NETWORK_PAGE_ID = "monitor-network-page";
+        this.MONITOR_NETWORKS_PAGE_ID = "monitor-networks-page";
         this.MONITOR_NETWORK_LIST_ID = "monitor-network-list";
         this.MONITOR_NETWORK_LIST_VIEW_ID = "monitor-network-list-view";
         this.MONITOR_NETWORK_ID = "monitor-network";

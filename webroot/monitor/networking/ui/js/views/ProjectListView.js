@@ -4,123 +4,100 @@
 
 define([
     'underscore',
-    'backbone'
-], function (_, Backbone) {
+    'backbone',
+    'contrail-list-model'
+], function (_, Backbone, ContrailListModel) {
     var ProjectListView = Backbone.View.extend({
         el: $(contentContainer),
 
         render: function () {
-            var that = this,
+            var self = this,
                 viewConfig = this.attributes.viewConfig;
 
-            var projectsRemoteConfig = {
-                url: networkPopulateFns.getProjectsURL('default-domain'),
+            var ajaxConfig = {
+                url: networkPopulateFns.getProjectsURL(ctwc.DEFAULT_DOMAIN),
                 type: 'GET'
             };
 
-            // TODO: Handle multi-tenancy
-            var projectsUCID = "default-domain:projects";
+            var listModelConfig = {
+                remote: {
+                    ajaxConfig: ajaxConfig,
+                    hlRemoteConfig: ctwgc.getProjectDetailsHLazyRemoteConfig(),
+                    dataParser: ctwp.projectDataParser
+                },
+                cacheConfig: {
+                    getDataFromCache: function (ucid) {
+                        return mnPageLoader.mnView.listCache[ucid];
+                    },
+                    setData2Cache: function (ucid, dataObject) {
+                        mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
+                    },
+                    ucid: ctwc.UCID_DEFAULT_DOMAIN_PROJECTS //TODO: Handle multi-tenancy
+                }
+            };
 
-            cowu.renderView4Config(that.$el, null, getProjectListViewConfig(projectsRemoteConfig, projectsUCID));
+            var contrailListModel = new ContrailListModel(listModelConfig);
+            cowu.renderView4Config(this.$el, contrailListModel, getProjectListViewConfig());
         }
     });
 
-    var getProjectListViewConfig = function (projectsRemoteConfig, ucid) {
+    var getProjectListViewConfig = function () {
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_LIST_VIEW_ID]),
+            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_LIST_ID]),
             view: "SectionView",
             viewConfig: {
                 rows: [
                     {
                         columns: [
                             {
-                                elementId: ctwl.PROJECTS_GRID_ID,
+                                elementId: ctwl.PROJECTS_SCATTER_CHART_ID,
                                 title: ctwl.TITLE_PROJECTS,
-                                view: "GridView",
+                                view: "ScatterChartView",
                                 viewConfig: {
-                                    elementConfig: getProjectGridConfig(projectsRemoteConfig, ucid)
+                                    class: "port-distribution-chart",
+                                    chartConfig: {},
+                                    parseFn: function (response) {
+                                        return {
+                                            d: [{
+                                                key: 'Projects',
+                                                values: response
+                                            }],
+                                            xLbl: 'Interfaces',
+                                            yLbl: 'Networks',
+                                            forceX: [0, 5],
+                                            forceY: [0, 10],
+                                            link: {
+                                                hashParams: {
+                                                    q: {
+                                                        view: 'details',
+                                                        type: 'project',
+                                                        source: 'uve'
+                                                    }
+                                                },
+                                                conf: {p: 'mon_net_project-beta', merge: false}
+                                            },
+                                            chartOptions: {tooltipFn: tenantNetworkMonitor.projectTooltipFn},
+                                            hideLoadingIcon: false
+                                        }
+                                    }
                                 }
+                            },
+                        ]
+                    },
+                    {
+                        columns: [
+                            {
+                                elementId: ctwl.PROJECTS_ID,
+                                title: ctwl.TITLE_PROJECTS,
+                                view: "ProjectGridView",
+                                app: cowc.APP_CONTRAIL_CONTROLLER,
+                                viewConfig: {}
                             }
                         ]
                     }
                 ]
             }
         }
-    };
-
-    var getProjectGridConfig = function (projectsRemoteConfig, ucid) {
-        var gridElementConfig = {
-            header: {
-                title: {
-                    text: ctwl.TITLE_PROJECTS_SUMMARY
-                },
-                defaultControls: {
-                    collapseable: false,
-                    exportable: true,
-                    refreshable: true,
-                    searchable: true
-                }
-            },
-            body: {
-                options: {
-                    autoRefresh: false,
-                    checkboxSelectable: false
-                },
-                dataSource: {
-                    remote: {
-                        ajaxConfig: projectsRemoteConfig,
-                        hlRemoteConfig: getHLazyRemoteConfig(),
-                        dataParser: ctwp.projectDataParser
-                    },
-                    cacheConfig: {
-                        getDataFromCache: function (ucid) {
-                            return mnPageLoader.mnView.listCache[ucid];
-                        },
-                        setData2Cache: function (ucid, dataObject) {
-                            mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-                        },
-                        ucid: ucid
-                    }
-                }
-            },
-            columnHeader: {
-                columns: ctwgc.projectsColumns
-            }
-        };
-        return gridElementConfig;
-    };
-
-    var getHLazyRemoteConfig = function () {
-        return {
-            remote: {
-                ajaxConfig: {
-                    url: ctwc.URL_NETWORKS_DETAILS,
-                    type: 'POST',
-                    data: JSON.stringify({
-                        data: [{
-                            "type": ctwc.TYPE_VIRTUAL_NETWORK,
-                            "cfilt": ctwc.FILTERS_COLUMN_VN.join(',')
-                        }]
-                    })
-                },
-                dataParser: ctwp.networkDataParser
-            },
-            vlRemoteConfig: {
-                completeCallback: function(contrailListModel, parentListModel) {
-                    ctwp.projectNetworksDataParser(parentListModel, contrailListModel);
-                }
-            },
-            lazyRemote: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK),
-            cacheConfig: {
-                getDataFromCache: function (ucid) {
-                    return mnPageLoader.mnView.listCache[ucid];
-                },
-                setData2Cache: function (ucid, dataObject) {
-                    mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-                },
-                ucid: "default-domain:virtual-networks"
-            }
-        };
     };
 
     return ProjectListView;

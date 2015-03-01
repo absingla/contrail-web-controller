@@ -15,7 +15,7 @@ define([
                 projectFQN = viewConfig['projectFQN'];
 
             var networkRemoteConfig = {
-                url: projectFQN != null ? ctwc.get(ctwc.URL_PROJECT_NETWORKS, projectFQN) : ctwc.URL_NETWORKS_DETAILS,
+                url: projectFQN != null ? ctwc.get(ctwc.URL_PROJECT_NETWORKS, projectFQN) : ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS,
                 type: 'POST',
                 data: JSON.stringify({
                     data: [{
@@ -26,7 +26,7 @@ define([
             };
 
             // TODO: Handle multi-tenancy
-            var ucid = projectFQN != null ? (projectFQN + ":virtual-networks") : "default-domain:virtual-networks";
+            var ucid = projectFQN != null ? (projectFQN + ":virtual-networks") : ctwc.UCID_ALL_VN;
 
             cowu.renderView4Config(that.$el, self.model, getNetworkListViewConfig(networkRemoteConfig, ucid));
 
