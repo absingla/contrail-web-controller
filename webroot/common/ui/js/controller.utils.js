@@ -11,11 +11,14 @@ define([
     'monitor/networking/ui/js/views/InstanceTabView',
     'monitor/networking/ui/js/views/InstanceGridView',
     'monitor/networking/ui/js/views/ProjectGridView',
-    'monitor/networking/ui/js/views/FlowListView',
+    'monitor/networking/ui/js/views/FlowGridView',
     'monitor/networking/ui/js/views/NetworkListView',
     'monitor/networking/ui/js/views/ProjectListView',
-    'monitor/networking/ui/js/views/InstanceListView'
-], function (_, NetworkingGraphView, ProjectTabView, NetworkTabView, NetworkGridView, InstanceTabView, InstanceGridView, ProjectGridView, FlowListView, NetworkListView, ProjectListView, InstanceListView) {
+    'monitor/networking/ui/js/views/InstanceListView',
+    'monitor/networking/ui/js/views/FlowListView'
+], function (_, NetworkingGraphView, ProjectTabView, NetworkTabView, NetworkGridView, InstanceTabView, InstanceGridView,
+             ProjectGridView, FlowGridView, NetworkListView, ProjectListView, InstanceListView, FlowListView) {
+
     var CTUtils = function () {
         var self = this;
 
@@ -63,8 +66,23 @@ define([
                     elementView.render();
                     break;
 
+                case "ProjectListView":
+                    elementView = new ProjectListView({ el: parentElement, model: model, attributes: viewAttributes });
+                    elementView.render();
+                    break;
+
+                case "ProjectGridView":
+                    elementView = new ProjectGridView({ el: parentElement, model: model, attributes: viewAttributes });
+                    elementView.render();
+                    break;
+
                 case "ProjectTabView":
                     elementView = new ProjectTabView({ el: parentElement, model: model, attributes: viewAttributes });
+                    elementView.render();
+                    break;
+
+                case "NetworkListView":
+                    elementView = new NetworkListView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
 
@@ -78,6 +96,11 @@ define([
                     elementView.render();
                     break;
 
+                case "InstanceListView":
+                    elementView = new InstanceListView({ el: parentElement, model: model, attributes: viewAttributes });
+                    elementView.render();
+                    break;
+
                 case "InstanceTabView":
                     elementView = new InstanceTabView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
@@ -88,28 +111,13 @@ define([
                     elementView.render();
                     break;
 
-                case "ProjectGridView":
-                    elementView = new ProjectGridView({ el: parentElement, model: model, attributes: viewAttributes });
-                    elementView.render();
-                    break;
-
                 case "FlowListView":
                     elementView = new FlowListView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
 
-                case "NetworkListView":
-                    elementView = new NetworkListView({ el: parentElement, model: model, attributes: viewAttributes });
-                    elementView.render();
-                    break;
-
-                case "ProjectListView":
-                    elementView = new ProjectListView({ el: parentElement, model: model, attributes: viewAttributes });
-                    elementView.render();
-                    break;
-
-                case "InstanceListView":
-                    elementView = new InstanceListView({ el: parentElement, model: model, attributes: viewAttributes });
+                case "FlowGridView":
+                    elementView = new FlowGridView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.render();
                     break;
             }

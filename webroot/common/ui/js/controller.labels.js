@@ -91,6 +91,7 @@ define([
         this.MONITOR_INSTANCE_VIEW_ID = "monitor-instance-view";
         this.MONITOR_FLOW_LIST_ID = "monitor-flow-list";
         this.MONITOR_FLOW_LIST_VIEW_ID = "monitor-flow-list-view";
+        this.MONITOR_FLOWS_PAGE_ID = "monitor-flows-page";
 
         this.DOMAINS_BREADCRUMB_DROPDOWN = "domains-breadcrumb-dropdown";
 

@@ -100,5 +100,4 @@ define([
     };
 
     return ProjectListView;
-})
-;
+});
