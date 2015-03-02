@@ -10,7 +10,7 @@ define([
 
         renderDomainBreadcrumbDropdown: function(fqName, initCB, changeCB) {
             contrail.ajaxHandler({
-                url: '/api/tenants/config/domains',
+                url: '/api/tenants/config/domains', //TODO - Move to Constants
                 async: false
             }, function(){
 
@@ -20,7 +20,7 @@ define([
                     var domainDropdownElementId = ctwl.DOMAINS_BREADCRUMB_DROPDOWN,
                         domainDropdownElement = constructBreadcrumbDropdownDOM(domainDropdownElementId),
                         selectedValueData = null,
-                        urlDomainFQN = (contrail.checkIfExist(fqName) ? fqName : null),
+                        urlDomainFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,1).join(':') : null),
                         cookieDomainFQN = contrail.getCookie(cowc.COOKIE_DOMAIN),
                         urlDataKey = null, cookieDataKey = null;
 
@@ -83,7 +83,7 @@ define([
                     var projectDropdownElementId = ctwl.PROJECTS_BREADCRUMB_DROPDOWN,
                         projectDropdownElement = constructBreadcrumbDropdownDOM(projectDropdownElementId),
                         selectedValueData = null,
-                        urlProjectFQN = ((contrail.checkIfExist(fqName)) ? fqName : null),
+                        urlProjectFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,2).join(':') : null),
                         cookieProjectFQN = domain + ':' + contrail.getCookie(cowc.COOKIE_PROJECT),
                         urlDataKey = null, cookieDataKey = null;
 
@@ -137,7 +137,7 @@ define([
                 project = contrail.getCookie(cowc.COOKIE_PROJECT),
                 projectFQN = domain + ':' + project;
             contrail.ajaxHandler({
-                url: '/api/tenants/networks/' + projectFQN,
+                url: '/api/tenants/networks/' + projectFQN, //TODO - Move to Constants
                 async: false
             }, function(){
 
@@ -147,7 +147,7 @@ define([
                     var networkDropdownElementId = ctwl.NETWORKS_BREADCRUMB_DROPDOWN,
                         networkDropdownElement = constructBreadcrumbDropdownDOM(networkDropdownElementId),
                         selectedValueData = null,
-                        urlNetworkFQN = ((contrail.checkIfExist(fqName)) ? fqName : null),
+                        urlNetworkFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,3).join(':') : null),
                         cookieNetworkFQN = projectFQN + ':' + contrail.getCookie(cowc.COOKIE_VIRTUAL_NETWORK),
                         urlDataKey = null, cookieDataKey = null;
 

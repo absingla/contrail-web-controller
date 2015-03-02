@@ -32,12 +32,12 @@ define([
        },
 
         renderProjectCB: function (projectObj) {
+            contrail.setCookie(cowc.COOKIE_PROJECT, projectObj.name);
+
             var self = this,
                 domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
                 projectFQN = domain + ':' + projectObj.name,
                 projectUUID = projectObj.value;
-
-            contrail.setCookie('project', projectObj.name);
 
             _ignoreOnHashChange = true;
             layoutHandler.setURLHashObj({
@@ -59,16 +59,17 @@ define([
                 fqName = (contrail.checkIfExist(viewConfig.hashParams.fqName) ? viewConfig.hashParams.fqName : null),
                 breadcrumbView = new BreadcrumbView();
 
-            breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (selectedValueData) {
-                contrail.setCookie(cowc.COOKIE_DOMAIN, selectedValueData.name);
+            breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (domainSelectedValueData) {
+                contrail.setCookie(cowc.COOKIE_DOMAIN, domainSelectedValueData.name);
 
                 breadcrumbView.renderProjectBreadcrumbDropdown(fqName, function (projectSelectedValueData) {
+                    contrail.setCookie(cowc.COOKIE_PROJECT, projectSelectedValueData.name);
 
                     breadcrumbView.renderNetworkBreadcrumbDropdown(fqName, function (networkSelectedValueData) {
                         self.renderNetworkCB(networkSelectedValueData);
                     });
-                }, function (selectedValueData) {
-                    self.renderProjectCB(selectedValueData);
+                }, function (projectSelectedValueData) {
+                    self.renderProjectCB(projectSelectedValueData);
                 });
             });
         },
@@ -112,6 +113,7 @@ define([
                 contrail.setCookie(cowc.COOKIE_DOMAIN, selectedValueData.name);
 
                 breadcrumbView.renderProjectBreadcrumbDropdown(fqName, function (projectSelectedValueData) {
+                    contrail.setCookie(cowc.COOKIE_PROJECT, projectSelectedValueData.name);
 
                     breadcrumbView.renderNetworkBreadcrumbDropdown(fqName,
                         function (networkSelectedValueData) {
@@ -120,8 +122,8 @@ define([
                             self.renderNetworkCB(networkSelectedValueData);
                         }
                     );
-                }, function (selectedValueData) {
-                    self.renderProjectCB(selectedValueData);
+                }, function (projectSelectedValueData) {
+                    self.renderProjectCB(projectSelectedValueData);
                 });
             });
         },
