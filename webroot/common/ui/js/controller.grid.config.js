@@ -9,8 +9,10 @@ define([
     var onClickGrid = function (e, selRowDataItem) {
         var name = $(e.target).attr('name'),
             fqName, uuid, vn;
-
-        if ($.inArray(name, ['network']) > -1) {
+        if ($.inArray(name, ['project']) > -1) {
+            fqName = selRowDataItem['name'];
+            layoutHandler.setURLHashParams({ fqName: fqName, type: "project", view: "details" }, {p: "mon_networking_projects", merge: false});
+        } else if ($.inArray(name, ['network']) > -1) {
             fqName = selRowDataItem['name'];
             uuid = selRowDataItem['uuid'];
             layoutHandler.setURLHashParams({ fqName: fqName, uuid: uuid, type: "network", view: "details" }, {p: "mon_networking_networks", merge: false});
@@ -138,7 +140,7 @@ define([
                 minWidth: 200,
                 searchable: true,
                 events: {
-                    onClick: onClickGridLink
+                    onClick: onClickGrid
                 },
                 cssClass: 'cell-hyperlink-blue'
             },
