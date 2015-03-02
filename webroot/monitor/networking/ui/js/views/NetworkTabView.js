@@ -62,7 +62,7 @@ define([
                                         {
                                             elementId: ctwl.NETWORK_INSTANCES_ID,
                                             title: ctwl.TITLE_INSTANCES,
-                                            view: "InstanceListView",
+                                            view: "InstanceGridView",
                                             app: cowc.APP_CONTRAIL_CONTROLLER,
                                             viewConfig: {
                                                 parentUUID: networkUUID,
@@ -74,9 +74,23 @@ define([
                                             title: ctwl.TITLE_TRAFFIC_STATISTICS,
                                             view: "LineWithFocusChartView",
                                             viewConfig: {
-                                                ajaxConfig: {
-                                                    url: ctwc.get(ctwc.URL_NETWORK_TRAFFIC_STATS, 60, networkFQN, 120),
-                                                    type: 'GET'
+                                                modelConfig: {
+                                                    remote: {
+                                                        ajaxConfig: {
+                                                            url: ctwc.get(ctwc.URL_NETWORK_TRAFFIC_STATS, 60, networkFQN, 120),
+                                                            type: 'GET'
+                                                        },
+                                                        dataParser: ctwp.vnTrafficStatsParser
+                                                    },
+                                                    cacheConfig: {
+                                                        getDataFromCache: function (ucid) {
+                                                            return mnPageLoader.mnView.listCache[ucid];
+                                                        },
+                                                        setData2Cache: function (ucid, dataObject) {
+                                                            mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
+                                                        },
+                                                        ucid: ctwc.get(ctwc.UCID_NETWORK_TRAFFIC_STATS, networkFQN)
+                                                    }
                                                 },
                                                 parseFn: parseLineChartData
                                             }
@@ -93,7 +107,7 @@ define([
                                                             url: ctwc.get(ctwc.URL_PORT_DISTRIBUTION, networkFQN),
                                                             type: 'GET'
                                                         },
-                                                        dataParser: ctwp.projectPortStatsParser
+                                                        dataParser: ctwp.projectVNPortStatsParser
                                                     },
                                                     cacheConfig: {
                                                         getDataFromCache: function (ucid) {
@@ -102,7 +116,7 @@ define([
                                                         setData2Cache: function (ucid, dataObject) {
                                                             mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
                                                         },
-                                                        ucid: ctwc.get(ctwc.UCID_PROJECT_PORT_STATS, networkFQN)
+                                                        ucid: ctwc.get(ctwc.UCID_PROJECT_VN_PORT_STATS, networkFQN)
                                                     }
                                                 },
                                                 parseFn: function (responseArray) {
@@ -329,8 +343,9 @@ define([
         };
     };
 
-    function parseLineChartData(response) {
-        var rawdata = response['flow-series'],
+    function parseLineChartData(responseArray) {
+        var response = responseArray[0],
+            rawdata = response['flow-series'],
             inBytes = {key: "In Bytes", values: [], color: d3_category5[0]}, outBytes = {
                 key: "Out Bytes",
                 values: [],

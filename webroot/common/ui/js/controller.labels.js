@@ -113,7 +113,7 @@ define([
         this.PROJECTS_BREADCRUMB_DROPDOWN = "projects-breadcrumb-dropdown";
 
         this.NETWORK_GRAPH_ID = "network-graph";
-        this.NETWORKS_SCATTER_CHART_ID = "networks-scatter-chart";
+        this.NETWORKS_PORTS_SCATTER_CHART_ID = "networks-ports-scatter-chart";
         this.NETWORK_TABS_ID = "network-tabs";
         this.NETWORK_DETAILS_ID = "network-details";
         this.NETWORK_PORT_DIST_ID = "network-port-distribution";

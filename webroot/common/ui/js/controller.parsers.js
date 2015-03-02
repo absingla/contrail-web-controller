@@ -220,7 +220,11 @@ define([
             return projectList;
         };
 
-        this.projectPortStatsParser = function (response) {
+        this.projectVNPortStatsParser = function (response) {
+            return [response];
+        };
+
+        this.vnTrafficStatsParser = function (response) {
             return [response];
         };
 

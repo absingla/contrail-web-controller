@@ -76,7 +76,7 @@ define([
                                                             url: ctwc.get(ctwc.URL_PORT_DISTRIBUTION, projectFQN),
                                                             type: 'GET'
                                                         },
-                                                        dataParser: ctwp.projectPortStatsParser
+                                                        dataParser: ctwp.projectVNPortStatsParser
                                                     },
                                                     cacheConfig: {
                                                         getDataFromCache: function (ucid) {
@@ -85,7 +85,7 @@ define([
                                                         setData2Cache: function (ucid, dataObject) {
                                                             mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
                                                         },
-                                                        ucid: ctwc.get(ctwc.UCID_PROJECT_PORT_STATS, projectFQN)
+                                                        ucid: ctwc.get(ctwc.UCID_PROJECT_VN_PORT_STATS, projectFQN)
                                                     }
                                                 },
                                                 parseFn: function (responseArray) {

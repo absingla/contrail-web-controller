@@ -56,7 +56,8 @@ define([
         this.UCID_DEFAULT_DOMAIN_VN = this.DEFAULT_DOMAIN + ":virtual-networks";
         this.UCID_DEFAULT_DOMAIN_PROJECTS = this.DEFAULT_DOMAIN + ":projects";
 
-        this.UCID_PROJECT_PORT_STATS = "{0}:port-stats";
+        this.UCID_PROJECT_VN_PORT_STATS = "{0}:port-stats";
+        this.UCID_NETWORK_TRAFFIC_STATS = "{0}:traffic-stats";
 
         this.get = function () {
             var args = arguments;

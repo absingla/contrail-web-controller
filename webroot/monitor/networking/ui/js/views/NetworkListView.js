@@ -49,7 +49,7 @@ define([
                     {
                         columns: [
                             {
-                                elementId: ctwl.NETWORKS_SCATTER_CHART_ID,
+                                elementId: ctwl.NETWORKS_PORTS_SCATTER_CHART_ID,
                                 title: ctwl.TITLE_NETWORKS,
                                 view: "ScatterChartView",
                                 viewConfig: {
