@@ -36,7 +36,7 @@ define([
                                     activate: function (e, ui) {
                                         var selTab = $(ui.newTab.context).text();
                                         if (selTab == ctwl.TITLE_PORT_DISTRIBUTION) {
-                                            $('#' + ctwl.PROJECT_PORT_DIST_ID).find('svg').trigger('refresh');
+                                            $('#' + ctwl.PROJECT_PORTS_SCATTER_CHART_ID).find('svg').trigger('refresh');
                                         } else if (selTab == ctwl.TITLE_NETWORKS) {
                                             $('#' + ctwl.PROJECT_NETWORK_GRID_ID).data('contrailGrid').refreshView();
                                         } else if (selTab == ctwl.TITLE_INSTANCES) {
@@ -44,6 +44,26 @@ define([
                                         }
                                     },
                                     tabs: [
+                                        {
+                                            elementId: ctwl.PROJECT_NETWORKS_ID,
+                                            title: ctwl.TITLE_NETWORKS,
+                                            view: "NetworkGridView",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: {
+                                                projectFQN: projectFQN,
+                                                parentType: 'project'
+                                            }
+                                        },
+                                        {
+                                            elementId: ctwl.PROJECT_INSTANCES_ID,
+                                            title: ctwl.TITLE_INSTANCES,
+                                            view: "InstanceListView",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: {
+                                                parentUUID: projectUUID,
+                                                parentType: 'project'
+                                            }
+                                        },
                                         {
                                             elementId: ctwl.PROJECT_PORTS_SCATTER_CHART_ID,
                                             title: ctwl.TITLE_PORT_DISTRIBUTION,
@@ -134,26 +154,6 @@ define([
                                                     }
                                                     return retObj;
                                                 }
-                                            }
-                                        },
-                                        {
-                                            elementId: ctwl.PROJECT_NETWORKS_ID,
-                                            title: ctwl.TITLE_NETWORKS,
-                                            view: "NetworkGridView",
-                                            app: cowc.APP_CONTRAIL_CONTROLLER,
-                                            viewConfig: {
-                                                projectFQN: projectFQN,
-                                                parentType: 'project'
-                                            }
-                                        },
-                                        {
-                                            elementId: ctwl.PROJECT_INSTANCES_ID,
-                                            title: ctwl.TITLE_INSTANCES,
-                                            view: "InstanceListView",
-                                            app: cowc.APP_CONTRAIL_CONTROLLER,
-                                            viewConfig: {
-                                                parentUUID: projectUUID,
-                                                parentType: 'project'
                                             }
                                         }
                                     ]
