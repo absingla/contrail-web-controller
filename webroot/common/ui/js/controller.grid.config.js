@@ -261,7 +261,7 @@ define([
             return {
                 remote: {
                     ajaxConfig: {
-                        url: ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS,
+                        url: ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 10),
                         type: 'POST',
                         data: JSON.stringify({
                             data: [{

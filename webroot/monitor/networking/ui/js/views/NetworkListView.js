@@ -14,7 +14,7 @@ define([
             var self = this, viewConfig = this.attributes.viewConfig;
 
             var ajaxConfig = {
-                url: ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS),
+                url: ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 10),
                 type: "POST"
             };
 
@@ -54,7 +54,7 @@ define([
                                 view: "ScatterChartView",
                                 viewConfig: {
                                     class: "port-distribution-chart",
-                                    chartConfig: {},
+                                    loadChartInChunks: true,
                                     parseFn: function (response) {
                                         return {
                                             d: [{key: 'Networks', values: response}],

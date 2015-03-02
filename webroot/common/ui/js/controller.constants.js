@@ -9,21 +9,21 @@ define([
 
         this.URL_PROJECT_CONNECTED_GRAPH = '/api/tenant/monitoring/project-connected-graph?fqName={0}';
         this.URL_PROJECT_CONFIG_GRAPH = '/api/tenant/monitoring/project-config-graph?fqName={0}';
-        this.URL_PROJECT_INSTANCES_DETAILS = '/api/tenant/networking/virtual-machines/details?fqnUUID={0}&count=25&type={1}';
-        this.URL_PROJECT_NETWORKS = '/api/tenant/networking/virtual-networks/details?count=25&fqn={0}';
+        this.URL_PROJECT_INSTANCES_IN_CHUNKS = '/api/tenant/networking/virtual-machines/details?fqnUUID={0}&count={1}&type={2}';
+        this.URL_PROJECT_NETWORKS_IN_CHUNKS = '/api/tenant/networking/virtual-networks/details?count={0}&fqn={1}';
 
         this.URL_NETWORK_CONNECTED_GRAPH = '/api/tenant/monitoring/network-connected-graph?fqName={0}';
         this.URL_NETWORK_CONFIG_GRAPH = '/api/tenant/monitoring/network-config-graph?fqName={0}';
         this.URL_NETWORK_SUMMARY = 'api/tenant/networking/virtual-network/summary?fqNameRegExp={0}'
         this.URL_ALL_NETWORKS_DETAILS = '/api/tenant/networking/virtual-networks/details';
 
-        this.URL_NETWORKS_DETAILS_IN_CHUNKS = '/api/tenant/networking/virtual-networks/details?count=25';
+        this.URL_NETWORKS_DETAILS_IN_CHUNKS = '/api/tenant/networking/virtual-networks/details?count={0}';
         this.URL_NETWORK_SUMMARY = '/api/tenant/networking/virtual-network/summary?fqNameRegExp={0}';
 
         this.URL_NETWORK_TRAFFIC_STATS = '/api/tenant/networking/flow-series/vn?minsSince={0}&fqName={1}&sampleCnt={2}&useServerTime=true';
 
         this.URL_INSTANCE_SUMMARY = '/api/tenant/networking/virtual-machine/summary?fqNameRegExp={0}?flat';
-        this.URL_INSTANCE_DETAILS_IN_CHUNKS = '/api/tenant/networking/virtual-machines/details?count=25';
+        this.URL_INSTANCE_DETAILS_IN_CHUNKS = '/api/tenant/networking/virtual-machines/details?count={0}';
 
 
         this.URL_VM_VN_STATS = '/api/tenant/networking/stats';
@@ -45,10 +45,7 @@ define([
 
         this.get = function () {
             var args = arguments;
-            return args[0].replace(/\{(\d+)\}/g, function (m, n) {
-                n = parseInt(n) + 1;
-                return args[n];
-            });
+            return cowc.getValueFromTemplate(args);
         };
 
         this.TMPL_VN_PORT_HEAT_CHART = "network-port-heat-chart-template";

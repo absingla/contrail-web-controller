@@ -14,7 +14,7 @@ define([
             var self = this, viewConfig = this.attributes.viewConfig;
 
             var ajaxConfig = {
-                url: ctwc.URL_INSTANCE_DETAILS_IN_CHUNKS,
+                url: ctwc.get(ctwc.URL_INSTANCE_DETAILS_IN_CHUNKS, 25),
                 type: 'POST',
                 data: JSON.stringify({
                     data: [{"type": ctwc.TYPE_VIRTUAL_MACHINE, "cfilt": ctwc.FILTERS_COLUMN_VM.join(',')}]
