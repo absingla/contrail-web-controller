@@ -38,7 +38,7 @@ if (!module.parent)
 }
 
 //No of times to retry to check for VN on API Server
-var maxRetryCnt = 30;
+var maxRetryCnt = 100;
 function ifNetworkExists(appData,projUUID,name,callback,retryCnt) {
     if(retryCnt == null)
         retryCnt = 0;
@@ -57,14 +57,34 @@ function ifNetworkExists(appData,projUUID,name,callback,retryCnt) {
                 var nwUUID = data[i]['uuid'];
                 var nwName = data[i]['to'][2];
                 if(nwName == name) {
-                    callback(nwUUID);
-                    return;
+                        callback(nwUUID);
+                        return;
+                    }
                 }
             }
-        }
         setTimeout(function() {
             ifNetworkExists(appData,projUUID,name,callback,retryCnt);
-        },3000);
+        },500);
+    });
+}
+
+function waitForNetworkDelete(appData,vnUUID,callback,retryCnt) {
+    if(retryCnt == null)
+        retryCnt = 0;
+    if(retryCnt == maxRetryCnt) {
+        callback(false);
+        return;
+    }
+    retryCnt++;
+    var networkURL = '/virtual-network/' + vnUUID; 
+    configApiServer.apiGet(networkURL,appData,function(err,data) {
+        if(data['virtual-network'] == null) {
+            callback(true);
+            return;
+        }
+        setTimeout(function() {
+            waitForNetworkDelete(appData,vnUUID,callback,retryCnt);
+        },500);
     });
 }
 
@@ -145,7 +165,20 @@ function deleteVirtualNetwork (request, response, appData)
                             poolId = ipPoolsArr[i]['id'];
                     }
                     vCenterApi.destroyIpPool(appData,poolId).done(function(data) {
-                        commonUtils.handleJSONResponse(null,response,data);
+                        if(data['Fault'] != null) {
+                            commonUtils.handleJSONResponse({custom:true,responseCode:500,message:data['Fault']['faultstring']},response,null);
+                            return;
+                        } else {
+                            //Wait for network to be deleted from API server
+                            waitForNetworkDelete(appData,virtualNetworkId,function(result) {
+                                if(result == false) {
+                                    commonUtils.handleJSONResponse({custom:true,responseCode:500,message:'Error in deleting virtual network' + virtualNetworkId});
+                                    return
+                                } else {
+                                    commonUtils.handleJSONResponse(null,response,data);
+                                }
+                            });
+                        }
                     });
                 }
             });
