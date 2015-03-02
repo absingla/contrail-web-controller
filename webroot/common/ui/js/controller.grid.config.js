@@ -13,11 +13,11 @@ define([
         if ($.inArray(name, ['network']) > -1) {
             fqName = selRowDataItem['name'];
             uuid = selRowDataItem['uuid'];
-            layoutHandler.setURLHashParams({ fqName: fqName, uuid: uuid, type: "network", view: "details" }, {p: "mon_net_networks-beta", merge: false});
+            layoutHandler.setURLHashParams({ fqName: fqName, uuid: uuid, type: "network", view: "details" }, {p: "mon_networking_networks", merge: false});
         } else if ($.inArray(name, ['instance']) > -1) {
             vn = selRowDataItem['vnFQN'];
             uuid = selRowDataItem['name'];
-            layoutHandler.setURLHashParams({ uuid: uuid, vn: vn, type: "instance", view: "details" }, {p: "mon_net_instances-beta", merge: false});
+            layoutHandler.setURLHashParams({ uuid: uuid, vn: vn, type: "instance", view: "details" }, {p: "mon_networking_instances", merge: false});
         }
     };
 

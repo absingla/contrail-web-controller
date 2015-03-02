@@ -41,7 +41,7 @@ define([
 
             _ignoreOnHashChange = true;
             layoutHandler.setURLHashObj({
-                p: 'mon_net_projects-beta',
+                p: 'mon_networking_projects',
                 q: {
                     fqName: projectFQN,
                     view:'details'
@@ -84,7 +84,7 @@ define([
 
             _ignoreOnHashChange = true;
             layoutHandler.setURLHashObj({
-                p: 'mon_net_networks-beta',
+                p: 'mon_networking_networks',
                 q: {
                     fqName: networkFQN,
                     view:'details',

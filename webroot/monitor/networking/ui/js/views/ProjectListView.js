@@ -73,9 +73,9 @@ define([
                                                         source: 'uve'
                                                     }
                                                 },
-                                                conf: {p: 'mon_net_project-beta', merge: false}
+                                                conf: {p: 'mon_networking_project', merge: false}
                                             },
-                                            chartOptions: {tooltipFn: tenantNetworkMonitor.projectTooltipFn},
+                                            chartOptions: {tooltipFn: tenantNetworkMonitor.projectTooltipFn, clickFn: onScatterChartClick},
                                             hideLoadingIcon: false
                                         }
                                     }
@@ -97,6 +97,19 @@ define([
                 ]
             }
         }
+    };
+
+    function onScatterChartClick(chartConfig) {
+        var obj = {
+            fqName: chartConfig['name'],
+            view: "details",
+            type: "project"
+        };
+
+        layoutHandler.setURLHashParams(obj, {
+            p: "mon_networking_projects",
+            merge: false
+        });
     };
 
     return ProjectListView;

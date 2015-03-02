@@ -66,9 +66,9 @@ define([
                                                 hashParams: {
                                                     q: { view: 'list', type: 'network', fqName: 'default:domain', source: 'uve', context: 'domain' }
                                                 },
-                                                conf: {p: 'mon_net_networks-beta', merge: false}
+                                                conf: {p: 'mon_networking_networks', merge: false}
                                             },
-                                            chartOptions: {tooltipFn: tenantNetworkMonitor.networkTooltipFn},
+                                            chartOptions: {tooltipFn: tenantNetworkMonitor.networkTooltipFn, clickFn: onScatterChartClick},
                                             hideLoadingIcon: false
                                         }
                                     }
@@ -90,6 +90,19 @@ define([
                 ]
             }
         }
+    };
+
+    function onScatterChartClick(chartConfig) {
+        var obj = {
+            fqName: chartConfig['name'],
+            view: "details",
+            type: "network"
+        };
+
+        layoutHandler.setURLHashParams(obj, {
+            p: "mon_networking_networks",
+            merge: false
+        });
     };
 
     return NetworkListView;

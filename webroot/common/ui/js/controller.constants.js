@@ -40,8 +40,8 @@ define([
         this.TYPE_VIRTUAL_NETWORK = "virtual-network";
         this.TYPE_VIRTUAL_MACHINE = "virtual-machine";
 
-        this.URL_NETWORK = '/#p=mon_net_networks-beta&q[fqName]={{params.fqName}}&q[uuid]=&q[type]=network&q[view]=details';
-        this.URL_INSTANCE = '/#p=mon_net_instances-beta&q[uuid]={{key}}&q[vn]={{params.vn}}&q[type]=instance&q[view]=details';
+        this.URL_NETWORK = '/#p=mon_networking_networks&q[fqName]={{params.fqName}}&q[uuid]=&q[type]=network&q[view]=details';
+        this.URL_INSTANCE = '/#p=mon_networking_instances&q[uuid]={{key}}&q[vn]={{params.vn}}&q[type]=instance&q[view]=details';
 
         this.get = function () {
             var args = arguments;

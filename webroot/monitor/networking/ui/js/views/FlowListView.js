@@ -112,7 +112,7 @@ define([
                                                     obj['type'] = "flow";
                                                     obj['view'] = "details";
                                                     layoutHandler.setURLHashParams(obj, {
-                                                        p: "mon_net_networks-beta",
+                                                        p: "mon_networking_networks",
                                                         merge: false
                                                     });
                                                 },
