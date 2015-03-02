@@ -46,7 +46,7 @@ define([
                                                     url: instanceDetailsUrl,
                                                     type: 'GET'
                                                 },
-                                                templateConfig: getDetailsViewTemplateConfig(),
+                                                templateConfig: getInstanceDetailsTemplateConfig(),
                                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                                 dataParser: function(response) {
                                                     return {value: response};
@@ -63,7 +63,7 @@ define([
         }
     };
 
-    function getDetailsViewTemplateConfig() {
+    var getInstanceDetailsTemplateConfig = function() {
         return {
             templateGenerator: 'RowSectionTemplateGenerator',
             templateGeneratorConfig: {
@@ -76,8 +76,8 @@ define([
                                     class: 'span6',
                                     rows: [
                                         {
-                                            templateGenerator: 'BlockListTemplateGenerator',
                                             title: ctwl.TITLE_INSTANCE_DETAILS,
+                                            templateGenerator: 'BlockListTemplateGenerator',
                                             templateGeneratorConfig: [
                                                 {
                                                     key: 'name',
@@ -95,8 +95,8 @@ define([
                                     class: 'span6',
                                     rows: [
                                         {
-                                            templateGenerator: 'BlockListTemplateGenerator',
                                             title: ctwl.TITLE_CPU_INFO,
+                                            templateGenerator: 'BlockListTemplateGenerator',
                                             templateGeneratorConfig: [
                                                 {
                                                     key: 'value.UveVirtualMachineAgent.cpu_info.cpu_one_min_avg',

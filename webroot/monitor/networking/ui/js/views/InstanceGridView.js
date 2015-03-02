@@ -71,7 +71,7 @@ define([
                     autoRefresh: false,
                     checkboxSelectable: false,
                     detail: {
-                        template: cowu.generateDetailTemplateHTML(getDetailsTemplateConfig(), cowc.APP_CONTRAIL_CONTROLLER)
+                        template: cowu.generateDetailTemplateHTML(getInstanceDetailsTemplateConfig(), cowc.APP_CONTRAIL_CONTROLLER)
                     }
                 },
                 dataSource: {
@@ -107,7 +107,7 @@ define([
         return gridElementConfig;
     };
 
-    var getDetailsTemplateConfig = function() {
+    var getInstanceDetailsTemplateConfig = function() {
         return {
             templateGenerator: 'RowSectionTemplateGenerator',
             templateGeneratorConfig: {

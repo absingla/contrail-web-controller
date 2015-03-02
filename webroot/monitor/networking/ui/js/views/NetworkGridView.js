@@ -74,7 +74,7 @@ define([
                     autoRefresh: false,
                     checkboxSelectable: false,
                     detail: {
-                        template: cowu.generateDetailTemplateHTML(getDetailsTemplateConfig(), cowc.APP_CONTRAIL_CONTROLLER)
+                        template: cowu.generateDetailTemplateHTML(getNetworkDetailsTemplateConfig(), cowc.APP_CONTRAIL_CONTROLLER)
                     }
                 },
                 dataSource: {
@@ -102,7 +102,7 @@ define([
     };
 
 
-    function getDetailsTemplateConfig() {
+    function getNetworkDetailsTemplateConfig() {
         return {
             templateGenerator: 'RowSectionTemplateGenerator',
             templateGeneratorConfig: {

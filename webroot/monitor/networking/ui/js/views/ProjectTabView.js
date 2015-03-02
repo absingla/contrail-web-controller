@@ -57,7 +57,7 @@ define([
                                         {
                                             elementId: ctwl.PROJECT_INSTANCES_ID,
                                             title: ctwl.TITLE_INSTANCES,
-                                            view: "InstanceListView",
+                                            view: "InstanceGridView",
                                             app: cowc.APP_CONTRAIL_CONTROLLER,
                                             viewConfig: {
                                                 parentUUID: projectUUID,
