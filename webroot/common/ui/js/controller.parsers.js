@@ -220,6 +220,10 @@ define([
             return projectList;
         };
 
+        this.projectPortStatsParser = function (response) {
+            return [response];
+        };
+
         this.parseNetworks4PortMap = function (data) {
             var response = data['res'];
             var result = {};

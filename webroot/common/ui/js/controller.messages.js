@@ -23,10 +23,7 @@ define([
 
         this.get = function () {
             var args = arguments;
-            return args[0].replace(/\{(\d+)\}/g, function (m, n) {
-                n = parseInt(n) + 1;
-                return args[n];
-            });
+            return cowu.getValueFromTemplate(args);
         };
     };
     return CTMessages;

@@ -76,7 +76,7 @@ define([
                         setData2Cache: function (ucid, dataObject) {
                             mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
                         },
-                        ucid: ctwc.UCID_DEFAULT_DOMAIN_PROJECTS + "-2" // TODO: Handle multi-tenancy
+                        ucid: ctwc.UCID_DEFAULT_DOMAIN_PROJECTS // TODO: Handle multi-tenancy
                     }
                 }
             },

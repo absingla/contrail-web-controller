@@ -58,6 +58,13 @@ define([
         this.UCID_ALL_VM = "all-virtual-machines";
         this.UCID_DEFAULT_DOMAIN_VN = this.DEFAULT_DOMAIN + ":virtual-networks";
         this.UCID_DEFAULT_DOMAIN_PROJECTS = this.DEFAULT_DOMAIN + ":projects";
+
+        this.UCID_PROJECT_PORT_STATS = "{0}:port-stats";
+
+        this.get = function () {
+            var args = arguments;
+            return cowu.getValueFromTemplate(args);
+        };
     };
     return CTConstants;
 });
