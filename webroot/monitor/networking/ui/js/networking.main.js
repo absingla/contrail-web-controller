@@ -24,6 +24,7 @@ function MonitorNetworkingLoader() {
         });
     };
     this.renderView = function (renderFn, hashParams) {
+        $(contentContainer).html("");
         switch (renderFn) {
             case 'renderProjects':
                 if (hashParams.view == "details") {
