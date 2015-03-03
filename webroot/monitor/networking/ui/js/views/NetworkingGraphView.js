@@ -26,21 +26,21 @@ define([
         },
 
         renderConnectedGraph: function (graphConfig, selectorId, connectedSelectorId, configSelectorId) {
-            var connectedGraph = $.extend(true, {}, graphConfig, {
+            var connectedGraphConfig = $.extend(true, {}, graphConfig, {
                 forceFit: true,
                 generateElementsFn: getElements4ConnectedGraph
             });
 
 
-            connectedGraph['cacheConfig']['getDataFromCache'] = function(ucid) {
+            connectedGraphConfig['cacheConfig']['getDataFromCache'] = function(ucid) {
                 return mnPageLoader.mnView.graphCache[ucid];
             };
 
-            connectedGraph['cacheConfig']['setData2Cache'] = function(ucid, dataObject) {
+            connectedGraphConfig['cacheConfig']['setData2Cache'] = function(ucid, dataObject) {
                 mnPageLoader.mnView.graphCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
             };
 
-            var connectedGraphModel = new ContrailGraphModel(connectedGraph);
+            var connectedGraphModel = new ContrailGraphModel(connectedGraphConfig);
 
             var connectedGraphView = new GraphView({
                 el: $(connectedSelectorId),
@@ -65,20 +65,20 @@ define([
         },
 
         renderConfigGraph: function (graphConfig, configSelectorId) {
-            var configGraph = $.extend(true, {}, graphConfig, {
+            var confGraphConfig = $.extend(true, {}, graphConfig, {
                 forceFit: false,
                 generateElementsFn: getElements4ConfigGraph
             });
 
-            configGraph['cacheConfig']['getDataFromCache'] = function(ucid) {
+            confGraphConfig['cacheConfig']['getDataFromCache'] = function(ucid) {
                 return mnPageLoader.mnView.graphCache[ucid];
             };
 
-            configGraph['cacheConfig']['setData2Cache'] = function(ucid, dataObject) {
+            confGraphConfig['cacheConfig']['setData2Cache'] = function(ucid, dataObject) {
                 mnPageLoader.mnView.graphCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
             };
 
-            var configGraphModel = new ContrailGraphModel(configGraph);
+            var configGraphModel = new ContrailGraphModel(confGraphConfig);
 
             var configGraphView = new GraphView({
                 el: $(configSelectorId),

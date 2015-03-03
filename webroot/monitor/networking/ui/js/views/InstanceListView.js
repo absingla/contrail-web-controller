@@ -26,7 +26,9 @@ define([
                     ajaxConfig: ajaxConfig,
                     dataParser: ctwp.instanceDataParser
                 },
-                lazyRemote: ctwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE),
+                vlRemoteConfig: {
+                    vlRemoteList: ctwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
+                },
                 cacheConfig : {
                     getDataFromCache: function (ucid) {
                         return mnPageLoader.mnView.listCache[ucid];

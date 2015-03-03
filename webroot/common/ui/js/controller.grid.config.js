@@ -277,9 +277,9 @@ define([
                 vlRemoteConfig: {
                     completeCallback: function(contrailListModel, parentListModel) {
                         ctwp.projectNetworksDataParser(parentListModel, contrailListModel);
-                    }
+                    },
+                    vlRemoteList: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
                 },
-                lazyRemote: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK),
                 cacheConfig: {
                     getDataFromCache: function (ucid) {
                         return mnPageLoader.mnView.listCache[ucid];

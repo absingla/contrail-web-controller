@@ -82,7 +82,9 @@ define([
                         ajaxConfig: networkRemoteConfig,
                         dataParser: ctwp.networkDataParser
                     },
-                    lazyRemote: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK),
+                    vlRemoteConfig: {
+                        vlRemoteList: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
+                    },
                     cacheConfig: {
                         getDataFromCache: function (ucid) {
                             return mnPageLoader.mnView.listCache[ucid];
