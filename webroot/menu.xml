@@ -183,7 +183,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     </resources>
                     <items>
                         <item>
-                            <hash>mon_networking_projects</hash>
+                            <hash>mon_networking_dashboard</hash>
                             <label>Dashboard</label>
                             <resources>
                                 <resource>
