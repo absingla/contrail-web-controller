@@ -79,13 +79,7 @@ define([
                                                         dataParser: ctwp.projectVNPortStatsParser
                                                     },
                                                     cacheConfig: {
-                                                        getDataFromCache: function (ucid) {
-                                                            return mnPageLoader.mnView.listCache[ucid];
-                                                        },
-                                                        setData2Cache: function (ucid, dataObject) {
-                                                            mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-                                                        },
-                                                        ucid: ctwc.get(ctwc.UCID_PROJECT_VN_PORT_STATS, projectFQN)
+                                                        ucid: ctwc.get(ctwc.UCID_PROJECT_VN_PORT_STATS_LIST, projectFQN)
                                                     }
                                                 },
                                                 parseFn: function (responseArray) {

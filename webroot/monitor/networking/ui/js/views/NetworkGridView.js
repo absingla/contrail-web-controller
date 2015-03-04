@@ -26,7 +26,7 @@ define([
             };
 
             // TODO: Handle multi-tenancy
-            var ucid = projectFQN != null ? (projectFQN + ":virtual-networks") : ctwc.UCID_ALL_VN;
+            var ucid = projectFQN != null ? (ctwc.UCID_PREFIX_MN_LISTS + projectFQN + ":virtual-networks") : ctwc.UCID_ALL_VN_LIST;
 
             cowu.renderView4Config(that.$el, self.model, getNetworkListViewConfig(networkRemoteConfig, ucid));
 
@@ -86,12 +86,6 @@ define([
                         vlRemoteList: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
                     },
                     cacheConfig: {
-                        getDataFromCache: function (ucid) {
-                            return mnPageLoader.mnView.listCache[ucid];
-                        },
-                        setData2Cache: function (ucid, dataObject) {
-                            mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-                        },
                         ucid: ucid
                     }
                 }

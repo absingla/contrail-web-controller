@@ -31,15 +31,6 @@ define([
                 generateElementsFn: getElements4ConnectedGraph
             });
 
-
-            connectedGraphConfig['cacheConfig']['getDataFromCache'] = function(ucid) {
-                return mnPageLoader.mnView.graphCache[ucid];
-            };
-
-            connectedGraphConfig['cacheConfig']['setData2Cache'] = function(ucid, dataObject) {
-                mnPageLoader.mnView.graphCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-            };
-
             var connectedGraphModel = new ContrailGraphModel(connectedGraphConfig);
 
             var connectedGraphView = new GraphView({
@@ -69,14 +60,6 @@ define([
                 forceFit: false,
                 generateElementsFn: getElements4ConfigGraph
             });
-
-            confGraphConfig['cacheConfig']['getDataFromCache'] = function(ucid) {
-                return mnPageLoader.mnView.graphCache[ucid];
-            };
-
-            confGraphConfig['cacheConfig']['setData2Cache'] = function(ucid, dataObject) {
-                mnPageLoader.mnView.graphCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-            };
 
             var configGraphModel = new ContrailGraphModel(confGraphConfig);
 

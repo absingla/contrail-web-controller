@@ -51,13 +51,25 @@ define([
         this.TMPL_VN_PORT_HEAT_CHART = "network-port-heat-chart-template";
 
         this.DEFAULT_DOMAIN = "default-domain";
-        this.UCID_ALL_VN = "all-virtual-networks";
-        this.UCID_ALL_VM = "all-virtual-machines";
-        this.UCID_DEFAULT_DOMAIN_VN = this.DEFAULT_DOMAIN + ":virtual-networks";
-        this.UCID_DEFAULT_DOMAIN_PROJECTS = this.DEFAULT_DOMAIN + ":projects";
+        this.UCID_PREFIX_MN = "monitor-networking";
+        this.UCID_PREFIX_BREADCRUMB = "breadcrumb";
+        this.UCID_PREFIX_GRAPHS = "graphs";
+        this.UCID_PREFIX_CHARTS = "charts";
+        this.UCID_PREFIX_LISTS = "lists";
+        this.UCID_PREFIX_PROJECTS = "projects";
+        this.UCID_PREFIX_NETWORKS = "networks";
+        this.UCID_PREFIX_INSTANCES = "instances";
+        this.UCID_PREFIX_MN_LISTS = this.UCID_PREFIX_MN + ":" + this.UCID_PREFIX_LISTS + ":";
+        this.UCID_PREFIX_MN_GRAPHS = this.UCID_PREFIX_MN + ":" + this.UCID_PREFIX_GRAPHS + ":";
+        this.UCID_PREFIX_MN_CHARTS = this.UCID_PREFIX_MN + ":" + this.UCID_PREFIX_CHARTS + ":";
 
-        this.UCID_PROJECT_VN_PORT_STATS = "{0}:port-stats";
-        this.UCID_NETWORK_TRAFFIC_STATS = "{0}:traffic-stats";
+        this.UCID_ALL_VN_LIST = this.UCID_PREFIX_MN_LISTS + "all-virtual-networks";
+        this.UCID_ALL_VM_LIST = this.UCID_PREFIX_MN_LISTS + "all-virtual-machines";
+        this.UCID_DEFAULT_DOMAIN_VN_LIST = this.UCID_PREFIX_MN_LISTS + this.DEFAULT_DOMAIN + ":virtual-networks";
+        this.UCID_DEFAULT_DOMAIN_PROJECT_LIST = this.UCID_PREFIX_MN_LISTS + this.DEFAULT_DOMAIN + ":projects";
+
+        this.UCID_PROJECT_VN_PORT_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:port-stats";
+        this.UCID_NETWORK_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:traffic-stats";
 
         this.get = function () {
             var args = arguments;

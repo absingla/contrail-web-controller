@@ -30,13 +30,7 @@ define([
                     vlRemoteList: ctwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
                 },
                 cacheConfig : {
-                    getDataFromCache: function (ucid) {
-                        return mnPageLoader.mnView.listCache[ucid];
-                    },
-                    setData2Cache: function (ucid, dataObject) {
-                        mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-                    },
-                    ucid: ctwc.UCID_ALL_VM
+                    ucid: ctwc.UCID_ALL_VM_LIST
                 }
             };
 

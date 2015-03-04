@@ -83,13 +83,7 @@ define([
                                                         dataParser: ctwp.vnTrafficStatsParser
                                                     },
                                                     cacheConfig: {
-                                                        getDataFromCache: function (ucid) {
-                                                            return mnPageLoader.mnView.listCache[ucid];
-                                                        },
-                                                        setData2Cache: function (ucid, dataObject) {
-                                                            mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-                                                        },
-                                                        ucid: ctwc.get(ctwc.UCID_NETWORK_TRAFFIC_STATS, networkFQN)
+                                                        ucid: ctwc.get(ctwc.UCID_NETWORK_TRAFFIC_STATS_LIST, networkFQN)
                                                     }
                                                 },
                                                 parseFn: parseLineChartData
@@ -110,13 +104,7 @@ define([
                                                         dataParser: ctwp.projectVNPortStatsParser
                                                     },
                                                     cacheConfig: {
-                                                        getDataFromCache: function (ucid) {
-                                                            return mnPageLoader.mnView.listCache[ucid];
-                                                        },
-                                                        setData2Cache: function (ucid, dataObject) {
-                                                            mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-                                                        },
-                                                        ucid: ctwc.get(ctwc.UCID_PROJECT_VN_PORT_STATS, networkFQN)
+                                                        ucid: ctwc.get(ctwc.UCID_PROJECT_VN_PORT_STATS_LIST, networkFQN)
                                                     }
                                                 },
                                                 parseFn: function (responseArray) {

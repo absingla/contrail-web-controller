@@ -2,7 +2,7 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 
-var ctwc, ctwgc, ctwl, ctwm, ctwp, ctInitComplete = false;
+var ctwc, ctwch, ctwgc, ctwl, ctwm, ctwp, ctInitComplete = false;
 
 require.config({
     baseUrl: '/',
@@ -13,7 +13,8 @@ require.config({
         'controller-utils': 'common/ui/js/controller.utils',
         'controller-messages': 'common/ui/js/controller.messages',
         'controller-init': 'common/ui/js/controller.init',
-        'controller-parsers': 'common/ui/js/controller.parsers'
+        'controller-parsers': 'common/ui/js/controller.parsers',
+        'controller-cache': 'common/ui/js/controller.cache'
     },
     waitSeconds: 0
 })

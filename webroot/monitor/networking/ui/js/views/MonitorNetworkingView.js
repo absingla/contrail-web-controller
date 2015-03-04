@@ -9,9 +9,6 @@ define([
 ], function (_, Backbone, BreadcrumbView) {
     var MonitorNetworkingView = Backbone.View.extend({
         el: $(contentContainer),
-        graphCache: {},
-        chartCache: {},
-        listCache: {},
 
         renderProjectList: function () {
             cowu.renderView4Config(this.$el, null, getProjectListConfig());
@@ -317,7 +314,7 @@ define([
             },
             fqName: fqName,
             cacheConfig: {
-                ucid: fqName + keySuffix
+                ucid: ctwc.UCID_PREFIX_MN_GRAPHS + fqName + keySuffix
             },
             focusedElement: focusedElement
         };

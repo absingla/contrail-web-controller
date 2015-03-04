@@ -27,13 +27,7 @@ define([
                     vlRemoteList: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
                 },
                 cacheConfig: {
-                    getDataFromCache: function (ucid) {
-                        return mnPageLoader.mnView.listCache[ucid];
-                    },
-                    setData2Cache: function (ucid, dataObject) {
-                        mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-                    },
-                    ucid: ctwc.UCID_ALL_VN
+                    ucid: ctwc.UCID_ALL_VN_LIST
                 }
             };
 

@@ -25,13 +25,7 @@ define([
                     dataParser: ctwp.projectDataParser
                 },
                 cacheConfig: {
-                    getDataFromCache: function (ucid) {
-                        return mnPageLoader.mnView.listCache[ucid];
-                    },
-                    setData2Cache: function (ucid, dataObject) {
-                        mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-                    },
-                    ucid: ctwc.UCID_DEFAULT_DOMAIN_PROJECTS //TODO: Handle multi-tenancy
+                    ucid: ctwc.UCID_DEFAULT_DOMAIN_PROJECT_LIST //TODO: Handle multi-tenancy
                 }
             };
 

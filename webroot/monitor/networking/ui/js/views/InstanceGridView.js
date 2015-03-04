@@ -24,7 +24,7 @@ define([
             };
 
             // TODO: Handle multi-tenancy
-            var ucid = (parentUUID != null) ? (parentUUID + ":" + 'virtual-machines') : ctwc.UCID_ALL_VM;
+            var ucid = (parentUUID != null) ? (ctwc.UCID_PREFIX_MN_LISTS + parentUUID + ":" + 'virtual-machines') : ctwc.UCID_ALL_VM_LIST;
 
             cowu.renderView4Config(that.$el, this.model, getInstanceListViewConfig(instanceRemoteConfig, ucid));
         }
@@ -83,12 +83,6 @@ define([
                         vlRemoteList: ctwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
                     },
                     cacheConfig : {
-                        getDataFromCache: function (ucid) {
-                            return mnPageLoader.mnView.listCache[ucid];
-                        },
-                        setData2Cache: function (ucid, dataObject) {
-                            mnPageLoader.mnView.listCache[ucid] = {lastUpdateTime: $.now(), dataObject: dataObject};
-                        },
                         ucid: ucid
                     }
                 }
