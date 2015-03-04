@@ -228,6 +228,10 @@ define([
             return [response];
         };
 
+        this.vmTrafficStatsParser = function (response) {
+            return [response];
+        };
+
         this.parseNetworks4PortMap = function (data) {
             var response = data['res'];
             var result = {};
@@ -271,6 +275,27 @@ define([
             result['type'] = data['type'];
             result['pType'] = data['pType'];
             return result;
+        };
+
+        this.parseLineChartData = function(responseArray) {
+            var response = responseArray[0],
+                rawdata = response['flow-series'],
+                inBytes = {key: "In Bytes", values: [], color: d3_category5[0]}, outBytes = {
+                    key: "Out Bytes",
+                    values: [],
+                    color: d3_category5[1]
+                },
+                inPackets = {key: "In Packets", values: []}, outPackets = {key: "Out Packets", values: []},
+                chartData = [inBytes, outBytes];
+
+            for (var i = 0; i < rawdata.length; i++) {
+                var ts = Math.floor(rawdata[i].time / 1000);
+                inBytes.values.push({x: ts, y: rawdata[i].inBytes});
+                outBytes.values.push({x: ts, y: rawdata[i].outBytes});
+                inPackets.values.push({x: ts, y: rawdata[i].inPkts});
+                outPackets.values.push({x: ts, y: rawdata[i].outPkts});
+            }
+            return chartData;
         };
     };
 

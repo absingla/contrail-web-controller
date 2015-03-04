@@ -24,6 +24,7 @@ define([
 
         this.URL_INSTANCE_SUMMARY = '/api/tenant/networking/virtual-machine/summary?fqNameRegExp={0}?flat';
         this.URL_INSTANCE_DETAILS_IN_CHUNKS = '/api/tenant/networking/virtual-machines/details?count={0}';
+        this.URL_INSTANCE_TRAFFIC_STATS = '/api/tenant/networking/flow-series/vm?minsSince={0}&fqName={1}&sampleCnt={2}&ip={3}&vmName={4}&vmVnName={5}&useServerTime=true';
 
 
         this.URL_VM_VN_STATS = '/api/tenant/networking/stats';
@@ -70,11 +71,15 @@ define([
 
         this.UCID_PROJECT_VN_PORT_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:port-stats";
         this.UCID_NETWORK_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:traffic-stats";
+        this.UCID_INSTANCE_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:traffic-stats";
 
         this.get = function () {
             var args = arguments;
             return cowu.getValueFromTemplate(args);
         };
+
+
+        this.UMID_INSTANCE_UVE = "uve:{0}";
     };
     return CTConstants;
 });

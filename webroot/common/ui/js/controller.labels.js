@@ -85,6 +85,7 @@ define([
         this.MONITOR_NETWORK_ID = "monitor-network";
         this.MONITOR_NETWORK_VIEW_ID = "monitor-network-view";
         this.MONITOR_INSTANCE_LIST_ID = "monitor-instance-list";
+        this.MONITOR_INSTANCE_PAGE_ID = "monitor-instance-page";
         this.MONITOR_INSTANCES_PAGE_ID = "monitor-instances-page";
         this.MONITOR_INSTANCE_LIST_VIEW_ID = "monitor-instance-list-view";
         this.MONITOR_INSTANCE_ID = "monitor-instance";
@@ -125,6 +126,7 @@ define([
         this.INSTANCE_GRAPH_ID = "instance-graph";
         this.INSTANCE_TABS_ID = "instance-tabs";
         this.INSTANCE_DETAILS_ID = "instance-details";
+        this.INSTANCE_TRAFFIC_STATS_ID = "instance-traffic-stats";
 
         this.FLOWS_SCATTER_CHART_ID = "flows-scatter-chart";
         this.FLOWS_GRID_ID = "flows-grid";

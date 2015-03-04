@@ -10,17 +10,17 @@ define([
         el: $(contentContainer),
 
         render: function () {
-            var self = this,
-                viewConfig = this.attributes.viewConfig;
+            var self = this, viewConfig = this.attributes.viewConfig,
+                modelMap = this.modelMap;
 
-            cowu.renderView4Config(self.$el, null, getInstanceViewConfig(viewConfig));
+            cowu.renderView4Config(self.$el, null, getInstanceTabViewConfig(viewConfig), null, null, modelMap);
         }
-
     });
 
-    var getInstanceViewConfig = function (viewConfig) {
+    function getInstanceTabViewConfig(viewConfig) {
         var instanceUUID = viewConfig['instanceUUID'],
-            instanceDetailsUrl = ctwc.get(ctwc.URL_INSTANCE_SUMMARY, instanceUUID);
+            instanceDetailsUrl = ctwc.get(ctwc.URL_INSTANCE_SUMMARY, instanceUUID),
+            networkFQN = viewConfig['networkFQN'];
 
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_VIEW_ID, '-section']),
@@ -35,6 +35,9 @@ define([
                                 viewConfig: {
                                     activate: function (e, ui) {
                                         var selTab = $(ui.newTab.context).text();
+                                        if (selTab == ctwl.TITLE_TRAFFIC_STATISTICS) {
+                                            $('#' + ctwl.INSTANCE_TRAFFIC_STATS_ID).find('svg').trigger('refresh');
+                                        }
                                     },
                                     tabs: [
                                         {
@@ -46,11 +49,33 @@ define([
                                                     url: instanceDetailsUrl,
                                                     type: 'GET'
                                                 },
+                                                modelKey: ctwc.get(ctwc.UMID_INSTANCE_UVE, instanceUUID),
                                                 templateConfig: getInstanceDetailsTemplateConfig(),
                                                 app: cowc.APP_CONTRAIL_CONTROLLER,
-                                                dataParser: function(response) {
+                                                dataParser: function (response) {
                                                     return {value: response};
                                                 }
+                                            }
+                                        },
+                                        {
+                                            elementId: ctwl.INSTANCE_TRAFFIC_STATS_ID,
+                                            title: ctwl.TITLE_TRAFFIC_STATISTICS,
+                                            view: "LineWithFocusChartView",
+                                            viewConfig: {
+                                                modelConfig: {
+                                                    remote: {
+                                                        ajaxConfig: {
+                                                            //url: ctwc.get(ctwc.URL_INSTANCE_TRAFFIC_STATS, 60, networkFQN, 120, '10.3.1.3', instanceUUID, vmVnName),
+                                                            url: ctwc.get(ctwc.URL_NETWORK_TRAFFIC_STATS, 60, networkFQN, 120),
+                                                            type: 'GET'
+                                                        },
+                                                        dataParser: ctwp.vmTrafficStatsParser
+                                                    },
+                                                    cacheConfig: {
+                                                        ucid: ctwc.get(ctwc.UCID_INSTANCE_TRAFFIC_STATS_LIST, instanceUUID)
+                                                    }
+                                                },
+                                                parseFn: ctwp.parseLineChartData
                                             }
                                         }
                                     ]
@@ -63,7 +88,7 @@ define([
         }
     };
 
-    var getInstanceDetailsTemplateConfig = function() {
+    var getInstanceDetailsTemplateConfig = function () {
         return {
             templateGenerator: 'RowSectionTemplateGenerator',
             templateGeneratorConfig: {

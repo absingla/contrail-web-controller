@@ -45,8 +45,8 @@ define([
                 }
             });
 
-            var connectedGraph = getGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONNECTED_GRAPH, projectFQN), projectFQN, ':connected', 'Project'),
-                configGraph = getGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONFIG_GRAPH, projectFQN), projectFQN, ':config', 'Project');
+            var connectedGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONNECTED_GRAPH, projectFQN), projectFQN, ':connected', 'Project'),
+                configGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONFIG_GRAPH, projectFQN), projectFQN, ':config', 'Project');
 
             cowu.renderView4Config(this.$el, null, getProjectConfig(connectedGraph, configGraph, projectFQN, projectUUID));
         },
@@ -90,8 +90,8 @@ define([
                 }
             });
 
-            var connectedGraph = getGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), networkFQN, ':connected', 'Network'),
-                configGraph = getGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONFIG_GRAPH, networkFQN), networkFQN, ':config', 'Network');
+            var connectedGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), networkFQN, ':connected', 'Network'),
+                configGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONFIG_GRAPH, networkFQN), networkFQN, ':config', 'Network');
 
             cowu.renderView4Config(this.$el, null, getNetworkConfig(connectedGraph, configGraph, networkFQN, networkUUID));
         },
@@ -131,10 +131,7 @@ define([
                 project = contrail.getCookie(cowc.COOKIE_PROJECT),
                 networkFQN = domain + ':' + project + ':' + networkObj.name;
 
-            var connectedGraph = getGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), instanceUUID, ':connected', 'Instance'),
-                configGraph = getGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONFIG_GRAPH, networkFQN), networkFQN, ':config', 'Instance');
-
-            cowu.renderView4Config(this.$el, null, getInstanceConfig(connectedGraph, configGraph, networkFQN, instanceUUID));
+            cowu.renderView4Config(this.$el, null, getInstanceConfig(networkFQN, instanceUUID));
         },
 
         renderInstanceList: function (projectUUID) {
@@ -212,34 +209,12 @@ define([
         }
     };
 
-    function getInstanceConfig(connectedGraph, configGraph, networkFQN, instanceUUID) {
+    function getInstanceConfig(networkFQN, instanceUUID) {
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_ID]),
-            view: "SectionView",
-            viewConfig: {
-                rows: [
-                    {
-                        columns: [
-                            {
-                                elementId: ctwl.INSTANCE_GRAPH_ID,
-                                view: "NetworkingGraphView",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {connectedGraph: connectedGraph, configGraph: configGraph}
-                            }
-                        ]
-                    },
-                    {
-                        columns: [
-                            {
-                                elementId: ctwl.MONITOR_INSTANCE_VIEW_ID,
-                                view: "InstanceTabView",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {networkFQN: networkFQN, instanceUUID: instanceUUID}
-                            }
-                        ]
-                    }
-                ]
-            }
+            elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_PAGE_ID]),
+            view: "InstanceView",
+            app: cowc.APP_CONTRAIL_CONTROLLER,
+            viewConfig: {networkFQN: networkFQN, instanceUUID: instanceUUID}
         }
     };
 
@@ -302,23 +277,6 @@ define([
                 ]
             }
         }
-    };
-
-    function getGraphConfig(url, fqName, keySuffix, focusedElement) {
-        return {
-            remote: {
-                ajaxConfig: {
-                    url: url,
-                    type: 'GET'
-                }
-            },
-            fqName: fqName,
-            cacheConfig: {
-                ucid: ctwc.UCID_PREFIX_MN_GRAPHS + fqName + keySuffix
-            },
-            focusedElement: focusedElement
-        };
-
     };
 
     function getURLConfigForGrid(viewConfig) {
