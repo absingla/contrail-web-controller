@@ -5,24 +5,6 @@
 define([
     'underscore'
 ], function (_) {
-
-    var onClickGrid = function (e, selRowDataItem) {
-        var name = $(e.target).attr('name'),
-            fqName, uuid, vn;
-        if ($.inArray(name, ['project']) > -1) {
-            fqName = selRowDataItem['name'];
-            layoutHandler.setURLHashParams({ fqName: fqName, type: "project", view: "details" }, {p: "mon_networking_projects", merge: false});
-        } else if ($.inArray(name, ['network']) > -1) {
-            fqName = selRowDataItem['name'];
-            uuid = selRowDataItem['uuid'];
-            layoutHandler.setURLHashParams({ fqName: fqName, uuid: uuid, type: "network", view: "details" }, {p: "mon_networking_networks", merge: false});
-        } else if ($.inArray(name, ['instance']) > -1) {
-            vn = selRowDataItem['vnFQN'];
-            uuid = selRowDataItem['name'];
-            layoutHandler.setURLHashParams({ uuid: uuid, vn: vn, type: "instance", view: "details" }, {p: "mon_networking_instances", merge: false});
-        }
-    };
-
     var CTGridConfig = function () {
         this.projectNetworksColumns = [
             {
@@ -372,6 +354,23 @@ define([
                 searchable: true
             }
         ];
+    };
+
+    function onClickGrid(e, selRowDataItem) {
+        var name = $(e.target).attr('name'),
+            fqName, uuid, vn;
+        if ($.inArray(name, ['project']) > -1) {
+            fqName = selRowDataItem['name'];
+            layoutHandler.setURLHashParams({ fqName: fqName, type: "project", view: "details" }, {p: "mon_networking_projects", merge: false});
+        } else if ($.inArray(name, ['network']) > -1) {
+            fqName = selRowDataItem['name'];
+            uuid = selRowDataItem['uuid'];
+            layoutHandler.setURLHashParams({ fqName: fqName, uuid: uuid, type: "network", view: "details" }, {p: "mon_networking_networks", merge: false});
+        } else if ($.inArray(name, ['instance']) > -1) {
+            vn = selRowDataItem['vnFQN'];
+            uuid = selRowDataItem['name'];
+            layoutHandler.setURLHashParams({ uuid: uuid, vn: vn, type: "instance", view: "details" }, {p: "mon_networking_instances", merge: false});
+        }
     };
 
     return CTGridConfig;
