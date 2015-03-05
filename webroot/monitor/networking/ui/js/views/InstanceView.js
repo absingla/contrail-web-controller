@@ -33,8 +33,8 @@ define([
             var contrailViewModel = new ContrailViewModel(viewModelConfig);
             modelMap[viewModelConfig['modelKey']] = contrailViewModel;
 
-            var connectedGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), instanceUUID, ':connected', 'Instance'),
-                configGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONFIG_GRAPH, networkFQN), networkFQN, ':config', 'Instance');
+            var connectedGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), {fqName: networkFQN, instanceUUID: instanceUUID}, ':connected', 'Instance'),
+                configGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONFIG_GRAPH, networkFQN), {fqName: networkFQN, instanceUUID: instanceUUID}, ':config', 'Instance');
 
             cowu.renderView4Config(self.$el, null, getInstanceViewConfig(connectedGraph, configGraph, networkFQN, instanceUUID), null, null, modelMap);
         }
