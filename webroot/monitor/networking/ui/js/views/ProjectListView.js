@@ -82,7 +82,7 @@ define([
                                 title: ctwl.TITLE_PROJECTS,
                                 view: "ProjectGridView",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {}
+                                viewConfig: {pagerOptions: { options: { pageSize: 10, pageSizeSelect: [10, 50, 100] } }}
                             }
                         ]
                     }

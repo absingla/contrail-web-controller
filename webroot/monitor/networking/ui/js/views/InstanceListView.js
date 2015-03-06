@@ -52,7 +52,7 @@ define([
                                 title: ctwl.TITLE_INSTANCES,
                                 view: "InstanceGridView",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {}
+                                viewConfig: {pagerOptions: { options: { pageSize: 25, pageSizeSelect: [20, 50, 100] } }}
                             }
                         ]
                     }

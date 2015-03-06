@@ -11,18 +11,19 @@ define([
 
         render: function () {
             var that = this,
-                viewConfig = this.attributes.viewConfig;
+                viewConfig = this.attributes.viewConfig,
+                pagerOptions = viewConfig['pagerOptions'];
 
             var projectsRemoteConfig = {
                 url: networkPopulateFns.getProjectsURL(ctwc.DEFAULT_DOMAIN),
                 type: 'GET'
             };
 
-            cowu.renderView4Config(that.$el, this.model, getProjectListViewConfig(projectsRemoteConfig));
+            cowu.renderView4Config(that.$el, this.model, getProjectListViewConfig(projectsRemoteConfig, pagerOptions));
         }
     });
 
-    var getProjectListViewConfig = function (projectsRemoteConfig) {
+    var getProjectListViewConfig = function (projectsRemoteConfig, pagerOptions) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_LIST_VIEW_ID]),
             view: "SectionView",
@@ -35,7 +36,7 @@ define([
                                 title: ctwl.TITLE_PROJECTS,
                                 view: "GridView",
                                 viewConfig: {
-                                    elementConfig: getProjectGridConfig(projectsRemoteConfig)
+                                    elementConfig: getProjectGridConfig(projectsRemoteConfig, pagerOptions)
                                 }
                             }
                         ]
@@ -45,7 +46,7 @@ define([
         }
     };
 
-    var getProjectGridConfig = function (projectsRemoteConfig) {
+    var getProjectGridConfig = function (projectsRemoteConfig, pagerOptions) {
         var gridElementConfig = {
             header: {
                 title: {
@@ -76,6 +77,9 @@ define([
             },
             columnHeader: {
                 columns: ctwgc.projectsColumns
+            },
+            footer: {
+                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 5, pageSizeSelect: [5, 10, 50, 100] } })
             }
         };
         return gridElementConfig;

@@ -12,7 +12,8 @@ define([
         render: function () {
             var self = this,
                 viewConfig = this.attributes.viewConfig,
-                projectFQN = viewConfig['projectFQN'];
+                projectFQN = viewConfig['projectFQN'],
+                pagerOptions = viewConfig['pagerOptions'];
 
             var networkRemoteConfig = {
                 url: projectFQN != null ? ctwc.get(ctwc.URL_PROJECT_NETWORKS_IN_CHUNKS, 25, projectFQN, $.now()) : ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 25, $.now()),
@@ -28,12 +29,12 @@ define([
             // TODO: Handle multi-tenancy
             var ucid = projectFQN != null ? (ctwc.UCID_PREFIX_MN_LISTS + projectFQN + ":virtual-networks") : ctwc.UCID_ALL_VN_LIST;
 
-            cowu.renderView4Config(self.$el, self.model, getNetworkGridViewConfig(networkRemoteConfig, ucid));
+            cowu.renderView4Config(self.$el, self.model, getNetworkGridViewConfig(networkRemoteConfig, ucid, pagerOptions));
 
         }
     });
 
-    var getNetworkGridViewConfig = function (networkRemoteConfig, ucid) {
+    var getNetworkGridViewConfig = function (networkRemoteConfig, ucid, pagerOptions) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_LIST_VIEW_ID]),
             view: "SectionView",
@@ -46,7 +47,7 @@ define([
                                 title: ctwl.TITLE_NETWORKS,
                                 view: "GridView",
                                 viewConfig: {
-                                    elementConfig: getProjectNetworkGridConfig(networkRemoteConfig, ucid)
+                                    elementConfig: getProjectNetworkGridConfig(networkRemoteConfig, ucid, pagerOptions)
                                 }
                             }
                         ]
@@ -56,7 +57,7 @@ define([
         }
     };
 
-    var getProjectNetworkGridConfig = function (networkRemoteConfig, ucid) {
+    var getProjectNetworkGridConfig = function (networkRemoteConfig, ucid, pagerOptions) {
         var gridElementConfig = {
             header: {
                 title: {
@@ -92,6 +93,9 @@ define([
             },
             columnHeader: {
                 columns: ctwgc.projectNetworksColumns
+            },
+            footer: {
+                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 5, pageSizeSelect: [5, 10, 50, 100] } })
             }
         };
         return gridElementConfig;

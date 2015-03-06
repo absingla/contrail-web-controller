@@ -13,7 +13,8 @@ define([
             var that = this,
                 viewConfig = this.attributes.viewConfig,
                 parentUUID = viewConfig['parentUUID'],
-                parentType = viewConfig['parentType'];
+                parentType = viewConfig['parentType'],
+                pagerOptions = viewConfig['pagerOptions'];
 
             var instanceRemoteConfig = {
                 url: parentUUID != null ? ctwc.get(ctwc.URL_PROJECT_INSTANCES_IN_CHUNKS, parentUUID, 10, parentType, $.now()) : ctwc.get(ctwc.URL_INSTANCE_DETAILS_IN_CHUNKS, 25, $.now()),
@@ -26,11 +27,11 @@ define([
             // TODO: Handle multi-tenancy
             var ucid = (parentUUID != null) ? (ctwc.UCID_PREFIX_MN_LISTS + parentUUID + ":" + 'virtual-machines') : ctwc.UCID_ALL_VM_LIST;
 
-            cowu.renderView4Config(that.$el, this.model, getInstanceListViewConfig(instanceRemoteConfig, ucid));
+            cowu.renderView4Config(that.$el, this.model, getInstanceListViewConfig(instanceRemoteConfig, ucid, pagerOptions));
         }
     });
 
-    var getInstanceListViewConfig = function (instanceRemoteConfig, ucid) {
+    var getInstanceListViewConfig = function (instanceRemoteConfig, ucid, pagerOptions) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_LIST_VIEW_ID]),
             view: "SectionView",
@@ -43,7 +44,7 @@ define([
                                 title: ctwl.TITLE_INSTANCES,
                                 view: "GridView",
                                 viewConfig: {
-                                    elementConfig: getProjectInstancesConfig(instanceRemoteConfig, ucid)
+                                    elementConfig: getProjectInstancesConfig(instanceRemoteConfig, ucid, pagerOptions)
                                 }
                             }
                         ]
@@ -53,7 +54,7 @@ define([
         }
     };
 
-    var getProjectInstancesConfig = function (instanceRemoteConfig, ucid) {
+    var getProjectInstancesConfig = function (instanceRemoteConfig, ucid, pagerOptions) {
         var gridElementConfig = {
             header: {
                 title: {
@@ -91,13 +92,7 @@ define([
                 columns: ctwgc.projectInstancesColumns
             },
             footer: {
-                pager: {
-                    options: {
-                        pageSize: 25,
-                        pageSizeSelect: [25, 50, 100]
-                    }
-
-                }
+                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 5, pageSizeSelect: [5, 10, 50, 100] } })
             }
         };
         return gridElementConfig;
