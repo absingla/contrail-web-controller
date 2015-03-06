@@ -55,7 +55,7 @@ define([
                     refreshable: false,
                     searchable: true
                 },
-                customControls: ['<a class="toggleProtocol selected">ICMP</a>','<a class="toggleProtocol selected">UDP</a>','<a class="toggleProtocol selected">TCP</a>'],
+                advanceControls: getProtocolFilterActionConfig()
             },
             body: {
                 options: {
@@ -112,6 +112,57 @@ define([
             'portType'   : viewConfig['portType']
         }
         return urlConfigObj;
+    };
+
+    function getProtocolFilterActionConfig (){
+        var headerActionConfig = [
+            {
+                type: 'checked-multiselect',
+                iconClass: 'icon-filter',
+                placeholder: ctwl.TITLE_FILTER_BY_PROTOCOL,
+                elementConfig: {
+                    elementId: ctwl.PROJECT_FILTER_PROTOCOL_MULTISELECT_ID,
+                    dataTextField: 'text',
+                    dataValueField: 'id',
+                    noneSelectedText: ctwl.TITLE_FILTER_PROTOCOL,
+                    filterConfig: {
+                        placeholder: ctwl.TITLE_FILTER_BY_PROTOCOL,
+                    },
+                    minWidth: 100,
+                    height: 150,
+                    emptyOptionText: 'No Protocol found',
+                    data: [{
+                        id: 'Protocol',
+                        text: 'Protocol',
+                        children: ctwc.PROTOCOL_MAP
+                    }],
+                    click: applyProtocolFilter,
+                    optgrouptoggle: applyProtocolFilter,
+                    control: false
+                }
+            }
+        ];
+        return headerActionConfig;
+    };
+
+    function applyProtocolFilter (event, ui) {
+        var checkedRows = $('#' + ctwl.PROJECT_FILTER_PROTOCOL_MULTISELECT_ID).data('contrailCheckedMultiselect').getChecked(),
+            flowsGrid = $('#' + ctwl.PROJECT_FLOW_GRID_ID).data('contrailGrid'),
+            checkedProtocols = [];
+
+        $.each(checkedRows, function (checkedRowKey, checkedRowValue) {
+            checkedProtocols.push(parseInt($.parseJSON(unescape($(checkedRowValue).val())).value));
+        });
+
+        flowsGrid._dataView.setFilterArgs({checkedProtocols: checkedProtocols});
+        flowsGrid._dataView.setFilter(function (item, args) {
+            if (args['checkedProtocols'].length == 0) {
+                return true;
+            }
+            if (args['checkedProtocols'].indexOf(item['protocol']) > -1)
+                return true;
+            return false;
+        });
     };
 
     return FlowGridView;

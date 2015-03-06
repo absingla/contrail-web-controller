@@ -111,6 +111,7 @@ define([
         this.PROJECT_INSTANCE_GRID_ID = "project-instance-grid";
         this.PROJECTS_SCATTER_CHART_ID = "projects-scatter-chart";
         this.PROJECT_FLOW_GRID_ID = "project-flow-grid";
+        this.PROJECT_FILTER_PROTOCOL_MULTISELECT_ID = "project-filter-protocol-multiselect-id";
         this.PROJECTS_BREADCRUMB_DROPDOWN = "projects-breadcrumb-dropdown";
 
         this.NETWORK_GRAPH_ID = "network-graph";
@@ -141,6 +142,8 @@ define([
 
         this.TITLE_FLOWS= "Flows";
         this.TITLE_FLOWS_SUMMARY = "Flows Summary";
+        this.TITLE_FILTER_PROTOCOL = "Filter Protocol";
+        this.TITLE_FILTER_BY_PROTOCOL = "Filter by Protocol";
 
         this.TITLE_DETAILS = "Details";
         this.TITLE_INTERFACES = "Interfaces";
@@ -156,6 +159,7 @@ define([
 
         this.SOURCE_PORT = "Source Port";
         this.DESTINATION_PORT = "Destination Port";
+
     };
     return CTLabels;
 });
