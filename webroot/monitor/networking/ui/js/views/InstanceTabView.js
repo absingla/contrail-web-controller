@@ -53,28 +53,21 @@ define([
                                                 templateConfig: getInstanceDetailsTemplateConfig(),
                                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                                 dataParser: function (response) {
-                                                    return {value: response};
+                                                    return {
+                                                        name: instanceUUID,
+                                                        value: response
+                                                    };
                                                 }
                                             }
                                         },
                                         {
                                             elementId: ctwl.INSTANCE_TRAFFIC_STATS_ID,
                                             title: ctwl.TITLE_TRAFFIC_STATISTICS,
-                                            view: "LineWithFocusChartView",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            view: "InstanceTrafficStatsView",
                                             viewConfig: {
-                                                modelConfig: {
-                                                    remote: {
-                                                        ajaxConfig: {
-                                                            //url: ctwc.get(ctwc.URL_INSTANCE_TRAFFIC_STATS, 60, networkFQN, 120, '10.3.1.3', instanceUUID, vmVnName),
-                                                            url: ctwc.get(ctwc.URL_NETWORK_TRAFFIC_STATS, 60, networkFQN, 120),
-                                                            type: 'GET'
-                                                        },
-                                                        dataParser: ctwp.vmTrafficStatsParser
-                                                    },
-                                                    cacheConfig: {
-                                                        ucid: ctwc.get(ctwc.UCID_INSTANCE_TRAFFIC_STATS_LIST, instanceUUID)
-                                                    }
-                                                },
+                                                modelKey: ctwc.get(ctwc.UMID_INSTANCE_UVE, instanceUUID),
+                                                instanceUUID: instanceUUID,
                                                 parseFn: ctwp.parseLineChartData
                                             }
                                         }
@@ -109,7 +102,7 @@ define([
                                                     templateGenerator: 'TextGenerator'
                                                 },
                                                 {
-                                                    key: 'vRouter',
+                                                    key: 'value.UveVirtualMachineAgent.vrouter',
                                                     templateGenerator: 'TextGenerator'
                                                 }
                                             ]
@@ -165,6 +158,10 @@ define([
                                                     templateGenerator: 'TextGenerator'
                                                 },
                                                 dataColumn: [
+                                                    {
+                                                        key: 'name',
+                                                        templateGenerator: 'TextGenerator'
+                                                    },
                                                     {
                                                         key: 'uuid',
                                                         templateGenerator: 'TextGenerator'

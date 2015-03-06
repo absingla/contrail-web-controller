@@ -52,6 +52,7 @@ define([
         };
 
         this.TMPL_VN_PORT_HEAT_CHART = "network-port-heat-chart-template";
+        this.TMPL_INSTANCE_TRAFFIC_STATS = "instance-traffic-stats-tab-template";
 
         this.DEFAULT_DOMAIN = "default-domain";
         this.UCID_PREFIX_MN = "monitor-networking";
@@ -75,7 +76,7 @@ define([
 
         this.UCID_PROJECT_VN_PORT_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:port-stats";
         this.UCID_NETWORK_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:traffic-stats";
-        this.UCID_INSTANCE_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:traffic-stats";
+        this.UCID_INSTANCE_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:{1}:{2}:traffic-stats";
 
         this.get = function () {
             var args = arguments;

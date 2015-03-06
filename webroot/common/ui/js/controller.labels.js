@@ -60,7 +60,7 @@ define([
             cpu_one_min_avg: 'CPU',
             rss: 'Memory Used',
             vm_memory_quota: 'Memory Total',
-            vRouter: 'Virtual Router',
+            vrouter: 'Virtual Router',
 
             /*Interface Details */
             uuid: 'UUID',
@@ -128,6 +128,8 @@ define([
         this.INSTANCE_TABS_ID = "instance-tabs";
         this.INSTANCE_DETAILS_ID = "instance-details";
         this.INSTANCE_TRAFFIC_STATS_ID = "instance-traffic-stats";
+        this.INSTANCE_TRAFFIC_STATS_DROPDOWN_ID = "instance-traffic-stats-dropdown";
+        this.INSTANCE_TRAFFIC_STATS_CHART_ID = "instance-traffic-stats-chart";
 
         this.FLOWS_SCATTER_CHART_ID = "flows-scatter-chart";
         this.FLOWS_GRID_ID = "flows-grid";

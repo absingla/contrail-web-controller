@@ -25,7 +25,7 @@ define([
                         type: 'GET'
                     },
                     dataParser: function(response) {
-                        return {value: response};
+                        return {name: instanceUUID, value: response};
                     }
                 }
             };
