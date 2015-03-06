@@ -4,198 +4,302 @@
 
 define([
     'underscore',
-    'backbone'
-], function (_, Backbone) {
+    'backbone',
+    'contrail-list-model'
+], function (_, Backbone, ContrailListModel) {
     var BreadcrumbView = Backbone.View.extend({
 
         renderDomainBreadcrumbDropdown: function(fqName, initCB, changeCB) {
-            contrail.ajaxHandler({
-                url: '/api/tenants/config/domains', //TODO - Move to Constants
-                async: false
-            }, function(){
 
-            }, function(response) {
-                if (response.domains.length > 0) {
+            var ajaxConfig = {
+                url: ctwc.URL_ALL_DOMAINS
+            };
 
-                    var domainDropdownElementId = ctwl.DOMAINS_BREADCRUMB_DROPDOWN,
-                        domainDropdownElement = constructBreadcrumbDropdownDOM(domainDropdownElementId),
-                        selectedValueData = null,
-                        urlDomainFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,1).join(':') : null),
-                        cookieDomainFQN = contrail.getCookie(cowc.COOKIE_DOMAIN),
-                        urlDataKey = null, cookieDataKey = null;
-
-                    var dropdownData = $.map(response.domains, function (n, i) {
-                        if (urlDomainFQN == n.fq_name.join(':')) {
-                            urlDataKey = i;
-                        }
-
-                        if (cookieDomainFQN == n.fq_name.join(':')) {
-                            cookieDataKey = i;
-                        }
-
-                        return {
-                            name: n.fq_name[0],
-                            value: n.uuid
-                        };
-                    });
-
-                    selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
-                    selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
-                    selectedValueData = (selectedValueData == null) ? dropdownData[0] : selectedValueData;
-
-                    var domainDropdown = domainDropdownElement.contrailDropdown({
-                        dataTextField: "name",
-                        dataValueField: "value",
-                        data: dropdownData,
-                        change: function (e) {
-                            var selectedValueData = {
-                                name: domainDropdownElement.data('contrailDropdown').text(),
-                                value: domainDropdownElement.data('contrailDropdown').value()
+            var listModelConfig = {
+                remote: {
+                    ajaxConfig: ajaxConfig,
+                    dataParser: function(response) {
+                        return  $.map(response.domains, function (n, i) {
+                            return {
+                                fq_name: n.fq_name.join(':'),
+                                name: n.fq_name[0],
+                                value: n.uuid
                             };
-
-                            (contrail.checkIfFunction(changeCB) ? changeCB(selectedValueData) : initCB(selectedValueData));
-                            destroyBreadcrumbDropdownDOM(ctwl.PROJECTS_BREADCRUMB_DROPDOWN);
-                            destroyBreadcrumbDropdownDOM(ctwl.NETWORKS_BREADCRUMB_DROPDOWN);
-                        }
-                    }).data('contrailDropdown');
-
-                    domainDropdown.text(selectedValueData.name);
-                    initCB(selectedValueData);
-
-                } else {
-                    //TODO - Empty message - that.$el.html(ctwm.NO_PROJECT_FOUND);
+                        });
+                    },
+                    errorCallback: function() {
+                        //TODO
+                    }
+                },
+                cacheConfig : {
+                    ucid: ctwc.UCID_BC_ALL_DOMAINS,
+                    loadOnTimeout: false
                 }
-            }, function(error) {
-               // TODO - show some error message
+            };
+
+            var contrailListModel = new ContrailListModel(listModelConfig);
+
+            if(contrailListModel.loadedFromCache || !(contrailListModel.isRequestInProgress())) {
+                populateDomainBreadcrumbDropdown(contrailListModel, fqName, initCB, changeCB);
+            }
+
+            contrailListModel.onAllRequestsComplete.subscribe(function() {
+                populateDomainBreadcrumbDropdown(contrailListModel, fqName, initCB, changeCB);
             });
+
         },
 
         renderProjectBreadcrumbDropdown: function(fqName, initCB, changeCB) {
-            var domain = contrail.getCookie(cowc.COOKIE_DOMAIN);
-            contrail.ajaxHandler({
-                url: networkPopulateFns.getProjectsURL(domain),
-                async: false
-            }, function(){
+            var domain = getDomainFromFQN(fqName);
 
-            }, function(response) {
-                if (response.projects.length > 0) {
+            var ajaxConfig = {
+                url: networkPopulateFns.getProjectsURL(domain)
+            };
 
-                    var projectDropdownElementId = ctwl.PROJECTS_BREADCRUMB_DROPDOWN,
-                        projectDropdownElement = constructBreadcrumbDropdownDOM(projectDropdownElementId),
-                        selectedValueData = null,
-                        urlProjectFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,2).join(':') : null),
-                        cookieProjectFQN = domain + ':' + contrail.getCookie(cowc.COOKIE_PROJECT),
-                        urlDataKey = null, cookieDataKey = null;
-
-                    var dropdownData = $.map(response.projects, function (n, i) {
-                        if (urlProjectFQN == n.fq_name.join(':')) {
-                            urlDataKey = i;
-                        }
-
-                        if (cookieProjectFQN == n.fq_name.join(':')) {
-                            cookieDataKey = i;
-                        }
-
-                        return {
-                            name: n.fq_name[1],
-                            value: n.uuid
-                        };
-                    });
-
-                    selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
-                    selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
-                    selectedValueData = (selectedValueData == null) ? dropdownData[0] : selectedValueData;
-
-                    var projectDropdown = projectDropdownElement.contrailDropdown({
-                        dataTextField: "name",
-                        dataValueField: "value",
-                        data: dropdownData,
-                        change: function (e) {
-                            var selectedValueData = {
-                                name: projectDropdownElement.data('contrailDropdown').text(),
-                                value: projectDropdownElement.data('contrailDropdown').value()
+            var listModelConfig = {
+                remote: {
+                    ajaxConfig: ajaxConfig,
+                    dataParser: function(response) {
+                        return  $.map(response.projects, function (n, i) {
+                            return {
+                                fq_name: n.fq_name.join(':'),
+                                name: n.fq_name[1],
+                                value: n.uuid
                             };
-
-                            (contrail.checkIfFunction(changeCB) ? changeCB(selectedValueData) : initCB(selectedValueData));
-                            destroyBreadcrumbDropdownDOM(ctwl.NETWORKS_BREADCRUMB_DROPDOWN);
-                        }
-                    }).data('contrailDropdown');
-
-                    projectDropdown.text(selectedValueData.name);
-                    initCB(selectedValueData);
-
-                } else {
-                    //TODO - Empty message - that.$el.html(ctwm.NO_PROJECT_FOUND);
+                        });
+                    },
+                    errorCallback: function() {
+                        //TODO
+                    }
+                },
+                cacheConfig : {
+                    ucid: ctwc.get(ctwc.UCID_BC_DOMAIN_ALL_PROJECTS, domain),
+                    loadOnTimeout: false
                 }
-            }, function(error) {
-               // TODO - show some error message
-            });
+            };
+
+            var contrailListModel = new ContrailListModel(listModelConfig);
+
+            if(contrailListModel != null) {
+                if(contrailListModel.loadedFromCache || !(contrailListModel.isRequestInProgress())) {
+                    populateProjectBreadcrumbDropdown(contrailListModel, fqName, initCB, changeCB);
+                } else {
+                    contrailListModel.onAllRequestsComplete.subscribe(function() {
+                        populateProjectBreadcrumbDropdown(contrailListModel, fqName, initCB, changeCB);
+                    });
+                }
+            }
         },
 
         renderNetworkBreadcrumbDropdown: function(fqName, initCB, changeCB) {
-            var domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
-                project = contrail.getCookie(cowc.COOKIE_PROJECT),
+            var domain = getDomainFromFQN(fqName),
+                project = getProjectFromFQN(fqName),
                 projectFQN = domain + ':' + project;
-            contrail.ajaxHandler({
-                url: '/api/tenants/networks/' + projectFQN, //TODO - Move to Constants
-                async: false
-            }, function(){
 
-            }, function(response) {
-                if (response['virtual-networks'].length > 0) {
+            var ajaxConfig = {
+                url: ctwc.get(ctwc.URL_PROJECT_ALL_NETWORKS, projectFQN)
+            };
 
-                    var networkDropdownElementId = ctwl.NETWORKS_BREADCRUMB_DROPDOWN,
-                        networkDropdownElement = constructBreadcrumbDropdownDOM(networkDropdownElementId),
-                        selectedValueData = null,
-                        urlNetworkFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,3).join(':') : null),
-                        cookieNetworkFQN = projectFQN + ':' + contrail.getCookie(cowc.COOKIE_VIRTUAL_NETWORK),
-                        urlDataKey = null, cookieDataKey = null;
-
-                    var dropdownData = $.map(response['virtual-networks'], function (n, i) {
-                        if (urlNetworkFQN == n.fq_name.join(':')) {
-                            urlDataKey = i;
-                        }
-
-                        if (cookieNetworkFQN == n.fq_name.join(':')) {
-                            cookieDataKey = i;
-                        }
-
-                        return {
-                            name: n.fq_name[2],
-                            value: n.uuid
-                        };
-                    });
-
-                    selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
-                    selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
-                    selectedValueData = (selectedValueData == null) ? dropdownData[0] : selectedValueData;
-
-                    var networkDropdown = networkDropdownElement.contrailDropdown({
-                        dataTextField: "name",
-                        dataValueField: "value",
-                        data: dropdownData,
-                        change: function (e) {
-                            var selectedValueData = {
-                                name: networkDropdownElement.data('contrailDropdown').text(),
-                                value: networkDropdownElement.data('contrailDropdown').value()
+            var listModelConfig = {
+                remote: {
+                    ajaxConfig: ajaxConfig,
+                    dataParser: function(response) {
+                        return  $.map(response['virtual-networks'], function (n, i) {
+                            return {
+                                fq_name: n.fq_name.join(':'),
+                                name: n.fq_name[2],
+                                value: n.uuid
                             };
-
-                            (contrail.checkIfFunction(changeCB) ? changeCB(selectedValueData) : initCB(selectedValueData));
-                        }
-                    }).data('contrailDropdown');
-
-                    networkDropdown.text(selectedValueData.name);
-                    initCB(selectedValueData);
-
-                } else {
-                    //TODO - Empty message - that.$el.html(ctwm.NO_PROJECT_FOUND);
+                        });
+                    },
+                    errorCallback: function() {
+                        //TODO
+                    }
+                },
+                cacheConfig : {
+                    ucid: ctwc.get(ctwc.UCID_BC_PROJECT_ALL_NETWORKS, projectFQN),
+                    loadOnTimeout: false
                 }
-            }, function(error) {
-               // TODO - show some error message
+            };
+
+            var contrailListModel = new ContrailListModel(listModelConfig);
+
+            if(contrailListModel.loadedFromCache || !(contrailListModel.isRequestInProgress())) {
+                populateNetworkBreadcrumbDropdown(contrailListModel, fqName, initCB, changeCB);
+            }
+            contrailListModel.onAllRequestsComplete.subscribe(function() {
+                populateNetworkBreadcrumbDropdown(contrailListModel, fqName, initCB, changeCB);
             });
         }
 
     });
+
+    var populateDomainBreadcrumbDropdown = function(contrailListModel, fqName, initCB, changeCB) {
+        var dropdownData = contrailListModel.getItems();
+
+        if (dropdownData.length > 0) {
+            var domainDropdownElementId = ctwl.DOMAINS_BREADCRUMB_DROPDOWN,
+                domainDropdownElement = constructBreadcrumbDropdownDOM(domainDropdownElementId),
+                selectedValueData = null,
+                urlDomainFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,1).join(':') : null),
+                cookieDomainFQN = contrail.getCookie(cowc.COOKIE_DOMAIN),
+                urlDataKey = null, cookieDataKey = null;
+
+            $.each(dropdownData, function (key, value) {
+                if (urlDomainFQN == value.fq_name) {
+                    urlDataKey = key;
+                }
+
+                if (cookieDomainFQN == value.fq_name) {
+                    cookieDataKey = key;
+                }
+            });
+
+            if(urlDomainFQN != null && urlDataKey == null) {
+                $(contentContainer).html('<p id="content-container-error"><i class="icon-warning-sign"></i> &nbsp; ' + urlDomainFQN + ' is not a valid domain.</p>'); //TODO - Styles
+            } else {
+                selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
+                selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
+                selectedValueData = (selectedValueData == null) ? dropdownData[0] : selectedValueData;
+
+                var domainDropdown = domainDropdownElement.contrailDropdown({
+                    dataTextField: "name",
+                    dataValueField: "value",
+                    data: dropdownData,
+                    change: function (e) {
+                        var selectedValueData = {
+                            name: domainDropdownElement.data('contrailDropdown').text(),
+                            value: domainDropdownElement.data('contrailDropdown').value()
+                        };
+
+                        (contrail.checkIfFunction(changeCB) ? changeCB(selectedValueData) : initCB(selectedValueData));
+                        destroyBreadcrumbDropdownDOM(ctwl.PROJECTS_BREADCRUMB_DROPDOWN);
+                        destroyBreadcrumbDropdownDOM(ctwl.NETWORKS_BREADCRUMB_DROPDOWN);
+                    }
+                }).data('contrailDropdown');
+
+                domainDropdown.text(selectedValueData.name);
+                initCB(selectedValueData);
+            }
+
+
+        } else {
+            //TODO - Empty message - that.$el.html(ctwm.NO_PROJECT_FOUND);
+        }
+
+    };
+
+    var populateProjectBreadcrumbDropdown = function(contrailListModel, fqName, initCB, changeCB) {
+        var dropdownData = contrailListModel.getItems();
+
+        if (dropdownData.length > 0) {
+            var projectDropdownElementId = ctwl.PROJECTS_BREADCRUMB_DROPDOWN,
+                projectDropdownElement = constructBreadcrumbDropdownDOM(projectDropdownElementId),
+                selectedValueData = null,
+                urlProjectFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,2).join(':') : null),
+                cookieProjectFQN = contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' + contrail.getCookie(cowc.COOKIE_PROJECT),
+                urlDataKey = null, cookieDataKey = null;
+
+            $.each(dropdownData, function (key, value) {
+                if (urlProjectFQN == value.fq_name) {
+                    urlDataKey = key;
+                }
+
+                if (cookieProjectFQN == value.fq_name) {
+                    cookieDataKey = key;
+                }
+            });
+
+            if(urlProjectFQN != null && urlDataKey == null) {
+                $(contentContainer).html('<p id="content-container-error"><i class="icon-warning-sign"></i> &nbsp; ' + urlProjectFQN + ' is not a valid project.</p>'); //TODO - Styles
+            } else {
+                selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
+                selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
+                selectedValueData = (selectedValueData == null) ? dropdownData[0] : selectedValueData;
+
+                var projectDropdown = projectDropdownElement.contrailDropdown({
+                    dataTextField: "name",
+                    dataValueField: "value",
+                    data: dropdownData,
+                    change: function (e) {
+                        var selectedValueData = {
+                            name: projectDropdownElement.data('contrailDropdown').text(),
+                            value: projectDropdownElement.data('contrailDropdown').value()
+                        };
+
+                        (contrail.checkIfFunction(changeCB) ? changeCB(selectedValueData) : initCB(selectedValueData));
+                        destroyBreadcrumbDropdownDOM(ctwl.NETWORKS_BREADCRUMB_DROPDOWN);
+                    }
+                }).data('contrailDropdown');
+
+                projectDropdown.text(selectedValueData.name);
+                initCB(selectedValueData);
+            }
+
+        } else {
+            //TODO - Empty message - that.$el.html(ctwm.NO_PROJECT_FOUND);
+        }
+    };
+
+    var populateNetworkBreadcrumbDropdown = function(contrailListModel, fqName, initCB, changeCB) {
+        var dropdownData = contrailListModel.getItems();
+
+        if (dropdownData.length > 0) {
+            var networkDropdownElementId = ctwl.NETWORKS_BREADCRUMB_DROPDOWN,
+                networkDropdownElement = constructBreadcrumbDropdownDOM(networkDropdownElementId),
+                selectedValueData = null,
+                urlNetworkFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,3).join(':') : null),
+                cookieNetworkFQN = contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' + contrail.getCookie(cowc.COOKIE_PROJECT) + ':' + contrail.getCookie(cowc.COOKIE_VIRTUAL_NETWORK),
+                urlDataKey = null, cookieDataKey = null;
+
+            $.each(dropdownData, function (key, value) {
+                if (urlNetworkFQN == value.fq_name) {
+                    urlDataKey = key;
+                }
+
+                if (cookieNetworkFQN == value.fq_name) {
+                    cookieDataKey = key;
+                }
+            });
+
+            if(urlNetworkFQN != null && urlDataKey == null) {
+                $(contentContainer).html('<p id="content-container-error"><i class="icon-warning-sign"></i> &nbsp; ' + urlNetworkFQN + ' is not a valid Network.</p>'); //TODO - Styles
+            } else {
+
+                selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
+                selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
+                selectedValueData = (selectedValueData == null) ? dropdownData[0] : selectedValueData;
+
+                var networkDropdown = networkDropdownElement.contrailDropdown({
+                    dataTextField: "name",
+                    dataValueField: "value",
+                    data: dropdownData,
+                    change: function (e) {
+                        var selectedValueData = {
+                            name: networkDropdownElement.data('contrailDropdown').text(),
+                            value: networkDropdownElement.data('contrailDropdown').value()
+                        };
+
+                        (contrail.checkIfFunction(changeCB) ? changeCB(selectedValueData) : initCB(selectedValueData));
+                    }
+                }).data('contrailDropdown');
+
+                networkDropdown.text(selectedValueData.name);
+                initCB(selectedValueData);
+            }
+
+        } else {
+            //TODO - Empty message - that.$el.html(ctwm.NO_PROJECT_FOUND);
+        }
+    };
+
+    var getDomainFromFQN = function(fqName) {
+        return contrail.checkIfExist(fqName) ? fqName.split(':')[0] : contrail.getCookie(cowc.COOKIE_DOMAIN);
+    };
+
+    var getProjectFromFQN = function(fqName) {
+        return contrail.checkIfExist(fqName) ? fqName.split(':')[1] : contrail.getCookie(cowc.COOKIE_DOMAIN);
+    };
 
     var constructBreadcrumbDropdownDOM = function(breadcrumbDropdownId) {
         var breadcrumbElement = $('#breadcrumb'); //TODO - move to constants
