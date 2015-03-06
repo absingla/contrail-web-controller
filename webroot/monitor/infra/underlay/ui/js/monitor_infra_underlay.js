@@ -985,7 +985,7 @@ underlayView.prototype.initTooltipConfig = function() {
                 return 'Physical Router';
             },
             content: function(element, graph) {
-                var viewElement = graph.getCell(element.attr('model-id'));
+                var viewElement = _this.getGraph().getCell(element.attr('model-id'));
                 var tooltipContent = contrail.getTemplate4Id('tooltip-content-template');
 
                 var ifLength = 0;
@@ -1205,6 +1205,9 @@ underlayView.prototype.addDimlightToNodes = function() {
     $('div.font-element')
         .removeClass('elementHighlighted')
         .addClass('dimHighlighted');
+    $('div.font-element')
+        .find('i')
+            .css("color", "#555");
     $('g.element')
         .removeClassSVG('elementHighlighted')
         .addClassSVG('dimHighlighted');
@@ -1220,11 +1223,18 @@ underlayView.prototype.addDimlightToLinks = function() {
 underlayView.prototype.addHighlightToNode = function(node_model_id) {
     $('div.font-element[font-element-model-id="' + node_model_id + '"]')
         .addClass('elementHighlighted')
-        .removeClass('dimHighlighted');
+        .removeClass('dimHighlighted')
+        .removeClass('hidden');
 
     $('g.element[model-id="' + node_model_id + '"]')
         .addClassSVG('elementHighlighted')
-        .removeClassSVG('dimHighlighted');
+        .removeClassSVG('dimHighlighted')
+        .removeClassSVG('hidden');
+
+    $('div.font-element[font-element-model-id="' + node_model_id + '"]')
+        .find('i')
+            .css("color", "#498AB9");
+
 }
 
 underlayView.prototype.hideLink = function(link_model_id) {
@@ -1240,9 +1250,33 @@ underlayView.prototype.hideNode = function(node_model_id) {
         .removeClassSVG('dimHighlighted')
         .addClassSVG('hidden');
     $('div.font-element[font-element-model-id="' + node_model_id + '"]')
-        .removeClassSVG('elementHighlighted')
+        .removeClass('elementHighlighted')
+        .removeClass('dimHighlighted')
+        .addClass('hidden');
+}
+
+underlayView.prototype.addHighlightToLink = function(link_model_id) {
+    $('g.link[model-id="' + link_model_id + '"]')
+        .removeClassSVG('hidden')
         .removeClassSVG('dimHighlighted')
-        .addClassSVG('hidden');
+        .addClassSVG('elementHighlighted');
+
+    $('g.link[model-id="' + link_model_id + '"]')
+        .find('path.connection')
+            .css("stroke", "#498AB9");
+    $('g.link[model-id="' + link_model_id + '"]')
+        .find('path.marker-source')
+            .css("fill", "#498AB9")
+            .css("stroke", "#498AB9");
+    $('g.link[model-id="' + link_model_id + '"]')
+        .find('path.marker-target')
+            .css("fill", "#498AB9")
+            .css("stroke", "#498AB9");
+    $('g.link[model-id="' + link_model_id + '"]')
+        .find('path.connection-wrap')
+            .css("opacity", "")
+            .css("fill", "")
+            .css("stroke", "");
 }
 
 underlayView.prototype.clearHighlightedConnectedElements = function() {
@@ -1525,10 +1559,12 @@ underlayView.prototype.highlightPath = function(response, data) {
     if(null !== response && typeof response !== "undefined" &&
         null !== response.nodes && typeof response.nodes !== "undefined"){
 
-    } else if(response.nodes <=0){
+    }
+    if(response.nodes <=0 ){
         showInfoWindow("No Underlay paths found for the selected flow.", "Info");
         return false;
-    } else if("" !== response && typeof response === "string") {
+    }
+    if(typeof response === "string") {
         showInfoWindow(response, "Info");
         return false;
     }
@@ -1577,6 +1613,8 @@ underlayView.prototype.highlightPath = function(response, data) {
     var linkEl = [];
     $.each(highlightedElements.links, function(linkKey, linkValue) {
         var nodeElement = graph.getCell(elementMap.links[linkValue]);
+        if(typeof nodeElement === "undefined")
+            return;
         $("g.link[model-id='" + nodeElement.id + "']").removeClassSVG('hidden');
         $("g.link[model-id='" + nodeElement.id + "']")
             .find('path.connection-wrap')
@@ -1614,12 +1652,8 @@ underlayView.prototype.highlightPath = function(response, data) {
             if(hlNode.name == srcVM) {
                 //Plot green
                 $('div.font-element[font-element-model-id="' + model_id + '"]')
-                    .css('stroke', "green")
-                    .css('fill', "green");
-
-                $('g.element[model-id="' + model_id + '"]')
-                    .css('stroke', "green")
-                    .css('fill', "green");
+                    .find('i')
+                    .css("color", "green");
 
                 if(associatedVRouterUID !== "") {
                     var cell = _this.getGraph().getCell(associatedVRouterUID);
@@ -1634,12 +1668,9 @@ underlayView.prototype.highlightPath = function(response, data) {
             } else if(hlNode.name == destVM) {
                 //Plot red
                 $('div.font-element[font-element-model-id="' + model_id + '"]')
-                    .css('stroke', "red")
-                    .css('fill', "red");
+                    .find('i')
+                    .css("color", "red");
 
-                $('g.element[model-id="' + model_id + '"]')
-                    .css('stroke', "red")
-                    .css('fill', "red");
                 if(associatedVRouterUID !== "") {
                     var cell = _this.getGraph().getCell(associatedVRouterUID);
                     var vrouterPosition = cell.attributes.position;
@@ -1660,50 +1691,19 @@ underlayView.prototype.showChildrenOfType = function(parent, child_type) {
     var elMap  = this.getElementMap();
     var clickedNodeName = parent['attributes']['nodeDetails']['name'];
     var children = parent['attributes']['nodeDetails']['children'];
+    this.addHighlightToNode(parent.id);
+    var _this = this;
     if(null !== children && typeof children === "object" && {} !== children) {
         for(var child in children) {
             var childName = children[child]["name"];
             var node_model_id = elMap["nodes"][childName];
             if($('g.element[model-id="' + node_model_id + '"]').hasClassSVG('hidden')){
-                $('div[font-element-model-id="'+ parent.id  + '"]')
-                    .removeClass('dimHighlighted')
-                    .addClass('elementHighlighted');
-                $('g.element[model-id="' + parent.id + '"]')
-                    .removeClassSVG('dimHighlighted')
-                    .addClassSVG('elementHighlighted');
-                $('div[font-element-model-id="'+ node_model_id  + '"]')
-                    .removeClass('hidden')
-                    .removeClass('dimHighlighted')
-                    .addClass('elementHighlighted');
-                $('g.element[model-id="' + node_model_id + '"]')
-                    .removeClassSVG('hidden')
-                    .removeClassSVG('dimHighlighted')
-                    .addClassSVG('elementHighlighted');
+                _this.addHighlightToNode(node_model_id);
             }
             var link_model_id = elMap["links"][clickedNodeName + "<->" + childName];
             if(null !== link_model_id && typeof link_model_id !== "undefined") {
                 if($('g.link[model-id="' + link_model_id + '"]').hasClassSVG('hidden')) {
-                    $('g.link[model-id="' + link_model_id + '"]')
-                        .removeClassSVG('hidden')
-                        .removeClassSVG('dimHighlighted')
-                        .addClassSVG('elementHighlighted');
-
-                    $('g.link[model-id="' + link_model_id + '"]')
-                        .find('path.connection')
-                            .css("stroke", "#498AB9");
-                    $('g.link[model-id="' + link_model_id + '"]')
-                        .find('path.marker-source')
-                            .css("fill", "#498AB9")
-                            .css("stroke", "#498AB9");
-                    $('g.link[model-id="' + link_model_id + '"]')
-                        .find('path.marker-target')
-                            .css("fill", "#498AB9")
-                            .css("stroke", "#498AB9");
-                    $('g.link[model-id="' + link_model_id + '"]')
-                        .find('path.connection-wrap')
-                            .css("opacity", "")
-                            .css("fill", "")
-                            .css("stroke", "");
+                    _this.addHighlightToLink(link_model_id);
                 }
             }
         }
@@ -1717,7 +1717,7 @@ underlayView.prototype.hideVRouters = function() {
 underlayView.prototype.renderUnderlayViz = function() {
     var elements = this.getConnectedElements();
     //this.initContextMenuConfig();
-    this.graph.addCells(elements);
+    this.getGraph().addCells(elements);
     this.getPaper().fitToContent();
     this.initGraphEvents();
     this.initTooltipConfig();
@@ -1779,7 +1779,12 @@ underlayView.prototype.renderTracePath = function(options) {
     // in monitor infra vrouter details page flows tab
     flowKeyStack = [];
     $("#traceFlow").html(tracePathTemplate);
-    var computeNodes = globalObj['dataSources']['computeNodeDS']['dataSource'].getItems(),computeNodeCombobox = [];
+    var computeNodesDS = globalObj['dataSources']['computeNodeDS']['dataSource'].getItems(),computeNodeCombobox = [];
+    var computeNodes = []
+    $.each(computeNodesDS,function(idx,value){
+        if(value['vRouterType'] == 'hypervisor')
+            computeNodes.push(value);
+    });
     if(nodeType == VROUTER && nodeName != null) {
         defaultValue = nodeName;
     } else {
@@ -1790,7 +1795,7 @@ underlayView.prototype.renderTracePath = function(options) {
         if(computeNodes[i]['name'] == defaultValue)
             ip = computeNodes[i]['ip'];
         computeNodeCombobox.push({
-            text:computeNodes[i]['name'],
+            text:contrail.format('{0} ({1})',computeNodes[i]['name'],computeNodes[i]['ip']),
             value:computeNodes[i]['name']
         });
     }
@@ -1809,13 +1814,19 @@ underlayView.prototype.renderTracePath = function(options) {
         var vRouterFlowsColumns = [
                                       {
                                           field:'peer_vrouter',
-                                          name:"Other Vrouter",
-                                          minWidth:100,
+                                          name:"Other vRouter",
+                                          minWidth:120,
+                                          formatter: function(r,c,v,cd,dc){
+                                              var name = $.grep(computeNodes,function(value,idx){
+                                                              return (value['ip'] == dc['peer_vrouter']);
+                                                         });
+                                              return contrail.format('{0} ({1})',ifNull(name[0]['name'],'-'),dc['peer_vrouter']);
+                                          }
                                       },
                                       {
                                           field:"protocol",
                                           name:"Protocol",
-                                          minWidth:60,
+                                          minWidth:40,
                                           formatter:function(r,c,v,cd,dc){
                                               return formatProtocol(dc['protocol']);
                                           }
@@ -1823,11 +1834,15 @@ underlayView.prototype.renderTracePath = function(options) {
                                       {
                                           field:"src_vn",
                                           name:"Source Network",
-                                          minWidth:195
+                                          minWidth:150,
+                                          /*formatter: function (r,c,v,cd,dc) {
+                                              var srcVN = dc['src_vn'].split(":");
+                                              return contrail.format('{0} ({1})',ifNull(srcVN[2],'-'),ifNull(srcVN[1],'-'));
+                                          }*/
                                       },
                                       {
                                           field:"sip",
-                                          name:"Src IP",
+                                          name:"Source IP",
                                           minWidth:70,
                                           formatter:function(r,c,v,cd,dc) {
                                               if(validateIPAddress(dc['sip']))
@@ -1842,9 +1857,26 @@ underlayView.prototype.renderTracePath = function(options) {
                                           minWidth:50
                                       },
                                       {
+                                          field:"direction",
+                                          name:"Direction",
+                                          minWidth:50,
+                                          formatter: function(r,c,v,cd,dc) {
+                                              if (dc['direction'] == 'ingress')
+                                                  return 'INGRESS'
+                                              else if (dc['direction'] == 'egress')
+                                                  return 'EGRESS'
+                                              else
+                                                  return '-';
+                                          }
+                                      },
+                                      {
                                           field:"dst_vn",
                                           name:"Destination Network",
-                                          minWidth:195
+                                          minWidth:150,
+                                          /*formatter: function (r,c,v,cd,dc) {
+                                              var srcVN = dc['src_vn'].split(":");
+                                              return contrail.format('{0} ({1})',ifNull(srcVN[2],'-'),ifNull(srcVN[1],'-'));
+                                          }*/
                                       },
                                       {
                                           field:"dip",
@@ -2019,26 +2051,28 @@ underlayView.prototype.renderTracePath = function(options) {
     }
     var tracePathDropdown = $("#tracePathDropdown").data('contrailDropdown');
     tracePathDropdown.setData(computeNodeCombobox);
-    tracePathDropdown.text(defaultValue);
+    tracePathDropdown.text(contrail.format('{0} ({1})',defaultValue,ip));
     
     $("#vrouterRadiobtn").prop('checked',true);
     var instances = globalObj['dataSources']['instDS']['dataSource'].getItems(),instComboboxData = [];
     var instMap = {};
     for(var i = 0; i < instances.length; i++) {
         var instObj = instances[i];
+        var instAttributes = ifNull(instObj['more_attributes'],{});
         instComboboxData.push({
             text: instObj['vmName']+' ('+instObj['name']+')',
-            value: instances[i]['name'],
+            value: instances[i]['name']
         });
         instMap[instances[i]['name']] = instances[i];
     }
     //Todo when changing the VM flows to introspect need to merge this function
     function reloadFlowsGrid(newAjaxConfig) {
-        var selectArray = parseStringToArray(newAjaxConfig['data']['select'], ',');
+        var selectArray = parseStringToArray("other_vrouter_ip,agg-bytes", ',');
         selectArray = selectArray.concat(queries['fr']['defaultColumns']);
         var options = getFRDefaultOptions();
         options['elementId'] = 'vrouterflows';
         var columnDisplay = getColumnDisplay4Grid(queries['fr']['columnDisplay'], selectArray, true);
+        selectArray = selectArray.concat(newAjaxConfig['data']['select']);
         loadFlowResultsForUnderlay(options,newAjaxConfig['data'],columnDisplay,null,true);
     }
     $('input[name="flowtype"]').change(function(){
@@ -2076,11 +2110,11 @@ underlayView.prototype.renderTracePath = function(options) {
                 protocol: dataItem['protocol'],
          };
         if(dataItem['direction_ing'] == 1 || dataItem['direction'] == 'ingress') {
-            postData['nodeIP'] = dataItem['vrouter_ip'];
+            postData['nodeIP'] = dataItem['vrouter_ip'] != null ? dataItem['vrouter_ip'] : computeNodeInfo['ip'];
             nwFqName = dataItem['sourcevn'] != null ? dataItem['sourcevn'] : dataItem['src_vn'];
             //postData['vrfName'] = (dataItem['destvn'] +":"+ dataItem['destvn'].split(':')[2]);
         } else if(dataItem['direction_ing'] == 0 || dataItem['direction'] == 'egress') {
-            postData['nodeIP'] = dataItem['other_vrouter_ip'];
+            postData['nodeIP'] = dataItem['other_vrouter_ip'] != null ? dataItem['other_vrouter_ip'] : dataItem['peer_vrouter'];
             nwFqName = dataItem['destvn'] != null ? dataItem['destvn'] : dataItem['dst_vn'];
             //postData['vrfName'] = (dataItem['destvn'] +":"+ dataItem['destvn'].split(':')[2]);
         }
@@ -2090,11 +2124,11 @@ underlayView.prototype.renderTracePath = function(options) {
             if(networkDetails['value']!= null && networkDetails['value'][0] != null &&  networkDetails['value'][0]['value'] != null) {
                 var vrfList = ifNull(networkDetails['value'][0]['value']['UveVirtualNetworkConfig']['routing_instance_list'],[]);
                 if(vrfList[0] != null)
-                    nwFqName += vrfList[0];
+                    nwFqName += ":"+vrfList[0];
             } else 
                 // if there is no vrf name in the response then just constructing it in general format
-                nwFqName += nwFqName.split(':')[2];
-            postData['vrfName'] = '('+nwFqName+')';
+                nwFqName += ":"+nwFqName.split(':')[2];
+            postData['vrfName'] = nwFqName;
             $.ajax({
                 url:'/api/tenant/networking/trace-flow',
                 type:'POST',
@@ -2145,7 +2179,7 @@ underlayView.prototype.renderTracePath = function(options) {
         var ajaxData = {
                 pageSize: 50,
                 timeRange: 300,
-                select: 'setup_time, teardown_time, agg-bytes, agg-packets,vrouter_ip,other_vrouter_ip',
+                select: 'agg-bytes,agg-packets,vrouter_ip,other_vrouter_ip',
                 fromTimeUTC: 'now-300s',
                 toTimeUTC: 'now',
                 queryId: randomUUID(),
@@ -2390,7 +2424,6 @@ underlayView.prototype.populateDetailsTab = function(data) {
                 }
                 initMemoryLineChart('#'+selector,chartObj['data'],{height:300});
             } else if (link == 'prouter') {
-                response[1] = response[0];
                 details = Handlebars.compile($("#link-summary-template").html())({link:link,intfObjs:response});
                 $("#detailsTab").html(details);
                 for(var i = 0; i < response.length; i++) {
@@ -2484,11 +2517,10 @@ underlayController.prototype.getModelData = function(cfg) {
     //Force refresh call config
     var forceCallCfg = {
             url     : url+'?forceRefresh',
-            //url     : '/underlayResponse.json',
             type    : "GET",
             data    : data,
             callback: function (forceResponse) {
-                //removing the progress bar
+                //removing the progress bar and clearing the graph
                 var graph = _this.getView().getGraph();
                 graph.clear();
                 $("#topology-connected-elements").find('div').remove();
@@ -2496,6 +2528,7 @@ underlayController.prototype.getModelData = function(cfg) {
                 topologyCallback(forceResponse);
             },
             failureCallback : function (err) {
+                $("#underlay_topology").find('.topology-visualization-loading').hide();
                 $("#underlay_topology").html('Error in fetching details');
             }
         }
@@ -2517,6 +2550,7 @@ underlayController.prototype.getModelData = function(cfg) {
         }
     };
     function topologyCallback(response){
+        globalObj.topologyResponse = response;
         _this.getView().resetTopology();
         _this.getModel().setNodes(response['nodes']);
         _this.getModel().setLinks(response['links']);
