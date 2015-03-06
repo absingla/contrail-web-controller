@@ -6,65 +6,42 @@ define([
     'underscore'
 ], function (_) {
     var CTParsers = function() {
-        this.networkDataParserBack = function(response) {
-            var retArr = $.map(ifNull(response['data']['value'], response), function (currObject) {
-                currObject['rawData'] = $.extend(true,{},currObject);
-                currObject['url'] = '/api/tenant/networking/virtual-network/summary?fqNameRegExp=' + currObject['name'];
-                currObject['outBytes'] = '-';
-                currObject['inBytes'] = '-';
-                var inBytes = 0,outBytes = 0;
-                var statsObj = getValueByJsonPath(currObject,'value;UveVirtualNetworkAgent;vn_stats;0;StatTable.UveVirtualNetworkAgent.vn_stats',[]);
-                for(var i = 0; i < statsObj.length; i++){
-                    inBytes += ifNull(statsObj[i]['SUM(vn_stats.in_bytes)'],0);
-                    outBytes += ifNull(statsObj[i]['SUM(vn_stats.out_bytes)'],0);
-                }
-                if(getValueByJsonPath(currObject,'value;UveVirtualNetworkAgent;vn_stats') != null) {
-                    currObject['outBytes'] = outBytes;
-                    currObject['inBytes'] = inBytes;
-                }
-                currObject['instCnt'] = ifNull(jsonPath(currObject, '$..virtualmachine_list')[0], []).length;
-                currObject['inThroughput'] = ifNull(jsonPath(currObject, '$..in_bandwidth_usage')[0], 0);
-                currObject['outThroughput'] = ifNull(jsonPath(currObject, '$..out_bandwidth_usage')[0], 0);
-                return currObject;
-            });
-            return retArr;
-        };
-
         this.networkDataParser = function(response) {
             var retArr = $.map(ifNull(response['data']['value'], response), function (currObject) {
-                currObject['rawData'] = $.extend(true, {}, currObject);
-                currObject['url'] = '/api/tenant/networking/virtual-network/summary?fqNameRegExp=' + currObject['name'];
-                currObject['outBytes'] = '-';
-                currObject['inBytes'] = '-';
-                currObject['outBytes60'] = '-';
-                currObject['inBytes60'] = '-';
-                var inBytes = 0, outBytes = 0;
-                var statsObj = getValueByJsonPath(currObject, 'value;UveVirtualNetworkAgent;vn_stats;0;StatTable.UveVirtualNetworkAgent.vn_stats', []);
-                for (var i = 0; i < statsObj.length; i++) {
-                    inBytes += ifNull(statsObj[i]['SUM(vn_stats.in_bytes)'], 0);
-                    outBytes += ifNull(statsObj[i]['SUM(vn_stats.out_bytes)'], 0);
+                if(!isServiceVN(currObject['name'])) {
+                    currObject['rawData'] = $.extend(true, {}, currObject);
+                    currObject['url'] = '/api/tenant/networking/virtual-network/summary?fqNameRegExp=' + currObject['name'];
+                    currObject['outBytes'] = '-';
+                    currObject['inBytes'] = '-';
+                    currObject['outBytes60'] = '-';
+                    currObject['inBytes60'] = '-';
+                    var inBytes = 0, outBytes = 0;
+                    var statsObj = getValueByJsonPath(currObject, 'value;UveVirtualNetworkAgent;vn_stats;0;StatTable.UveVirtualNetworkAgent.vn_stats', []);
+                    for (var i = 0; i < statsObj.length; i++) {
+                        inBytes += ifNull(statsObj[i]['SUM(vn_stats.in_bytes)'], 0);
+                        outBytes += ifNull(statsObj[i]['SUM(vn_stats.out_bytes)'], 0);
+                    }
+                    if (getValueByJsonPath(currObject, 'value;UveVirtualNetworkAgent;vn_stats') != null) {
+                        currObject['outBytes'] = outBytes;
+                        currObject['inBytes'] = inBytes;
+                    }
+                    currObject['instCnt'] = ifNull(jsonPath(currObject, '$..virtualmachine_list')[0], []).length;
+                    currObject['inThroughput'] = ifNull(jsonPath(currObject, '$..in_bandwidth_usage')[0], 0);
+                    currObject['outThroughput'] = ifNull(jsonPath(currObject, '$..out_bandwidth_usage')[0], 0);
+
+                    currObject['intfCnt'] = ifNull(jsonPath(currObject, '$..interface_list')[0], []).length;
+                    currObject['vnCnt'] = ifNull(jsonPath(currObject, '$..connected_networks')[0], []).length;
+                    currObject['throughput'] = currObject['inThroughput'] + currObject['outThroughput'];
+                    currObject['x'] = currObject['intfCnt'];
+                    currObject['y'] = currObject['vnCnt'];
+                    currObject['size'] = currObject['throughput'] + 1;
+                    currObject['type'] = 'network';
+                    currObject['name'] = currObject['name'];
+                    currObject['uuid'] = currObject['uuid'];
+                    currObject['project'] = currObject['name'].split(':').slice(0, 2).join(':');
+
+                    return currObject;
                 }
-                if (getValueByJsonPath(currObject, 'value;UveVirtualNetworkAgent;vn_stats') != null) {
-                    currObject['outBytes'] = outBytes;
-                    currObject['inBytes'] = inBytes;
-                }
-                currObject['instCnt'] = ifNull(jsonPath(currObject, '$..virtualmachine_list')[0], []).length;
-                currObject['inThroughput'] = ifNull(jsonPath(currObject, '$..in_bandwidth_usage')[0], 0);
-                currObject['outThroughput'] = ifNull(jsonPath(currObject, '$..out_bandwidth_usage')[0], 0);
-
-                currObject['intfCnt'] = ifNull(jsonPath(currObject, '$..interface_list')[0], []).length;
-                currObject['vnCnt'] = ifNull(jsonPath(currObject, '$..connected_networks')[0], []).length;
-                currObject['throughput'] = currObject['inThroughput'] + currObject['outThroughput'];
-                currObject['x'] = currObject['intfCnt'];
-                currObject['y'] = currObject['vnCnt'];
-                currObject['size'] = currObject['throughput'] + 1;
-                currObject['type'] = 'network';
-                currObject['name'] = currObject['name'];
-                currObject['uuid'] = currObject['uuid'];
-                currObject['project'] = currObject['name'].split(':').slice(0, 2).join(':');
-
-                return currObject;
-
             });
             return retArr;
         };
@@ -297,6 +274,16 @@ define([
             }
             return chartData;
         };
+    };
+
+    function isServiceVN(vnFQN) {
+        var fqnArray = vnFQN.split(":");
+
+        if(ctwc.SERVICE_VN_EXCLUDE_LIST.indexOf(fqnArray[2]) != -1) {
+            return true;
+        }
+
+        return false;
     };
 
     return CTParsers;

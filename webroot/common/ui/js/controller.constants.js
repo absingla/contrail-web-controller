@@ -82,8 +82,8 @@ define([
             return cowu.getValueFromTemplate(args);
         };
 
-
         this.UMID_INSTANCE_UVE = "uve:{0}";
+        this.SERVICE_VN_EXCLUDE_LIST = ['svc-vn-left','svc-vn-right','svc-vn-mgmt'];
     };
     return CTConstants;
 });
