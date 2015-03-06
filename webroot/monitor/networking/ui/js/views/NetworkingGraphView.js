@@ -263,6 +263,10 @@ define([
 
         /* Pan and Zoom events */
         $(connectedSelectorId).panzoom({
+            increment: 0.3,
+            minScale: 0.3,
+            maxScale: 2,
+            duration: 300,
             $zoomIn: graphControlElement.find(".zoom-in"),
             $zoomOut: graphControlElement.find(".zoom-out"),
             $reset: graphControlElement.find(".zoom-reset")

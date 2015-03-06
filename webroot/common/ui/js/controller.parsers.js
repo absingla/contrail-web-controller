@@ -209,6 +209,10 @@ define([
             return [response];
         };
 
+        this.flowsDataParser = function (response) {
+            return response['data'];
+        };
+
         this.parseNetworks4PortMap = function (data) {
             var response = data['res'];
             var result = {};

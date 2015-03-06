@@ -255,8 +255,8 @@ define([
     };
 
     function getFlowConfig(config) {
-        var viewConfig = config['hashParams'],
-            url = constructReqURL($.extend({}, getURLConfigForGrid(viewConfig), {protocol:['tcp','icmp','udp']}));
+        var hashParams = config['hashParams'],
+            url = constructReqURL($.extend({}, getURLConfigForGrid(hashParams), {protocol:['tcp','icmp','udp']}));
 
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_FLOW_LIST_ID]),
@@ -270,7 +270,7 @@ define([
                                 title: ctwl.TITLE_FLOWS,
                                 view: "FlowGridView",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: viewConfig
+                                viewConfig: {hashParams: hashParams, pagerOptions: { options: { pageSize: 25, pageSizeSelect: [25, 50, 100] } } }
                             }
                         ]
                     }

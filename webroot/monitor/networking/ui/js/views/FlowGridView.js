@@ -9,18 +9,19 @@ define([
     var FlowGridView = Backbone.View.extend({
         el: $(contentContainer),
         render: function () {
-            var that = this,
-                viewConfig = this.attributes.viewConfig;
+            var that = this, viewConfig = this.attributes.viewConfig,
+                hashParams = viewConfig['hashParams'],
+                pagerOptions = viewConfig['pagerOptions'];
 
             var flowRemoteConfig = {
-                url:constructReqURL($.extend({}, getURLConfigForGrid(viewConfig), {protocol:['tcp','icmp','udp']})),
+                url:constructReqURL($.extend({}, getURLConfigForGrid(hashParams), {protocol:['tcp','icmp','udp']})),
                 type: 'GET'
             };
-            cowu.renderView4Config(that.$el, null, getFlowListViewConfig(flowRemoteConfig));
+            cowu.renderView4Config(that.$el, this.model, getFlowListViewConfig(flowRemoteConfig, pagerOptions));
         }
     });
 
-    var getFlowListViewConfig = function (flowRemoteConfig) {
+    var getFlowListViewConfig = function (flowRemoteConfig, pagerOptions) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_FLOW_LIST_VIEW_ID]),
             view: "SectionView",
@@ -33,7 +34,7 @@ define([
                                 title: ctwl.TITLE_FLOWS,
                                 view: "GridView",
                                 viewConfig: {
-                                    elementConfig: getProjectFlowGridConfig(flowRemoteConfig)
+                                    elementConfig: getProjectFlowGridConfig(flowRemoteConfig, pagerOptions)
                                 }
                             }
                         ]
@@ -43,7 +44,7 @@ define([
         }
     };
 
-    var getProjectFlowGridConfig = function (flowRemoteConfig) {
+    var getProjectFlowGridConfig = function (flowRemoteConfig, pagerOptions) {
         var gridElementConfig = {
             header: {
                 title: {
@@ -95,6 +96,9 @@ define([
             },
             columnHeader: {
                 columns: ctwgc.projectFlowsColumns
+            },
+            footer: {
+                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 5, pageSizeSelect: [5, 10, 50, 100] } })
             }
         };
         return gridElementConfig;

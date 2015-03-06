@@ -12,15 +12,26 @@ define([
 
         render: function () {
             var self = this, viewConfig = this.attributes.viewConfig,
-                config = viewConfig['config'];
+                config = viewConfig['config'],
+                hashParams = config['hashParams'];
 
-            cowu.renderView4Config(this.$el, null, getFlowListViewConfig(config));
+            var listModelConfig = {
+                remote: {
+                    ajaxConfig: {
+                        url: constructReqURL($.extend({}, getURLConfigForGrid(hashParams), {protocol: ['tcp', 'icmp', 'udp']})),
+                        type: 'GET'
+                    },
+                    dataParser: ctwp.flowsDataParser
+                }
+            };
+
+            var contrailListModel = new ContrailListModel(listModelConfig);
+            cowu.renderView4Config(this.$el, contrailListModel, getFlowListViewConfig(hashParams));
         }
     });
 
-    function getFlowListViewConfig(config) {
-        var viewConfig = config['hashParams'],
-            url = constructReqURL($.extend({}, getURLConfigForGrid(viewConfig), {protocol: ['tcp', 'icmp', 'udp']}));
+    function getFlowListViewConfig(hashParams) {
+        var url = constructReqURL($.extend({}, getURLConfigForGrid(hashParams), {protocol: ['tcp', 'icmp', 'udp']}));
 
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_FLOW_LIST_ID]),
@@ -35,25 +46,21 @@ define([
                                 view: "ScatterChartView",
                                 viewConfig: {
                                     class: "port-distribution-chart",
-                                    ajaxConfig: {
-                                        url: url,
-                                        type: "GET"
-                                    },
-                                    parseFn: function (response) {
-                                        var portData = constructDataForPortDist(response, getURLConfigForGrid(viewConfig)),
-                                            portTitle = (viewConfig['portType'] == 'src') ? ctwl.SOURCE_PORT : ctwl.DESTINATION_PORT,
+                                    parseFn: function (chartData) {
+                                        var portData = constructDataForPortDist(chartData, getURLConfigForGrid(hashParams)),
+                                            portTitle = (hashParams['portType'] == 'src') ? ctwl.SOURCE_PORT : ctwl.DESTINATION_PORT,
                                             portRange = [], startPort, endPort,
                                             portDistributionParams = $.deparamURLArgs(url),
                                             valueField, portType,
                                             portType = 'port', flowCntField = 'flowCnt';
 
-                                        if (viewConfig['port'].indexOf('-') > -1) {
-                                            portRange = viewConfig['port'].split("-");
+                                        if (hashParams['port'].indexOf('-') > -1) {
+                                            portRange = hashParams['port'].split("-");
                                             startPort = parseInt(portRange[0]);
                                             endPort = parseInt(portRange[1]);
                                             //TODO pushBreadcrumb([viewConfig['fqName'],portTitle + 's (' + viewConfig['port'] + ')']);
                                         } else {
-                                            portRange = [viewConfig['port'], viewConfig['port']];
+                                            portRange = [hashParams['port'], hashParams['port']];
                                             //TODO pushBreadcrumb([viewConfig['fqName'],portTitle + ' ' + viewConfig['port']]);
                                         }
 
@@ -74,21 +81,21 @@ define([
                                             portField: 'port',
                                             startPort: startPort,
                                             endPort: endPort
-                                        }, {portType: viewConfig['portType']}));
+                                        }, {portType: hashParams['portType']}));
 
                                         var retObj = {
                                             d: [{key: ctwl.SOURCE_PORT, values: portData}],
                                             forceX: [startPort, endPort],
                                             xLblFormat: d3.format(''),
                                             yDataType: 'bytes',
-                                            fqName: viewConfig['fqName'],
+                                            fqName: hashParams['fqName'],
                                             yLbl: ctwl.Y_AXIS_TITLE_BW,
                                             link: {
                                                 hashParams: {
                                                     q: {
                                                         view: 'list',
                                                         type: 'network',
-                                                        fqName: viewConfig['fqName'],
+                                                        fqName: hashParams['fqName'],
                                                         context: 'domain'
                                                     }
                                                 }
@@ -135,7 +142,10 @@ define([
                                 title: ctwl.TITLE_FLOWS,
                                 view: "FlowGridView",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: viewConfig
+                                viewConfig: {
+                                    hashParams: hashParams,
+                                    pagerOptions: {options: {pageSize: 10, pageSizeSelect: [10, 50, 100]}}
+                                }
                             }
                         ]
                     }
@@ -144,15 +154,15 @@ define([
         }
     };
 
-    function constructDataForPortDist(response, obj) {
-        var portCF = crossfilter(response['data']), portDim, portArr = [], portGroup;
+    function constructDataForPortDist(chartData, obj) {
+        var portCF = crossfilter(chartData), portDim, portArr = [], portGroup;
 
         if (obj['port'].indexOf('-') > -1) {
             var data = {
                 portType: obj['portType'],
                 minPort: obj['port'].split('-')[0],
                 maxPort: obj['port'].split('-')[1],
-                data: response['data']
+                data: chartData
             };
             //manageDataSource.setPortRangeData(obj['fqName'], data);
         }
