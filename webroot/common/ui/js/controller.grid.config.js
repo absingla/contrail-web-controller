@@ -173,7 +173,7 @@ define([
                         }
                         return lazyAjaxConfig;
                     },
-                    successCallback: function (response, contrailListModel) {
+                    successCallback: function (response, contrailListModel, parentModelList) {
                         var statDataList = ctwp.statsOracleParseFn(response[0], type),
                             dataItems = contrailListModel.getItems(),
                             statData;
@@ -190,6 +190,9 @@ define([
                             }
                         }
                         contrailListModel.updateData(dataItems);
+                        if(contrail.checkIfExist(parentModelList)) {
+                            ctwp.projectNetworksDataParser(parentModelList, contrailListModel);
+                        }
                     }
                 }
             ];
@@ -245,7 +248,7 @@ define([
             return {
                 remote: {
                     ajaxConfig: {
-                        url: ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 10),
+                        url: ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 25, $.now()),
                         type: 'POST',
                         data: JSON.stringify({
                             data: [{
@@ -257,8 +260,8 @@ define([
                     dataParser: ctwp.networkDataParser
                 },
                 vlRemoteConfig: {
-                    completeCallback: function(contrailListModel, parentListModel) {
-                        ctwp.projectNetworksDataParser(parentListModel, contrailListModel);
+                    completeCallback: function(contrailListModel, parentModelList) {
+                        //ctwp.projectNetworksDataParser(parentModelList, contrailListModel);
                     },
                     vlRemoteList: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
                 },

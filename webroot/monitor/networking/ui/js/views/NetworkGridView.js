@@ -10,12 +10,12 @@ define([
         el: $(contentContainer),
 
         render: function () {
-            var that = this,
+            var self = this,
                 viewConfig = this.attributes.viewConfig,
                 projectFQN = viewConfig['projectFQN'];
 
             var networkRemoteConfig = {
-                url: projectFQN != null ? ctwc.get(ctwc.URL_PROJECT_NETWORKS_IN_CHUNKS, 10, projectFQN) : ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 25),
+                url: projectFQN != null ? ctwc.get(ctwc.URL_PROJECT_NETWORKS_IN_CHUNKS, 25, projectFQN, $.now()) : ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 25, $.now()),
                 type: 'POST',
                 data: JSON.stringify({
                     data: [{
@@ -28,12 +28,12 @@ define([
             // TODO: Handle multi-tenancy
             var ucid = projectFQN != null ? (ctwc.UCID_PREFIX_MN_LISTS + projectFQN + ":virtual-networks") : ctwc.UCID_ALL_VN_LIST;
 
-            cowu.renderView4Config(that.$el, self.model, getNetworkListViewConfig(networkRemoteConfig, ucid));
+            cowu.renderView4Config(self.$el, self.model, getNetworkGridViewConfig(networkRemoteConfig, ucid));
 
         }
     });
 
-    var getNetworkListViewConfig = function (networkRemoteConfig, ucid) {
+    var getNetworkGridViewConfig = function (networkRemoteConfig, ucid) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_LIST_VIEW_ID]),
             view: "SectionView",

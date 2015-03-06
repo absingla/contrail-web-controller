@@ -13,14 +13,18 @@ define([
         render: function () {
             var self = this, viewConfig = this.attributes.viewConfig;
 
-            var ajaxConfig = {
-                url: ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 10),
-                type: "POST"
-            };
-
             var listModelConfig = {
                 remote: {
-                    ajaxConfig: ajaxConfig,
+                    ajaxConfig: {
+                        url: ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 25, $.now()),
+                        type: "POST",
+                        data: JSON.stringify({
+                            data: [{
+                                "type": ctwc.TYPE_VIRTUAL_NETWORK,
+                                "cfilt": ctwc.FILTERS_COLUMN_VN.join(',')
+                            }]
+                        })
+                    },
                     dataParser: ctwp.networkDataParser
                 },
                 vlRemoteConfig: {

@@ -13,14 +13,12 @@ define([
         render: function () {
             var self = this, viewConfig = this.attributes.viewConfig;
 
-            var ajaxConfig = {
-                url: networkPopulateFns.getProjectsURL(ctwc.DEFAULT_DOMAIN),
-                type: 'GET'
-            };
-
             var listModelConfig = {
                 remote: {
-                    ajaxConfig: ajaxConfig,
+                    ajaxConfig: {
+                        url: networkPopulateFns.getProjectsURL(ctwc.DEFAULT_DOMAIN),
+                        type: 'GET'
+                    },
                     hlRemoteConfig: ctwgc.getProjectDetailsHLazyRemoteConfig(),
                     dataParser: ctwp.projectDataParser
                 },
@@ -48,7 +46,7 @@ define([
                                 view: "ScatterChartView",
                                 viewConfig: {
                                     class: "port-distribution-chart",
-                                    chartConfig: {},
+                                    loadChartInChunks: true,
                                     parseFn: function (response) {
                                         return {
                                             d: [{

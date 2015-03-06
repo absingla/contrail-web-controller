@@ -3,8 +3,9 @@
  */
 
 define([
-    'underscore'
-], function (_) {
+    'underscore',
+    'contrail-list-model'
+], function (_, ContrailListModel) {
     var ctCache = {
         'breadcrumb': {},
         'monitor-networking': {
@@ -15,7 +16,9 @@ define([
     };
 
     var CTCache = function () {
-        this.init = function () {};
+        this.init = function () {
+            initProjectCache();
+        };
 
         this.cleanCache = function(key) {
             this.set(key, {});
@@ -59,6 +62,24 @@ define([
             this.set(ucid, {lastUpdateTime: $.now(), dataObject: dataObject});
         }
     };
+
+    function initProjectCache() {
+        var listModelConfig = {
+            remote: {
+                ajaxConfig: {
+                    url: networkPopulateFns.getProjectsURL(ctwc.DEFAULT_DOMAIN),
+                    type: 'GET'
+                },
+                hlRemoteConfig: ctwgc.getProjectDetailsHLazyRemoteConfig(),
+                dataParser: ctwp.projectDataParser
+            },
+            cacheConfig: {
+                ucid: ctwc.UCID_DEFAULT_DOMAIN_PROJECT_LIST //TODO: Handle multi-tenancy
+            }
+        };
+
+        //var contrailListModel = new ContrailListModel(listModelConfig);
+    }
 
     return CTCache;
 })
