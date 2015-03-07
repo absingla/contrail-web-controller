@@ -36,7 +36,7 @@ define([
                 graphModelConfig: cGraphModelConfig,
                 tooltipConfig: ctwgrc.getTooltipConfig(),
                 clickEvents: {
-                    'blank:pointerclick': cgBlankPointerClick,
+                //    'blank:pointerclick': cgBlankPointerClick,
                     'cell:pointerdblclick': cgPointerDblClick,
                     'cell:rightclick': ctwgrc.getContextMenuConfig()
                 },
@@ -84,6 +84,7 @@ define([
             var connectedElements = [],
                 zoomedElements = [],
                 nodes = response['nodes'],
+                zoomedNodeElement = null,
                 links = response['links'],
                 zoomedNode = null;
 
@@ -91,7 +92,6 @@ define([
                 createNodeElements(nodes, connectedElements, elementMap);
             } else {
                 var zoomedNodeKey = null,
-                    zoomedNodeElement = null,
                     options = null;
 
                 $.each(nodes, function (nodeKey, nodeValue) {
@@ -124,6 +124,7 @@ define([
                 elements: connectedElements,
                 nodes: nodes,
                 links: links,
+                zoomedNodeElement: zoomedNodeElement,
                 zoomedElements: zoomedElements
             };
         };
@@ -139,8 +140,8 @@ define([
             vmLength = options['noOfVMsToDraw'],
             vmNode, vmList = options['vmList'];
 
-        var xOrigin = zoomedNodeElement['attributes']['position']['x'] + vmMargin / 2 + 30,
-            yOrigin = zoomedNodeElement['attributes']['position']['y'] + vmMargin / 2 + 30;
+        var xOrigin = vmMargin / 2,
+            yOrigin = vmMargin / 2;
 
         var centerLineHeight = 0.1,
             xFactor = 0, yFactor = -1;
