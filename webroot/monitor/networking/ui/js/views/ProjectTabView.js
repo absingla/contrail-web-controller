@@ -138,7 +138,7 @@ define([
 
                                                                 obj['type'] = "flow";
                                                                 obj['view'] = "list";
-                                                                layoutHandler.setURLHashParams(obj, {p:"mon_networking_networks", merge:false});
+                                                                layoutHandler.setURLHashParams(obj, {p:"mon_networking_projects", merge:false});
 
                                                             },
                                                             tooltipFn: tenantNetworkMonitor.portTooltipFn

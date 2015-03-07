@@ -27,10 +27,18 @@ function MonitorNetworkingLoader() {
         $(contentContainer).html("");
         switch (renderFn) {
             case 'renderProjects':
-                if (hashParams.view == "details") {
-                    this.mnView.renderProject({hashParams: hashParams});
-                } else {
-                    this.mnView.renderProjectList({hashParams: hashParams});
+                if (hashParams.type == "project") {
+                    if (hashParams.view == "details") {
+                        this.mnView.renderProject({hashParams: hashParams});
+                    } else {
+                        this.mnView.renderProjectList({hashParams: hashParams});
+                    }
+                } else if (hashParams.type == "flow"){
+                    if (hashParams.view == "list") {
+                        this.mnView.renderFlowList({hashParams: hashParams});
+                    } else if (hashParams.view == "details") {
+                        this.mnView.renderFlow({hashParams: hashParams});
+                    }
                 }
                 break;
 

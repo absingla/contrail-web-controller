@@ -118,8 +118,9 @@ define([
 
                                                     obj['type'] = "flow";
                                                     obj['view'] = "details";
+                                                    // dont change the 'p' of hash here as FlowListView is used
+                                                    // on multiple pages w/ different hash
                                                     layoutHandler.setURLHashParams(obj, {
-                                                        p: "mon_networking_networks",
                                                         merge: false
                                                     });
                                                 },
