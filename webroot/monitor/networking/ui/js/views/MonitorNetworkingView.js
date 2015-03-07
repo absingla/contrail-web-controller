@@ -41,7 +41,8 @@ define([
                 p: 'mon_networking_projects',
                 q: {
                     fqName: projectFQN,
-                    view:'details'
+                    view: 'details',
+                    type: 'project'
                 }
             });
 
