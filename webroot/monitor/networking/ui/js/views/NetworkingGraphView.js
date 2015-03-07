@@ -51,6 +51,7 @@ define([
                     adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
                     //TODO: Make control panel as a common view to grid and graph
                     initNetworkingGraphControlEvents(selectorId, connectedSelectorId, configSelectorId);
+                    highlightSelectedElementForZoomedElement(connectedSelectorId, jointObject, graphConfig)
                 }
             };
 
@@ -343,6 +344,41 @@ define([
                 $('g.VirtualMachine').popover('hide');
                 break;
 
+        }
+    };
+
+    var highlightSelectedElementForZoomedElement = function(connectedSelectorId, jointObject, graphConfig) {
+        highlightSelectedSVGElements([$('g.ZoomedElement')]);
+        if (graphConfig.focusedElement == 'Network') {
+            highlightSelectedElements([$('div.VirtualMachine')]);
+            highlightSelectedSVGElements([$('g.VirtualMachine'), $('.VirtualMachineLink')]);
+        }
+        else if (graphConfig.focusedElement == 'Instance') {
+            highlightElementsToFaint([
+                $(connectedSelectorId).find('div.font-element')
+            ]);
+
+            highlightSVGElementsToFaint([
+                $(connectedSelectorId).find('g.element'),
+                $(connectedSelectorId).find('g.link')
+            ]);
+            var graphElements = jointObject.connectedGraph.getElements(),
+                vmFqName = graphConfig.elementNameObject.instanceUUID;
+
+            $.each(graphElements, function (graphElementKey, graphElementValue) {
+                if (graphElementValue.attributes.type == 'contrail.VirtualMachine' && graphElementValue.attributes.nodeDetails.fqName == vmFqName) {
+                    var modelId = graphElementValue.id;
+                    vmLinks = jointObject.connectedGraph.getConnectedLinks(graphElementValue);
+
+                    $('g.VirtualNetwork').find('rect').addClassSVG('faintHighlighted').removeClassSVG('elementSelectedHighlighted');
+                    $('g[model-id="' + modelId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+                    $('div.font-element[font-element-model-id="' + modelId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+
+                    $.each(vmLinks, function (vmLinkKey, vmLinkValue) {
+                        $('g.link[model-id="' + vmLinkValue.id + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+                    });
+                }
+            });
         }
     };
 

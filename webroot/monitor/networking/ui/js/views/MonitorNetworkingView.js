@@ -36,7 +36,7 @@ define([
                 projectFQN = domain + ':' + projectObj.name,
                 projectUUID = projectObj.value;
 
-            _ignoreOnHashChange = true;
+            globalObj.hashUpdated = 1;
             layoutHandler.setURLHashObj({
                 p: 'mon_networking_projects',
                 q: {
@@ -80,7 +80,7 @@ define([
 
             contrail.setCookie(cowc.COOKIE_VIRTUAL_NETWORK, networkObj.name);
 
-            _ignoreOnHashChange = true;
+            globalObj.hashUpdated = 1;
             layoutHandler.setURLHashObj({
                 p: 'mon_networking_networks',
                 q: {
