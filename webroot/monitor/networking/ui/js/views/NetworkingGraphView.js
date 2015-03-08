@@ -275,10 +275,13 @@ define([
         });
 
         /* Resize Events */
-        graphControlElement.find('.resize').on('click', function (event) {
-            $(this).find('i').toggleClass('icon-resize-full').toggleClass('icon-resize-small');
-            adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
-        });
+        graphControlElement.find('.resize')
+            .off('click')
+            .on('click', function (event) {
+                $(this).find('i').toggleClass('icon-resize-full').toggleClass('icon-resize-small');
+                adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
+            }
+        );
     };
 
     function cgBlankPointerClick(evt, x, y) {
