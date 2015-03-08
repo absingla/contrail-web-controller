@@ -103,15 +103,7 @@ define([
             var listModelConfig = {
                 remote: {
                     ajaxConfig: ajaxConfig,
-                    dataParser: function(response) {
-                        return  $.map(response['virtual-networks'], function (n, i) {
-                            return {
-                                fq_name: n.fq_name.join(':'),
-                                name: n.fq_name[2],
-                                value: n.uuid
-                            };
-                        });
-                    },
+                    dataParser: ctwp.parseNetwork4Breadcrumb,
                     errorCallback: function() {
                         //TODO
                     }

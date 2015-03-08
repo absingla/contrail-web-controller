@@ -278,6 +278,18 @@ define([
             }
             return chartData;
         };
+
+        this.parseNetwork4Breadcrumb = function(response) {
+            return  $.map(response['virtual-networks'], function (n, i) {
+                if (!isServiceVN(n.fq_name.join(':'))) {
+                    return {
+                        fq_name: n.fq_name.join(':'),
+                        name: n.fq_name[2],
+                        value: n.uuid
+                    };
+                }
+            });
+        };
     };
 
     function isServiceVN(vnFQN) {
