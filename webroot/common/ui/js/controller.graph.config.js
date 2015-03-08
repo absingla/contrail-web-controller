@@ -327,8 +327,8 @@ define([
                             }
                         }
                     };
-                },
-                link: function (element, jointObject) {
+                }
+                /*link: function (element, jointObject) {
                     var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
                         viewElementDetails = viewElement.attributes.linkDetails,
                         sourceName = viewElementDetails['src'].split(':')[2],
@@ -361,7 +361,7 @@ define([
                     }
 
                     return viewListMenu;
-                }
+                }*/
             };
         };
     }
