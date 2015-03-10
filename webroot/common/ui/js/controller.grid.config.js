@@ -367,8 +367,7 @@ define([
             layoutHandler.setURLHashParams({ fqName: fqName, type: "project", view: "details" }, {p: "mon_networking_projects", merge: false});
         } else if ($.inArray(name, ['network']) > -1) {
             fqName = selRowDataItem['name'];
-            uuid = selRowDataItem['uuid'];
-            layoutHandler.setURLHashParams({ fqName: fqName, uuid: uuid, type: "network", view: "details" }, {p: "mon_networking_networks", merge: false});
+            layoutHandler.setURLHashParams({ fqName: fqName, type: "network", view: "details" }, {p: "mon_networking_networks", merge: false});
         } else if ($.inArray(name, ['instance']) > -1) {
             vn = selRowDataItem['vnFQN'];
             uuid = selRowDataItem['name'];

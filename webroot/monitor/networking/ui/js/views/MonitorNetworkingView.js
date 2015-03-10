@@ -16,19 +16,20 @@ define([
 
         renderProject: function (viewConfig) {
             var self = this,
-                fqName = (contrail.checkIfExist(viewConfig.hashParams.fqName) ? viewConfig.hashParams.fqName : null),
+                hashParams = viewConfig.hashParams,
+                fqName = (contrail.checkIfExist(hashParams.fqName) ? hashParams.fqName : null),
                 breadcrumbView = new BreadcrumbView();
 
             breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (selectedValueData) {
                 contrail.setCookie(cowc.COOKIE_DOMAIN, selectedValueData.name);
 
                 breadcrumbView.renderProjectBreadcrumbDropdown(fqName, function (selectedValueData) {
-                    self.renderProjectCB(selectedValueData);
+                    self.renderProjectCB(hashParams, selectedValueData);
                 });
             });
        },
 
-        renderProjectCB: function (projectObj) {
+        renderProjectCB: function (hashParams, projectObj) {
             contrail.setCookie(cowc.COOKIE_PROJECT, projectObj.name);
 
             var self = this,
@@ -36,22 +37,15 @@ define([
                 projectFQN = domain + ':' + projectObj.name,
                 projectUUID = projectObj.value;
 
-            globalObj.hashUpdated = 1;
-            layoutHandler.setURLHashObj({
-                p: 'mon_networking_projects',
-                q: {
-                    fqName: projectFQN,
-                    view: 'details',
-                    type: 'project'
-                }
-            });
+            changeProjectURLHash(hashParams, projectFQN);
 
             cowu.renderView4Config(this.$el, null, getProjectConfig(projectFQN, projectUUID));
         },
 
         renderNetwork: function (viewConfig) {
             var self = this,
-                fqName = (contrail.checkIfExist(viewConfig.hashParams.fqName) ? viewConfig.hashParams.fqName : null),
+                hashParams = viewConfig.hashParams,
+                fqName = (contrail.checkIfExist(hashParams.fqName) ? hashParams.fqName : null),
                 breadcrumbView = new BreadcrumbView();
 
             breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (domainSelectedValueData) {
@@ -61,15 +55,15 @@ define([
                     contrail.setCookie(cowc.COOKIE_PROJECT, projectSelectedValueData.name);
 
                     breadcrumbView.renderNetworkBreadcrumbDropdown(fqName, function (networkSelectedValueData) {
-                        self.renderNetworkCB(networkSelectedValueData);
+                        self.renderNetworkCB(hashParams, networkSelectedValueData);
                     });
                 }, function (projectSelectedValueData) {
-                    self.renderProjectCB(projectSelectedValueData);
+                    self.renderProjectCB(hashParams, projectSelectedValueData);
                 });
             });
         },
 
-        renderNetworkCB: function(networkObj) {
+        renderNetworkCB: function(hashParams, networkObj) {
             var self = this,
                 domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
                 project = contrail.getCookie(cowc.COOKIE_PROJECT),
@@ -78,15 +72,7 @@ define([
 
             contrail.setCookie(cowc.COOKIE_VIRTUAL_NETWORK, networkObj.name);
 
-            globalObj.hashUpdated = 1;
-            layoutHandler.setURLHashObj({
-                p: 'mon_networking_networks',
-                q: {
-                    fqName: networkFQN,
-                    view:'details',
-                    type: 'network'
-                }
-            });
+            changeNetworkURLHash(hashParams, networkFQN);
 
             cowu.renderView4Config(this.$el, null, getNetworkConfig(networkFQN, networkUUID));
         },
@@ -98,8 +84,9 @@ define([
         renderInstance: function (viewConfig) {
             var self = this,
                 breadcrumbView = new BreadcrumbView(),
-                fqName = (contrail.checkIfExist(viewConfig.hashParams.vn)) ? viewConfig.hashParams.vn : null,
-                instanceUUID = (contrail.checkIfExist(viewConfig.hashParams.uuid)) ? viewConfig.hashParams.uuid : null;
+                hashParams = viewConfig.hashParams,
+                fqName = (contrail.checkIfExist(hashParams.vn)) ? hashParams.vn : null,
+                instanceUUID = (contrail.checkIfExist(hashParams.uuid)) ? hashParams.uuid : null;
 
             breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (selectedValueData) {
                 contrail.setCookie(cowc.COOKIE_DOMAIN, selectedValueData.name);
@@ -111,11 +98,11 @@ define([
                         function (networkSelectedValueData) {
                             self.renderInstanceCB(networkSelectedValueData, instanceUUID);
                         }, function (networkSelectedValueData) {
-                            self.renderNetworkCB(networkSelectedValueData);
+                            self.renderNetworkCB(hashParams, networkSelectedValueData);
                         }
                     );
                 }, function (projectSelectedValueData) {
-                    self.renderProjectCB(projectSelectedValueData);
+                    self.renderProjectCB(hashParams, projectSelectedValueData);
                 });
             });
         },
@@ -227,6 +214,40 @@ define([
                     }
                 ]
             }
+        }
+    };
+
+    var changeProjectURLHash = function(hashParams, projectFQN) {
+        var newHashParams = {
+            p: 'mon_networking_projects',
+            q: {
+                fqName: projectFQN,
+                view: 'details',
+                type: 'project'
+            }
+        };
+
+        if(!_.isEqual(hashParams, newHashParams)) {
+            globalObj.hashUpdated = 1;
+            layoutHandler.setURLHashObj(newHashParams);
+            globalObj.hashUpdated = 0;
+        }
+    };
+
+    var changeNetworkURLHash = function(hashParams, networkFQN) {
+        var newHashParams = {
+            p: 'mon_networking_networks',
+            q: {
+                fqName: networkFQN,
+                view:'details',
+                type: 'network'
+            }
+        };
+
+        if(!_.isEqual(hashParams, newHashParams)) {
+            globalObj.hashUpdated = 1;
+            layoutHandler.setURLHashObj(newHashParams);
+            globalObj.hashUpdated = 0;
         }
     };
 
