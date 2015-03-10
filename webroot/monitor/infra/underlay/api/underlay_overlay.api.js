@@ -20,6 +20,8 @@ var rest = require(process.mainModule.exports["corePath"] + '/src/serverroot/com
                         '/src/serverroot/common/opServer.api'),
   configApiServer = require(process.mainModule.exports["corePath"] +
                             '/src/serverroot/common/configServer.api'),
+  jsonDiff = require(process.mainModule.exports["corePath"] +
+                     '/src/serverroot/common/jsondiff'),
   queries = require(process.mainModule.exports["corePath"] +
                     '/src/serverroot/common/queries.api');
 
@@ -68,7 +70,12 @@ function buildvRouterVMTopology (nodeList, appData, callback)
             try {
                 var moreAttr = {'vm_name':
                     vmData['value'][i]['value']['UveVirtualMachineAgent']
-                        ['interface_list'][0]['vm_name']};
+                        ['interface_list'][0]['vm_name'],
+                    'interface_list':
+                        vmData['value'][i]['value']['UveVirtualMachineAgent']
+                               ['interface_list'],
+                    'vrouter':
+                        vmData['value'][i]['value']['UveVirtualMachineAgent']['vrouter']};
                 vmList.push({'name': vmData['value'][i]['name'],
                     'node_type': ctrlGlobal.NODE_TYPE_VIRTUAL_MACHINE,
                     'chassis_type': ctrlGlobal.NODE_TYPE_NONE,
@@ -115,6 +122,7 @@ function buildTopology (req, appData, callback)
     });
 }
 
+
 /* Function: getUnderlayTopology
  *  Get the Underlay Topology
  */
@@ -123,9 +131,32 @@ function getUnderlayTopology (req, res, appData)
 
     var url = '/analytics/uves/prouter';
     var key = global.STR_GET_UNDERLAY_TOPOLOGY + '@' + url;
+    var topologyChanged = true;
     redisUtils.checkAndGetRedisDataByKey(key, buildTopology, req, appData,
                                          function(err, topology) {
-        commonUtils.handleJSONResponse(err, res, topology); 
+        var forceRefresh = req.param('forceRefresh');
+        if (null != forceRefresh) {
+            /* Check if we have same topology or there is any change */
+            process.mainModule.exports.redisClient.get(key,
+                                                       function(error, value) {
+                if ((null != error) || (null == value)) {
+                    topology['topologyChanged'] = true;
+                    commonUtils.handleJSONResponse(err, res, topology);
+                    return;
+                }
+                value = JSON.parse(value);
+                var delta = jsonDiff.getConfigJSONDiff('physical-topology',
+                                                       value, topology);
+                if (null == delta) {
+                    topology['topologyChanged'] = false;
+                } else {
+                    topology['topologyChanged'] = true;
+                }
+                commonUtils.handleJSONResponse(err, res, topology);
+            });
+        } else {
+            commonUtils.handleJSONResponse(err, res, topology);
+        }
     });
 }
 
@@ -383,7 +414,7 @@ function getPhysicalTopologyByPRouter (prouter, appData, pRouterData,
 
     postData['kfilt'] = [];
     postData['cfilt'] = ['PRouterLinkEntry', 'PRouterEntry:ifTable',
-        'PRouterEntry:ifXTable', 'PRouterEntry:lldpTable:lldpLocalSystemData'];
+        'PRouterEntry:lldpTable:lldpLocalSystemData'];
 
     tempNodeObjs[prouter] = prouter;
     for (var i = 0; i < linksCnt; i++) {
@@ -447,7 +478,7 @@ function buildPhysicalTopology (prouter, appData, callback)
     var postData = {};
     var dataObjArr = [];
     postData['cfilt'] = ['PRouterLinkEntry', 'PRouterEntry:ifTable',
-        'PRouterEntry:ifXTable', 'PRouterEntry:lldpTable:lldpLocalSystemData'];
+        'PRouterEntry:lldpTable:lldpLocalSystemData'];
     if (null != prouter) {
         postData['kfilt'] = [];
         postData['kfilt'] = [prouter];
@@ -618,10 +649,13 @@ function getCompletePhysicalTopology (appData, pRouterData, prConfigData, callba
     callback(null, topoData);
 }
 
-function getUnderlayPathByNodelist (topoData, appData, callback)
+function getUnderlayPathByNodelist (req, topoData, appData, callback)
 {
     var endpoints = [];
-    buildPhysicalTopology(null, appData, function(err, topology) {
+    var url = '/analytics/uves/prouter';
+    var key = global.STR_GET_UNDERLAY_TOPOLOGY + '@' + url;
+    redisUtils.checkAndGetRedisDataByKey(key, buildTopology, req, appData,
+                                         function(err, topology) {
         var nodeCnt = topoData['nodes'].length;
         var links = topology['links'];
         var linksCnt = links.length;
@@ -743,18 +777,22 @@ function getUnderlayPath (req, res, appData)
                                        "node_type":
                                        ctrlGlobal.NODE_TYPE_VROUTER});
             }
-            getUnderlayPathByNodelist(topoData, appData, function(err, endpoints) {
-                topoData['nodes'].push({"name": srcVrouter['vm_uuid'],
-                                       "node_type":
-                                       ctrlGlobal.NODE_TYPE_VIRTUAL_MACHINE});
-                topoData['nodes'].push({"name": destVrouter['vm_uuid'],
-                                       "node_type":
-                                       ctrlGlobal.NODE_TYPE_VIRTUAL_MACHINE});
+            getUnderlayPathByNodelist(req, topoData, appData, function(err, endpoints) {
                 topoData['links'] = endpoints;
-                topoData['links'].push({'endpoints': [srcVrouter['vm_uuid'], 
-                                       srcVrouter['vrouter']]});
-                topoData['links'].push({'endpoints': [destVrouter['vm_uuid'], 
-                                       destVrouter['vrouter']]});
+                if (null != srcVrouter) {
+                    topoData['nodes'].push({"name": srcVrouter['vm_uuid'],
+                                           "node_type":
+                                           ctrlGlobal.NODE_TYPE_VIRTUAL_MACHINE});
+                    topoData['links'].push({'endpoints': [srcVrouter['vm_uuid'],
+                                           srcVrouter['vrouter']]});
+                }
+                if (null != destVrouter) {
+                    topoData['nodes'].push({"name": destVrouter['vm_uuid'],
+                                           "node_type":
+                                           ctrlGlobal.NODE_TYPE_VIRTUAL_MACHINE});
+                    topoData['links'].push({'endpoints': [destVrouter['vm_uuid'],
+                                           destVrouter['vrouter']]});
+                }
                 commonUtils.handleJSONResponse(err, res, topoData);
             });
         });
@@ -1038,8 +1076,7 @@ function getUnderlayStats (req, res, appData)
     var prPostData = {};
     var vrPostData = {};
     prPostData['kfilt'] = [node1, node2];
-    prPostData['cfilt'] = ['PRouterLinkEntry', 'PRouterEntry:ifTable',
-        'PRouterEntry:ifXTable'];
+    prPostData['cfilt'] = ['PRouterLinkEntry', 'PRouterEntry:ifTable'];
     commonUtils.createReqObj(dataObjArr, url, global.HTTP_REQUEST_POST,
                              prPostData, null, null, null);
     vrPostData['kfilt'] = [node1, node2];
