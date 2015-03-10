@@ -46,10 +46,7 @@ define([
                 }
             });
 
-            var connectedGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONNECTED_GRAPH, projectFQN), {fqName: projectFQN}, ':connected', 'Project'),
-                configGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONFIG_GRAPH, projectFQN), {fqName: projectFQN}, ':config', 'Project');
-
-            cowu.renderView4Config(this.$el, null, getProjectConfig(connectedGraph, configGraph, projectFQN, projectUUID));
+            cowu.renderView4Config(this.$el, null, getProjectConfig(projectFQN, projectUUID));
         },
 
         renderNetwork: function (viewConfig) {
@@ -91,10 +88,7 @@ define([
                 }
             });
 
-            var connectedGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), {fqName: networkFQN}, ':connected', 'Network'),
-                configGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONFIG_GRAPH, networkFQN), {fqName: networkFQN}, ':config', 'Network');
-
-            cowu.renderView4Config(this.$el, null, getNetworkConfig(connectedGraph, configGraph, networkFQN, networkUUID));
+            cowu.renderView4Config(this.$el, null, getNetworkConfig(networkFQN, networkUUID));
         },
 
         renderNetworkList: function (projectFQN) {
@@ -148,65 +142,21 @@ define([
         }
     });
 
-    function getProjectConfig(connectedGraph, configGraph, projectFQN, projectUUID) {
+    function getProjectConfig(projectFQN, projectUUID) {
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_ID]),
-            view: "SectionView",
-            viewConfig: {
-                rows: [
-                    {
-                        columns: [
-                            {
-                                elementId: ctwl.PROJECT_GRAPH_ID,
-                                view: "NetworkingGraphView",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {connectedGraph: connectedGraph, configGraph: configGraph}
-                            }
-                        ]
-                    },
-                    {
-                        columns: [
-                            {
-                                elementId: ctwl.MONITOR_PROJECT_VIEW_ID,
-                                view: "ProjectTabView",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {projectFQN: projectFQN, projectUUID: projectUUID}
-                            }
-                        ]
-                    }
-                ]
-            }
+            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_PAGE_ID]),
+            view: "ProjectView",
+            app: cowc.APP_CONTRAIL_CONTROLLER,
+            viewConfig: {projectFQN: projectFQN, projectUUID: projectUUID}
         }
     };
 
-    function getNetworkConfig(connectedGraph, configGraph, networkFQN, networkUUID) {
+    function getNetworkConfig(networkFQN, networkUUID) {
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_ID]),
-            view: "SectionView",
-            viewConfig: {
-                rows: [
-                    {
-                        columns: [
-                            {
-                                elementId: ctwl.NETWORK_GRAPH_ID,
-                                view: "NetworkingGraphView",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {connectedGraph: connectedGraph, configGraph: configGraph}
-                            }
-                        ]
-                    },
-                    {
-                        columns: [
-                            {
-                                elementId: ctwl.MONITOR_NETWORK_VIEW_ID,
-                                view: "NetworkTabView",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {networkFQN: networkFQN, networkUUID: networkUUID}
-                            }
-                        ]
-                    }
-                ]
-            }
+            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_PAGE_ID]),
+            view: "NetworkView",
+            app: cowc.APP_CONTRAIL_CONTROLLER,
+            viewConfig: {networkFQN: networkFQN, networkUUID: networkUUID}
         }
     };
 
@@ -221,7 +171,7 @@ define([
 
     function getProjectListConfig() {
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECTS_PAGE_ID]),
+            elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_LIST_PAGE_ID]),
             view: "ProjectListView",
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: {}
@@ -230,7 +180,7 @@ define([
 
     function getNetworkListConfig() {
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORKS_PAGE_ID]),
+            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_LIST_PAGE_ID]),
             view: "NetworkListView",
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: {}
@@ -239,7 +189,7 @@ define([
 
     function getInstanceListConfig() {
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCES_PAGE_ID]),
+            elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_LIST_PAGE_ID]),
             view: "InstanceListView",
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: {}
