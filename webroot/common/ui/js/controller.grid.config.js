@@ -361,17 +361,41 @@ define([
 
     function onClickGrid(e, selRowDataItem) {
         var name = $(e.target).attr('name'),
-            fqName, uuid, vn;
+            fqName, uuid;
         if ($.inArray(name, ['project']) > -1) {
             fqName = selRowDataItem['name'];
-            layoutHandler.setURLHashParams({ fqName: fqName, type: "project", view: "details" }, {p: "mon_networking_projects", merge: false});
+            layoutHandler.setURLHashParams({
+                type: "project",
+                view: "details",
+                focusedElements: {
+                    fqName: fqName,
+                    type: 'project'
+                }
+            }, {p: "mon_networking_projects", merge: false});
+
         } else if ($.inArray(name, ['network']) > -1) {
             fqName = selRowDataItem['name'];
-            layoutHandler.setURLHashParams({ fqName: fqName, type: "network", view: "details" }, {p: "mon_networking_networks", merge: false});
+            layoutHandler.setURLHashParams({
+                type: "network",
+                view: "details",
+                focusedElement: {
+                    fqName: fqName,
+                    type: 'virtual-network'
+                }
+            }, {p: "mon_networking_networks", merge: false});
+
         } else if ($.inArray(name, ['instance']) > -1) {
-            vn = selRowDataItem['vnFQN'];
+            fqName = selRowDataItem['vnFQN'];
             uuid = selRowDataItem['name'];
-            layoutHandler.setURLHashParams({ uuid: uuid, vn: vn, type: "instance", view: "details" }, {p: "mon_networking_instances", merge: false});
+            layoutHandler.setURLHashParams({
+                type: "instance",
+                view: "details",
+                focusedElement: {
+                    fqName: fqName,
+                    uuid: uuid,
+                    type: 'virtual-network'
+                }
+            }, {p: "mon_networking_instances", merge: false});
         }
     };
 

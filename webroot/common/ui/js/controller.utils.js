@@ -62,7 +62,7 @@ define([
             });
         };
 
-        self.getNetworkingGraphConfig = function(url, elementNameObject, keySuffix, focusedElement) {
+        self.getNetworkingGraphConfig = function(url, elementNameObject, keySuffix, type) {
             return {
                 remote: {
                     ajaxConfig: {
@@ -70,11 +70,13 @@ define([
                         type: 'GET'
                     }
                 },
-                elementNameObject: elementNameObject,
                 cacheConfig: {
                     ucid: ctwc.UCID_PREFIX_MN_GRAPHS + elementNameObject.fqName + keySuffix
                 },
-                focusedElement: focusedElement
+                focusedElement: {
+                    type: type,
+                    name: elementNameObject
+                }
             };
         };
 

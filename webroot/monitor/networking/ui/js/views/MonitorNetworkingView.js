@@ -17,7 +17,7 @@ define([
         renderProject: function (viewConfig) {
             var self = this,
                 hashParams = viewConfig.hashParams,
-                fqName = (contrail.checkIfExist(hashParams.fqName) ? hashParams.fqName : null),
+                fqName = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.fqName') ? hashParams.focusedElement.fqName : null),
                 breadcrumbView = new BreadcrumbView();
 
             breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (selectedValueData) {
@@ -37,7 +37,7 @@ define([
                 projectFQN = domain + ':' + projectObj.name,
                 projectUUID = projectObj.value;
 
-            changeProjectURLHash(hashParams, projectFQN);
+            changeProjectURLHash(hashParams, projectFQN, projectUUID);
 
             cowu.renderView4Config(this.$el, null, getProjectConfig(projectFQN, projectUUID));
         },
@@ -45,7 +45,7 @@ define([
         renderNetwork: function (viewConfig) {
             var self = this,
                 hashParams = viewConfig.hashParams,
-                fqName = (contrail.checkIfExist(hashParams.fqName) ? hashParams.fqName : null),
+                fqName = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.fqName') ? hashParams.focusedElement.fqName : null),
                 breadcrumbView = new BreadcrumbView();
 
             breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (domainSelectedValueData) {
@@ -72,7 +72,7 @@ define([
 
             contrail.setCookie(cowc.COOKIE_VIRTUAL_NETWORK, networkObj.name);
 
-            changeNetworkURLHash(hashParams, networkFQN);
+            changeNetworkURLHash(hashParams, networkFQN, networkUUID);
 
             cowu.renderView4Config(this.$el, null, getNetworkConfig(networkFQN, networkUUID));
         },
@@ -85,8 +85,8 @@ define([
             var self = this,
                 breadcrumbView = new BreadcrumbView(),
                 hashParams = viewConfig.hashParams,
-                fqName = (contrail.checkIfExist(hashParams.vn)) ? hashParams.vn : null,
-                instanceUUID = (contrail.checkIfExist(hashParams.uuid)) ? hashParams.uuid : null;
+                fqName = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.fqName') ? hashParams.focusedElement.fqName : null),
+                instanceUUID = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.uuid')) ? hashParams.focusedElement.uuid : null;
 
             breadcrumbView.renderDomainBreadcrumbDropdown(fqName, function (selectedValueData) {
                 contrail.setCookie(cowc.COOKIE_DOMAIN, selectedValueData.name);
@@ -111,9 +111,10 @@ define([
             var self = this,
                 domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
                 project = contrail.getCookie(cowc.COOKIE_PROJECT),
-                networkFQN = domain + ':' + project + ':' + networkObj.name;
+                networkFQN = domain + ':' + project + ':' + networkObj.name,
+                networkUUID = networkObj.value;
 
-            cowu.renderView4Config(this.$el, null, getInstanceConfig(networkFQN, instanceUUID));
+            cowu.renderView4Config(this.$el, null, getInstanceConfig(networkFQN, networkUUID, instanceUUID));
         },
 
         renderInstanceList: function (projectUUID) {
@@ -147,12 +148,12 @@ define([
         }
     };
 
-    function getInstanceConfig(networkFQN, instanceUUID) {
+    function getInstanceConfig(networkFQN, networkUUID, instanceUUID) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_PAGE_ID]),
             view: "InstanceView",
             app: cowc.APP_CONTRAIL_CONTROLLER,
-            viewConfig: {networkFQN: networkFQN, instanceUUID: instanceUUID}
+            viewConfig: {networkFQN: networkFQN, networkUUID: networkUUID, instanceUUID: instanceUUID}
         }
     };
 
@@ -217,13 +218,16 @@ define([
         }
     };
 
-    var changeProjectURLHash = function(hashParams, projectFQN) {
+    var changeProjectURLHash = function(hashParams, projectFQN, projectUUID) {
         var newHashParams = {
             p: 'mon_networking_projects',
             q: {
-                fqName: projectFQN,
                 view: 'details',
-                type: 'project'
+                type: 'project',
+                focusedElement: {
+                    fqName: projectFQN,
+                    type: 'project'
+                }
             }
         };
 
@@ -234,13 +238,16 @@ define([
         }
     };
 
-    var changeNetworkURLHash = function(hashParams, networkFQN) {
+    var changeNetworkURLHash = function(hashParams, networkFQN, networkUUID) {
         var newHashParams = {
             p: 'mon_networking_networks',
             q: {
-                fqName: networkFQN,
                 view:'details',
-                type: 'network'
+                type: 'network',
+                focusedElement: {
+                    fqName: networkFQN,
+                    type: 'virtual-network'
+                }
             }
         };
 

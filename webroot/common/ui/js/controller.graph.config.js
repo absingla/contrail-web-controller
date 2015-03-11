@@ -259,11 +259,15 @@ define([
                         items.view = {
                             name: '<i class="icon-external-link"></i><span class="margin-0-5">View Virtual Network</span>',
                             callback: function (key, options) {
-                                loadFeature({p: 'mon_networking_networks',
+                                loadFeature({
+                                    p: 'mon_networking_networks',
                                     q: {
-                                        fqName: viewElement['attributes']['nodeDetails']['name'],
                                         view: 'details',
-                                        type: 'network'
+                                        type: 'network',
+                                        focusedElement: {
+                                            fqName: viewElement['attributes']['nodeDetails']['name'],
+                                            type: 'virtual-network'
+                                        }
                                     }
                                 });
                             }
@@ -364,7 +368,86 @@ define([
                 }*/
             };
         };
-    }
+
+        this.getTabsViewConfig = function(tabType, options) {
+
+            var config = {};
+
+            switch (tabType) {
+                case 'virtual-network':
+
+                    config = {
+                        elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_ID]),
+                        view: "SectionView",
+                        viewConfig: {
+                            rows: [
+                                {
+                                    columns: [
+                                        {
+                                            elementId: ctwl.MONITOR_NETWORK_VIEW_ID,
+                                            view: "NetworkTabView",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: options
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+
+                    break;
+
+                case 'virtual-machine':
+
+                    config = {
+                        elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_ID]),
+                        view: "SectionView",
+                        viewConfig: {
+                            rows: [
+                                {
+                                    columns: [
+                                        {
+                                            elementId: ctwl.MONITOR_INSTANCE_VIEW_ID,
+                                            view: "InstanceTabView",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: options
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+
+                    break;
+
+                case 'project':
+
+                    config = {
+                        elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_ID]),
+                        view: "SectionView",
+                        viewConfig: {
+                            rows: [
+                                {
+                                    columns: [
+                                        {
+                                            elementId: ctwl.MONITOR_PROJECT_VIEW_ID,
+                                            view: "ProjectTabView",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: options
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+
+                    break;
+
+            }
+
+            return config;
+        };
+    };
 
     return CTGraphConfig;
 });

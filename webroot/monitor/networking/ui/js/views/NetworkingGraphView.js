@@ -38,6 +38,7 @@ define([
                 clickEvents: {
                 //    'blank:pointerclick': cgBlankPointerClick,
                     'cell:pointerdblclick': cgPointerDblClick,
+                    'cell:pointerclick': cgPointerClick,
                     'cell:rightclick': ctwgrc.getContextMenuConfig()
                 },
                 successCallback: function (connectedGraphView, directedGraphSize, jointObject) {
@@ -77,8 +78,8 @@ define([
     });
 
     var getElements4ConnectedGraphFn = function (graphconfig, selectorId) {
-        var focusedElement = graphconfig.focusedElement,
-            fqName = graphconfig.elementNameObject.fqName;
+        var focusedElementType = graphconfig.focusedElement.type,
+            fqName = graphconfig.focusedElement.name.fqName;
 
         return function (response, elementMap) {
             var connectedElements = [],
@@ -88,7 +89,7 @@ define([
                 links = response['links'],
                 zoomedNode = null;
 
-            if (focusedElement == 'Project') {
+            if (focusedElementType == 'Project') {
                 createNodeElements(nodes, connectedElements, elementMap);
             } else {
                 var zoomedNodeKey = null,
@@ -168,6 +169,7 @@ define([
                 },
                 nodeDetails: {
                     fqName: node,
+                    node_type: nodeType,
                     srcVNDetails: srcVNDetails
                 }
             };
@@ -288,16 +290,90 @@ define([
         $('g').popover('hide');
     };
 
+    function cgPointerClick(cellView, evt, x, y) {
+
+        var clickedElement = cellView.model.attributes.nodeDetails,
+            elementNodeType= clickedElement.node_type,
+            elementNodeId = cellView.model.id,
+            bottomContainerElement = $('#' + ctwl.BOTTOM_CONTENT_CONTAINER),
+            tabConfig = {};
+
+        highlightElementsToFaint([
+            $('div.font-element')
+        ]);
+
+        highlightSVGElementsToFaint([
+            $('g.element'),
+            $('g.link')
+        ]);
+
+        $('div.font-element[font-element-model-id="' + elementNodeId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+        $('g[model-id="' + elementNodeId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+
+        switch (elementNodeType) {
+            case 'virtual-network':
+
+                var networkFQN = clickedElement.name,
+                    networkUUID = getUUIDByName(networkFQN);
+
+                tabConfig = ctwgrc.getTabsViewConfig('virtual-network', {
+                    networkFQN: networkFQN,
+                    networkUUID: networkUUID
+                });
+
+                layoutHandler.setURLHashParams({
+                    clickedElement: {
+                        fqName: networkFQN,
+                        uuid: networkUUID,
+                        type: elementNodeType
+                    }
+                }, { merge: true, triggerHashChange: false});
+
+                break;
+
+            case 'virtual-machine':
+
+                var networkFQN = clickedElement.fqName,
+                    instanceUUID = clickedElement.fqName;
+
+                tabConfig = ctwgrc.getTabsViewConfig('virtual-machine', {
+                    networkFQN: networkFQN,
+                    instanceUUID: instanceUUID
+                });
+
+                layoutHandler.setURLHashParams({
+                    clickedElement: {
+                        fqName: networkFQN,
+                        uuid: instanceUUID,
+                        type: elementNodeType
+
+                    }
+                }, { merge: true, triggerHashChange: false});
+
+                break;
+        }
+
+        cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
+
+        //TODO - Highlight clicked ELement
+
+    }
+
     function cgPointerDblClick(cellView, evt, x, y) {
-        var dblClickedElement = cellView.model,
-            elementType = dblClickedElement['attributes']['type'];
-        //elementMap = params.data.elementMap;
-        switch (elementType) {
-            case 'contrail.VirtualNetwork':
+        var dblClickedElement = cellView.model.attributes.nodeDetails,
+            elementNodeType= dblClickedElement.node_type,
+            elementNodeId = cellView.model.id;
+
+        switch (elementNodeType) {
+            case 'virtual-network':
+                globalObj.hashUpdated = 0;
                 loadFeature({
                     p: 'mon_networking_networks',
                     q: {
-                        fqName: dblClickedElement['attributes']['nodeDetails']['name'],
+                        focusedElement: {
+                            fqName: dblClickedElement['name'],
+                            type: elementNodeType
+                        },
                         view: 'details',
                         type: 'network'
                     }
@@ -334,15 +410,18 @@ define([
             //        });
             //    }
             //    break;
-            case 'contrail.VirtualMachine':
-                var srcVN = dblClickedElement.attributes.nodeDetails.srcVNDetails.name;
+            case 'virtual-machine':
+                var srcVN = dblClickedElement.srcVNDetails.name;
                 loadFeature({
                     p: 'mon_networking_instances',
                     q: {
-                        uuid: dblClickedElement['attributes']['nodeDetails']['fqName'],
-                        vn: srcVN,
                         type: 'instance',
-                        view: 'details'
+                        view: 'details',
+                        focusedElement: {
+                            fqName: srcVN,
+                            uuid: dblClickedElement['fqName'],
+                            type: 'virtual-network'
+                        }
                     }
                 });
                 $('g.VirtualMachine').popover('hide');
@@ -353,11 +432,11 @@ define([
 
     var highlightSelectedElementForZoomedElement = function(connectedSelectorId, jointObject, graphConfig) {
         highlightSelectedSVGElements([$('g.ZoomedElement')]);
-        if (graphConfig.focusedElement == 'Network') {
+        if (graphConfig.focusedElement.type == 'Network') {
             highlightSelectedElements([$('div.VirtualMachine')]);
             highlightSelectedSVGElements([$('g.VirtualMachine'), $('.VirtualMachineLink')]);
         }
-        else if (graphConfig.focusedElement == 'Instance') {
+        else if (graphConfig.focusedElement.type == 'Instance') {
             highlightElementsToFaint([
                 $(connectedSelectorId).find('div.font-element')
             ]);
@@ -367,7 +446,7 @@ define([
                 $(connectedSelectorId).find('g.link')
             ]);
             var graphElements = jointObject.connectedGraph.getElements(),
-                vmFqName = graphConfig.elementNameObject.instanceUUID;
+                vmFqName = graphConfig.focusedElement.name.instanceUUID;
 
             $.each(graphElements, function (graphElementKey, graphElementValue) {
                 if (graphElementValue.attributes.type == 'contrail.VirtualMachine' && graphElementValue.attributes.nodeDetails.fqName == vmFqName) {

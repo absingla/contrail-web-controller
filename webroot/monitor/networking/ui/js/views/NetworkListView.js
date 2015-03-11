@@ -94,9 +94,13 @@ define([
 
     function onScatterChartClick(chartConfig) {
         var obj = {
-            fqName: chartConfig['name'],
             view: "details",
-            type: "network"
+            type: "network",
+            focusedElement: {
+                fqName: chartConfig['name'],
+                type: 'virtual-network'
+            }
+
         };
 
         layoutHandler.setURLHashParams(obj, {

@@ -93,9 +93,12 @@ define([
 
     function onScatterChartClick(chartConfig) {
         var obj = {
-            fqName: chartConfig['name'],
             view: "details",
-            type: "project"
+            type: "project",
+            focusedElement: {
+                fqName: chartConfig['name'],
+                type: 'project'
+            }
         };
 
         layoutHandler.setURLHashParams(obj, {

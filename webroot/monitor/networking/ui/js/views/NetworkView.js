@@ -10,18 +10,38 @@ define([
         el: $(contentContainer),
 
         render: function () {
-            var self = this, viewConfig = this.attributes.viewConfig,
+            var self = this,
+                graphTabsTemplate = contrail.getTemplate4Id(cowc.TMPL_2ROW_CONTENT_VIEW),
+                viewConfig = this.attributes.viewConfig,
                 networkFQN = viewConfig['networkFQN'],
-                networkUUID = viewConfig['networkUUID'];
+                networkUUID = viewConfig['networkUUID']
 
-            var connectedGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), {fqName: networkFQN}, ':connected', 'Network'),
+            this.$el.html(graphTabsTemplate);
+
+            self.renderNetworkGraph(networkFQN, networkUUID);
+            self.renderNetworkTabs(networkFQN, networkUUID);
+        },
+
+        renderNetworkGraph: function(networkFQN, networkUUID) {
+            var topContainerElement = $('#' + ctwl.TOP_CONTENT_CONTAINER),
+                connectedGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONNECTED_GRAPH, networkFQN), {fqName: networkFQN}, ':connected', 'Network'),
                 configGraph = ctwu.getNetworkingGraphConfig(ctwc.get(ctwc.URL_NETWORK_CONFIG_GRAPH, networkFQN), {fqName: networkFQN}, ':config', 'Network');
 
-            cowu.renderView4Config(self.$el, null, getNetworkViewConfig(connectedGraph, configGraph, networkFQN, networkUUID), null, null);
+            cowu.renderView4Config(topContainerElement, null, getNetworkGraphViewConfig(connectedGraph, configGraph, networkFQN, networkUUID), null, null);
+        },
+
+        renderNetworkTabs: function(networkFQN, networkUUID) {
+            var bottomContainerElement = $('#' + ctwl.BOTTOM_CONTENT_CONTAINER),
+                tabConfig = ctwgrc.getTabsViewConfig('virtual-network', {
+                    networkFQN: networkFQN,
+                    networkUUID: networkUUID
+                });
+
+            cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
         }
     });
 
-    function getNetworkViewConfig(connectedGraph, configGraph, networkFQN, networkUUID) {
+    function getNetworkGraphViewConfig(connectedGraph, configGraph, networkFQN, networkUUID) {
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_ID]),
             view: "SectionView",
@@ -34,16 +54,6 @@ define([
                                 view: "NetworkingGraphView",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {connectedGraph: connectedGraph, configGraph: configGraph}
-                            }
-                        ]
-                    },
-                    {
-                        columns: [
-                            {
-                                elementId: ctwl.MONITOR_NETWORK_VIEW_ID,
-                                view: "NetworkTabView",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {networkFQN: networkFQN, networkUUID: networkUUID}
                             }
                         ]
                     }
