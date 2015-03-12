@@ -51,8 +51,13 @@ define([
                     $(selectorId).data('joint-object', jointObject);
                     adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
                     //TODO: Make control panel as a common view to grid and graph
-                    initNetworkingGraphControlEvents(selectorId, connectedSelectorId, configSelectorId);
-                    highlightSelectedElementForZoomedElement(connectedSelectorId, jointObject, graphConfig)
+                    initNetworkingGraphControlEvents(selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
+                    highlightSelectedElementForZoomedElement(connectedSelectorId, jointObject, graphConfig);
+
+                    //TODO: Execute only in refresh case.
+                    setTimeout(function(){
+                        $(selectorId).find('.refresh i').removeClass('icon-spin icon-spinner').addClass('icon-repeat');
+                    }, 1000);
                 }
             };
 
@@ -89,7 +94,7 @@ define([
                 links = response['links'],
                 zoomedNode = null;
 
-            if (focusedElementType == 'Project') {
+            if (focusedElementType == ctwc.GRAPH_ELEMENT_PROJECT) {
                 createNodeElements(nodes, connectedElements, elementMap);
             } else {
                 var zoomedNodeKey = null,
@@ -262,7 +267,7 @@ define([
         });
     };
 
-    function initNetworkingGraphControlEvents(selectorId, connectedSelectorId, configSelectorId) {
+    function initNetworkingGraphControlEvents(selectorId, connectedSelectorId, configSelectorId, connectedGraphView) {
         var graphControlElement = $(selectorId).find('.graph-controls');
 
         /* Pan and Zoom events */
@@ -282,6 +287,15 @@ define([
             .on('click', function (event) {
                 $(this).find('i').toggleClass('icon-resize-full').toggleClass('icon-resize-small');
                 adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
+            }
+        );
+
+        graphControlElement.find('.refresh')
+            .off('click')
+            .on('click', function () {
+                $(this).find('i').removeClass('icon-repeat').toggleClass('icon-spin icon-spinner');
+                connectedGraphView.refreshData();
+                //TODO: If spinning don't call refreshData
             }
         );
     };
