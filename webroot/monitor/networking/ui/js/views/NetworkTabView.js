@@ -217,9 +217,7 @@ define([
                                                     templateGeneratorConfig: {
                                                         formatter: 'link',
                                                         template: ctwc.URL_NETWORK,
-                                                        params: {
-                                                            fqName: 'value.UveVirtualNetworkConfig.connected_networks'
-                                                        }
+                                                        params: {}
                                                     }
                                                 },
                                                 {
