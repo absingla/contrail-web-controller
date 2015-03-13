@@ -49,7 +49,7 @@ define([
                     $(connectedSelectorId).data('offset', {x: 0, y: 0});
 
                     $(selectorId).data('joint-object', jointObject);
-                    if(!ctwc.PLOT_VM_VERTICAL){
+                    if((!ctwc.PLOT_VM_VERTICAL) && (!ctwc.PLOT_VM_HORIZONTAL)){
                         adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
                     }
                     //TODO: Make control panel as a common view to grid and graph
@@ -113,6 +113,8 @@ define([
 
                         if (ctwc.PLOT_VM_VERTICAL) {
                             options = getVerticalZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
+                        } else if (ctwc.PLOT_VM_HORIZONTAL) {
+                            options = getHorizontalZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
                         } else {
                             options = getZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
                         }
@@ -127,6 +129,8 @@ define([
 
                         if (ctwc.PLOT_VM_VERTICAL) {
                             generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options);
+                        } else if (ctwc.PLOT_VM_HORIZONTAL) {
+                            generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options);
                         } else {
                             generateVMGraph(zoomedElements, zoomedNodeElement, options);
                         }
@@ -216,6 +220,64 @@ define([
         };
     };
 
+    function generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options) {
+        var vmMargin = options['VMMargin'],
+            vmWidth = options['VMWidth'],
+            vmHeight = options['VMHeight'],
+            xSeparation = vmWidth + vmMargin,
+            ySeparation = vmHeight + vmMargin,
+            vmPerRow = options['vmPerRow'],
+            vmLength = options['noOfVMsToDraw'],
+            vmNode, vmList = options['vmList'];
+
+        var xOrigin = vmMargin / 2,
+            yOrigin = vmMargin / 2;
+
+        var xFactor = 0, yFactor = 0, linkThickness = 1, horizontalAdjustFactor = 6;
+        if(vmLength !== 0){
+            var longRect = createRect(xOrigin - vmWidth/2, yOrigin + ySeparation - horizontalAdjustFactor, vmLength * xSeparation + vmWidth/2, linkThickness);
+            zoomedElements.push(longRect);
+        }
+
+        for (var i = 0; i < vmLength; i++) {
+
+            vmNode = createVirtualMachine(xOrigin + (xSeparation * xFactor), yOrigin + ((ySeparation) * yFactor), vmList[i], options['srcVNDetails']);
+            zoomedElements.push(vmNode);
+            linkRect = createRect(xOrigin + (xSeparation * xFactor)+ vmWidth/2 +1, yOrigin + ((ySeparation) * yFactor) + vmHeight, linkThickness, ySeparation/2 -6);
+            zoomedElements.push(linkRect);
+            xFactor++;
+        }
+
+        function createRect (x, y, width, height){
+            var rect = new joint.shapes.basic.Rect({
+                position: { x: x, y: y}, size: { width: width, height: height},
+                attrs: {rect:{stroke: '#3182bd', opacity: 1}}
+            });
+            return rect;
+        }
+        function createVirtualMachine(x, y, node, srcVNDetails) {
+            var nodeType = 'virtual-machine',
+                element, options;
+
+            options = {
+                position: {x: x, y: y},
+                size: {width: vmWidth, height: vmHeight},
+                font: {
+                    iconClass: 'icon-contrail-virtual-machine'
+                },
+                nodeDetails: {
+                    fqName: node,
+                    node_type: nodeType,
+                    srcVNDetails: srcVNDetails
+                },
+                elementType: nodeType
+            };
+            element = new ContrailElement(nodeType, options);
+            return element;
+        };
+
+        return zoomedElements;
+    }
 
     function generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options) {
         var vmMargin = options['VMMargin'],
