@@ -75,7 +75,8 @@ define([
             /*Connected Network Details */
             src: 'Source Network',
             dst: 'Destination Network',
-            service_inst: 'Service Instances'
+            service_inst: 'Service Instances',
+            pkts: "Packets"
         };
 
         this.TOP_CONTENT_CONTAINER = "top-content-container";

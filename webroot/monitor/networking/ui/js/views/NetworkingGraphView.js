@@ -405,7 +405,7 @@ define([
             case 'virtual-network':
 
                 var networkFQN = clickedElement.nodeDetails.name,
-                    networkUUID = getUUIDByName(networkFQN);
+                    networkUUID = ctwu.getUUIDByName(networkFQN);
 
                 tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, {
                     networkFQN: networkFQN,
