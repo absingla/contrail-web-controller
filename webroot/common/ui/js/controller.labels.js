@@ -155,7 +155,7 @@ define([
         this.TITLE_NETWORKS_SUMMARY = "Networks Summary";
         this.TITLE_NETWORK_DETAILS = "Network Details";
 
-        this.TITLE_CONNECTED_NETWORKS = "Instances";
+        this.TITLE_INSTANCES = "Instances";
         this.TITLE_INSTANCES_SUMMARY = "Instances Summary";
         this.TITLE_INSTANCE_DETAILS = "Instance Details";
 
