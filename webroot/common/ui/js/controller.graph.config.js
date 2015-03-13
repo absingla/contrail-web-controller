@@ -443,6 +443,29 @@ define([
 
                     break;
 
+                case 'connected-network':
+
+                    config = {
+                        elementId: cowu.formatElementId([ctwl.MONITOR_CONNECTED_NETWORK_ID]),
+                        view: "SectionView",
+                        viewConfig: {
+                            rows: [
+                                {
+                                    columns: [
+                                        {
+                                            elementId: ctwl.MONITOR_CONNECTED_NETWORK_VIEW_ID,
+                                            view: "ConnectedNetworkTabView",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: options
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+
+                    break;
+
             }
 
             return config;

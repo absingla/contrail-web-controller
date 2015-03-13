@@ -70,8 +70,12 @@ define([
             gateway: 'Gateway',
             label: 'Label',
             active: 'Active',
-            l2_active: 'L2 Active'
+            l2_active: 'L2 Active',
 
+            /*Connected Network Details */
+            src: 'Source Network',
+            dst: 'Destination Network',
+            service_inst: 'Service Instances'
         };
 
         this.TOP_CONTENT_CONTAINER = "top-content-container";
@@ -136,6 +140,14 @@ define([
         this.INSTANCE_TRAFFIC_STATS_DROPDOWN_ID = "instance-traffic-stats-dropdown";
         this.INSTANCE_TRAFFIC_STATS_CHART_ID = "instance-traffic-stats-chart";
 
+        this.MONITOR_CONNECTED_NETWORK_ID = "monitor-connected-network";
+        this.MONITOR_CONNECTED_NETWORK_VIEW_ID = "monitor-connected-network-view";
+        this.CONNECTED_NETWORK_TABS_ID = "connected-networks-tabs";
+        this.CONNECTED_NETWORK_DETAILS_ID = "connected-network-details";
+        this.CONNECTED_NETWORK_TRAFFIC_STATS_ID = "connected-network-traffic-stats";
+        this.CONNECTED_NETWORK_TRAFFIC_STATS_DROPDOWN_ID = "connected-network-traffic-stats-dropdown";
+        this.CONNECTED_NETWORK_TRAFFIC_STATS_CHART_ID = "connected-network-traffic-stats-chart";
+
         this.FLOWS_SCATTER_CHART_ID = "flows-scatter-chart";
         this.FLOWS_GRID_ID = "flows-grid";
 
@@ -143,9 +155,11 @@ define([
         this.TITLE_NETWORKS_SUMMARY = "Networks Summary";
         this.TITLE_NETWORK_DETAILS = "Network Details";
 
-        this.TITLE_INSTANCES = "Instances";
+        this.TITLE_CONNECTED_NETWORKS = "Instances";
         this.TITLE_INSTANCES_SUMMARY = "Instances Summary";
         this.TITLE_INSTANCE_DETAILS = "Instance Details";
+
+        this.TITLE_CONNECTED_NETWORK_DETAILS = "Connected Network Details";
 
         this.TITLE_FLOWS= "Flows";
         this.TITLE_FLOWS_SUMMARY = "Flows Summary";
@@ -158,6 +172,8 @@ define([
         this.TITLE_CPU_INFO = "CPU Info";
         this.TITLE_TRAFFIC_DETAILS = "Traffic Details";
         this.TITLE_TRAFFIC_STATISTICS = "Traffic Statistics";
+        this.TITLE_TRAFFIC_STATISTICS_IN = "Traffic Statistics In";
+        this.TITLE_TRAFFIC_STATISTICS_OUT = "Traffic Statistics Out";
         this.TITLE_PORT_DISTRIBUTION = "Port Distribution";
         this.TITLE_PORT_MAP = "Port Map";
 

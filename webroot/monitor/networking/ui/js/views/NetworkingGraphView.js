@@ -176,7 +176,8 @@ define([
                     fqName: node,
                     node_type: nodeType,
                     srcVNDetails: srcVNDetails
-                }
+                },
+                elementType: nodeType
             };
             element = new ContrailElement(nodeType, options);
             return element;
@@ -306,8 +307,8 @@ define([
 
     function cgPointerClick(cellView, evt, x, y) {
 
-        var clickedElement = cellView.model.attributes.nodeDetails,
-            elementNodeType= clickedElement.node_type,
+        var clickedElement = cellView.model.attributes,
+            elementNodeType= clickedElement.elementType,
             elementNodeId = cellView.model.id,
             bottomContainerElement = $('#' + ctwl.BOTTOM_CONTENT_CONTAINER),
             tabConfig = {};
@@ -327,10 +328,10 @@ define([
         switch (elementNodeType) {
             case 'virtual-network':
 
-                var networkFQN = clickedElement.name,
+                var networkFQN = clickedElement.nodeDetails.name,
                     networkUUID = getUUIDByName(networkFQN);
 
-                tabConfig = ctwgrc.getTabsViewConfig('virtual-network', {
+                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, {
                     networkFQN: networkFQN,
                     networkUUID: networkUUID
                 });
@@ -347,10 +348,10 @@ define([
 
             case 'virtual-machine':
 
-                var networkFQN = clickedElement.fqName,
-                    instanceUUID = clickedElement.fqName;
+                var networkFQN = clickedElement.nodeDetails.fqName,
+                    instanceUUID = clickedElement.nodeDetails.fqName;
 
-                tabConfig = ctwgrc.getTabsViewConfig('virtual-machine', {
+                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, {
                     networkFQN: networkFQN,
                     instanceUUID: instanceUUID
                 });
@@ -365,17 +366,29 @@ define([
                 }, { merge: true, triggerHashChange: false});
 
                 break;
+
+            case 'connected-network':
+
+                var sourceElement = clickedElement.linkDetails.dst,
+                    targetElement = clickedElement.linkDetails.src;
+
+                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, {
+                    sourceElement: sourceElement,
+                    targetElement: targetElement,
+                    linkDetails: clickedElement.linkDetails
+                });
+
+                $('g.link[model-id="' + elementNodeId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+
+                break;
         }
 
         cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
-
-        //TODO - Highlight clicked ELement
-
     }
 
     function cgPointerDblClick(cellView, evt, x, y) {
-        var dblClickedElement = cellView.model.attributes.nodeDetails,
-            elementNodeType= dblClickedElement.node_type,
+        var dblClickedElement = cellView.model.attributes,
+            elementNodeType= dblClickedElement.elementType,
             elementNodeId = cellView.model.id;
 
         switch (elementNodeType) {
@@ -385,7 +398,7 @@ define([
                     p: 'mon_networking_networks',
                     q: {
                         focusedElement: {
-                            fqName: dblClickedElement['name'],
+                            fqName: dblClickedElement.nodeDetails['name'],
                             type: elementNodeType
                         },
                         view: 'details',
@@ -394,38 +407,8 @@ define([
                 });
                 $('g.VirtualNetwork').popover('hide');
                 break;
-            //case 'link': // TODO
-            //    var modelId = dblClickedElement.id;
-            //
-            //    var graph = jointObject.connectedGraph,
-            //        targetElement = graph.getCell(elementMap.node[dblClickedElement['attributes']['linkDetails']['dst']]),
-            //        sourceElement = graph.getCell(elementMap.node[dblClickedElement['attributes']['linkDetails']['src']]);
-            //
-            //    if (targetElement && sourceElement) {
-            //        highlightElementsToFaint([
-            //            $(selectorId + '-connected-elements').find('div.font-element')
-            //        ]);
-            //
-            //        highlightSVGElementsToFaint([
-            //            $(selectorId + '-connected-elements').find('g.element'),
-            //            $(selectorId + '-connected-elements').find('g.link')
-            //        ]);
-            //
-            //        $('g.link[model-id="' + modelId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
-            //
-            //        loadVisualizationTab({
-            //            container: '#topology-visualization-tabs',
-            //            type: "connected-network",
-            //            context: "connected-nw",
-            //            sourceElement: sourceElement,
-            //            targetElement: targetElement,
-            //            fqName: targetElement['attributes']['nodeDetails']['name'],
-            //            selfElement: dblClickedElement
-            //        });
-            //    }
-            //    break;
             case 'virtual-machine':
-                var srcVN = dblClickedElement.srcVNDetails.name;
+                var srcVN = dblClickedElement.nodeDetails.srcVNDetails.name;
                 loadFeature({
                     p: 'mon_networking_instances',
                     q: {
@@ -433,7 +416,7 @@ define([
                         view: 'details',
                         focusedElement: {
                             fqName: srcVN,
-                            uuid: dblClickedElement['fqName'],
+                            uuid: dblClickedElement.nodeDetails['fqName'],
                             type: 'virtual-network'
                         }
                     }

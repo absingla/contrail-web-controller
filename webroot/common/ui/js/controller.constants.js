@@ -28,6 +28,7 @@ define([
         this.URL_INSTANCE_SUMMARY = '/api/tenant/networking/virtual-machine/summary?fqNameRegExp={0}?flat';
         this.URL_INSTANCE_DETAILS_IN_CHUNKS = '/api/tenant/networking/virtual-machines/details?count={0}&startAt={1}';
         this.URL_INSTANCE_TRAFFIC_STATS = '/api/tenant/networking/flow-series/vm?minsSince={0}&fqName={1}&sampleCnt={2}&ip={3}&vmName={4}&vmVnName={5}&useServerTime=true';
+        this.URL_CONNECTED_NETWORK_TRAFFIC_STATS = '/api/tenant/networking/flow-series/vn?minsSince={0}&srcVN={1}&destVN={2}&sampleCnt={3}&useServerTime=true';
 
         this.URL_VM_VN_STATS = '/api/tenant/networking/stats';
         this.URL_PORT_DISTRIBUTION = '/api/tenant/networking/network/stats/top?minsSince=10&fqName={0}&useServerTime=true&type=port';
@@ -52,7 +53,7 @@ define([
         };
 
         this.TMPL_VN_PORT_HEAT_CHART = "network-port-heat-chart-template";
-        this.TMPL_INSTANCE_TRAFFIC_STATS = "instance-traffic-stats-tab-template";
+        this.TMPL_TRAFFIC_STATS_TAB = "traffic-stats-tab-template";
 
         this.DEFAULT_DOMAIN = "default-domain";
         this.UCID_PREFIX_MN = "monitor-networking";
@@ -77,6 +78,7 @@ define([
         this.UCID_PROJECT_VN_PORT_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:port-stats";
         this.UCID_NETWORK_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:traffic-stats";
         this.UCID_INSTANCE_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:{1}:{2}:traffic-stats";
+        this.UCID_CONNECTED_NETWORK_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:{1}:traffic-stats";
 
         this.get = function () {
             var args = arguments;
