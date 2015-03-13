@@ -49,7 +49,9 @@ define([
                     $(connectedSelectorId).data('offset', {x: 0, y: 0});
 
                     $(selectorId).data('joint-object', jointObject);
-                    adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
+                    if(!ctwc.PLOT_VM_VERTICAL){
+                        adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
+                    }
                     //TODO: Make control panel as a common view to grid and graph
                     initNetworkingGraphControlEvents(selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
                     highlightSelectedElementForZoomedElement(connectedSelectorId, jointObject, graphConfig);
@@ -109,7 +111,11 @@ define([
                         zoomedNode = nodeValue;
                         zoomedNodeKey = nodeKey;
 
-                        options = getZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
+                        if (ctwc.PLOT_VM_VERTICAL) {
+                            options = getVerticalZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
+                        } else {
+                            options = getZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
+                        }
 
                         zoomedNodeElement = createCloudZoomedNodeElement(zoomedNode, {
                             width: options['widthZoomedElement'],
@@ -119,7 +125,11 @@ define([
                         connectedElements.push(zoomedNodeElement);
                         elementMap.node[fqName] = zoomedNodeElement.id;
 
-                        generateVMGraph(zoomedElements, zoomedNodeElement, options);
+                        if (ctwc.PLOT_VM_VERTICAL) {
+                            generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options);
+                        } else {
+                            generateVMGraph(zoomedElements, zoomedNodeElement, options);
+                        }
                     }
                 });
 
@@ -206,6 +216,68 @@ define([
         };
     };
 
+
+    function generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options) {
+        var vmMargin = options['VMMargin'],
+            vmWidth = options['VMWidth'],
+            vmHeight = options['VMHeight'],
+            xSeparation = vmWidth + vmMargin,
+            ySeparation = vmHeight + vmMargin,
+            vmPerRow = options['vmPerRow'],
+            vmLength = options['noOfVMsToDraw'],
+            vmNode, vmList = options['vmList'];
+
+        var xOrigin = vmMargin / 2,
+            yOrigin = vmMargin / 2;
+
+        var centerLineHeight = 0.1,
+            xFactor = 0, yFactor = -1, linkThickness = 1
+        if(vmLength !== 0){
+            var longRect = createRect(xOrigin + vmWidth + xSeparation/2, yOrigin - vmMargin/2, linkThickness, vmLength * ySeparation);
+            zoomedElements.push(longRect);
+        }
+
+        for (var i = 0; i < vmLength; i++) {
+            if (i % vmPerRow == 0) {
+                xFactor = 0;
+                yFactor++;
+            }
+            vmNode = createVirtualMachine(xOrigin + (xSeparation * xFactor), yOrigin + ((ySeparation) * yFactor), vmList[i], options['srcVNDetails']);
+            zoomedElements.push(vmNode);
+            linkRect = createRect(xOrigin + vmWidth + 2, yOrigin + ((ySeparation) * yFactor) + vmHeight/2, xSeparation/2 - 2, linkThickness);
+            zoomedElements.push(linkRect);
+        }
+
+        function createRect (x, y, width, height){
+            var rect = new joint.shapes.basic.Rect({
+                position: { x: x, y: y}, size: { width: width, height: height},
+                attrs: {rect:{stroke: '#3182bd', opacity: 1}}
+            });
+            return rect;
+        }
+        function createVirtualMachine(x, y, node, srcVNDetails) {
+            var nodeType = 'virtual-machine',
+                element, options;
+
+            options = {
+                position: {x: x, y: y},
+                size: {width: vmWidth, height: vmHeight},
+                font: {
+                    iconClass: 'icon-contrail-virtual-machine'
+                },
+                nodeDetails: {
+                    fqName: node,
+                    node_type: nodeType,
+                    srcVNDetails: srcVNDetails
+                },
+                elementType: nodeType
+            };
+            element = new ContrailElement(nodeType, options);
+            return element;
+        };
+
+        return zoomedElements;
+    };
 
     function adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId) {
         /*

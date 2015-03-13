@@ -80,6 +80,9 @@ define([
         this.UCID_INSTANCE_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:{1}:{2}:traffic-stats";
         this.UCID_CONNECTED_NETWORK_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:{1}:traffic-stats";
 
+        this.PLOT_VM_VERTICAL = true;
+        this.MAX_VM_TO_PLOT = 100;
+
         this.get = function () {
             var args = arguments;
             return cowu.getValueFromTemplate(args);
