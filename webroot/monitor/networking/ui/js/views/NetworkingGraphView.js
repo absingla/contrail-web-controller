@@ -34,12 +34,12 @@ define([
             var cGraphViewConfig = {
                 el: $(connectedSelectorId),
                 graphModelConfig: cGraphModelConfig,
-                tooltipConfig: ctwgrc.getTooltipConfig(),
+                tooltipConfig: ctwgrc.getConnectedGraphTooltipConfig(),
                 clickEvents: {
                 //    'blank:pointerclick': cgBlankPointerClick,
                     'cell:pointerdblclick': cgPointerDblClick,
                     'cell:pointerclick': cgPointerClick,
-                    'cell:rightclick': ctwgrc.getContextMenuConfig()
+                    'cell:rightclick': ctwgrc.getConnectedGraphContextMenuConfig()
                 },
                 successCallback: function (connectedGraphView, directedGraphSize, jointObject) {
                     $(selectorId).parent().find('.graph-loading').remove(); // TODO - move class name to constants
@@ -74,7 +74,11 @@ define([
             var confGraphViewConfig = {
                 el: $(configSelectorId),
                 width: 150,
-                graphModelConfig: confGraphModelConfig
+                graphModelConfig: confGraphModelConfig,
+                tooltipConfig: ctwgrc.getConfigGraphTooltipConfig(),
+                clickEvents: {
+                    'cell:rightclick': ctwgrc.getConfigGraphContextMenuConfig()
+                }
             };
 
             var configGraphView = new GraphView(confGraphViewConfig);

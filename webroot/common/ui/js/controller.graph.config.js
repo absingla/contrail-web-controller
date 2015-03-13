@@ -6,34 +6,64 @@ define([
     'underscore'
 ], function (_) {
     var CTGraphConfig = function () {
-        this.getTooltipConfig = function () {
+        this.getConfigGraphTooltipConfig = function () {
             return {
-                PhysicalRouter: {
+                NetworkPolicy: {
                     title: function (element, jointObject) {
-                        return 'Physical Router';
+                        return 'Network Policy';
                     },
                     content: function (element, jointObject) {
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
-                            tooltipContent = contrail.getTemplate4Id('prouter-tooltip-content-template');
+                            tooltipContent = contrail.getTemplate4Id('tooltip-content-template');
 
-                        return tooltipContent([{lbl: 'Name', value: viewElement.attributes.prouterDetails['name']},
-                            {lbl: 'Links', value: viewElement.attributes.prouterDetails.connected_prouters}]);
-
+                        return tooltipContent([
+                            {lbl: 'Name', value: viewElement.attributes.nodeDetails['fq_name'][2]},
+                            {
+                                lbl: 'Project',
+                                value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
+                            }
+                        ]);
                     }
                 },
-                VirtualRouter: {
+                SecurityGroup: {
                     title: function (element, jointObject) {
-                        return 'Virtual Router';
+                        return 'Security Group';
                     },
                     content: function (element, jointObject) {
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
-                            tooltipContent = contrail.getTemplate4Id('vrouter-tooltip-content-template');
+                            tooltipContent = contrail.getTemplate4Id('tooltip-content-template');
 
-                        return tooltipContent([{lbl: 'Name', value: viewElement.attributes.vrouterDetails['name']},
-                            {lbl: 'Links', value: viewElement.attributes.vrouterDetails.connected_vrouters}]);
-
+                        return tooltipContent([
+                            {lbl: 'Name', value: viewElement.attributes.nodeDetails['fq_name'][2]},
+                            {
+                                lbl: 'Project',
+                                value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
+                            }
+                        ]);
                     }
                 },
+                NetworkIPAM: {
+                    title: function (element, jointObject) {
+                        return 'Network IPAM';
+                    },
+                    content: function (element, jointObject) {
+                        var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
+                            tooltipContent = contrail.getTemplate4Id('tooltip-content-template');
+
+                        return tooltipContent([
+                            {lbl: 'Name', value: viewElement.attributes.nodeDetails['fq_name'][2]},
+                            {
+                                lbl: 'Project',
+                                value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
+                            }
+                        ]);
+                    }
+                }
+            }
+        };
+
+        this.getConnectedGraphTooltipConfig = function () {
+            return {
                 VirtualNetwork: {
                     title: function (element, jointObject) {
                         return 'Virtual Network';
@@ -56,57 +86,6 @@ define([
                             },
                             {lbl: 'Instance Count', value: viewElement.attributes.nodeDetails.more_attr.vm_cnt}]);
 
-                    }
-                },
-                NetworkPolicy: {
-                    title: function (element, jointObject) {
-                        return 'Network Policy';
-                    },
-                    content: function (element, jointObject) {
-                        var viewElement = jointObject.configGraph.getCell(element.attr('model-id')),
-                            tooltipContent = contrail.getTemplate4Id('tooltip-content-template');
-
-                        return tooltipContent([
-                            {lbl: 'Name', value: viewElement.attributes.nodeDetails['fq_name'][2]},
-                            {
-                                lbl: 'Project',
-                                value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
-                            }
-                        ]);
-                    }
-                },
-                SecurityGroup: {
-                    title: function (element, jointObject) {
-                        return 'Security Group';
-                    },
-                    content: function (element, jointObject) {
-                        var viewElement = jointObject.configGraph.getCell(element.attr('model-id')),
-                            tooltipContent = contrail.getTemplate4Id('tooltip-content-template');
-
-                        return tooltipContent([
-                            {lbl: 'Name', value: viewElement.attributes.nodeDetails['fq_name'][2]},
-                            {
-                                lbl: 'Project',
-                                value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
-                            }
-                        ]);
-                    }
-                },
-                NetworkIPAM: {
-                    title: function (element, jointObject) {
-                        return 'Network IPAM';
-                    },
-                    content: function (element, jointObject) {
-                        var viewElement = jointObject.configGraph.getCell(element.attr('model-id')),
-                            tooltipContent = contrail.getTemplate4Id('tooltip-content-template');
-
-                        return tooltipContent([
-                            {lbl: 'Name', value: viewElement.attributes.nodeDetails['fq_name'][2]},
-                            {
-                                lbl: 'Project',
-                                value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
-                            }
-                        ]);
                     }
                 },
                 ServiceInstance: {
@@ -241,7 +220,54 @@ define([
             };
         };
 
-        this.getContextMenuConfig = function() {
+        this.getConfigGraphContextMenuConfig = function() {
+            return {
+                NetworkPolicy: function (element, jointObject) {
+                    var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
+                        jointElementFullName = viewElement.attributes.nodeDetails['fq_name'];
+                    return {
+                        items: {
+                            configure: {
+                                name: '<i class="icon-cog"></i><span class="margin-0-5">Configure Network Policy</span>',
+                                callback: function (key, options) {
+                                    loadFeature({p: 'config_net_policies'});
+                                }
+                            }
+                        }
+                    };
+                },
+                SecurityGroup: function (element, jointObject) {
+                    var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
+                        jointElementFullName = viewElement.attributes.nodeDetails['fq_name'];
+                    return {
+                        items: {
+                            configure: {
+                                name: '<i class="icon-cog"></i><span class="margin-0-5">Configure Security Group</span>',
+                                callback: function (key, options) {
+                                    loadFeature({p: 'config_net_sg'});
+                                }
+                            }
+                        }
+                    };
+                },
+                NetworkIPAM: function (element, jointObject) {
+                    var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
+                        jointElementFullName = viewElement.attributes.nodeDetails['fq_name'];
+                    return {
+                        items: {
+                            configure: {
+                                name: '<i class="icon-cog"></i><span class="margin-0-5">Configure Network IPAM</span>',
+                                callback: function (key, options) {
+                                    loadFeature({p: 'config_net_ipam'});
+                                }
+                            }
+                        }
+                    };
+                }
+            };
+        };
+
+        this.getConnectedGraphContextMenuConfig = function() {
             return {
                 VirtualNetwork: function (element, jointObject) {
                     var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
@@ -276,48 +302,6 @@ define([
 
                     return {items: items};
                 },
-                NetworkPolicy: function (element, jointObject) {
-                    var viewElement = jointObject.configGraph.getCell(element.attr('model-id')),
-                        jointElementFullName = viewElement.attributes.nodeDetails['fq_name'];
-                    return {
-                        items: {
-                            configure: {
-                                name: '<i class="icon-cog"></i><span class="margin-0-5">Configure Network Policy</span>',
-                                callback: function (key, options) {
-                                    loadFeature({p: 'config_net_policies'});
-                                }
-                            }
-                        }
-                    };
-                },
-                SecurityGroup: function (element, jointObject) {
-                    var viewElement = jointObject.configGraph.getCell(element.attr('model-id')),
-                        jointElementFullName = viewElement.attributes.nodeDetails['fq_name'];
-                    return {
-                        items: {
-                            configure: {
-                                name: '<i class="icon-cog"></i><span class="margin-0-5">Configure Security Group</span>',
-                                callback: function (key, options) {
-                                    loadFeature({p: 'config_net_sg'});
-                                }
-                            }
-                        }
-                    };
-                },
-                NetworkIPAM: function (element, jointObject) {
-                    var viewElement = jointObject.configGraph.getCell(element.attr('model-id')),
-                        jointElementFullName = viewElement.attributes.nodeDetails['fq_name'];
-                    return {
-                        items: {
-                            configure: {
-                                name: '<i class="icon-cog"></i><span class="margin-0-5">Configure Network IPAM</span>',
-                                callback: function (key, options) {
-                                    loadFeature({p: 'config_net_ipam'});
-                                }
-                            }
-                        }
-                    };
-                },
                 ServiceInstance: function (element, jointObject) {
                     var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
                         jointElementFullName = viewElement.attributes.nodeDetails['name'].split(':');
@@ -332,40 +316,6 @@ define([
                         }
                     };
                 }
-                /*link: function (element, jointObject) {
-                    var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
-                        viewElementDetails = viewElement.attributes.linkDetails,
-                        sourceName = viewElementDetails['src'].split(':')[2],
-                        targetName = viewElementDetails['dst'].split(':')[2];
-
-                    var viewListMenu = {
-                        items: {
-                            trafficFromSource2Target: {
-                                name: '<i class="icon-long-arrow-right"></i><span class="margin-0-5">View Traffic from ' + sourceName + ' to ' + targetName + '</span>',
-                                callback: function (key, options) {
-                                    loadFeature({
-                                        p: 'mon_networking_networks',
-                                        q: {fqName: viewElementDetails['dst'], srcVN: viewElementDetails['src']}
-                                    });
-                                }
-                            }
-                        }
-                    };
-
-                    if (viewElementDetails.dir == 'bi') {
-                        viewListMenu.items.trafficFromTarget2Source = {
-                            name: '<i class="icon-long-arrow-left"></i><span class="margin-0-5">View Traffic from ' + targetName + ' to ' + sourceName + '</span>',
-                            callback: function (key, options) {
-                                loadFeature({
-                                    p: 'mon_networking_networks',
-                                    q: {fqName: viewElementDetails['src'], srcVN: viewElementDetails['dst']}
-                                });
-                            }
-                        };
-                    }
-
-                    return viewListMenu;
-                }*/
             };
         };
 
