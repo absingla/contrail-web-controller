@@ -52,7 +52,7 @@ define([
                     $(selectorId).data('joint-object', jointObject);
 
                     //TODO: Make control panel as a common view to grid and graph
-                    initNetworkingGraphControlEvents(selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
+                    initNetworkingGraphControlEvents(graphConfig.focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
                     highlightSelectedElementForZoomedElement(connectedSelectorId, jointObject, graphConfig);
 
                     //TODO: Execute only in refresh case.
@@ -60,7 +60,7 @@ define([
                         $(selectorId).find('.refresh i').removeClass('icon-spin icon-spinner').addClass('icon-repeat');
                     }, 1000);
 
-                    adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
+                    adjustNetworkingGraphHeight(graphConfig.focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
 
                 }
             };
@@ -343,7 +343,7 @@ define([
         return zoomedElements;
     };
 
-    function adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId, connectedGraphView) {
+    function adjustNetworkingGraphHeight(focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView) {
         /*
          * Height logic (graphHeight[g], availableHeight[g], minHeight[m])
          * a < m     = m
@@ -353,7 +353,7 @@ define([
          */
 
         var resizeFlag = ($(selectorId).parents('.visualization-container').find('.icon-resize-small').is(':visible')),
-            tabHeight = resizeFlag ? 155 : 435,
+            tabHeight = resizeFlag ? 155 : 435, //TODO - move to constants
             minHeight = 300,
             availableHeight = window.innerHeight - tabHeight,
             connectedGraphHeight = ($(connectedSelectorId).data('graph-size').height) ? $(connectedSelectorId).data('graph-size').height : 0,
@@ -390,7 +390,7 @@ define([
             $(configSelectorId + ' svg').attr('height', adjustedHeight);
         }
 
-        panConnectedGraph2Center(selectorId, connectedSelectorId)
+        panConnectedGraph2Center(focusedElement, selectorId, connectedSelectorId)
 
     };
 
@@ -413,18 +413,24 @@ define([
         });
     };
 
-    function panConnectedGraph2Center(selectorId, connectedSelectorId) {
+    function panConnectedGraph2Center(focusedElement, selectorId, connectedSelectorId) {
         var connectedGraphWidth = $(connectedSelectorId).data('graph-size').width,
             connectedGraphHeight = $(connectedSelectorId).data('graph-size').height,
             availableGraphWidth = $(connectedSelectorId).parents('.col1').width(),
-            availableGraphHeight = $(connectedSelectorId).parents('.col1').height();
+            availableGraphHeight = $(connectedSelectorId).parents('.col1').height(),
+            panX = (availableGraphWidth - connectedGraphWidth) / 2,
+            panY = (availableGraphHeight - connectedGraphHeight) / 2;
+
+        if (focusedElement.type == ctwc.GRAPH_ELEMENT_PROJECT) {
+            panY = 0;
+        }
 
         $(connectedSelectorId).panzoom("resetPan");
-        $(connectedSelectorId).panzoom("pan", (availableGraphWidth - connectedGraphWidth) / 2, (availableGraphHeight - connectedGraphHeight) / 2, { relative: true });
+        $(connectedSelectorId).panzoom("pan", panX, panY, { relative: true });
         $(connectedSelectorId).css({'backface-visibility':'initial'});
     };
 
-    function initNetworkingGraphControlEvents(selectorId, connectedSelectorId, configSelectorId, connectedGraphView) {
+    function initNetworkingGraphControlEvents(focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView) {
         var graphControlElement = $(selectorId).find('.graph-controls');
 
         /* Pan and Zoom events */
@@ -443,7 +449,7 @@ define([
             .off('click')
             .on('click', function (event) {
                 $(this).find('i').toggleClass('icon-resize-full').toggleClass('icon-resize-small');
-                adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
+                adjustNetworkingGraphHeight(focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
             }
         );
 
