@@ -45,13 +45,11 @@ define([
                     $(selectorId).parent().find('.graph-loading').remove(); // TODO - move class name to constants
 
                     connectedGraphView.setDimensions((($(selectorId).width() > directedGraphSize.width) ? $(selectorId).width() : directedGraphSize.width) + GRAPH_MARGIN, directedGraphSize.height + GRAPH_MARGIN, 1);
-                    $(connectedSelectorId).data('actual-size', directedGraphSize);
+                    $(connectedSelectorId).data('graph-size', directedGraphSize);
                     $(connectedSelectorId).data('offset', {x: 0, y: 0});
 
                     $(selectorId).data('joint-object', jointObject);
-                    if((!ctwc.PLOT_VM_VERTICAL) && (!ctwc.PLOT_VM_HORIZONTAL)){
-                        adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
-                    }
+
                     //TODO: Make control panel as a common view to grid and graph
                     initNetworkingGraphControlEvents(selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
                     highlightSelectedElementForZoomedElement(connectedSelectorId, jointObject, graphConfig);
@@ -60,6 +58,9 @@ define([
                     setTimeout(function(){
                         $(selectorId).find('.refresh i').removeClass('icon-spin icon-spinner').addClass('icon-repeat');
                     }, 1000);
+
+                    adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
+
                 }
             };
 
@@ -341,59 +342,64 @@ define([
         return zoomedElements;
     };
 
-    function adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId) {
+    function adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId, connectedGraphView) {
         /*
-         * Height logic (svgHeight[s], topologyHeight[t], minHeight[m])
-         * t < m     = m
-         * s < m < t = m
-         * m < s < t = s
-         * m < t < s = t
+         * Height logic (graphHeight[g], availableHeight[g], minHeight[m])
+         * a < m     = m
+         * g < m < a = m
+         * m < g < a = g
+         * m < a < g = a
          */
 
         var resizeFlag = ($(selectorId).parents('.visualization-container').find('.icon-resize-small').is(':visible')),
             tabHeight = resizeFlag ? 155 : 435,
             minHeight = 300,
-            graphHeight = window.innerHeight - tabHeight,
-            connectedElementsHeight = ($(connectedSelectorId).data('actual-size').height) ? $(connectedSelectorId).data('actual-size').height : 0,
-            svgHeight = Math.max(connectedElementsHeight, $(configSelectorId + ' svg').attr('height')),
-            elementHeight = resizeFlag ? graphHeight : ((graphHeight < minHeight) ? minHeight : ((svgHeight < graphHeight) ? ((svgHeight < minHeight) ? minHeight : svgHeight) : graphHeight));
+            availableHeight = window.innerHeight - tabHeight,
+            connectedGraphHeight = ($(connectedSelectorId).data('graph-size').height) ? $(connectedSelectorId).data('graph-size').height : 0,
+            configGraphHeight = $(configSelectorId + ' svg').attr('height'),
+            graphHeight = Math.max(connectedGraphHeight, configGraphHeight),
+            adjustedHeight = availableHeight;
 
-        $(selectorId).parent().height(elementHeight);
-        $(selectorId).find('.col1').height(elementHeight);
-        $(connectedSelectorId + ' svg').attr('height', elementHeight);
+        if(!resizeFlag) {
+            if (availableHeight < minHeight) {
+                adjustedHeight = minHeight;
+            } else {
+                if (graphHeight < minHeight) {
+                    adjustedHeight = minHeight;
+                } else {
+                    if (graphHeight < availableHeight) {
+                        adjustedHeight = graphHeight;
+                    }
+                }
+            }
+        }
+
+        $(selectorId).parent().height(adjustedHeight);
         $(selectorId).parent().css('width', '100%');
-        $(selectorId).parents('.visualization-container').find('.col3').height(elementHeight);
 
-        // Adding dotted image SVG TODO - make a separate function to handle this
-        var image = document.createElementNS('http://www.w3.org/2000/svg', 'image'),
-            patt = document.createElementNS('http://www.w3.org/2000/svg', 'pattern'),
-            defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs'),
-            svg = document.getElementsByTagName('svg')[0];
+        $(connectedSelectorId).parents('.col1').height(adjustedHeight);
+        $(configSelectorId).parents('.col3').height(adjustedHeight);
 
-        patt.setAttribute('id', 'dotted');
-        patt.setAttribute('patternUnits', 'userSpaceOnUse');
-        patt.setAttribute('width', '100');
-        patt.setAttribute('height', '100');
+        if(connectedGraphHeight < adjustedHeight) {
+            $(connectedSelectorId + ' svg').attr('height', adjustedHeight);
+            //translateConnectedGraph2Center(selectorId, connectedSelectorId, connectedGraphView);
+        }
 
-        image.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '/img/dotted.png');
-        image.setAttribute('x', '0');
-        image.setAttribute('y', '0');
-        image.setAttribute('width', '101');
-        image.setAttribute('height', '101');
+        if(configGraphHeight < adjustedHeight) { //TODO - Needs to be tested with multiple config elements
+            $(configSelectorId + ' svg').attr('height', adjustedHeight);
+        }
 
-        patt.appendChild(image);
-        defs.appendChild(patt);
-        svg.appendChild(defs);
+        panConnectedGraph2Center(selectorId, connectedSelectorId)
 
-        translateNetworkingGraphElements(selectorId, connectedSelectorId);
     };
 
-    function translateNetworkingGraphElements(selectorId, connectedSelectorId) {
-        var connectedGraphSize = $(connectedSelectorId).data('actual-size'),
+    function translateConnectedGraph2Center(selectorId, connectedSelectorId, connectedGraphView) {
+        //TODO - This needs to be changed to paper translate instead of elements translate.
+        var connectedGraphSize = $(connectedSelectorId).data('graph-size'),
             oldOffset = $(connectedSelectorId).data('offset'),
             offset = {
-                x: ($(selectorId).find('.col1').width() > connectedGraphSize.width) ? ($(selectorId).find('.col1').width() - connectedGraphSize.width - GRAPH_MARGIN) / 2 : 0,
-                y: ($(selectorId).find('.col1').height() > connectedGraphSize.height) ? ($(selectorId).find('.col1').height() - connectedGraphSize.height - GRAPH_MARGIN) / 2 : 0
+                x: ($(connectedSelectorId).parents('.col1').width() > connectedGraphSize.width) ? ($(connectedSelectorId).parents('.col1').width() - connectedGraphSize.width - GRAPH_MARGIN) / 2 : 0,
+                y: ($(connectedSelectorId).parents('.col1').height() > connectedGraphSize.height) ? ($(connectedSelectorId).parents('.col1').height() - connectedGraphSize.height - GRAPH_MARGIN) / 2 : 0
             },
             connectedGraph = $(selectorId).data('joint-object').connectedGraph,
             elements = connectedGraph.getElements(),
@@ -404,6 +410,17 @@ define([
             //TODO: Fix getStroke error in joint.clean
             elementValue.translate(offset.x - oldOffset.x, offset.y - oldOffset.y);
         });
+    };
+
+    function panConnectedGraph2Center(selectorId, connectedSelectorId) {
+        var connectedGraphWidth = $(connectedSelectorId).data('graph-size').width,
+            connectedGraphHeight = $(connectedSelectorId).data('graph-size').height,
+            availableGraphWidth = $(connectedSelectorId).parents('.col1').width(),
+            availableGraphHeight = $(connectedSelectorId).parents('.col1').height();
+
+        $(connectedSelectorId).panzoom("resetPan");
+        $(connectedSelectorId).panzoom("pan", (availableGraphWidth - connectedGraphWidth) / 2, (availableGraphHeight - connectedGraphHeight) / 2, { relative: true });
+        $(connectedSelectorId).css({'backface-visibility':'initial'});
     };
 
     function initNetworkingGraphControlEvents(selectorId, connectedSelectorId, configSelectorId, connectedGraphView) {
@@ -425,7 +442,19 @@ define([
             .off('click')
             .on('click', function (event) {
                 $(this).find('i').toggleClass('icon-resize-full').toggleClass('icon-resize-small');
-                adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId);
+                adjustNetworkingGraphHeight(selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
+            }
+        );
+
+        graphControlElement.find('.realign')
+            .off('click')
+            .on('click', function () {
+                $(this).find('i').toggleClass('icon-align-left').toggleClass('icon-align-center');
+                if ($(this).find('i').hasClass('icon-align-left')) {
+                    connectedGraphView.model.reLayoutGraph("LR");
+                } else if ($(this).find('i').hasClass('icon-align-center')) {
+                    connectedGraphView.model.reLayoutGraph("TB");
+                }
             }
         );
 
@@ -435,20 +464,6 @@ define([
                 $(this).find('i').removeClass('icon-repeat').toggleClass('icon-spin icon-spinner');
                 connectedGraphView.refreshData();
                 //TODO: If spinning don't call refreshData
-            }
-        );
-
-        graphControlElement.find('.left-to-right')
-            .off('click')
-            .on('click', function () {
-                connectedGraphView.model.reLayoutGraph("LR");
-            }
-        );
-
-        graphControlElement.find('.top-to-bottom')
-            .off('click')
-            .on('click', function () {
-                connectedGraphView.model.reLayoutGraph("TB");
             }
         );
     };
