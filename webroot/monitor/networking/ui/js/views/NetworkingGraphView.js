@@ -81,10 +81,8 @@ define([
                 graphModelConfig: confGraphModelConfig,
                 tooltipConfig: ctwgrc.getConfigGraphTooltipConfig(),
                 clickEvents: {
+                    //'cell:pointerclick': getConfgPointerClickFn(connectedGraphView),
                     'cell:rightclick': ctwgrc.getConfigGraphContextMenuConfig()
-                },
-                successCallback: function(confGraphView) {
-                    //initConfGraphMouseEvents(configSelectorId, confGraphView, connectedGraphView);
                 }
             };
 
@@ -491,17 +489,7 @@ define([
             bottomContainerElement = $('#' + ctwl.BOTTOM_CONTENT_CONTAINER),
             tabConfig = {};
 
-        highlightElementsToFaint([
-            $('div.font-element')
-        ]);
-
-        highlightSVGElementsToFaint([
-            $('g.element'),
-            $('g.link')
-        ]);
-
-        $('div.font-element[font-element-model-id="' + elementNodeId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
-        $('g[model-id="' + elementNodeId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+        highlightCurrentElement(elementNodeId);
 
         switch (elementNodeType) {
             case 'virtual-network':
@@ -640,104 +628,102 @@ define([
         }
     };
 
-    function initConfGraphMouseEvents(selectorId, confGraphView, connectedGraphView) {
-        setTimeout(function () {
-            var jointObject = {
-                    configGraph: confGraphView.model,
+    function getConfgPointerClickFn(connectedGraphView) {
+        return function (cellView, evt, x, y) {
+            var clickedElement = cellView.model.attributes,
+                elementNodeType= clickedElement.type,
+                elementMap = connectedGraphView.model.elementMap,
+                jointObject = {
                     connectedGraph: connectedGraphView.model
-                },
-                elementMap = connectedGraphView.model.elementMap;
+                };
 
-            $(selectorId).find('.NetworkPolicy').off('mouseout').on('mouseout', function (e) {
-                $('g.element').removeClassSVG('dimHighlighted').removeClassSVG('elementHighlighted');
-                $('div.font-element').removeClass('dimHighlighted').removeClass('elementHighlighted');
-                $('g.link').removeClassSVG('dimHighlighted').removeClassSVG('elementHighlighted');
+            switch (elementNodeType) {
+                case 'contrail.NetworkPolicy':
+                    onClickNetworkPolicy(cellView.model, jointObject, elementMap);
+                    break;
+            };
+        }
+    };
+
+    function onClickNetworkPolicy(cellModel, jointObject, elementMap) {
+        var cellAttributes = cellModel.attributes;
+
+        var policyRules = (contrail.checkIfExist(cellAttributes.nodeDetails.network_policy_entries)) ? cellAttributes.nodeDetails.network_policy_entries.policy_rule : [],
+            highlightedElements = { nodes: [], links: [] };
+
+        highlightCurrentElement(cellAttributes.id);
+
+        $.each(policyRules, function (policyRuleKey, policyRuleValue) {
+            var sourceNode = policyRuleValue.src_addresses[0],
+                destinationNode = policyRuleValue.dst_addresses[0],
+                serviceInstanceNode = policyRuleValue.action_list.apply_service,
+                serviceInstanceNodeLength = 0,
+                policyRuleLinkKey = [];
+
+            highlightedElements = { nodes: [], links: [] };
+
+            $.each(sourceNode, function (sourceNodeKey, sourceNodeValue) {
+                if (contrail.checkIfExist(sourceNodeValue)) {
+                    highlightedElements.nodes.push(sourceNodeValue);
+                    policyRuleLinkKey.push(sourceNodeValue);
+
+                    if (serviceInstanceNode) {
+                        serviceInstanceNodeLength = serviceInstanceNode.length
+                        $.each(serviceInstanceNode, function (serviceInstanceNodeKey, serviceInstanceNodeValue) {
+                            highlightedElements.nodes.push(serviceInstanceNodeValue);
+                            policyRuleLinkKey.push(serviceInstanceNodeValue);
+                        });
+                        policyRuleLinkKey.push(destinationNode[sourceNodeKey]);
+                        highlightedElements.links.push(policyRuleLinkKey.join('<->'));
+                        highlightedElements.links.push(policyRuleLinkKey.reverse().join('<->'));
+
+                    } else {
+                        highlightedElements.links.push(destinationNode[sourceNodeKey] + '<->' + sourceNodeValue);
+                        highlightedElements.links.push(sourceNodeValue + '<->' + destinationNode[sourceNodeKey]);
+                    }
+                }
+            });
+            $.each(destinationNode, function (destinationNodeKey, destinationNodeValue) {
+                if (contrail.checkIfExist(destinationNodeValue)) {
+                    highlightedElements.nodes.push(destinationNodeValue);
+                }
             });
 
-            $(selectorId).find('g.NetworkPolicy').each(function () {
-                var viewElement = jointObject.configGraph.getCell($(this).attr('model-id')),
-                    policyRules = (contrail.checkIfExist(viewElement.attributes.nodeDetails.network_policy_entries)) ?
-                        viewElement.attributes.nodeDetails.network_policy_entries.policy_rule : [],
-                    highlightedElements = {
-                        nodes: [],
-                        links: []
-                    };
+            if (elementMap.link[policyRuleLinkKey.join('<->')] || elementMap.link[policyRuleLinkKey.reverse().join('<->')]) {
+                highlightedElements.nodes = $.unique(highlightedElements.nodes);
+                $.each(highlightedElements.nodes, function (nodeKey, nodeValue) {
+                    var nodeElement = jointObject.connectedGraph.getCell(elementMap.node[nodeValue]);
+                    $('g[model-id="' + nodeElement.id + '"]').addClassSVG('elementHighlighted');
+                    $('div[font-element-model-id="' + nodeElement.id + '"]').addClass('elementHighlighted');
+                });
 
-                $(this).off('mouseover').on('mouseover', function (e) {
-                    $('div.font-element').addClass('dimHighlighted');
-                    $('g.element').addClassSVG('dimHighlighted');
-                    $('g.link').addClassSVG('dimHighlighted');
-
-                    $(this).removeClassSVG('dimHighlighted').addClassSVG('elementHighlighted');
-                    $('div[font-element-model-id="' + $(this).attr('model-id') + '"]').removeClass('dimHighlighted').addClass('elementHighlighted');
-                    $.each(policyRules, function (policyRuleKey, policyRuleValue) {
-                        var sourceNode = policyRuleValue.src_addresses[0],
-                            destinationNode = policyRuleValue.dst_addresses[0],
-                            serviceInstanceNode = policyRuleValue.action_list.apply_service,
-                            serviceInstanceNodeLength = 0,
-                            policyRuleLinkKey = [];
-
-                        highlightedElements = {
-                            nodes: [],
-                            links: []
-                        };
-
-                        $.each(sourceNode, function (sourceNodeKey, sourceNodeValue) {
-                            if (contrail.checkIfExist(sourceNodeValue)) {
-                                highlightedElements.nodes.push(sourceNodeValue);
-                                policyRuleLinkKey.push(sourceNodeValue);
-
-                                if (serviceInstanceNode) {
-                                    serviceInstanceNodeLength = serviceInstanceNode.length
-                                    $.each(serviceInstanceNode, function (serviceInstanceNodeKey, serviceInstanceNodeValue) {
-                                        highlightedElements.nodes.push(serviceInstanceNodeValue);
-                                        policyRuleLinkKey.push(serviceInstanceNodeValue);
-                                    });
-                                    policyRuleLinkKey.push(destinationNode[sourceNodeKey]);
-                                    highlightedElements.links.push(policyRuleLinkKey.join('<->'));
-                                    highlightedElements.links.push(policyRuleLinkKey.reverse().join('<->'));
-
-                                } else {
-                                    highlightedElements.links.push(destinationNode[sourceNodeKey] + '<->' + sourceNodeValue);
-                                    highlightedElements.links.push(sourceNodeValue + '<->' + destinationNode[sourceNodeKey]);
-                                }
-                            }
-                        });
-                        $.each(destinationNode, function (destinationNodeKey, destinationNodeValue) {
-                            if (contrail.checkIfExist(destinationNodeValue)) {
-                                highlightedElements.nodes.push(destinationNodeValue);
-                            }
-                        });
-
-                        if (elementMap.link[policyRuleLinkKey.join('<->')] || elementMap.link[policyRuleLinkKey.reverse().join('<->')]) {
-                            highlightedElements.nodes = $.unique(highlightedElements.nodes);
-                            $.each(highlightedElements.nodes, function (nodeKey, nodeValue) {
-                                var nodeElement = jointObject.connectedGraph.getCell(elementMap.node[nodeValue]);
-                                $('g[model-id="' + nodeElement.id + '"]').addClassSVG('elementHighlighted');
-                                $('div[font-element-model-id="' + nodeElement.id + '"]').addClass('elementHighlighted');
-                            });
-
-                            if (policyRuleValue.action_list.simple_action == 'pass') {
-                                highlightedElements.links = $.unique(highlightedElements.links);
-                                $.each(highlightedElements.links, function (highlightedElementLinkKey, highlightedElementLinkValue) {
-                                    if (elementMap.link[highlightedElementLinkValue]) {
-                                        if (typeof elementMap.link[highlightedElementLinkValue] == 'string') {
-                                            highlightLink(jointObject, elementMap.link[highlightedElementLinkValue]);
-                                        } else {
-                                            $.each(elementMap.link[highlightedElementLinkValue], function (linkKey, linkValue) {
-                                                highlightLink(jointObject, linkValue)
-                                            });
-                                        }
-
-                                    }
+                if (policyRuleValue.action_list.simple_action == 'pass') {
+                    highlightedElements.links = $.unique(highlightedElements.links);
+                    $.each(highlightedElements.links, function (highlightedElementLinkKey, highlightedElementLinkValue) {
+                        if (elementMap.link[highlightedElementLinkValue]) {
+                            if (typeof elementMap.link[highlightedElementLinkValue] == 'string') {
+                                highlightLink(jointObject, elementMap.link[highlightedElementLinkValue]);
+                            } else {
+                                $.each(elementMap.link[highlightedElementLinkValue], function (linkKey, linkValue) {
+                                    highlightLink(jointObject, linkValue)
                                 });
                             }
+
                         }
                     });
-                });
-            });
-        }, 1000)
+                }
+            }
+        });
     };
+
+    function highlightCurrentElement(elementNodeId) {
+        highlightElementsToFaint([ $('div.font-element') ]);
+
+        highlightSVGElementsToFaint([ $('g.element'), $('g.link') ]);
+
+        $('div.font-element[font-element-model-id="' + elementNodeId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+        $('g[model-id="' + elementNodeId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+    }
 
     return NetworkingGraphView;
 });
