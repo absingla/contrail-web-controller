@@ -139,7 +139,7 @@ define([
                     dataTextField: "name",
                     dataValueField: "value",
                     data: dropdownData,
-                    change: function (e) {
+                    selecting: function (e) {
                         var selectedValueData = {
                             name: projectDropdownElement.data('contrailDropdown').text(),
                             value: projectDropdownElement.data('contrailDropdown').value()
