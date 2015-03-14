@@ -230,11 +230,10 @@ define([
                 }
             }
         };
-
-        if(!_.isEqual(hashParams, newHashParams)) {
+        //TODO: We should compare both p and q
+        if(!_.isEqual(hashParams, newHashParams['q'])) {
             globalObj.hashUpdated = 1;
             layoutHandler.setURLHashObj(newHashParams);
-            globalObj.hashUpdated = 0;
         }
     };
 
@@ -251,10 +250,10 @@ define([
             }
         };
 
-        if(!_.isEqual(hashParams, newHashParams)) {
+        //TODO: We should compare both p and q
+        if(!_.isEqual(hashParams, newHashParams['q'])) {
             globalObj.hashUpdated = 1;
             layoutHandler.setURLHashObj(newHashParams);
-            globalObj.hashUpdated = 0;
         }
     };
 
