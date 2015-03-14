@@ -36,7 +36,7 @@ define([
                 graphModelConfig: cGraphModelConfig,
                 tooltipConfig: ctwgrc.getConnectedGraphTooltipConfig(),
                 clickEvents: {
-                //    'blank:pointerclick': cgBlankPointerClick,
+                    //'blank:pointerclick': cgBlankPointerClick,
                     'cell:pointerdblclick': cgPointerDblClick,
                     'cell:pointerclick': cgPointerClick,
                     'cell:rightclick': ctwgrc.getConnectedGraphContextMenuConfig()
@@ -435,6 +435,20 @@ define([
                 $(this).find('i').removeClass('icon-repeat').toggleClass('icon-spin icon-spinner');
                 connectedGraphView.refreshData();
                 //TODO: If spinning don't call refreshData
+            }
+        );
+
+        graphControlElement.find('.left-to-right')
+            .off('click')
+            .on('click', function () {
+                connectedGraphView.model.reLayoutGraph("LR");
+            }
+        );
+
+        graphControlElement.find('.top-to-bottom')
+            .off('click')
+            .on('click', function () {
+                connectedGraphView.model.reLayoutGraph("TB");
             }
         );
     };
