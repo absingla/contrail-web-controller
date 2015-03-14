@@ -144,7 +144,14 @@ define([
                             name: projectDropdownElement.data('contrailDropdown').text(),
                             value: projectDropdownElement.data('contrailDropdown').value()
                         };
-
+                        (contrail.checkIfFunction(changeCB) ? changeCB(selectedValueData) : initCB(selectedValueData));
+                        destroyBreadcrumbDropdownDOM(ctwl.NETWORKS_BREADCRUMB_DROPDOWN);
+                    },
+                    change: function (e) {
+                        var selectedValueData = {
+                            name: projectDropdownElement.data('contrailDropdown').text(),
+                            value: projectDropdownElement.data('contrailDropdown').value()
+                        };
                         (contrail.checkIfFunction(changeCB) ? changeCB(selectedValueData) : initCB(selectedValueData));
                         destroyBreadcrumbDropdownDOM(ctwl.NETWORKS_BREADCRUMB_DROPDOWN);
                     }
