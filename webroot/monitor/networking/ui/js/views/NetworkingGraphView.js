@@ -33,6 +33,7 @@ define([
 
             var cGraphViewConfig = {
                 el: $(connectedSelectorId),
+                linkView: joint.shapes.contrail.LinkView,
                 graphModelConfig: cGraphModelConfig,
                 tooltipConfig: ctwgrc.getConnectedGraphTooltipConfig(),
                 clickEvents: {
