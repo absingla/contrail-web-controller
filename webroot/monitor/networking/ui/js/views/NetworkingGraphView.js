@@ -37,7 +37,6 @@ define([
                 graphModelConfig: cGraphModelConfig,
                 tooltipConfig: ctwgrc.getConnectedGraphTooltipConfig(),
                 clickEvents: {
-                    //'blank:pointerclick': cgBlankPointerClick,
                     'cell:pointerdblclick': cgPointerDblClick,
                     'cell:pointerclick': cgPointerClick,
                     'cell:rightclick': ctwgrc.getConnectedGraphContextMenuConfig()
@@ -423,7 +422,7 @@ define([
             panX = (availableGraphWidth - connectedGraphWidth) / 2,
             panY = (availableGraphHeight - connectedGraphHeight) / 2;
 
-        if (focusedElement.type == ctwc.GRAPH_ELEMENT_PROJECT) {
+        if (focusedElement.type == ctwc.GRAPH_ELEMENT_PROJECT && connectedGraphHeight > availableGraphHeight) {
             panY = 0;
         }
 
@@ -475,10 +474,6 @@ define([
                 //TODO: If spinning don't call refreshData
             }
         );
-    };
-
-    function cgBlankPointerClick(evt, x, y) {
-        $('g').popover('hide');
     };
 
     function cgPointerClick(cellView, evt, x, y) {
