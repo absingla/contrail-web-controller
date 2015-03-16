@@ -37,7 +37,7 @@ define([
                 projectFQN = domain + ':' + projectObj.name,
                 projectUUID = projectObj.value;
 
-            changeProjectURLHash(hashParams, projectFQN, projectUUID);
+            ctwgrc.setProjectURLHashParams(projectFQN, false);
 
             cowu.renderView4Config(this.$el, null, getProjectConfig(projectFQN, projectUUID));
         },
@@ -72,7 +72,7 @@ define([
 
             contrail.setCookie(cowc.COOKIE_VIRTUAL_NETWORK, networkObj.name);
 
-            changeNetworkURLHash(hashParams, networkFQN, networkUUID);
+            ctwgrc.setNetworkURLHashParams(networkFQN, false);
 
             cowu.renderView4Config(this.$el, null, getNetworkConfig(networkFQN, networkUUID));
         },
@@ -215,45 +215,6 @@ define([
                     }
                 ]
             }
-        }
-    };
-
-    var changeProjectURLHash = function(hashParams, projectFQN, projectUUID) {
-        var newHashParams = {
-            p: 'mon_networking_projects',
-            q: {
-                view: 'details',
-                type: 'project',
-                focusedElement: {
-                    fqName: projectFQN,
-                    type: 'project'
-                }
-            }
-        };
-        //TODO: We should compare both p and q
-        if(!_.isEqual(hashParams, newHashParams['q'])) {
-            globalObj.hashUpdated = 1;
-            layoutHandler.setURLHashObj(newHashParams);
-        }
-    };
-
-    var changeNetworkURLHash = function(hashParams, networkFQN, networkUUID) {
-        var newHashParams = {
-            p: 'mon_networking_networks',
-            q: {
-                view:'details',
-                type: 'network',
-                focusedElement: {
-                    fqName: networkFQN,
-                    type: 'virtual-network'
-                }
-            }
-        };
-
-        //TODO: We should compare both p and q
-        if(!_.isEqual(hashParams, newHashParams['q'])) {
-            globalObj.hashUpdated = 1;
-            layoutHandler.setURLHashObj(newHashParams);
         }
     };
 

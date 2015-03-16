@@ -16,7 +16,7 @@ define([
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
                             networkPolicyName = viewElement.attributes.nodeDetails['fq_name'][2];
 
-                        return tooltipTitle({name: networkPolicyName, type: ctwc.GRAPH_ELEMENT_NETWORK_POLICY});
+                        return tooltipTitle({name: networkPolicyName, type: ctwl.TITLE_GRAPH_ELEMENT_NETWORK_POLICY});
 
                     },
                     content: function (element, jointObject) {
@@ -57,7 +57,7 @@ define([
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
                             securityGroupName = viewElement.attributes.nodeDetails['fq_name'][2];
 
-                        return tooltipTitle({name: securityGroupName, type: ctwc.GRAPH_ELEMENT_SECURITY_GROUP});
+                        return tooltipTitle({name: securityGroupName, type: ctwl.TITLE_GRAPH_ELEMENT_SECURITY_GROUP});
                     },
                     content: function (element, jointObject) {
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
@@ -97,7 +97,7 @@ define([
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
                             NetworkIPAMName = viewElement.attributes.nodeDetails['fq_name'][2];
 
-                        return tooltipTitle({name: NetworkIPAMName, type: ctwc.GRAPH_ELEMENT_NETWORK_IPAM});
+                        return tooltipTitle({name: NetworkIPAMName, type: ctwl.TITLE_GRAPH_ELEMENT_NETWORK_IPAM});
                     },
                     content: function (element, jointObject) {
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
@@ -145,7 +145,7 @@ define([
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
                             virtualNetworkName = viewElement.attributes.nodeDetails['name'].split(':')[2];
 
-                        return tooltipTitle({name: virtualNetworkName, type: ctwc.GRAPH_ELEMENT_VIRTUAL_NETWORK});
+                        return tooltipTitle({name: virtualNetworkName, type: ctwl.TITLE_GRAPH_ELEMENT_VIRTUAL_NETWORK});
 
                     },
                     content: function (element, jointObject) {
@@ -219,7 +219,7 @@ define([
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
                             serviceInstanceName = viewElement.attributes.nodeDetails['name'].split(':')[2];
 
-                        return tooltipTitle({name: serviceInstanceName, type: ctwc.GRAPH_ELEMENT_SERVICE_INSTANCE});
+                        return tooltipTitle({name: serviceInstanceName, type: ctwl.TITLE_GRAPH_ELEMENT_SERVICE_INSTANCE});
                     },
                     content: function (element, jointObject) {
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
@@ -257,7 +257,7 @@ define([
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
                             virtualMachineName = viewElement.attributes.nodeDetails['fqName'];
 
-                        return tooltipTitle({name: virtualMachineName, type: ctwc.GRAPH_ELEMENT_VIRTUAL_MACHINE});
+                        return tooltipTitle({name: virtualMachineName, type: ctwl.TITLE_GRAPH_ELEMENT_VIRTUAL_MACHINE});
                     },
                     content: function (element, jointObject) {
                         var viewElement = jointObject.connectedGraph.getCell(element.attr('model-id')),
@@ -265,6 +265,7 @@ define([
 
                         return tooltipContent({
                             info: [
+                                {lbl: 'UUID', value: viewElement.attributes.nodeDetails['fqName']},
                                 {lbl: 'Network', value: srcVNDetails.name},
                                 {lbl: 'Interface Count', value: srcVNDetails.more_attr.interface_list.length}
                             ],
@@ -279,7 +280,7 @@ define([
                             sourceNetwork = viewElementDetails.src.split(':')[2],
                             destinationNetwork = viewElementDetails.dst.split(':')[2];
 
-                        return tooltipTitle({name: sourceNetwork + ' ---' + destinationNetwork, type: ctwc.GRAPH_ELEMENT_CONNECTED_NETWORK});
+                        return tooltipTitle({name: sourceNetwork + ' ---' + destinationNetwork, type: ctwl.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK});
                     },
                     content: function (element, jointObject) {
                         //TODO - This needs some cleanup
@@ -581,6 +582,42 @@ define([
             }
 
             return config;
+        };
+
+        this.setProjectURLHashParams = function(projectFQN, triggerHashChange) {
+            layoutHandler.setURLHashParams({
+                type: "project",
+                view: "details",
+                focusedElement: {
+                    fqName: projectFQN,
+                    type: ctwc.GRAPH_ELEMENT_PROJECT
+                }
+            }, {p: "mon_networking_projects", merge: false, triggerHashChange: triggerHashChange});
+
+        };
+
+        this.setNetworkURLHashParams = function(networkFQN, triggerHashChange) {
+            layoutHandler.setURLHashParams({
+                type: "network",
+                view: "details",
+                focusedElement: {
+                fqName: networkFQN,
+                    type: ctwc.GRAPH_ELEMENT_NETWORK
+                }
+            }, {p: "mon_networking_networks", merge: false, triggerHashChange: triggerHashChange});
+
+        };
+
+        this.setInstanceURLHashParams = function(networkFQN, instanceUUID, triggerHashChange) {
+            layoutHandler.setURLHashParams({
+                type: "instance",
+                view: "details",
+                focusedElement: {
+                    fqName: networkFQN,
+                    uuid: instanceUUID,
+                    type: ctwc.GRAPH_ELEMENT_NETWORK
+                }
+            }, {p: "mon_networking_instances", merge: false});
         };
     };
 

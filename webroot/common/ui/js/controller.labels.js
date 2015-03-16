@@ -184,6 +184,14 @@ define([
         this.SOURCE_PORT = "Source Port";
         this.DESTINATION_PORT = "Destination Port";
 
+        this.TITLE_GRAPH_ELEMENT_NETWORK_POLICY = 'network policy';
+        this.TITLE_GRAPH_ELEMENT_SECURITY_GROUP = 'security group';
+        this.TITLE_GRAPH_ELEMENT_NETWORK_IPAM = 'network ipam';
+        this.TITLE_GRAPH_ELEMENT_SERVICE_INSTANCE = 'service instance';
+        this.TITLE_GRAPH_ELEMENT_VIRTUAL_NETWORK = 'virtual network';
+        this.TITLE_GRAPH_ELEMENT_VIRTUAL_MACHINE = 'virtual machine';
+        this.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK = 'connected network';
+
     };
     return CTLabels;
 });

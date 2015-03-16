@@ -364,38 +364,16 @@ define([
             fqName, uuid;
         if ($.inArray(name, ['project']) > -1) {
             fqName = selRowDataItem['name'];
-            layoutHandler.setURLHashParams({
-                type: "project",
-                view: "details",
-                focusedElements: {
-                    fqName: fqName,
-                    type: 'project'
-                }
-            }, {p: "mon_networking_projects", merge: false});
+            ctwgrc.setProjectURLHashParams(fqName, true)
 
         } else if ($.inArray(name, ['network']) > -1) {
             fqName = selRowDataItem['name'];
-            layoutHandler.setURLHashParams({
-                type: "network",
-                view: "details",
-                focusedElement: {
-                    fqName: fqName,
-                    type: 'virtual-network'
-                }
-            }, {p: "mon_networking_networks", merge: false});
+            ctwgrc.setNetworkURLHashParams(fqName, true)
 
         } else if ($.inArray(name, ['instance']) > -1) {
             fqName = selRowDataItem['vnFQN'];
             uuid = selRowDataItem['name'];
-            layoutHandler.setURLHashParams({
-                type: "instance",
-                view: "details",
-                focusedElement: {
-                    fqName: fqName,
-                    uuid: uuid,
-                    type: 'virtual-network'
-                }
-            }, {p: "mon_networking_instances", merge: false});
+            ctwgrc.setInstanceURLHashParams(fqName, uuid, true)
         }
     };
 

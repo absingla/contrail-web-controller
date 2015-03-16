@@ -96,14 +96,6 @@ define([
         this.GRAPH_ELEMENT_PROJECT = 'project';
         this.GRAPH_ELEMENT_NETWORK = 'virtual-network';
         this.GRAPH_ELEMENT_INSTANCE = 'virtual-machine';
-
-        this.GRAPH_ELEMENT_NETWORK_POLICY = 'network policy';
-        this.GRAPH_ELEMENT_SECURITY_GROUP = 'security group';
-        this.GRAPH_ELEMENT_NETWORK_IPAM = 'network ipam';
-        this.GRAPH_ELEMENT_SERVICE_INSTANCE = 'service instance';
-        this.GRAPH_ELEMENT_VIRTUAL_NETWORK = 'virtual network';
-        this.GRAPH_ELEMENT_VIRTUAL_MACHINE = 'virtual machine';
-        this.GRAPH_ELEMENT_CONNECTED_NETWORK = 'connected network';
     };
     return CTConstants;
 });
