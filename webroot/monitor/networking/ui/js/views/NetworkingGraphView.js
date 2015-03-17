@@ -80,7 +80,7 @@ define([
                 graphModelConfig: confGraphModelConfig,
                 tooltipConfig: ctwgrc.getConfigGraphTooltipConfig(),
                 clickEvents: {
-                    //'cell:pointerclick': getConfgPointerClickFn(connectedGraphView),
+                    'cell:pointerclick': getConfgPointerClickFn(connectedGraphView),
                     'cell:rightclick': ctwgrc.getConfigGraphContextMenuConfig()
                 }
             };
@@ -590,11 +590,11 @@ define([
 
     function highlightSelectedElementForZoomedElement(connectedSelectorId, jointObject, graphConfig) {
         highlightSelectedSVGElements([$('g.ZoomedElement')]);
-        if (graphConfig.focusedElement.type == 'Network') {
+        if (graphConfig.focusedElement.type == ctwc.GRAPH_ELEMENT_NETWORK) {
             highlightSelectedElements([$('div.VirtualMachine')]);
             highlightSelectedSVGElements([$('g.VirtualMachine'), $('.VirtualMachineLink')]);
         }
-        else if (graphConfig.focusedElement.type == 'Instance') {
+        else if (graphConfig.focusedElement.type == ctwc.GRAPH_ELEMENT_INSTANCE) {
             highlightElementsToFaint([
                 $(connectedSelectorId).find('div.font-element')
             ]);
@@ -673,6 +673,7 @@ define([
                         highlightedElements.links.push(policyRuleLinkKey.reverse().join('<->'));
 
                     } else {
+                        policyRuleLinkKey.push(destinationNode[sourceNodeKey]);
                         highlightedElements.links.push(destinationNode[sourceNodeKey] + '<->' + sourceNodeValue);
                         highlightedElements.links.push(sourceNodeValue + '<->' + destinationNode[sourceNodeKey]);
                     }
@@ -688,8 +689,8 @@ define([
                 highlightedElements.nodes = $.unique(highlightedElements.nodes);
                 $.each(highlightedElements.nodes, function (nodeKey, nodeValue) {
                     var nodeElement = jointObject.connectedGraph.getCell(elementMap.node[nodeValue]);
-                    $('g[model-id="' + nodeElement.id + '"]').addClassSVG('elementHighlighted');
-                    $('div[font-element-model-id="' + nodeElement.id + '"]').addClass('elementHighlighted');
+                    $('g[model-id="' + nodeElement.id + '"]').addClassSVG('highlighted');
+                    $('div[font-element-model-id="' + nodeElement.id + '"]').addClass('highlighted');
                 });
 
                 if (policyRuleValue.action_list.simple_action == 'pass') {
@@ -697,10 +698,10 @@ define([
                     $.each(highlightedElements.links, function (highlightedElementLinkKey, highlightedElementLinkValue) {
                         if (elementMap.link[highlightedElementLinkValue]) {
                             if (typeof elementMap.link[highlightedElementLinkValue] == 'string') {
-                                highlightLink(jointObject, elementMap.link[highlightedElementLinkValue]);
+                                highlightLinkElement(jointObject, elementMap.link[highlightedElementLinkValue]);
                             } else {
                                 $.each(elementMap.link[highlightedElementLinkValue], function (linkKey, linkValue) {
-                                    highlightLink(jointObject, linkValue)
+                                    highlightLinkElement(jointObject, linkValue)
                                 });
                             }
 
@@ -712,12 +713,23 @@ define([
     };
 
     function highlightCurrentElement(elementNodeId) {
-        highlightElementsToFaint([ $('div.font-element') ]);
+        faintAllElements();
 
-        highlightSVGElementsToFaint([ $('g.element'), $('g.link') ]);
+        $('div.font-element[font-element-model-id="' + elementNodeId + '"]').removeClassSVG('fainted').addClassSVG('highlighted');
+        $('g[model-id="' + elementNodeId + '"]').removeClassSVG('fainted').addClassSVG('highlighted');
+    }
 
-        $('div.font-element[font-element-model-id="' + elementNodeId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
-        $('g[model-id="' + elementNodeId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+    var faintAllElements = function() {
+        $('div.font-element').removeClass('highlighted').addClass('fainted');
+        $('g.element').removeClassSVG('highlighted').addClassSVG('fainted');
+        $('g.link').removeClassSVG('highlighted').addClassSVG('fainted');
+    };
+
+    function highlightLinkElement(jointObject, elementId) {
+        var linkElement = jointObject.connectedGraph.getCell(elementId);
+        if (linkElement) {
+            $('g[model-id="' + linkElement.id + '"]').addClassSVG('highlighted').removeClassSVG('fainted');
+        }
     }
 
     return NetworkingGraphView;
