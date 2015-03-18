@@ -930,19 +930,18 @@ function processNetworkConfigGraph(fqName, networkData, appData, callback) {
         configPolicy = networkData[0]['network-policys'];
 
     networkConfigGraph['configData'] = {"network-policys": configPolicy};
-    //setAssociatedPolicys4Network(fqName, scResultJSON);
+    //setAssociatedPolicys4Network(fqName, networkConfigGraph);
 
-    callback(null, networkConfigGraph);
+    updatePolicyConfigData(networkConfigGraph, appData, function (resultJSON) {
+        callback(null, resultJSON);
+    });
 
     /*
-     updatePolicyConfigData(scResultJSON, appData, function (scResultJSON) {
-     callback(null, scResultJSON);
-     });
      updateServiceInstanceConfigData(scResultJSON, configSI, appData, function (scResultJSON) {
      callback(null, scResultJSON)
      });
      */
-}
+};
 
 function getProjectConnectedGraph(req, res, appData) {
     var fqName = req.query['fqName'],
