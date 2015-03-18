@@ -167,27 +167,53 @@ and need to add the iconClass tag wherever we need to show some icons
                     </items>
                 </item>
                 <item>
-                    <name>networking</name>
                     <label>Networking</label>
+                    <iconClass>icon-sitemap</iconClass>
                     <resources>
+                        <resource>
+                            <rootDir>/common/ui</rootDir>
+                            <js>controller.app.js</js>
+                            <class>mnPageLoader</class>
+                        </resource>
                         <resource>
                             <rootDir>/monitor/tenant-network/common/ui</rootDir>
                             <js>tenant_monitor_topology.js</js>
                             <js>tenant_monitor_utils.js</js>
-                            <view>tenant_monitor_common.view</view>
+                            <class>mnPageLoader</class>
+                        </resource>
+                        <resource>
+                            <rootDir>/monitor/networking/ui</rootDir>
+                            <js>networking.main.js</js>
+                            <template>networking.tmpl</template>
+                            <class>mnPageLoader</class>
                         </resource>
                     </resources>
-                    <iconClass>icon-sitemap</iconClass>
                     <items>
                         <item>
-                            <label>Projects</label>
-                            <hash>mon_net_projects</hash>
+                            <hash>mon_networking_dashboard</hash>
+                            <label>Dashboard</label>
                             <resources>
                                 <resource>
-                                    <rootDir>/monitor/tenant-network/project/ui</rootDir>
-                                    <js>tenant_monitor_project.js</js>
-                                    <view>tenant_monitor_project.view</view>
-                                    <class>tenantNetworkMonitorView</class>
+                                    <rootDir>/monitor/networking/ui</rootDir>
+                                    <class>mnPageLoader</class>
+                                    <function>renderProjects</function>
+                                </resource>
+                            </resources>
+                            <queryParams>
+                                <view>details</view>
+                                <type>project</type>
+                                <source>uve</source>
+                            </queryParams>
+                            <searchStrings>Networking Dashboard</searchStrings>
+                        </item>
+                        <item>
+                            <hash>mon_networking_projects</hash>
+                            <label>Projects</label>
+                            <resources>
+                                <resource>
+                                    <rootDir>/monitor/networking/ui</rootDir>
+                                    <class>mnPageLoader</class>
+                                    <function>renderProjects</function>
                                 </resource>
                             </resources>
                             <queryParams>
@@ -198,14 +224,13 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Monitor Projects</searchStrings>
                         </item>
                         <item>
+                            <hash>mon_networking_networks</hash>
                             <label>Networks</label>
-                            <hash>mon_net_networks</hash>
                             <resources>
                                 <resource>
-                                    <rootDir>/monitor/tenant-network/network/ui</rootDir>
-                                    <view>tenant_monitor_network.view</view>
-                                    <js>tenant_monitor_network.js</js>
-                                    <class>tenantNetworkMonitorView</class>
+                                    <rootDir>/monitor/networking/ui</rootDir>
+                                    <class>mnPageLoader</class>
+                                    <function>renderNetworks</function>
                                 </resource>
                             </resources>
                             <queryParams>
@@ -217,13 +242,12 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                         <item>
                             <label>Instances</label>
-                            <hash>mon_net_instances</hash>
+                            <hash>mon_networking_instances</hash>
                             <resources>
                                 <resource>
-                                    <rootDir>/monitor/tenant-network/instance/ui</rootDir>
-                                    <view>tenant_monitor_instance.view</view>
-                                    <js>tenant_monitor_instance.js</js>
-                                    <class>tenantNetworkMonitorView</class>
+                                    <rootDir>/monitor/networking/ui</rootDir>
+                                    <class>mnPageLoader</class>
+                                    <function>renderInstances</function>
                                 </resource>
                             </resources>
                             <queryParams>
@@ -232,22 +256,6 @@ and need to add the iconClass tag wherever we need to show some icons
                                 <source>uve</source>
                             </queryParams>
                             <searchStrings>Monitor instances</searchStrings>
-                        </item>
-                        <item>
-                            <label>Traffic Statistics</label>
-                            <hash>mon_net_dashboard</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/monitor/tenant-network/dashboard/ui</rootDir>
-                                    <view>tenant_monitor_dashboard.view</view>
-                                    <js>tenant_monitor_dashboard.js</js>
-                                    <class>tenantNetworkMonitorView</class>
-                                </resource>
-                            </resources>
-                            <queryParams>
-                                <fqName>default-domain</fqName>
-                            </queryParams>
-                            <searchStrings>Networking Dashboard</searchStrings>
                         </item>
                     </items>
                 </item>
@@ -442,94 +450,113 @@ and need to add the iconClass tag wherever we need to show some icons
                 </item>
                 <item>
                     <label>Networking</label>
+                    <access>
+                        <roles>
+                            <role>member</role>
+                        </roles>
+                        <orchModels>
+                            <model>openstack</model>
+                            <model>vcenter</model>
+                        </orchModels>
+                    </access>
                     <iconClass>icon-sitemap</iconClass>
-                    <resources>
-                        <resource>
-                            <rootDir>/common/ui</rootDir>
-                            <js>controller.app.js</js>
-                            <class>mnPageLoader</class>
-                        </resource>
-                        <resource>
-                            <rootDir>/monitor/tenant-network/common/ui</rootDir>
-                            <js>tenant_monitor_topology.js</js>
-                            <js>tenant_monitor_utils.js</js>
-                            <class>mnPageLoader</class>
-                        </resource>
-                        <resource>
-                            <rootDir>/monitor/networking/ui</rootDir>
-                            <js>networking.main.js</js>
-                            <template>networking.tmpl</template>
-                            <class>mnPageLoader</class>
-                        </resource>
-                    </resources>
                     <items>
                         <item>
-                            <hash>mon_networking_dashboard</hash>
-                            <label>Dashboard</label>
-                            <resources>
-                                <resource>
-                                    <rootDir>/monitor/networking/ui</rootDir>
-                                    <class>mnPageLoader</class>
-                                    <function>renderProjects</function>
-                                </resource>
-                            </resources>
-                            <queryParams>
-                                <view>details</view>
-                                <type>project</type>
-                                <source>uve</source>
-                            </queryParams>
-                            <searchStrings>Networking Dashboard</searchStrings>
-                        </item>
-                        <item>
-                            <hash>mon_networking_projects</hash>
-                            <label>Projects</label>
-                            <resources>
-                                <resource>
-                                    <rootDir>/monitor/networking/ui</rootDir>
-                                    <class>mnPageLoader</class>
-                                    <function>renderProjects</function>
-                                </resource>
-                            </resources>
-                            <queryParams>
-                                <view>list</view>
-                                <type>project</type>
-                                <source>uve</source>
-                            </queryParams>
-                            <searchStrings>Monitor Projects</searchStrings>
-                        </item>
-                        <item>
-                            <hash>mon_networking_networks</hash>
                             <label>Networks</label>
+                            <hash>config_net_vn</hash>
                             <resources>
                                 <resource>
-                                    <rootDir>/monitor/networking/ui</rootDir>
-                                    <class>mnPageLoader</class>
-                                    <function>renderNetworks</function>
+                                    <rootDir>/config/vn/ui</rootDir>
+                                    <js>vn_config.js</js>
+                                    <view>vn_config.view</view>
+                                    <class>virtualnetworkConfigObj</class>
                                 </resource>
                             </resources>
-                            <queryParams>
-                                <view>list</view>
-                                <type>network</type>
-                                <source>uve</source>
-                            </queryParams>
-                            <searchStrings>Monitor Networks</searchStrings>
+                            <searchStrings>Configure Networks</searchStrings>
                         </item>
                         <item>
-                            <label>Instances</label>
-                            <hash>mon_networking_instances</hash>
+                            <label>Ports</label>
+                            <hash>config_net_ports</hash>
                             <resources>
                                 <resource>
-                                    <rootDir>/monitor/networking/ui</rootDir>
-                                    <class>mnPageLoader</class>
-                                    <function>renderInstances</function>
+                                    <rootDir>/config/ports/ui</rootDir>
+                                    <js>ports_config.js</js>
+                                    <view>ports_config.view</view>
+                                    <class>portsConfigObj</class>
                                 </resource>
                             </resources>
-                            <queryParams>
-                                <view>list</view>
-                                <type>instance</type>
-                                <source>uve</source>
-                            </queryParams>
-                            <searchStrings>Monitor instances</searchStrings>
+                            <searchStrings>Ports</searchStrings>
+                        </item>
+                        <item>
+                            <label>Policies</label>
+                            <hash>config_net_policies</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/config/networkpolicies/ui</rootDir>
+                                    <js>policy_config.js</js>
+                                    <view>policy_config.view</view>
+                                    <class>networkpolicyConfigObj</class>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Network Policies</searchStrings>
+                        </item>
+                        <item>
+                            <label>Security Groups</label>
+                            <hash>config_net_sg</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/config/securitygroup/ui</rootDir>
+                                    <js>sg_config.js</js>
+                                    <view>sg_config.view</view>
+                                    <class>sgConfigObj</class>
+                                </resource>
+                            </resources>
+                            <searchStrings>Security Groups</searchStrings>
+                        </item>
+                        <item>
+                            <label>Routers</label>
+                            <hash>config_net_routers</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/config/logicalrouters/ui</rootDir>
+                                    <js>router_config.js</js>
+                                    <view>router_config.view</view>
+                                    <class>routerConfigObj</class>
+                                </resource>
+                            </resources>
+                            <access>
+                                <orchModels>
+                                    <model>openstack</model>
+                                    <model>cloudstack</model>
+                                </orchModels>
+                            </access>
+                            <searchStrings>Routers</searchStrings>
+                        </item>
+                        <item>
+                            <label>IP Address Management</label>
+                            <hash>config_net_ipam</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/config/ipaddressmanagement/ui</rootDir>
+                                    <js>ipam_config.js</js>
+                                    <view>ipam_config.view</view>
+                                    <class>IPAddressManagementObj</class>
+                                </resource>
+                            </resources>
+                            <searchStrings>IP Address Management, IPAM</searchStrings>
+                        </item>
+                        <item>
+                            <label>Manage Floating IPs</label>
+                            <hash>config_net_fip</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/config/fip/ui</rootDir>
+                                    <js>fip_config.js</js>
+                                    <view>fip_config.view</view>
+                                    <class>FloatingIPConfigObj</class>
+                                </resource>
+                            </resources>
+                            <searchStrings>Manage Floating IPs</searchStrings>
                         </item>
                     </items>
                 </item>
