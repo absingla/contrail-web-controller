@@ -114,8 +114,10 @@ body > svg {
                         </li>
                         <li>
                             <label class="inline">
-                                <span class="key"> Total Traffic </span>
-                                <span class="value"> {{stats}} </span>
+                                <span class="key"> Traffic (In/Out) (Last 1 hr) </span>
+                                <span id = "VMstats" class="value"> 
+                                    <i class="grid-header-icon-loading icon-spinner icon-spin"></i> 
+                                </span>
                             </label>
                         </li>
                         <li>
@@ -129,11 +131,6 @@ body > svg {
 	        </div>
 	    </div>
 	</div>
-	{{#IfCompare type 'physical-router' operator='=='}}
-	   <div class="span12">
-            <div class="contrail-grid"></div>
-       </div>
-	{{/IfCompare}}
 </script>
 <script type="text/x-handlebars-template" id="visualization-template">
     <div id="underlay_topology">
@@ -161,31 +158,34 @@ body > svg {
                     <div title="Expand/Collapse Visualization" class="topology-control-item" onclick="underlayRenderer.getView().expandTopology();">
                         <i class="icon-resize-small"></i>
                     </div>
-                    <div title="Directed Graph" onclick="underlayRenderer.getView().layout();" class="topology-control-item">
-                        <i class="icon-random"></i>
-                    </div>
                 </div>
             </div>
         </div>
-        <div id="underlay_tabstrip" class="row-fluid contrail-widget-tabs">
-            <ul>
-                <li><a href="#flows-tab">Search Flows</a></li>
-                <li><a href="#traceFlow">Trace Flows</a></li>
-                <li id="detailsLink" style="display:none;">
-                    <a href="#detailsTab">Details</a>
-                </li>
-            </ul>
-            <div class="row-fluid" id="flows-tab">
-                <div id="fr-container">
-                    <div id='fr-query'></div>
-                    <div id="fr-results"></div>
-                </div>
-            </div>
-            <div class="row-fluid" id="traceFlow"></div>
-            <div id="detailsTab" class="row-fluid"></div>
+        <div id="underlayTabs" class="row-fluid">
+            {{> underlayTabsHtml}}
         </div>
     </div>
 </script>
+<script type="text/x-handlebars-template" id="underlay-tabs">
+    <div id="underlay_tabstrip" class="row-fluid contrail-widget-tabs">
+        <ul>
+            <li><a href="#flows-tab">Search Flows</a></li>
+            <li><a href="#traceFlow">Trace Flows</a></li>
+            <li id="detailsLink" style="display:none;">
+                <a href="#detailsTab">Details</a>
+            </li>
+        </ul>
+        <div class="row-fluid" id="flows-tab">
+            <div id="fr-container">
+                <div id='fr-query'></div>
+                <div id="fr-results"></div>
+            </div>
+        </div>
+        <div class="row-fluid" id="traceFlow"></div>
+        <div id="detailsTab" class="row-fluid"></div>
+    </div>
+</script>
+
 <script type="text/x-handlebars-template" id="tracePath-template">
 	<div class='row-fluid'>
         <div class='row-fluid margin-0-0-10'>
@@ -217,7 +217,11 @@ body > svg {
         </div
     </div>
 </script>
-
+<script type="text/x-handlebars-template" id="pRouterInterfaces">
+    <div class="row-fluid">
+        <div class="contrail-grid"></div>
+    </div>
+ </script>
 <script type="text/x-handlebars-template" id="link-summary-template">
     {{#IfCompare this.link 'vrouter' operator='=='}}   
         <div class="row-fluid">
