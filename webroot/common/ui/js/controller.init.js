@@ -15,11 +15,11 @@ define([
 ], function (_, Constants, GridConfig, GraphConfig, Labels, Utils, Messages, Parsers, Cache) {
     ctwc = new Constants();
     ctwl = new Labels();
-    ctwu = new Utils;
     ctwm = new Messages();
     ctwgc = new GridConfig();
     ctwgrc = new GraphConfig();
     ctwp = new Parsers();
     ctwch = new Cache();
+    ctwu = new Utils;
     ctwch.init();
 });
