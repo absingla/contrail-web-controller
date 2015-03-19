@@ -129,6 +129,17 @@ define([
                                                     }
                                                 },
                                                 {
+                                                    key: 'value.UveVirtualNetworkAgent.virtualmachine_list',
+                                                    templateGenerator: 'LinkGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'link',
+                                                        template: ctwc.URL_INSTANCE,
+                                                        params: {
+                                                            vn: 'name'
+                                                        }
+                                                    }
+                                                },
+                                                {
                                                     key: 'value.UveVirtualNetworkAgent.acl',
                                                     templateGenerator: 'TextGenerator'
                                                 },
@@ -142,17 +153,6 @@ define([
                                                     templateGeneratorConfig: {
                                                         formatter: 'length'
                                                     }
-                                                },
-                                                {
-                                                    key: 'value.UveVirtualNetworkAgent.virtualmachine_list',
-                                                    templateGenerator: 'LinkGenerator',
-                                                    templateGeneratorConfig: {
-                                                        formatter: 'link',
-                                                        template: ctwc.URL_INSTANCE,
-                                                        params: {
-                                                            vn: 'name'
-                                                        }
-                                                   }
                                                 }
                                             ]
                                         }

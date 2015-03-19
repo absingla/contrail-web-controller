@@ -7,8 +7,8 @@ define([
 ], function (_) {
     var CTGraphConfig = function () {
         this.getConfigGraphTooltipConfig = function () {
-            var tooltipTitle = contrail.getTemplate4Id(cowc.TMPL_TOOLTIP_TITLE),
-                tooltipContent = contrail.getTemplate4Id(cowc.TMPL_TOOLTIP_CONTENT);
+            var tooltipTitle = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_TITLE),
+                tooltipContent = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_CONTENT);
 
             return {
                 NetworkPolicy: {
@@ -136,8 +136,8 @@ define([
         };
 
         this.getConnectedGraphTooltipConfig = function () {
-            var tooltipTitle = contrail.getTemplate4Id(cowc.TMPL_TOOLTIP_TITLE),
-                tooltipContent = contrail.getTemplate4Id(cowc.TMPL_TOOLTIP_CONTENT);
+            var tooltipTitle = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_TITLE),
+                tooltipContent = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_CONTENT);
 
             return {
                 VirtualNetwork: {
@@ -170,12 +170,12 @@ define([
                             info: [
                                 {lbl: 'Project', value: virtualNetworkName[0] + ':' + virtualNetworkName[1]},
                                 {
-                                    lbl: 'In',
-                                    value: formatNumberByCommas(viewElement.attributes.nodeDetails.more_attr.in_tpkts) + ' packets / ' + formatBytes(viewElement.attributes.nodeDetails.more_attr.in_bytes)
+                                    lbl: 'Traffic In',
+                                    value: formatNumberByCommas(viewElement.attributes.nodeDetails.more_attr.in_tpkts) + ' packets | ' + formatBytes(viewElement.attributes.nodeDetails.more_attr.in_bytes)
                                 },
                                 {
-                                    lbl: 'Out',
-                                    value: formatNumberByCommas(viewElement.attributes.nodeDetails.more_attr.out_tpkts) + ' packets / ' + formatBytes(viewElement.attributes.nodeDetails.more_attr.out_bytes)
+                                    lbl: 'Traffic Out',
+                                    value: formatNumberByCommas(viewElement.attributes.nodeDetails.more_attr.out_tpkts) + ' packets  |  ' + formatBytes(viewElement.attributes.nodeDetails.more_attr.out_bytes)
                                 },
                                 {lbl: 'Instance Count', value: viewElement.attributes.nodeDetails.more_attr.vm_cnt}
                             ],
@@ -269,7 +269,7 @@ define([
                                 {lbl: 'Network', value: srcVNDetails.name},
                                 {lbl: 'Interface Count', value: srcVNDetails.more_attr.interface_list.length}
                             ],
-                            iconClass: 'icon-contrail-virtual-machine'
+                            iconClass: 'icon-contrail-virtual-machine font-size-30'
                         });
                     }
                 },
@@ -280,7 +280,7 @@ define([
                             sourceNetwork = viewElementDetails.src.split(':')[2],
                             destinationNetwork = viewElementDetails.dst.split(':')[2];
 
-                        return tooltipTitle({name: sourceNetwork + ' ---' + destinationNetwork, type: ctwl.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK});
+                        return tooltipTitle({name: sourceNetwork + ' - ' + destinationNetwork, type: ctwl.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK});
                     },
                     content: function (element, jointObject) {
                         //TODO - This needs some cleanup
@@ -308,35 +308,35 @@ define([
                                 if (src == in_stats[i].src && dst == in_stats[i].dst) {
                                     data.push({
                                         lbl: "Link",
-                                        value: in_stats[i].src.split(':').pop() + " --- " + in_stats[i].dst.split(':').pop()
+                                        value: in_stats[i].src.split(':').pop() + " - " + in_stats[i].dst.split(':').pop()
                                     });
                                     data.push({
-                                        lbl: "In",
-                                        value: formatNumberByCommas(in_stats[i].pkts) + " packets / " + formatBytes(in_stats[i].bytes)
+                                        lbl: "Traffic In",
+                                        value: formatNumberByCommas(in_stats[i].pkts) + " packets | " + formatBytes(in_stats[i].bytes)
                                     });
                                     for (var j = 0; j < out_stats.length; j++) {
                                         if (src == out_stats[j].src && dst == out_stats[j].dst) {
                                             data.push({
-                                                lbl: "Out",
-                                                value: formatNumberByCommas(out_stats[j].pkts) + " packets / " + formatBytes(out_stats[i].bytes)
+                                                lbl: "Traffic Out",
+                                                value: formatNumberByCommas(out_stats[j].pkts) + " packets | " + formatBytes(out_stats[i].bytes)
                                             });
                                         }
                                     }
                                 } else if (src == in_stats[i].dst && dst == in_stats[i].src) {
                                     data.push({
                                         lbl: "Link",
-                                        value: in_stats[i].src.split(':').pop() + " --- " + in_stats[i].dst.split(':').pop(),
+                                        value: in_stats[i].src.split(':').pop() + " - " + in_stats[i].dst.split(':').pop(),
                                         dividerClass: 'margin-5-0-0'
                                     });
                                     data.push({
-                                        lbl: "In",
-                                        value: formatNumberByCommas(in_stats[i].pkts) + " packets / " + formatBytes(in_stats[i].bytes)
+                                        lbl: "Traffic In",
+                                        value: formatNumberByCommas(in_stats[i].pkts) + " packets | " + formatBytes(in_stats[i].bytes)
                                     });
                                     for (var j = 0; j < out_stats.length; j++) {
                                         if (src == out_stats[j].dst && dst == out_stats[j].src) {
                                             data.push({
-                                                lbl: "Out",
-                                                value: formatNumberByCommas(out_stats[j].pkts) + " packets / " + formatBytes(out_stats[i].bytes)
+                                                lbl: "Traffic Out",
+                                                value: formatNumberByCommas(out_stats[j].pkts) + " packets | " + formatBytes(out_stats[i].bytes)
                                             });
                                         }
                                     }
@@ -349,14 +349,14 @@ define([
                             if (partial_msg != "")
                                 data.push({lbl: "", value: partial_msg});
 
-                            data.push({lbl: "Link", value: src + " --- " + dst});
-                            data.push({lbl: "In", value: "0 packets / 0 B"});
-                            data.push({lbl: "Out", value: "0 packets / 0 B"});
+                            data.push({lbl: "Link", value: src + " - " + dst});
+                            data.push({lbl: "Traffic In", value: "0 packets | 0 B"});
+                            data.push({lbl: "Traffic Out", value: "0 packets | 0 B"});
 
                             if (viewElementDetails.dir == 'bi') {
-                                data.push({lbl: "Link", value: dst + " --- " + src, dividerClass: 'margin-5-0-0'});
-                                data.push({lbl: "In", value: "0 packets / 0 B"});
-                                data.push({lbl: "Out", value: "0 packets / 0 B"});
+                                data.push({lbl: "Link", value: dst + " - " + src, dividerClass: 'margin-5-0-0'});
+                                data.push({lbl: "Traffic In", value: "0 packets | 0 B"});
+                                data.push({lbl: "Traffic Out", value: "0 packets | 0 B"});
                             }
                         } else if (viewElementDetails.more_attributes != undefined && viewElementDetails.more_attributes.in_stats != undefined
                             && viewElementDetails.more_attributes.out_stats != undefined && viewElementDetails.more_attributes.in_stats.length == 0
@@ -366,14 +366,14 @@ define([
                             if (partial_msg != "")
                                 data.push({lbl: "", value: partial_msg});
 
-                            data.push({lbl: "Link", value: src + " --- " + dst});
-                            data.push({lbl: "In", value: "0 packets / 0 B"});
-                            data.push({lbl: "Out", value: "0 packets / 0 B"});
+                            data.push({lbl: "Link", value: src + " - " + dst});
+                            data.push({lbl: "Traffic In", value: "0 packets | 0 B"});
+                            data.push({lbl: "Traffic Out", value: "0 packets | 0 B"});
 
                             if (viewElementDetails.dir == 'bi') {
-                                data.push({lbl: "Link", value: dst + " --- " + src, dividerClass: 'margin-5-0-0'});
-                                data.push({lbl: "In", value: "0 packets / 0 B"});
-                                data.push({lbl: "Out", value: "0 packets / 0 B"});
+                                data.push({lbl: "Link", value: dst + " - " + src, dividerClass: 'margin-5-0-0'});
+                                data.push({lbl: "Traffic In", value: "0 packets | 0 B"});
+                                data.push({lbl: "Traffic Out", value: "0 packets | 0 B"});
                             }
                         }
 

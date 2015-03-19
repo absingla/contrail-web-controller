@@ -190,7 +190,7 @@ define([
         this.TITLE_GRAPH_ELEMENT_SERVICE_INSTANCE = 'service instance';
         this.TITLE_GRAPH_ELEMENT_VIRTUAL_NETWORK = 'virtual network';
         this.TITLE_GRAPH_ELEMENT_VIRTUAL_MACHINE = 'virtual machine';
-        this.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK = 'connected network';
+        this.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK = 'link';
 
     };
     return CTLabels;

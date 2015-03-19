@@ -440,7 +440,10 @@ define([
             duration: 300,
             $zoomIn: graphControlElement.find(".zoom-in"),
             $zoomOut: graphControlElement.find(".zoom-out"),
-            $reset: graphControlElement.find(".zoom-reset")
+            $reset: graphControlElement.find(".zoom-reset"),
+            onReset: function() {
+                panConnectedGraph2Center(focusedElement, selectorId, connectedSelectorId)
+            }
         });
 
         /* Resize Events */
