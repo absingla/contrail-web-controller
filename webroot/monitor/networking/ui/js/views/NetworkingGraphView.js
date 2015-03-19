@@ -235,9 +235,9 @@ define([
         var xOrigin = vmMargin / 2,
             yOrigin = vmMargin / 2;
 
-        var xFactor = 0, yFactor = 0, linkThickness = 1, horizontalAdjustFactor = 6;
+        var xFactor = 0, yFactor = 0, linkThickness = 1, rectThickness = 2, horizontalAdjustFactor = 6;
         if(vmLength !== 0){
-            var longRect = createRect(xOrigin - vmWidth/2, yOrigin + ySeparation - horizontalAdjustFactor, vmLength * xSeparation + vmWidth/2, linkThickness);
+            var longRect = createRect(xOrigin - vmWidth/2, yOrigin + ySeparation - horizontalAdjustFactor, vmLength * xSeparation + vmWidth/2, rectThickness);
             zoomedElements.push(longRect);
         }
 
@@ -253,7 +253,7 @@ define([
         function createRect (x, y, width, height){
             var rect = new joint.shapes.basic.Rect({
                 position: { x: x, y: y}, size: { width: width, height: height},
-                attrs: {rect:{stroke: '#3182bd', opacity: 1}}
+                attrs: {rect:{stroke: '#3182bd', opacity: 1, fill: '#3182bd'}}
             });
             return rect;
         }
@@ -295,9 +295,10 @@ define([
             yOrigin = vmMargin / 2;
 
         var centerLineHeight = 0.1,
-            xFactor = 0, yFactor = -1, linkThickness = 1
+            xFactor = 0, yFactor = -1,
+            linkThickness = 1, rectThickness = 2;
         if(vmLength !== 0){
-            var longRect = createRect(xOrigin + vmWidth + xSeparation/2, yOrigin - vmMargin/2, linkThickness, vmLength * ySeparation);
+            var longRect = createRect(xOrigin + vmWidth + xSeparation/2, yOrigin - vmMargin/2, rectThickness, vmLength * ySeparation);
             zoomedElements.push(longRect);
         }
 
@@ -315,7 +316,7 @@ define([
         function createRect (x, y, width, height){
             var rect = new joint.shapes.basic.Rect({
                 position: { x: x, y: y}, size: { width: width, height: height},
-                attrs: {rect:{stroke: '#3182bd', opacity: 1}}
+                attrs: {rect:{stroke: '#3182bd', opacity: 1, fill: '#3182bd'}}
             });
             return rect;
         }
