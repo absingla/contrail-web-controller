@@ -80,8 +80,8 @@ define([
         this.UCID_INSTANCE_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:{1}:{2}:traffic-stats";
         this.UCID_CONNECTED_NETWORK_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:{1}:traffic-stats";
 
-        this.PLOT_VM_VERTICAL = true;
-        this.PLOT_VM_HORIZONTAL = false;
+        this.GRAPH_DIR_LR = "LR";
+        this.GRAPH_DIR_TB = "TB";
         this.MAX_VM_TO_PLOT = 100;
 
         this.get = function () {

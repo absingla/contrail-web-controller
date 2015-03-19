@@ -41,6 +41,7 @@ define([
                     'cell:pointerclick': cgPointerClick,
                     'cell:rightclick': ctwgrc.getConnectedGraphContextMenuConfig()
                 },
+                showControlPanel: true,
                 successCallback: function (connectedGraphView, directedGraphSize, jointObject) {
                     $(selectorId).parent().find('.graph-loading').remove(); // TODO - move class name to constants
 
@@ -95,7 +96,7 @@ define([
         var focusedElementType = graphconfig.focusedElement.type,
             fqName = graphconfig.focusedElement.name.fqName;
 
-        return function (response, elementMap) {
+        return function (response, elementMap, rankDir) {
             var connectedElements = [],
                 zoomedElements = [],
                 nodes = response['nodes'],
@@ -114,9 +115,9 @@ define([
                         zoomedNode = nodeValue;
                         zoomedNodeKey = nodeKey;
 
-                        if (ctwc.PLOT_VM_VERTICAL) {
+                        if (rankDir == ctwc.GRAPH_DIR_TB) {
                             options = getVerticalZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
-                        } else if (ctwc.PLOT_VM_HORIZONTAL) {
+                        } else if (rankDir == ctwc.GRAPH_DIR_LR) {
                             options = getHorizontalZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
                         } else {
                             options = getZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
@@ -130,9 +131,9 @@ define([
                         connectedElements.push(zoomedNodeElement);
                         elementMap.node[fqName] = zoomedNodeElement.id;
 
-                        if (ctwc.PLOT_VM_VERTICAL) {
+                        if (rankDir == ctwc.GRAPH_DIR_TB) {
                             generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options);
-                        } else if (ctwc.PLOT_VM_HORIZONTAL) {
+                        } else if (rankDir == ctwc.GRAPH_DIR_LR) {
                             generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options);
                         } else {
                             generateVMGraph(zoomedElements, zoomedNodeElement, options);
@@ -141,9 +142,7 @@ define([
                 });
 
                 nodes.splice(zoomedNodeKey, 1);
-
                 createNodeElements(nodes, connectedElements, elementMap);
-
             }
             createLinkElements(links, connectedElements, elementMap);
 
@@ -280,7 +279,7 @@ define([
         };
 
         return zoomedElements;
-    }
+    };
 
     function generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options) {
         var vmMargin = options['VMMargin'],
@@ -391,8 +390,7 @@ define([
             $(configSelectorId + ' svg').attr('height', adjustedHeight);
         }
 
-        panConnectedGraph2Center(focusedElement, selectorId, connectedSelectorId)
-
+        panConnectedGraph2Center(focusedElement, selectorId, connectedSelectorId);
     };
 
     function translateConnectedGraph2Center(selectorId, connectedSelectorId, connectedGraphView) {
@@ -457,7 +455,6 @@ define([
         graphControlElement.find('.realign')
             .off('click')
             .on('click', function () {
-                $(this).find('i').toggleClass('icon-align-left').toggleClass('icon-align-center');
                 if ($(this).find('i').hasClass('icon-align-left')) {
                     connectedGraphView.model.reLayoutGraph("LR");
                 } else if ($(this).find('i').hasClass('icon-align-center')) {
@@ -545,7 +542,7 @@ define([
         }
 
         cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
-    }
+    };
 
     function cgPointerDblClick(cellView, evt, x, y) {
         var dblClickedElement = cellView.model.attributes,
@@ -608,8 +605,8 @@ define([
 
             $.each(graphElements, function (graphElementKey, graphElementValue) {
                 if (graphElementValue.attributes.type == 'contrail.VirtualMachine' && graphElementValue.attributes.nodeDetails.fqName == vmFqName) {
-                    var modelId = graphElementValue.id;
-                    vmLinks = jointObject.connectedGraph.getConnectedLinks(graphElementValue);
+                    var modelId = graphElementValue.id,
+                        vmLinks = jointObject.connectedGraph.getConnectedLinks(graphElementValue);
 
                     $('g.VirtualNetwork').find('rect').addClassSVG('faintHighlighted').removeClassSVG('elementSelectedHighlighted');
                     $('g[model-id="' + modelId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
@@ -717,7 +714,7 @@ define([
 
         $('div.font-element[font-element-model-id="' + elementNodeId + '"]').removeClassSVG('fainted').addClassSVG('highlighted');
         $('g[model-id="' + elementNodeId + '"]').removeClassSVG('fainted').addClassSVG('highlighted');
-    }
+    };
 
     var faintAllElements = function() {
         $('div.font-element').removeClass('highlighted').addClass('fainted');
@@ -730,7 +727,7 @@ define([
         if (linkElement) {
             $('g[model-id="' + linkElement.id + '"]').addClassSVG('highlighted').removeClassSVG('fainted');
         }
-    }
+    };
 
     return NetworkingGraphView;
 });
