@@ -37,9 +37,10 @@ define([
                 graphModelConfig: cGraphModelConfig,
                 tooltipConfig: ctwgrc.getConnectedGraphTooltipConfig(),
                 clickEvents: {
-                    'cell:pointerdblclick': cgPointerDblClick,
                     'cell:pointerclick': cgPointerClick,
-                    'cell:rightclick': ctwgrc.getConnectedGraphContextMenuConfig()
+                    //'blank:pointerclick': '',
+                    'cell:pointerdblclick': cgPointerDblClick,
+                    'blank:pointerdblclick': getCgBlankDblClick(connectedSelectorId, graphConfig)
                 },
                 showControlPanel: true,
                 successCallback: function (connectedGraphView, directedGraphSize, jointObject) {
@@ -47,13 +48,13 @@ define([
 
                     connectedGraphView.setDimensions((($(selectorId).width() > directedGraphSize.width) ? $(selectorId).width() : directedGraphSize.width) + GRAPH_MARGIN, directedGraphSize.height + GRAPH_MARGIN, 1);
                     $(connectedSelectorId).data('graph-size', directedGraphSize);
-                    $(connectedSelectorId).data('offset', {x: 0, y: 0});
+                    //$(connectedSelectorId).data('offset', {x: 0, y: 0});
 
-                    $(selectorId).data('joint-object', jointObject);
+                    $(connectedSelectorId).data('joint-object', jointObject);
 
                     //TODO: Make control panel as a common view to grid and graph
                     initNetworkingGraphControlEvents(graphConfig.focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
-                    highlightSelectedElementForZoomedElement(connectedSelectorId, jointObject, graphConfig);
+                    highlightElement4ZoomedElement(connectedSelectorId, jointObject, graphConfig);
 
                     //TODO: Execute only in refresh case.
                     setTimeout(function(){
@@ -81,8 +82,7 @@ define([
                 graphModelConfig: confGraphModelConfig,
                 tooltipConfig: ctwgrc.getConfigGraphTooltipConfig(),
                 clickEvents: {
-                    'cell:pointerclick': getConfgPointerClickFn(connectedGraphView),
-                    'cell:rightclick': ctwgrc.getConfigGraphContextMenuConfig()
+                    'cell:pointerclick': getConfgPointerClickFn(connectedGraphView)
                 }
             };
 
@@ -252,6 +252,7 @@ define([
 
         function createRect (x, y, width, height){
             var rect = new joint.shapes.basic.Rect({
+                type: 'VirtualMachineLink',
                 position: { x: x, y: y}, size: { width: width, height: height},
                 attrs: {rect:{stroke: '#3182bd', opacity: 1}}
             });
@@ -393,25 +394,6 @@ define([
         panConnectedGraph2Center(focusedElement, selectorId, connectedSelectorId);
     };
 
-    function translateConnectedGraph2Center(selectorId, connectedSelectorId, connectedGraphView) {
-        //TODO - This needs to be changed to paper translate instead of elements translate.
-        var connectedGraphSize = $(connectedSelectorId).data('graph-size'),
-            oldOffset = $(connectedSelectorId).data('offset'),
-            offset = {
-                x: ($(connectedSelectorId).parents('.col1').width() > connectedGraphSize.width) ? ($(connectedSelectorId).parents('.col1').width() - connectedGraphSize.width - GRAPH_MARGIN) / 2 : 0,
-                y: ($(connectedSelectorId).parents('.col1').height() > connectedGraphSize.height) ? ($(connectedSelectorId).parents('.col1').height() - connectedGraphSize.height - GRAPH_MARGIN) / 2 : 0
-            },
-            connectedGraph = $(selectorId).data('joint-object').connectedGraph,
-            elements = connectedGraph.getElements(),
-            links = connectedGraph.getLinks();
-        $(connectedSelectorId).data('offset', offset);
-
-        $.each(elements, function (elementKey, elementValue) {
-            //TODO: Fix getStroke error in joint.clean
-            elementValue.translate(offset.x - oldOffset.x, offset.y - oldOffset.y);
-        });
-    };
-
     function panConnectedGraph2Center(focusedElement, selectorId, connectedSelectorId) {
         var connectedGraphWidth = $(connectedSelectorId).data('graph-size').width,
             connectedGraphHeight = $(connectedSelectorId).data('graph-size').height,
@@ -476,7 +458,7 @@ define([
         );
     };
 
-    function cgPointerClick(cellView, evt, x, y) {
+    var cgPointerClick = function(cellView, evt, x, y) {
 
         var clickedElement = cellView.model.attributes,
             elementNodeType= clickedElement.elementType,
@@ -487,7 +469,7 @@ define([
         highlightCurrentElement(elementNodeId);
 
         switch (elementNodeType) {
-            case 'virtual-network':
+            case ctwc.GRAPH_ELEMENT_NETWORK:
 
                 var networkFQN = clickedElement.nodeDetails.name,
                     networkUUID = ctwu.getUUIDByName(networkFQN);
@@ -507,7 +489,7 @@ define([
 
                 break;
 
-            case 'virtual-machine':
+            case ctwc.GRAPH_ELEMENT_INSTANCE:
 
                 var networkFQN = clickedElement.nodeDetails.fqName,
                     instanceUUID = clickedElement.nodeDetails.fqName;
@@ -539,15 +521,13 @@ define([
                     linkDetails: clickedElement.linkDetails
                 });
 
-                $('g.link[model-id="' + elementNodeId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
-
                 break;
         }
 
         cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
     };
 
-    function cgPointerDblClick(cellView, evt, x, y) {
+    var cgPointerDblClick = function(cellView, evt, x, y) {
         var dblClickedElement = cellView.model.attributes,
             elementNodeType= dblClickedElement.elementType,
             elementNodeId = cellView.model.id;
@@ -588,39 +568,113 @@ define([
         }
     };
 
-    function highlightSelectedElementForZoomedElement(connectedSelectorId, jointObject, graphConfig) {
-        highlightSelectedSVGElements([$('g.ZoomedElement')]);
-        if (graphConfig.focusedElement.type == ctwc.GRAPH_ELEMENT_NETWORK) {
-            highlightSelectedElements([$('div.VirtualMachine')]);
-            highlightSelectedSVGElements([$('g.VirtualMachine'), $('.VirtualMachineLink')]);
-        }
-        else if (graphConfig.focusedElement.type == ctwc.GRAPH_ELEMENT_INSTANCE) {
-            highlightElementsToFaint([
-                $(connectedSelectorId).find('div.font-element')
-            ]);
+    var getCgBlankDblClick = function(connectedSelectorId, graphConfig) {
 
-            highlightSVGElementsToFaint([
-                $(connectedSelectorId).find('g.element'),
-                $(connectedSelectorId).find('g.link')
-            ]);
-            var graphElements = jointObject.connectedGraph.getElements(),
-                vmFqName = graphConfig.focusedElement.name.instanceUUID;
+        return function() {
+            var currentHashParams = layoutHandler.getURLHashParams(),
+                focusedElementType = graphConfig.focusedElement.type,
+                bottomContainerElement = $('#' + ctwl.BOTTOM_CONTENT_CONTAINER),
+                tabConfig = {};
 
-            $.each(graphElements, function (graphElementKey, graphElementValue) {
-                if (graphElementValue.attributes.type == 'contrail.VirtualMachine' && graphElementValue.attributes.nodeDetails.fqName == vmFqName) {
-                    var modelId = graphElementValue.id,
-                        vmLinks = jointObject.connectedGraph.getConnectedLinks(graphElementValue);
+            switch (focusedElementType) {
+                case ctwc.GRAPH_ELEMENT_PROJECT:
 
-                    $('g.VirtualNetwork').find('rect').addClassSVG('faintHighlighted').removeClassSVG('elementSelectedHighlighted');
-                    $('g[model-id="' + modelId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
-                    $('div.font-element[font-element-model-id="' + modelId + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+                    removeFaint4AllElements();
+                    removeHighlight4AllElements();
 
-                    $.each(vmLinks, function (vmLinkKey, vmLinkValue) {
-                        $('g.link[model-id="' + vmLinkValue.id + '"]').removeClassSVG('faintHighlighted').addClassSVG('elementSelectedHighlighted');
+                    var projectFQN = graphConfig.focusedElement.name.fqName,
+                        projectUUID = ctwu.getUUIDByName(projectFQN);
+
+                    tabConfig = ctwgrc.getTabsViewConfig(focusedElementType, {
+                        projectFQN: projectFQN,
+                        projectUUID: projectUUID
                     });
-                }
-            });
+
+                    ctwgrc.setProjectURLHashParams(projectFQN, false);
+
+                    break;
+
+                case ctwc.GRAPH_ELEMENT_NETWORK:
+                    var networkFQN = graphConfig.focusedElement.name.fqName;
+
+                    if (contrail.checkIfExist(currentHashParams.clickedElement)) {
+                        var networkUUID = ctwu.getUUIDByName(networkFQN);
+
+                        tabConfig = ctwgrc.getTabsViewConfig(focusedElementType, {
+                            networkFQN: networkFQN,
+                            networkUUID: networkUUID
+                        });
+
+                        highlightNetwork4ZoomedElement(connectedSelectorId, graphConfig);
+                        ctwgrc.setNetworkURLHashParams(networkFQN, false);
+
+                    } else {
+                        var projectFQN = networkFQN.split(':').splice(0,2).join(':');
+                        ctwgrc.setProjectURLHashParams(projectFQN, true);
+                    }
+
+                    break;
+
+                case ctwc.GRAPH_ELEMENT_INSTANCE:
+                    var networkFQN = graphConfig.focusedElement.name.fqName;
+
+                    if (contrail.checkIfExist(currentHashParams.clickedElement)) {
+
+                        var instanceUUID = graphConfig.focusedElement.name.instanceUUID;
+
+                        tabConfig = ctwgrc.getTabsViewConfig(focusedElementType, {
+                            networkFQN: networkFQN,
+                            instanceUUID: instanceUUID
+                        });
+
+                        highlightInstance4ZoomedElement(connectedSelectorId, graphConfig);
+                        ctwgrc.setInstanceURLHashParams(networkFQN, instanceUUID, false);
+                    } else {
+                        ctwgrc.setNetworkURLHashParams(networkFQN, true);
+                    }
+
+                    break;
+            };
+
+            cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
+
+        };
+    };
+
+    var highlightElement4ZoomedElement = function(connectedSelectorId, jointObject, graphConfig) {
+        var focusedElementType = graphConfig.focusedElement.type;
+
+        if (focusedElementType == ctwc.GRAPH_ELEMENT_NETWORK) {
+            highlightNetwork4ZoomedElement(connectedSelectorId, graphConfig);
         }
+        else if (focusedElementType == ctwc.GRAPH_ELEMENT_INSTANCE) {
+            highlightInstance4ZoomedElement(connectedSelectorId, graphConfig);
+        }
+    };
+
+    var highlightNetwork4ZoomedElement = function(connectedSelectorId, graphConfig) {
+        faintAllElements();
+        highlightSVGElements([$('g.ZoomedElement')]);
+        highlightElements([$('div.VirtualMachine')]);
+        highlightSVGElements([$('g.VirtualMachine'), $('.VirtualMachineLink')]);
+    };
+
+    var highlightInstance4ZoomedElement = function(connectedSelectorId, graphConfig) {
+        faintAllElements();
+        highlightSVGElements([$('g.ZoomedElement')]);
+
+        var jointObject = $(connectedSelectorId).data('joint-object'),
+            graphElements = jointObject.connectedGraph.getElements(),
+            vmFqName = graphConfig.focusedElement.name.instanceUUID;
+
+        $.each(graphElements, function (graphElementKey, graphElementValue) {
+            if (graphElementValue.attributes.type == 'contrail.VirtualMachine' && graphElementValue.attributes.nodeDetails.fqName == vmFqName) {
+                var modelId = graphElementValue.id;
+
+                highlightElements([$('div.font-element[font-element-model-id="' + modelId + '"]')]);
+                highlightSVGElements([$('g[model-id="' + modelId + '"]')]);
+            }
+        });
     };
 
     function getConfgPointerClickFn(connectedGraphView) {
@@ -689,8 +743,15 @@ define([
                 highlightedElements.nodes = $.unique(highlightedElements.nodes);
                 $.each(highlightedElements.nodes, function (nodeKey, nodeValue) {
                     var nodeElement = jointObject.connectedGraph.getCell(elementMap.node[nodeValue]);
-                    $('g[model-id="' + nodeElement.id + '"]').addClassSVG('highlighted');
-                    $('div[font-element-model-id="' + nodeElement.id + '"]').addClass('highlighted');
+                    $('g[model-id="' + nodeElement.id + '"]').removeClassSVG('fainted').addClassSVG('highlighted');
+                    $('div[font-element-model-id="' + nodeElement.id + '"]').removeClass('fainted').addClass('highlighted');
+
+                    if ($('g[model-id="' + nodeElement.id + '"]').hasClassSVG('ZoomedElement')) {
+                        highlightElements([$('div.VirtualMachine')]);
+                        highlightSVGElements([$('g.VirtualMachine'), $('.VirtualMachineLink')]);
+                    }
+
+
                 });
 
                 if (policyRuleValue.action_list.simple_action == 'pass') {
@@ -712,11 +773,30 @@ define([
         });
     };
 
-    function highlightCurrentElement(elementNodeId) {
+    var highlightCurrentElement = function(elementNodeId) {
         faintAllElements();
 
-        $('div.font-element[font-element-model-id="' + elementNodeId + '"]').removeClassSVG('fainted').addClassSVG('highlighted');
-        $('g[model-id="' + elementNodeId + '"]').removeClassSVG('fainted').addClassSVG('highlighted');
+        highlightElements([$('div.font-element[font-element-model-id="' + elementNodeId + '"]')]);
+        highlightSVGElements([$('g[model-id="' + elementNodeId + '"]')])
+    };
+
+    var highlightLinkElement = function(jointObject, elementId) {
+        var linkElement = jointObject.connectedGraph.getCell(elementId);
+        if (linkElement) {
+            highlightSVGElements([$('g[model-id="' + linkElement.id + '"]')]);
+        }
+    };
+
+    var highlightElements = function(elements) {
+        $.each(elements, function (elementKey, elementValue) {
+            $(elementValue).removeClass('fainted').addClass('highlighted');
+        });
+    };
+
+    var highlightSVGElements = function(elements) {
+        $.each(elements, function (elementKey, elementValue) {
+            $(elementValue).removeClassSVG('fainted').addClassSVG('highlighted');
+        });
     };
 
     var faintAllElements = function() {
@@ -725,11 +805,16 @@ define([
         $('g.link').removeClassSVG('highlighted').addClassSVG('fainted');
     };
 
-    function highlightLinkElement(jointObject, elementId) {
-        var linkElement = jointObject.connectedGraph.getCell(elementId);
-        if (linkElement) {
-            $('g[model-id="' + linkElement.id + '"]').addClassSVG('highlighted').removeClassSVG('fainted');
-        }
+    var removeFaint4AllElements  = function() {
+        $('div.font-element').removeClass('fainted');
+        $('g.element').removeClassSVG('fainted');
+        $('g.link').removeClassSVG('fainted');
+    };
+
+    var removeHighlight4AllElements  = function() {
+        $('div.font-element').removeClass('highlighted');
+        $('g.element').removeClassSVG('highlighted');
+        $('g.link').removeClassSVG('highlighted');
     };
 
     return NetworkingGraphView;
