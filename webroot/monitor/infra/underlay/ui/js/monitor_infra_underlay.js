@@ -11,7 +11,6 @@ var VROUTER = 'virtual-router';
 var VIRTUALMACHINE = 'virtual-machine';
 var ZOOMED_OUT = 0;
 var timeout;
-var view ="cdg";
 var expanded = true;
 
 function underlayRenderer() {
@@ -408,6 +407,7 @@ var underlayView = function (model) {
     this.connectedElements = [];
     this.adjacencyList = [];
     this.underlayAdjacencyList = [];
+    this.connectionWrapIds = [];
     this.model = model || new underlayModel();
     this.graph = new joint.dia.Graph;
     window.onresize = this.resizeTopology;
@@ -599,8 +599,15 @@ underlayView.prototype.addElementsToGraph = function(els) {
         graph.clear();
         graph.resetCells(els);
         var newGraphSize = joint.layout.DirectedGraph.layout(graph, {"nodeSep" : 70, "rankSep" : 80});
-        //var newGraphSize = joint.layout.DirectedGraph.layout(graph);
-        this.getPaper().fitToContent();
+        this.getPaper().setDimensions($("#topology-connected-elements").width(), $("#topology-connected-elements").height());
+        var offset = {
+            x: ($("#topology-connected-elements").width() - newGraphSize.width)/2,
+            y: ($("#topology-connected-elements").height() - newGraphSize.height)/2
+        };
+        $.each(els, function (elementKey, elementValue) {
+            elementValue.translate(offset.x, offset.y);
+        });
+        this.initTooltipConfig();
 }
 
 
@@ -638,6 +645,7 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
     var linkElements = [];
     var _this = this;
     var adjacencyList = this.getAdjacencyList();
+    var conElements = this.getConnectedElements();
     var i=0;
     var nodes = this.getModel().getNodes();
     var links = this.getModel().getLinks();
@@ -649,6 +657,12 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
             if(null !== el && typeof el !== "undefined") {
                 elements.push(el);
                 return;
+            } else {
+                el = jsonPath(conElements, "$[?(@.id=='" + elMap["nodes"][parentElementLabel] + "')]");
+                if(typeof el === "object" && el.length === 1) {
+                    elements.push(el[0]);
+                    return;
+                }
             }
         }
         var parentNode = jsonPath(nodes, "$[?(@.name=='" + parentElementLabel + "')]");
@@ -658,6 +672,7 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
             var parentNodeType = parentNode.node_type;
             elements.push(_this.createNode(parentNode));
             var currentEl = elements[elements.length-1];
+            conElements.push(currentEl);
             var currentElId = currentEl.id;
             elMap.nodes[parentName] = currentElId;
         }
@@ -676,6 +691,12 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
                     if(null !== linkEl && typeof linkEl !== "undefined") {
                         linkElements.push(linkEl);
                         return;
+                    } else {
+                        linkEl = jsonPath(conElements, "$[?(@.id=='" + elMap["links"][parentElementLabel + "<->" + childElementLabel] + "')]");
+                        if(typeof linkEl === "object" && linkEl.length === 1) {
+                            linkElements.push(linkEl[0]);
+                            return;
+                        }
                     }
                 }
                 var childNode = jsonPath(nodes, "$[?(@.name=='" + childElementLabel + "')]");
@@ -689,25 +710,29 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
                         var link = links[i];
                         if(link.endpoints[0] === childElementLabel && link.endpoints[1] === parentElementLabel ||
                             (link.endpoints[1] === childElementLabel && link.endpoints[0] === parentElementLabel)) {
-                            linkElements.push(_this.createLink(link, link_type, parentId, childId));
-                            var currentLink = linkElements[linkElements.length-1];
-                            var currentLinkId = currentLink.id;
                             var linkName = childElementLabel + "<->" + parentElementLabel;
                             var altLinkName = parentElementLabel + "<->" + childElementLabel;
-                            elMap.links[linkName] = currentLinkId;
-                            elMap.links[altLinkName] = currentLinkId;
+                            if((null == elMap["links"][linkName] && typeof elMap["links"][linkName] == "undefined") &&
+                                null == elMap["links"][altLinkName] && typeof elMap["links"][altLinkName] == "undefined") {
+                                linkElements.push(_this.createLink(link, link_type, parentId, childId));
+                                var currentLink = linkElements[linkElements.length-1];
+                                var currentLinkId = currentLink.id;
+                                conElements.push(currentLink);
+                                elMap.links[linkName] = currentLinkId;
+                                elMap.links[altLinkName] = currentLinkId;
+                                break;
+                            }
                         }
                     }
                 }
             });
         }
     });
-
+    this.setConnectedElements(conElements);
     // Links must be added after all the elements. This is because when the links
     // are added to the graph, link source/target
     // elements must be in the graph already.
-    //return [elements, linkElements];
-    return elements.concat(linkElements);
+    return elements.concat(linkElements.unique());
 }
 
 underlayView.prototype.createLink = function(link, link_type, srcId, tgtId) {
@@ -776,7 +801,6 @@ underlayView.prototype.initZoomControls = function() {
         minScale: 0.5,
         maxScale: 20,
         contain: false,
-        //easing: "ease-in-out",
         $zoomIn: $("#topology-controls").find(".zoom-in"),
         $zoomOut: $("#topology-controls").find(".zoom-out"),
         $reset: $("#topology-controls").find(".zoom-reset"),
@@ -1172,12 +1196,12 @@ underlayView.prototype.clearHighlightedConnectedElements = function() {
 underlayView.prototype.initGraphEvents = function() {
     var paper = this.getPaper();
     var graph = this.getGraph();
-    var selectorId = paper.el.id;
+    var selectorId = "#" + paper.el.id;
     var _this      = this;
 
-    paper.on('blank:pointerclick', function (evt, x, y) {
-        //evt.stopImmediatePropagation();
-        //_this.resetTopology();
+    paper.on('blank:pointerdblclick', function (evt, x, y) {
+        evt.stopImmediatePropagation();
+        _this.resetTopology();
     });
 
     paper.on("cell:pointerdblclick", function (cellView, evt, x, y) {
@@ -1193,8 +1217,6 @@ underlayView.prototype.initGraphEvents = function() {
             case 'contrail.PhysicalRouter':
                 var chassis_type    = dblClickedElement['attributes']['nodeDetails']['chassis_type'];
                 if(chassis_type === "tor") {
-                    //_this.resetTopology();
-                    //_this.showChildrenOfType(dblClickedElement, "virtual-router");
                     var children = _this.getModel().getChildren(dblClickedElement['attributes']['nodeDetails']['name'], "virtual-router");
                     var adjList = _.clone(_this.getUnderlayAdjacencyList());
                     if(children.length > 0) {
@@ -1206,7 +1228,6 @@ underlayView.prototype.initGraphEvents = function() {
                         adjList[dblClickedElement['attributes']['nodeDetails']['name']] = childrenName;
                         _this.setAdjacencyList(adjList);
                         var childElementsArray = _this.createElementsFromAdjacencyList();
-                        _this.setConnectedElements(childElementsArray);
                         _this.addElementsToGraph(childElementsArray);
                         var thisNode = [dblClickedElement["attributes"]["nodeDetails"]];
                         _this.addHighlightToNodesAndLinks(thisNode.concat(children), childElementsArray);
@@ -1217,23 +1238,14 @@ underlayView.prototype.initGraphEvents = function() {
 
             case 'contrail.VirtualRouter':
                 var model_id          = $(dblClickedElement).attr('id');
-                //Faint all
-                /*_this.clearHighlightedConnectedElements();
-                _this.addDimlightToConnectedElements();
-
-                //Highlight selected vrouter
-                _this.addHighlightToNode(model_id);
-
-                if(ZOOMED_OUT == 0) {
-                    ZOOMED_OUT = 0.9;
-                    $("#topology-connected-elements").panzoom("zoom",ZOOMED_OUT);
-                }
-                _this.hideVMs();
-                _this.showChildrenOfType(dblClickedElement, "virtual-machine");*/
                 var children = _this.getModel().getChildren(dblClickedElement['attributes']['nodeDetails']['name'], "virtual-machine");
                 var oldAdjList = _.clone(_this.getAdjacencyList());
                 var newAdjList = _.clone(_this.getAdjacencyList());
                 if(children.length > 0) {
+                    if(ZOOMED_OUT == 0) {
+                        ZOOMED_OUT = 0.9;
+                        $("#topology-connected-elements").panzoom("zoom",ZOOMED_OUT);
+                    }
                     var childrenName = [];
                     for(var i=0; i<children.length; i++) {
                         childrenName.push(children[i]["name"]);
@@ -1244,17 +1256,20 @@ underlayView.prototype.initGraphEvents = function() {
                     newAdjList = oldAdjList;
                 }
                 _this.setAdjacencyList(newAdjList);
-                var childElementsArray = _this.createElementsFromAdjacencyList();        
-                _this.setConnectedElements(childElementsArray);
+                var childElementsArray = _this.createElementsFromAdjacencyList();
                 _this.addElementsToGraph(childElementsArray);
+                _this.addDimlightToConnectedElements();
                 var thisNode = [dblClickedElement["attributes"]["nodeDetails"]];
                 _this.addHighlightToNodesAndLinks(thisNode.concat(children), childElementsArray);
                 _this.setAdjacencyList(oldAdjList);
+                $(".popover").popover().hide();
+
                 break;
             case 'link':
                 var modelId = dblClickedElement.id;
                 var targetElement = graph.getCell(dblClickedElement['attributes']['target']['id']),
                     sourceElement = graph.getCell(dblClickedElement['attributes']['source']['id']);
+                $(".popover").popover().hide();
                 break;
         }
     });
@@ -1373,8 +1388,15 @@ underlayView.prototype.initGraphEvents = function() {
     });
 
     $(selectorId + " text").on('mousedown touchstart', function (e) {
+        _this.removeUnderlayPathIds();
         e.stopImmediatePropagation();
         paper.pointerdown(e);
+    });
+    $(selectorId + " text").on('mouseup touchend', function (e) {
+        var ids = _this.getUnderlayPathIds();
+        _this.showPath(ids);
+        e.stopImmediatePropagation();
+        paper.pointerup(e);
     });
 
     $(selectorId + " image").on('mousedown touchstart', function (e) {
@@ -1386,17 +1408,34 @@ underlayView.prototype.initGraphEvents = function() {
         e.stopImmediatePropagation();
         paper.pointerdown(e);
     });
+
     $(selectorId + " path").on('mousedown touchstart', function (e) {
         e.stopImmediatePropagation();
         paper.pointerdown(e);
     });
+
     $(selectorId + " rect").on('mousedown touchstart', function (e) {
+        _this.removeUnderlayPathIds();
         e.stopImmediatePropagation();
         paper.pointerdown(e);
     });
+    $(selectorId + " rect").on('mouseup touchend', function (e) {
+        var ids = _this.getUnderlayPathIds();
+        _this.showPath(ids);
+        e.stopImmediatePropagation();
+        paper.pointerup(e);
+    });
+
     $(selectorId + " .font-element").on('mousedown touchstart', function (e) {
+        _this.removeUnderlayPathIds();
         e.stopImmediatePropagation();
         paper.pointerdown(e);
+    });
+    $(selectorId + " .font-element").on('mouseup touchend', function (e) {
+        var ids = _this.getUnderlayPathIds();
+        _this.showPath(ids);
+        e.stopImmediatePropagation();
+        paper.pointerup(e);
     });
 }
 
@@ -1428,14 +1467,40 @@ underlayView.prototype.hideNodesOfType = function(type) {
 }
 
 underlayView.prototype.resetTopology = function() {
+    $("#underlay_topology").data('nodeType',null);
+    $("#underlay_topology").data('nodeName',null);
+    this.renderUnderlayTabs();
+    this.renderFlowRecords();
+    this.removeUnderlayPathIds();
+    this.setUnderlayPathIds([]);
     this.clearHighlightedConnectedElements();
     $("#topology-connected-elements").panzoom("resetZoom");
     $("#topology-connected-elements").panzoom("reset");
     ZOOMED_OUT = 0;
-    this.hideVRouters();
-    this.hideVMs();
+    var adjList = _.clone(this.getUnderlayAdjacencyList());
+    this.setAdjacencyList(adjList);
+    var childElementsArray = this.createElementsFromAdjacencyList();
+    this.addElementsToGraph(childElementsArray);
     $("#underlay_topology").removeData('nodeType');
     $("#underlay_topology").removeData('nodeName');
+}
+
+underlayView.prototype.removeUnderlayPathIds = function() {
+    $(".connection-wrap-up").remove();
+    $(".connection-wrap-down").remove();
+}
+
+underlayView.prototype.setUnderlayPathIds = function(connectionWrapIds) {
+    if(typeof connectionWrapIds === "object" &&
+        connectionWrapIds.length > 0) {
+        this.connection_wrap_ids = connectionWrapIds;
+    } else {
+        this.connection_wrap_ids = [];
+    }
+}
+
+underlayView.prototype.getUnderlayPathIds = function(connectionWrapIds) {
+    return this.connection_wrap_ids;
 }
 
 underlayView.prototype.renderTopology = function(response) {
@@ -1443,7 +1508,6 @@ underlayView.prototype.renderTopology = function(response) {
     this.setAdjacencyList(adjList);
     this.setUnderlayAdjacencyList(adjList);
     var childElementsArray = this.createElementsFromAdjacencyList();
-    this.setConnectedElements(childElementsArray);
     this.addElementsToGraph(childElementsArray);
     this.renderUnderlayViz();
     this.hideVRouters();
@@ -1484,7 +1548,7 @@ underlayView.prototype.highlightPath = function(response, data) {
     } else {
         _this = this;
     }
-    //_this.resetTopology();
+
     highlightedElements = {
         nodes: [],
         links: []
@@ -1563,18 +1627,8 @@ underlayView.prototype.highlightPath = function(response, data) {
         }
     }
     childElementsArray = childElementsArray.filter(function(n){ return n != undefined });
-    _this.setConnectedElements(childElementsArray);
     _this.addElementsToGraph(childElementsArray);
     _this.renderUnderlayViz();
-    for(var i=0; i<nodeNames.length; i++) {
-        var node = elementMap.nodes[nodeNames[i]];
-        if(null == node || typeof node === "undefined")
-            continue;
-        else {
-            this.addHighlightToNode(node);
-        }
-    }
-
     var connectionWrapIds = [];
     for (var i = 0; i < links.length; i++) {
         var endpoints = links[i].endpoints;
@@ -1584,49 +1638,22 @@ underlayView.prototype.highlightPath = function(response, data) {
         if(null == link || typeof link === "undefined")
             continue;
         else {
-            connectionWrapIds.push($("g.link[model-id='" + link + "']").find('path.connection-wrap')[0].id);
-            /*this.addHighlightToLink(link);
-            $("g.link[model-id='" + link + "']")
-                .find('path.connection-wrap')
-                .css("opacity", ".2")
-                .css("fill", "#498AB9")
-                .css("stroke", "#498AB9");*/
+            if(typeof $("g.link[model-id='" + link + "']").find('path.connection-wrap') == "object" &&
+                $("g.link[model-id='" + link + "']").find('path.connection-wrap').length === 1) {
+                connectionWrapIds.push($("g.link[model-id='" + link + "']").find('path.connection-wrap')[0].id);
+                $("g.link[model-id='" + link + "']")
+                    .css("opacity", "1");
+            }
         }
     }
     if(connectionWrapIds.length > 0) {
-        this.showPath(connectionWrapIds);
-    }
-
-    /*if(highlightedElements.nodes.length > 0) {
         if(ZOOMED_OUT == 0) {
             ZOOMED_OUT = 0.9;
             $("#topology-connected-elements").panzoom("zoom", ZOOMED_OUT);
         }
+        this.setUnderlayPathIds(connectionWrapIds);
+        this.showPath(connectionWrapIds);
     }
-    highlightedElements.nodes = $.unique(highlightedElements.nodes);
-    for(var i=0; i<highlightedElements.nodes.length; i++) {
-        var node = elementMap.nodes[highlightedElements.nodes[i].name];
-        if(null == node || typeof node === "undefined")
-            return;
-        if($('g.element[model-id="' + node + '"]').hasClassSVG('hidden'))
-            $('g.element[model-id="' + node + '"]').removeClassSVG('hidden');
-
-        if($('div[font-element-model-id="' + node + '"]').hasClass('hidden'))
-            $('div[font-element-model-id="' + node + '"]').removeClass('hidden');
-    }
-    highlightedElements.links = $.unique(highlightedElements.links);
-    var linkElement = [];
-    $.each(highlightedElements.links, function(linkKey, linkValue) {
-        var linkElement = graph.getCell(elementMap.links[linkValue]);
-        if(null == linkElement || typeof linkElement === "undefined")
-            return;
-        $("g.link[model-id='" + linkElement.id + "']").removeClassSVG('hidden');
-        $("g.link[model-id='" + linkElement.id + "']")
-            .find('path.connection-wrap')
-                .css("opacity", ".2")
-                .css("fill", "#498AB9")
-                .css("stroke", "#498AB9");
-    });*/
 
     var srcIP = data.data['srcIP'];
     var destIP = data.data['destIP'];
@@ -1661,35 +1688,12 @@ underlayView.prototype.highlightPath = function(response, data) {
                 $('div.font-element[font-element-model-id="' + model_id + '"]')
                     .find('i')
                     .css("color", "green");
-
-                /*if(associatedVRouterUID !== "") {
-                    var cell = _this.getGraph().getCell(associatedVRouterUID);
-                    var vrouterPosition = cell.attributes.position;
-                    var vmNode = jsonPath(conElements, "$[?(@.id=='" + model_id + "')]");
-                    if(false !== vmNode && vmNode.length == 1) {
-                        vmNode[0].old_position = _this.getGraph().getCell(model_id).attributes.position;
-                    }
-                    _this.getGraph().getCell(model_id).transition('position/x', vrouterPosition.x);
-                    _this.getGraph().getCell(model_id).transition('position/y', vrouterPosition.y + 80);
-                }*/
             } else if(hlNode.name == destVM) {
                 //Plot red
                 $('div.font-element[font-element-model-id="' + model_id + '"]')
                     .find('i')
                     .css("color", "red");
-
-                /*if(associatedVRouterUID !== "") {
-                    var cell = _this.getGraph().getCell(associatedVRouterUID);
-                    var vrouterPosition = cell.attributes.position;
-                    var vmNode = jsonPath(conElements, "$[?(@.id=='" + model_id + "')]");
-                    if(false !== vmNode && vmNode.length == 1) {
-                        vmNode[0].old_position = _this.getGraph().getCell(model_id).attributes.position;
-                    }
-                    _this.getGraph().getCell(model_id).transition('position/x', vrouterPosition.x);
-                    _this.getGraph().getCell(model_id).transition('position/y', vrouterPosition.y + 80);
-                }*/
             }
-            //_this.setConnectedElements(conElements);
         }
     }
 };
@@ -1714,8 +1718,8 @@ underlayView.prototype.getMarkers = function() {
     marker1.setAttribute('orient', 'auto');
     marker1.setAttribute('markerWidth', '30');
     marker1.setAttribute('markerHeight', '30');
-    marker1.setAttribute('refX', '3');
-    marker1.setAttribute('refY', '.5');
+    marker1.setAttribute('refX', '0');
+    marker1.setAttribute('refY', '0');
 
     var path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path1.setAttribute('d', "M0,0 L3,3 L0,3");
@@ -1728,7 +1732,7 @@ underlayView.prototype.getMarkers = function() {
     marker2.setAttribute('markerWidth', '30');
     marker2.setAttribute('markerHeight', '30');
     marker2.setAttribute('refX', '3');
-    marker2.setAttribute('refY', '.5');    
+    marker2.setAttribute('refY', '3');    
 
     var path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path2.setAttribute('d', "M0,0 L3,3 L3,0");
@@ -1861,13 +1865,13 @@ underlayView.prototype.renderTracePath = function(options) {
         var vRouterFlowsColumns = [
                                       {
                                           field:'peer_vrouter',
-                                          name:"Other vRouter",
-                                          minWidth:120,
+                                          name:"Other Virtual Router",
+                                          minWidth:170,
                                           formatter: function(r,c,v,cd,dc){
                                               var name = $.grep(computeNodes,function(value,idx){
                                                               return (value['ip'] == dc['peer_vrouter']);
                                                          });
-                                              return contrail.format('{0} ({1})',ifNull(name[0]['name'],'-'),dc['peer_vrouter']);
+                                              return contrail.format('{0} ({1})',getValueByJsonPath(name,'0;name','-'),dc['peer_vrouter']);
                                           }
                                       },
                                       {
@@ -1881,11 +1885,11 @@ underlayView.prototype.renderTracePath = function(options) {
                                       {
                                           field:"src_vn",
                                           name:"Source Network",
-                                          minWidth:150,
-                                          /*formatter: function (r,c,v,cd,dc) {
-                                              var srcVN = dc['src_vn'].split(":");
-                                              return contrail.format('{0} ({1})',ifNull(srcVN[2],'-'),ifNull(srcVN[1],'-'));
-                                          }*/
+                                          minWidth:125,
+                                          formatter: function (r,c,v,cd,dc) {
+                                              var srcVN = dc['src_vn'] != null ? dc['src_vn'] : noDataStr;
+                                              return formatVN(srcVN);
+                                          }
                                       },
                                       {
                                           field:"sip",
@@ -1919,11 +1923,11 @@ underlayView.prototype.renderTracePath = function(options) {
                                       {
                                           field:"dst_vn",
                                           name:"Destination Network",
-                                          minWidth:150,
-                                          /*formatter: function (r,c,v,cd,dc) {
-                                              var srcVN = dc['src_vn'].split(":");
-                                              return contrail.format('{0} ({1})',ifNull(srcVN[2],'-'),ifNull(srcVN[1],'-'));
-                                          }*/
+                                          minWidth:125,
+                                          formatter: function (r,c,v,cd,dc) {
+                                              var destVN = dc['dst_vn'] != null ? dc['dst_vn'] : noDataStr;
+                                              return formatVN(destVN);
+                                          }
                                       },
                                       {
                                           field:"dip",
@@ -2088,7 +2092,7 @@ underlayView.prototype.renderTracePath = function(options) {
     function updateVrouterFlowsGrid(deferredObj,vRouterData) {
         cmpNodeView.getComputeNodeDetails(deferredObj,vRouterData);
         vrouterflowsGrid.showGridMessage('loading');
-        $("#vrouterflows").parent().siblings('div.widget-header').find('.icon-spinner').show()
+        $("#vrouterflows").find('.icon-spinner').show()
         deferredObj.done(function(data){
             $("#vrouterflows").parent().siblings('div.widget-header').find('.icon-spinner').hide()
             vRouterData['ip'] = getValueByJsonPath(data,'VrouterAgent;self_ip_list;0',getValueByJsonPath(data,'ConfigData;virtual-router;virtual_router_ip_address'));
@@ -2106,8 +2110,22 @@ underlayView.prototype.renderTracePath = function(options) {
     for(var i = 0; i < instances.length; i++) {
         var instObj = instances[i];
         var instAttributes = ifNull(instObj['more_attributes'],{});
+        var interfaceList = ifNull(instAttributes['interface_list'],[])
+        var vmIp = '-',vmIpArr = [];
+        if(interfaceList.length > 0) {
+            for(var j = 0; j < interfaceList.length; j++) {
+                var intfObj = interfaceList[j];
+                if(intfObj['ip6_active']) {
+                    vmIpArr.push(isValidIP(intfObj['ip6_address']) ? intfObj['ip6_address'] : '-');
+                } else {
+                    vmIpArr.push(isValidIP(intfObj['ip_address']) ? intfObj['ip_address'] : '-');
+                }
+            }
+            if(vmIpArr.length > 0)
+                vmIp = vmIpArr.join(',');
+        }
         instComboboxData.push({
-            text: instAttributes['vm_name']+' ('+instObj['name']+')',
+            text: instAttributes['vm_name']+' ('+vmIp+')',
             value: instances[i]['name']
         });
         instMap[instances[i]['name']] = instances[i];
@@ -2161,7 +2179,7 @@ underlayView.prototype.renderTracePath = function(options) {
             nwFqName = dataItem['sourcevn'] != null ? dataItem['sourcevn'] : dataItem['src_vn'];
         } else if(dataItem['direction_ing'] == 0 || dataItem['direction'] == 'egress') {
             postData['nodeIP'] = dataItem['other_vrouter_ip'] != null ? dataItem['other_vrouter_ip'] : dataItem['peer_vrouter'];
-            nwFqName = dataItem['destvn'] != null ? dataItem['destvn'] : dataItem['dst_vn'];
+            nwFqName = dataItem['sourcevn'] != null ? dataItem['sourcevn'] : dataItem['src_vn'];
         }
         var progressBar = $("#network_topology").find('.topology-visualization-loading');
         $(progressBar).show();
@@ -2170,7 +2188,7 @@ underlayView.prototype.renderTracePath = function(options) {
             url:'api/tenant/networking/virtual-network/summary?fqNameRegExp='+nwFqName,
         }).always(function(networkDetails){
             if(networkDetails['value']!= null && networkDetails['value'][0] != null &&  networkDetails['value'][0]['value'] != null) {
-                var vrfList = ifNull(networkDetails['value'][0]['value']['UveVirtualNetworkConfig']['routing_instance_list'],[]);
+                var vrfList = getValueByJsonPath(networkDetails,'value;0;value;UveVirtualNetworkConfig;routing_instance_list',[]);
                 if(vrfList[0] != null)
                     nwFqName += ":"+vrfList[0];
             } else 
@@ -2208,7 +2226,7 @@ underlayView.prototype.renderTracePath = function(options) {
         };
         if(dataItem['direction_ing'] == 0 || dataItem['direction'] == 'egress') {
             postData['nodeIP'] = item[0]['text'].split("(")[1].slice(0,-1);
-            nwFqName = dataItem['sourcevn'] != null ? dataItem['sourcevn'] : dataItem['src_vn'];
+            nwFqName = dataItem['destvn'] != null ? dataItem['destvn'] : dataItem['dst_vn'];
         } else if(dataItem['direction_ing'] == 1 || dataItem['direction'] == 'ingress') {
             postData['nodeIP'] = dataItem['other_vrouter_ip'] != null ? dataItem['other_vrouter_ip'] : dataItem['peer_vrouter'];
             nwFqName = dataItem['destvn'] != null ? dataItem['destvn'] : dataItem['dst_vn'];
@@ -2220,7 +2238,7 @@ underlayView.prototype.renderTracePath = function(options) {
             url:'api/tenant/networking/virtual-network/summary?fqNameRegExp='+nwFqName,
         }).always(function(networkDetails){
             if(networkDetails['value']!= null && networkDetails['value'][0] != null &&  networkDetails['value'][0]['value'] != null) {
-                var vrfList = ifNull(networkDetails['value'][0]['value']['UveVirtualNetworkConfig']['routing_instance_list'],[]);
+                var vrfList = getValueByJsonPath(networkDetails,'value;0;value;UveVirtualNetworkConfig;routing_instance_list',[]);
                 if(vrfList[0] != null)
                     nwFqName += ":"+vrfList[0];
             } else 
@@ -2254,7 +2272,7 @@ underlayView.prototype.renderTracePath = function(options) {
         };
         if(type == VIRTUALMACHINE) {
             var vmData = instMap[name];
-            var intfData = ifNull(vmData['more_attributes']['interface_list'],[]);
+            var intfData = getValueByJsonPath(vmData,'more_attributes;interface_list',[]);
             var where = '';
             for(var i = 0; i < intfData.length; i++) {
                 where += '(sourcevn = '+intfData[i]['virtual_network']+' AND sourceip = '+intfData[i]['ip_address']+')';
@@ -2271,7 +2289,28 @@ underlayView.prototype.renderTracePath = function(options) {
         return req;
     }
 }
-
+/*
+ * This is utility function which accepts value to compare and key to lookup 
+ * and type to check in globalObj and get the response where we lookup for the
+ * value and returns the matche value if nothing matches empty object will be
+ * returned.
+ */
+underlayView.prototype.getvRouterVMDetails = function(value,key,type){
+    var data = [],selectedNode = {},id;
+    if(type == VIRTUALMACHINE) 
+        data = globalObj['topologyResponse']['VMList'];
+    else if (type == VROUTER)
+        data = globalObj['topologyResponse']['vRouterList'];
+    $.each(data,function(idx,item){
+        var details = jsonPath(item,'$..'+key);
+        if($.isArray(details) && details.indexOf(value) > -1) {
+            selectedNode = item;
+        } else if (details == value) { 
+            selectedNode = item;
+        }
+    });
+    return selectedNode;
+}
 underlayView.prototype.runTracePath = function(context, obj, response) {
     var data = {};
     for(var i = 0; i < obj.length; i++) {
@@ -2385,7 +2424,7 @@ underlayView.prototype.populateDetailsTab = function(data) {
             if(selTab == 'Interfaces'){
                 $("#pRouterInterfacesTab").html(Handlebars.compile($("#pRouterInterfaces").html()))
                 var intfDetails = [];
-                for(var i = 0; i < ifNull(data['response']['more_attributes']['ifTable'],[]).length; i++ ) {
+                for(var i = 0; i < getValueByJsonPath(data,'response;more_attributes;ifTable',[]).length; i++ ) {
                     var intfObj = data['response']['more_attributes']['ifTable'][i];
                     var rowObj = {
                             ifDescr: ifNull(intfObj['ifDescr'],'-'),
@@ -2549,12 +2588,17 @@ underlayView.prototype.populateDetailsTab = function(data) {
                     var lclData = ifNull(rawFlowData[0],{});
                     var rmtData = ifNull(rawFlowData[1],{});
                     var intfFlowData = [],lclInBytesData = [],lclOutBytesData = [],rmtInBytesData = [],rmtOutBytesData = [];
-                    var lclFlows = ifNull(lclData['flow-series']['value'],[]);
-                    var rmtFlows = ifNull(rmtData['flow-series']['value'],[]),chrtTitle;
-                    chrtTitle = contrail.format('Traffic statistics of link {0} ({1}) -- {2} ({3})',lclData['summary']['name'],
-                            lclData['summary']['if_name'],rmtData['summary']['name'],rmtData['summary']['if_name']);
-                    var inPacketsLocal = {key:contrail.format('{0} ({1})',lclData['summary']['name'],lclData['summary']['if_name']), values:[]}, 
-                        inPacketsRemote = {key:contrail.format('{0} ({1})',rmtData['summary']['name'],rmtData['summary']['if_name']), values:[]};
+                    var lclFlows = getValueByJsonPath(lclData,'flow-series;value',[]);
+                    var rmtFlows = getValueByJsonPath(rmtData,'flow-series;value',[]),chrtTitle,
+                        lclNodeName = getValueByJsonPath(lclData,'summary;name','-'),
+                        lclInfName = getValueByJsonPath(lclData,'summary;if_name','-'),
+                        rmtNodeName = getValueByJsonPath(rmtData,'summary;name','-'),
+                        rmtIntfName = getValueByJsonPath(rmtData,'summary;if_name','-');
+                    
+                    chrtTitle = contrail.format('Traffic statistics of link {0} ({1}) -- {2} ({3})',lclNodeName,
+                                                lclInfName,rmtNodeName,rmtIntfName);
+                    var inPacketsLocal = {key:contrail.format('{0} ({1})',lclNodeName,lclInfName), values:[]}, 
+                        inPacketsRemote = {key:contrail.format('{0} ({1})',rmtNodeName,rmtIntfName), values:[]};
                     for(var j = 0; j < lclFlows.length; j++) {
                         var lclFlowObj = lclFlows[j];
                         inPacketsLocal['values'].push({
@@ -2595,7 +2639,109 @@ underlayView.prototype.resizeTopology = function() {
 underlayView.prototype.expandTopology = function() {
     var topologySize = this.calculateDimensions(expanded);
     this.setDimensions(topologySize);
+    this.getPaper().setDimensions($("#topology-connected-elements").width(), $("#topology-connected-elements").height());
+    var graph = this.getGraph();
+    var newGraphSize = graph.getBBox(graph.getElements());
+    var offset = {
+        x: (($("#topology-connected-elements").width() - newGraphSize.width)/2) - newGraphSize.x,
+        y: (($("#topology-connected-elements").height() - newGraphSize.height)/2) - newGraphSize.y
+    };
+    $.each(graph.getElements(), function (elementKey, elementValue) {
+        elementValue.translate(offset.x, offset.y);
+    });
     expanded = !expanded;
+}
+
+underlayView.prototype.launchVMPage = function(jsonObj) {
+    if(null !== jsonObj && typeof jsonObj !== "undefined" &&
+        jsonObj.hasOwnProperty('q') &&
+        jsonObj['q'].hasOwnProperty('srcVN'))
+        jsonObj['q']['srcVN'] = decodeURIComponent(jsonObj['q']['srcVN']);
+
+    layoutHandler.setURLHashObj(jsonObj);
+}
+
+underlayView.prototype.showPath = function(connectionWrapIds, offsetWidth) {
+    if(offsetWidth == null)
+        offsetWidth = 5;
+    if(!(connectionWrapIds instanceof Array))
+        return;
+    var hopLength = connectionWrapIds.length;
+    for(var i=0;i<hopLength;i++) {
+        this.addOffsetPath(connectionWrapIds[i],offsetWidth);
+    }
+}
+
+underlayView.prototype.addOffsetPath = function(connectionWrapId, offsetWidth) {
+    var connectionWrapElem = $('#' + connectionWrapId);
+    if(connectionWrapElem.length > 0)
+        connectionWrapElem = $(connectionWrapElem[0]);
+    else
+        return;
+    var path = connectionWrapElem.attr('d');
+    var pathCoords;
+    if(typeof(path) == 'string') {
+        pathCoords = path.match(/M ([\d.]+) ([\d.]+) C ([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+)/);
+        if((pathCoords instanceof Array) && pathCoords.length == 9) {
+            pathCoords.shift();
+            pathCoords = $.map(pathCoords,function(val) {
+                return parseFloat(val);
+            });
+            var offsetPath; 
+            if(offsetWidth < 0) {
+                offsetPath = connectionWrapElem.clone().prop('id',connectionWrapId + '_down');
+            } else {
+                offsetPath = connectionWrapElem.clone().prop('id',connectionWrapId + '_up');
+            }
+            var curve = new Bezier(pathCoords);
+            offsetPath.attr('marker-end',"url(#head)");
+            if(curve._linear != true) {
+                var offsetPathStr = this.getOffsetBezierPath(pathCoords,offsetWidth);
+                var offsetPathCords = offsetPathStr.split(' ');
+                var offsetPathCordsLen = offsetPathCords.length;
+                var lastX = offsetPathCords[offsetPathCords.length - 2];
+                lastX = parseFloat(lastX) - 10;
+                offsetPathCords[offsetPathCords.length - 2] = lastX;
+                offsetPath.attr('d',offsetPathCords.join(' '));
+            } else {
+                //Vertical line
+                if(pathCoords[0] == pathCoords[6]) {
+                    //Pointing upwards/downwards
+                    if(pathCoords[1] > pathCoords[7]) {
+                        offsetPath.attr('transform','translate(' + offsetWidth + ',0)');
+                        offsetPath.attr('marker-end',"url(#up)");
+                    } else {
+                        offsetPath.attr('transform','translate(-' + offsetWidth + ',0)');
+                        offsetPath.attr('marker-end',"url(#down)");
+                    }
+                }
+                //Horizontal line
+                if(pathCoords[1] == pathCoords[7]) {
+                    offsetPath.attr('transform','translate(0,' + offsetWidth + ')');
+                }
+            }
+            
+            if(offsetWidth < 0) {
+                offsetPath.attr('class','connection-wrap-down');
+            } else {
+                offsetPath.attr('class','connection-wrap-up');
+            }
+            offsetPath.insertAfter(connectionWrapElem);
+        }
+    }
+}
+
+underlayView.prototype.getOffsetBezierPath = function(pathCoords, offsetWidth) {
+    //var curve = new Bezier(315,225,431,225,431,141,547,141);
+    var curve = new Bezier(pathCoords);
+    if(curve._linear == true) {
+    }
+    var offsetCurve = curve.offset(offsetWidth);
+    var offsetCurvePath = "";
+    for(var i=0;i<offsetCurve.length;i++) {
+        offsetCurvePath += " " + offsetCurve[i].toSVG();
+    }
+    return offsetCurvePath;
 }
 
 underlayView.prototype.destroy = function() {
@@ -2695,88 +2841,3 @@ underlayController.prototype.destroy = function() {
     //tbd
 }
 
-underlayView.prototype.launchVMPage = function(jsonObj) {
-    if(null !== jsonObj && typeof jsonObj !== "undefined" &&
-        jsonObj.hasOwnProperty('q') &&
-        jsonObj['q'].hasOwnProperty('srcVN'))
-        jsonObj['q']['srcVN'] = decodeURIComponent(jsonObj['q']['srcVN']);
-
-    layoutHandler.setURLHashObj(jsonObj);
-}
-
-underlayView.prototype.showPath = function(connectionWrapIds, offsetWidth) {
-    if(offsetWidth == null)
-        offsetWidth = 5;
-    if(!(connectionWrapIds instanceof Array))
-        return;
-    var hopLength = connectionWrapIds.length;
-    for(var i=0;i<hopLength;i++) {
-        this.addOffsetPath(connectionWrapIds[i],offsetWidth);
-    }
-}
-
-underlayView.prototype.addOffsetPath = function(connectionWrapId, offsetWidth) {
-    var connectionWrapElem = $('#' + connectionWrapId);
-    if(connectionWrapElem.length > 0)
-        connectionWrapElem = $(connectionWrapElem[0]);
-    else
-        return;
-    var path = connectionWrapElem.attr('d');
-    var pathCoords;
-    if(typeof(path) == 'string') {
-        pathCoords = path.match(/M ([\d.]+) ([\d.]+) C ([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+)/);
-        if((pathCoords instanceof Array) && pathCoords.length == 9) {
-            pathCoords.shift();
-            pathCoords = $.map(pathCoords,function(val) {
-                return parseFloat(val);
-            });
-            var offsetPath; 
-            if(offsetWidth < 0) {
-                offsetPath = connectionWrapElem.clone().prop('id',connectionWrapId + '_down');
-            } else {
-                offsetPath = connectionWrapElem.clone().prop('id',connectionWrapId + '_up');
-            }
-            var curve = new Bezier(pathCoords);
-            offsetPath.attr('marker-end',"url(#head)");
-            if(curve._linear != true) {
-                offsetPath.attr('d',this.getOffsetBezierPath(pathCoords,offsetWidth));
-            } else {
-                //Vertical line
-                if(pathCoords[0] == pathCoords[6]) {
-                    //Pointing upwards/downwards
-                    if(pathCoords[1] > pathCoords[7]) {
-                        offsetPath.attr('transform','translate(' + offsetWidth + ',0)');
-                        offsetPath.attr('marker-end',"url(#up)");
-                    } else {
-                        offsetPath.attr('transform','translate(-' + offsetWidth + ',0)');
-                        offsetPath.attr('marker-end',"url(#down)");
-                    }
-                }
-                //Horizontal line
-                if(pathCoords[1] == pathCoords[7]) {
-                    offsetPath.attr('transform','translate(0,' + offsetWidth + ')');
-                }
-            }
-            
-            if(offsetWidth < 0) {
-                offsetPath.attr('class','connection-wrap-down');
-            } else {
-                offsetPath.attr('class','connection-wrap-up');
-            }
-            offsetPath.insertAfter(connectionWrapElem);
-        }
-    }
-}
-
-underlayView.prototype.getOffsetBezierPath = function(pathCoords, offsetWidth) {
-    //var curve = new Bezier(315,225,431,225,431,141,547,141);
-    var curve = new Bezier(pathCoords);
-    if(curve._linear == true) {
-    }
-    var offsetCurve = curve.offset(offsetWidth);
-    var offsetCurvePath = "";
-    for(var i=0;i<offsetCurve.length;i++) {
-        offsetCurvePath += " " + offsetCurve[i].toSVG();
-    }
-    return offsetCurvePath;
-}
