@@ -44,6 +44,8 @@ define([
                 },
                 showControlPanel: true,
                 successCallback: function (connectedGraphView, directedGraphSize, jointObject) {
+                    var currentHashParams = layoutHandler.getURLHashParams();
+
                     $(selectorId).parent().find('.graph-loading').remove(); // TODO - move class name to constants
 
                     connectedGraphView.setDimensions((($(selectorId).width() > directedGraphSize.width) ? $(selectorId).width() : directedGraphSize.width) + GRAPH_MARGIN, directedGraphSize.height + GRAPH_MARGIN, 1);
@@ -54,7 +56,6 @@ define([
 
                     //TODO: Make control panel as a common view to grid and graph
                     initNetworkingGraphControlEvents(graphConfig.focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
-                    highlightElement4ZoomedElement(connectedSelectorId, jointObject, graphConfig);
 
                     //TODO: Execute only in refresh case.
                     setTimeout(function(){
@@ -62,6 +63,15 @@ define([
                     }, 1000);
 
                     adjustNetworkingGraphHeight(graphConfig.focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
+
+                    if (contrail.checkIfExist(currentHashParams.clickedElement)) {
+                        highlightConnectedClickedElement(currentHashParams.clickedElement, connectedGraphView)
+                    } else {
+                        removeFaint4AllElements()
+                        removeHighlight4AllElements()
+                    }
+
+                    highlightElement4ZoomedElement(connectedSelectorId, jointObject, graphConfig);
                 }
             };
 
@@ -132,11 +142,11 @@ define([
                         elementMap.node[fqName] = zoomedNodeElement.id;
 
                         if (rankDir == ctwc.GRAPH_DIR_TB) {
-                            generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options);
+                            generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap);
                         } else if (rankDir == ctwc.GRAPH_DIR_LR) {
-                            generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options);
+                            generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap);
                         } else {
-                            generateVMGraph(zoomedElements, zoomedNodeElement, options);
+                            generateVMGraph(zoomedElements, zoomedNodeElement, options, elementMap);
                         }
                     }
                 });
@@ -156,7 +166,7 @@ define([
         };
     };
 
-    function generateVMGraph(zoomedElements, zoomedNodeElement, options) {
+    function generateVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
         var vmMargin = options['VMMargin'],
             vmWidth = options['VMWidth'],
             vmHeight = options['VMHeight'],
@@ -178,12 +188,13 @@ define([
                 yFactor++;
             }
             vmNode = createVirtualMachine(xOrigin + (xSeparation * xFactor), yOrigin + ((ySeparation + centerLineHeight) * yFactor), vmList[i], options['srcVNDetails']);
+            elementMap.node[vmList[i]] = vmNode.id;
             xFactor++;
             zoomedElements.push(vmNode);
         }
 
         function createVirtualMachine(x, y, node, srcVNDetails) {
-            var nodeType = 'virtual-machine',
+            var nodeType = ctwc.GRAPH_ELEMENT_INSTANCE,
                 element, options;
 
             options = {
@@ -222,7 +233,7 @@ define([
         };
     };
 
-    function generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options) {
+    function generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
         var vmMargin = options['VMMargin'],
             vmWidth = options['VMWidth'],
             vmHeight = options['VMHeight'],
@@ -244,6 +255,7 @@ define([
         for (var i = 0; i < vmLength; i++) {
 
             vmNode = createVirtualMachine(xOrigin + (xSeparation * xFactor), yOrigin + ((ySeparation) * yFactor), vmList[i], options['srcVNDetails']);
+            elementMap.node[vmList[i]] = vmNode.id;
             zoomedElements.push(vmNode);
             linkRect = createRect(xOrigin + (xSeparation * xFactor)+ vmWidth/2 +1, yOrigin + ((ySeparation) * yFactor) + vmHeight, linkThickness, ySeparation/2 -6);
             zoomedElements.push(linkRect);
@@ -282,7 +294,7 @@ define([
         return zoomedElements;
     };
 
-    function generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options) {
+    function generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
         var vmMargin = options['VMMargin'],
             vmWidth = options['VMWidth'],
             vmHeight = options['VMHeight'],
@@ -309,6 +321,7 @@ define([
                 yFactor++;
             }
             vmNode = createVirtualMachine(xOrigin + (xSeparation * xFactor), yOrigin + ((ySeparation) * yFactor), vmList[i], options['srcVNDetails']);
+            elementMap.node[vmList[i]] = vmNode.id;
             zoomedElements.push(vmNode);
             linkRect = createRect(xOrigin + vmWidth + 2, yOrigin + ((ySeparation) * yFactor) + vmHeight/2, xSeparation/2 - 2, linkThickness);
             zoomedElements.push(linkRect);
@@ -322,7 +335,7 @@ define([
             return rect;
         }
         function createVirtualMachine(x, y, node, srcVNDetails) {
-            var nodeType = 'virtual-machine',
+            var nodeType = ctwc.GRAPH_ELEMENT_INSTANCE,
                 element, options;
 
             options = {
@@ -416,6 +429,9 @@ define([
         var graphControlElement = $(selectorId).find('.graph-controls');
 
         /* Pan and Zoom events */
+        $(connectedSelectorId).panzoom("reset");
+        $(connectedSelectorId).panzoom("resetPan");
+        $(connectedSelectorId).panzoom("destroy");
         $(connectedSelectorId).panzoom({
             increment: 0.3,
             minScale: 0.3,
@@ -460,72 +476,84 @@ define([
     };
 
     var cgPointerClick = function(cellView, evt, x, y) {
-
         var clickedElement = cellView.model.attributes,
             elementNodeType= clickedElement.elementType,
             elementNodeId = cellView.model.id,
             bottomContainerElement = $('#' + ctwl.BOTTOM_CONTENT_CONTAINER),
             tabConfig = {};
 
-        highlightCurrentElement(elementNodeId);
-
         switch (elementNodeType) {
             case ctwc.GRAPH_ELEMENT_NETWORK:
-
                 var networkFQN = clickedElement.nodeDetails.name,
                     networkUUID = ctwu.getUUIDByName(networkFQN);
 
-                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, {
-                    networkFQN: networkFQN,
-                    networkUUID: networkUUID
-                });
+                clickedElement = {
+                    fqName: networkFQN,
+                    uuid: networkUUID,
+                    type: elementNodeType
+                };
 
-                layoutHandler.setURLHashParams({
-                    clickedElement: {
-                        fqName: networkFQN,
-                        uuid: networkUUID,
-                        type: elementNodeType
-                    }
-                }, { merge: true, triggerHashChange: false});
+                layoutHandler.setURLHashParams({ clickedElement: clickedElement }, { merge: true, triggerHashChange: false});
+
+                highlightCurrentElement(elementNodeId);
+                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, clickedElement);
+                cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
 
                 break;
 
             case ctwc.GRAPH_ELEMENT_INSTANCE:
-
-                var networkFQN = clickedElement.nodeDetails.fqName,
+                var networkFQN = clickedElement.nodeDetails.srcVNDetails.name,
                     instanceUUID = clickedElement.nodeDetails.fqName;
 
-                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, {
-                    networkFQN: networkFQN,
-                    instanceUUID: instanceUUID
-                });
+                clickedElement = {
+                    fqName: networkFQN,
+                    uuid: instanceUUID,
+                    type: elementNodeType
+                };
 
-                layoutHandler.setURLHashParams({
-                    clickedElement: {
-                        fqName: networkFQN,
-                        uuid: instanceUUID,
-                        type: elementNodeType
+                layoutHandler.setURLHashParams({ clickedElement: clickedElement }, { merge: true, triggerHashChange: false});
 
-                    }
-                }, { merge: true, triggerHashChange: false});
+                highlightCurrentElement(elementNodeId);
+                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, clickedElement);
+                cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
 
                 break;
 
-            case 'connected-network':
-
+            case ctwc.GRAPH_ELEMENT_CONNECTED_NETWORK:
                 var sourceElement = clickedElement.linkDetails.dst,
                     targetElement = clickedElement.linkDetails.src;
 
-                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, {
+                clickedElement = {
                     sourceElement: sourceElement,
                     targetElement: targetElement,
                     linkDetails: clickedElement.linkDetails
-                });
+                };
+
+                highlightCurrentElement(elementNodeId);
+                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, clickedElement);
+                cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
 
                 break;
-        }
+        };
+    };
 
-        cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
+    var highlightConnectedClickedElement = function(clickedElement, connectedGraphView) {
+        var elementNodeType = clickedElement.type,
+            elementMap = connectedGraphView.model.elementMap;
+
+        switch (elementNodeType) {
+            case ctwc.GRAPH_ELEMENT_NETWORK:
+                var networkFQN = clickedElement.fqName;
+                highlightCurrentElement(elementMap.node[networkFQN]);
+
+                break;
+
+            case ctwc.GRAPH_ELEMENT_INSTANCE:
+                var instanceUUID = clickedElement.uuid;
+                highlightCurrentElement(elementMap.node[instanceUUID]);
+
+                break;
+        };
     };
 
     var cgPointerDblClick = function(cellView, evt, x, y) {
@@ -534,8 +562,7 @@ define([
             elementNodeId = cellView.model.id;
 
         switch (elementNodeType) {
-            case 'virtual-network':
-                globalObj.hashUpdated = 0;
+            case ctwc.GRAPH_ELEMENT_NETWORK:
                 loadFeature({
                     p: 'mon_networking_networks',
                     q: {
@@ -549,7 +576,8 @@ define([
                 });
                 $('g.VirtualNetwork').popover('hide');
                 break;
-            case 'virtual-machine':
+
+            case ctwc.GRAPH_ELEMENT_INSTANCE:
                 var srcVN = dblClickedElement.nodeDetails.srcVNDetails.name;
                 loadFeature({
                     p: 'mon_networking_instances',
@@ -559,7 +587,7 @@ define([
                         focusedElement: {
                             fqName: srcVN,
                             uuid: dblClickedElement.nodeDetails['fqName'],
-                            type: 'virtual-network'
+                            type: ctwc.GRAPH_ELEMENT_NETWORK
                         }
                     }
                 });
@@ -579,19 +607,20 @@ define([
 
             switch (focusedElementType) {
                 case ctwc.GRAPH_ELEMENT_PROJECT:
+                    if (contrail.checkIfExist(currentHashParams.clickedElement)) {
+                        removeFaint4AllElements();
+                        removeHighlight4AllElements();
 
-                    removeFaint4AllElements();
-                    removeHighlight4AllElements();
+                        var projectFQN = graphConfig.focusedElement.name.fqName,
+                            projectUUID = ctwu.getUUIDByName(projectFQN);
 
-                    var projectFQN = graphConfig.focusedElement.name.fqName,
-                        projectUUID = ctwu.getUUIDByName(projectFQN);
+                        tabConfig = ctwgrc.getTabsViewConfig(focusedElementType, {
+                            fqName: projectFQN,
+                            uuid: projectUUID
+                        });
 
-                    tabConfig = ctwgrc.getTabsViewConfig(focusedElementType, {
-                        projectFQN: projectFQN,
-                        projectUUID: projectUUID
-                    });
-
-                    ctwgrc.setProjectURLHashParams(projectFQN, false);
+                        ctwgrc.setProjectURLHashParams(null, projectFQN, false);
+                    }
 
                     break;
 
@@ -602,16 +631,16 @@ define([
                         var networkUUID = ctwu.getUUIDByName(networkFQN);
 
                         tabConfig = ctwgrc.getTabsViewConfig(focusedElementType, {
-                            networkFQN: networkFQN,
-                            networkUUID: networkUUID
+                            fqName: networkFQN,
+                            uuid: networkUUID
                         });
 
                         highlightNetwork4ZoomedElement(connectedSelectorId, graphConfig);
-                        ctwgrc.setNetworkURLHashParams(networkFQN, false);
+                        ctwgrc.setNetworkURLHashParams(null, networkFQN, false);
 
                     } else {
                         var projectFQN = networkFQN.split(':').splice(0,2).join(':');
-                        ctwgrc.setProjectURLHashParams(projectFQN, true);
+                        ctwgrc.setProjectURLHashParams(null, projectFQN, true);
                     }
 
                     break;
@@ -624,21 +653,22 @@ define([
                         var instanceUUID = graphConfig.focusedElement.name.instanceUUID;
 
                         tabConfig = ctwgrc.getTabsViewConfig(focusedElementType, {
-                            networkFQN: networkFQN,
-                            instanceUUID: instanceUUID
+                            fqName: networkFQN,
+                            uuid: instanceUUID
                         });
 
                         highlightInstance4ZoomedElement(connectedSelectorId, graphConfig);
-                        ctwgrc.setInstanceURLHashParams(networkFQN, instanceUUID, false);
+                        ctwgrc.setInstanceURLHashParams(null, networkFQN, instanceUUID, false);
                     } else {
-                        ctwgrc.setNetworkURLHashParams(networkFQN, true);
+                        ctwgrc.setNetworkURLHashParams(null, networkFQN, true);
                     }
 
                     break;
             };
 
-            cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
-
+            if (!$.isEmptyObject(tabConfig)) {
+                cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
+            }
         };
     };
 
@@ -681,22 +711,22 @@ define([
     function getConfgPointerClickFn(connectedGraphView) {
         return function (cellView, evt, x, y) {
             var clickedElement = cellView.model.attributes,
-                elementNodeType= clickedElement.type,
+                elementNodeType= clickedElement.elementType,
                 elementMap = connectedGraphView.model.elementMap,
                 jointObject = {
                     connectedGraph: connectedGraphView.model
                 };
 
             switch (elementNodeType) {
-                case 'contrail.NetworkPolicy':
+                case ctwc.GRAPH_ELEMENT_NETWORK_POLICY:
                     onClickNetworkPolicy(cellView.model, jointObject, elementMap);
                     break;
             };
         }
     };
 
-    function onClickNetworkPolicy(cellModel, jointObject, elementMap) {
-        var cellAttributes = cellModel.attributes;
+    function onClickNetworkPolicy(elementObj, jointObject, elementMap) {
+        var cellAttributes = elementObj.attributes;
 
         var policyRules = (contrail.checkIfExist(cellAttributes.nodeDetails.network_policy_entries)) ? cellAttributes.nodeDetails.network_policy_entries.policy_rule : [],
             highlightedElements = { nodes: [], links: [] };

@@ -33,10 +33,17 @@ define([
 
         renderInstanceTabs: function(networkFQN, instanceUUID) {
             var bottomContainerElement = $('#' + ctwl.BOTTOM_CONTENT_CONTAINER),
-                tabConfig = ctwgrc.getTabsViewConfig('virtual-machine', {
-                    networkFQN: networkFQN,
-                    instanceUUID: instanceUUID
+                currentHashParams = layoutHandler.getURLHashParams(),
+                tabConfig = {};
+
+            if (contrail.checkIfExist(currentHashParams.clickedElement)) {
+                tabConfig = ctwgrc.getTabsViewConfig(currentHashParams.clickedElement.type, currentHashParams.clickedElement);
+            } else {
+                tabConfig = ctwgrc.getTabsViewConfig(ctwc.GRAPH_ELEMENT_INSTANCE, {
+                    fqName: networkFQN,
+                    uuid: instanceUUID
                 });
+            }
 
             cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
         }

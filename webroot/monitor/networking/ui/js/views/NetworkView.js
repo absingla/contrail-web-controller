@@ -32,10 +32,17 @@ define([
 
         renderNetworkTabs: function(networkFQN, networkUUID) {
             var bottomContainerElement = $('#' + ctwl.BOTTOM_CONTENT_CONTAINER),
-                tabConfig = ctwgrc.getTabsViewConfig('virtual-network', {
-                    networkFQN: networkFQN,
-                    networkUUID: networkUUID
+                currentHashParams = layoutHandler.getURLHashParams(),
+                tabConfig = {};
+
+            if (contrail.checkIfExist(currentHashParams.clickedElement)) {
+                tabConfig = ctwgrc.getTabsViewConfig(currentHashParams.clickedElement.type, currentHashParams.clickedElement);
+            } else {
+                tabConfig = ctwgrc.getTabsViewConfig(ctwc.GRAPH_ELEMENT_NETWORK, {
+                    fqName: networkFQN,
+                    uuid: networkUUID
                 });
+            }
 
             cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
         }

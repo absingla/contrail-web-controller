@@ -95,7 +95,7 @@ define([
     function onScatterChartClick(chartConfig) {
         var networkFQN = chartConfig['name'];
 
-        ctwgrc.setNetworkURLHashParams(networkFQN, true);
+        ctwgrc.setNetworkURLHashParams(null, networkFQN, true);
     };
 
     return NetworkListView;

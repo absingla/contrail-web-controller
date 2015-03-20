@@ -96,6 +96,8 @@ define([
         this.GRAPH_ELEMENT_PROJECT = 'project';
         this.GRAPH_ELEMENT_NETWORK = 'virtual-network';
         this.GRAPH_ELEMENT_INSTANCE = 'virtual-machine';
+        this.GRAPH_ELEMENT_CONNECTED_NETWORK = 'connected-network';
+        this.GRAPH_ELEMENT_NETWORK_POLICY = 'network-policy';
     };
     return CTConstants;
 });

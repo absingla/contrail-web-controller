@@ -32,10 +32,17 @@ define([
 
         renderProjectTabs: function(projectFQN, projectUUID) {
             var bottomContainerElement = $('#' + ctwl.BOTTOM_CONTENT_CONTAINER),
-                tabConfig = ctwgrc.getTabsViewConfig('project', {
-                    projectFQN: projectFQN,
-                    projectUUID: projectUUID
+                currentHashParams = layoutHandler.getURLHashParams(),
+                tabConfig = {};
+
+            if (contrail.checkIfExist(currentHashParams.clickedElement) && currentHashParams.clickedElement.type != ctwc.GRAPH_ELEMENT_NETWORK_POLICY) {
+                tabConfig = ctwgrc.getTabsViewConfig(currentHashParams.clickedElement.type, currentHashParams.clickedElement);
+            } else {
+                tabConfig = ctwgrc.getTabsViewConfig(ctwc.GRAPH_ELEMENT_PROJECT, {
+                    fqName: projectFQN,
+                    uuid: projectUUID
                 });
+            }
 
             cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
         }

@@ -94,7 +94,7 @@ define([
     function onScatterChartClick(chartConfig) {
         var projectFQN = chartConfig['name'];
 
-        ctwgrc.setProjectURLHashParams(projectFQN, true);
+        ctwgrc.setProjectURLHashParams(null, projectFQN, true);
     };
 
     return ProjectListView;

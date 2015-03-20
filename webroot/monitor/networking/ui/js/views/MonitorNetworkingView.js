@@ -37,7 +37,7 @@ define([
                 projectFQN = domain + ':' + projectObj.name,
                 projectUUID = projectObj.value;
 
-            ctwgrc.setProjectURLHashParams(projectFQN, false);
+            ctwgrc.setProjectURLHashParams(hashParams, projectFQN, false);
 
             cowu.renderView4Config(this.$el, null, getProjectConfig(projectFQN, projectUUID));
         },
@@ -72,7 +72,7 @@ define([
 
             contrail.setCookie(cowc.COOKIE_VIRTUAL_NETWORK, networkObj.name);
 
-            ctwgrc.setNetworkURLHashParams(networkFQN, false);
+            ctwgrc.setNetworkURLHashParams(hashParams, networkFQN, false);
 
             cowu.renderView4Config(this.$el, null, getNetworkConfig(networkFQN, networkUUID));
         },
@@ -96,7 +96,7 @@ define([
 
                     breadcrumbView.renderNetworkBreadcrumbDropdown(fqName,
                         function (networkSelectedValueData) {
-                            self.renderInstanceCB(networkSelectedValueData, instanceUUID);
+                            self.renderInstanceCB(hashParams, networkSelectedValueData, instanceUUID);
                         }, function (networkSelectedValueData) {
                             self.renderNetworkCB(hashParams, networkSelectedValueData);
                         }
@@ -107,12 +107,14 @@ define([
             });
         },
 
-        renderInstanceCB: function(networkObj, instanceUUID) {
+        renderInstanceCB: function(hashParams, networkObj, instanceUUID) {
             var self = this,
                 domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
                 project = contrail.getCookie(cowc.COOKIE_PROJECT),
                 networkFQN = domain + ':' + project + ':' + networkObj.name,
                 networkUUID = networkObj.value;
+
+            ctwgrc.setInstanceURLHashParams(hashParams, networkFQN, instanceUUID, false);
 
             cowu.renderView4Config(this.$el, null, getInstanceConfig(networkFQN, networkUUID, instanceUUID));
         },

@@ -364,16 +364,16 @@ define([
             fqName, uuid;
         if ($.inArray(name, ['project']) > -1) {
             fqName = selRowDataItem['name'];
-            ctwgrc.setProjectURLHashParams(fqName, true)
+            ctwgrc.setProjectURLHashParams(null, fqName, true)
 
         } else if ($.inArray(name, ['network']) > -1) {
             fqName = selRowDataItem['name'];
-            ctwgrc.setNetworkURLHashParams(fqName, true)
+            ctwgrc.setNetworkURLHashParams(null, fqName, true)
 
         } else if ($.inArray(name, ['instance']) > -1) {
             fqName = selRowDataItem['vnFQN'];
             uuid = selRowDataItem['name'];
-            ctwgrc.setInstanceURLHashParams(fqName, uuid, true)
+            ctwgrc.setInstanceURLHashParams(null, fqName, uuid, true)
         }
     };
 

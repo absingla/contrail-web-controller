@@ -203,7 +203,7 @@ define([
                                             type: 'network',
                                             focusedElement: {
                                                 fqName: viewElement['attributes']['nodeDetails']['name'],
-                                                type: 'virtual-network'
+                                                type: ctwc.GRAPH_ELEMENT_NETWORK
                                             }
                                         }
                                     });
@@ -383,58 +383,18 @@ define([
             };
         };
 
-        this.getTabsViewConfig = function(tabType, options) {
+        this.getTabsViewConfig = function(tabType, elementObj) {
 
             var config = {};
 
             switch (tabType) {
-                case 'virtual-network':
 
-                    config = {
-                        elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_ID]),
-                        view: "SectionView",
-                        viewConfig: {
-                            rows: [
-                                {
-                                    columns: [
-                                        {
-                                            elementId: ctwl.MONITOR_NETWORK_VIEW_ID,
-                                            view: "NetworkTabView",
-                                            app: cowc.APP_CONTRAIL_CONTROLLER,
-                                            viewConfig: options
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
+                case ctwc.GRAPH_ELEMENT_PROJECT:
+
+                    var options = {
+                        projectFQN: elementObj.fqName,
+                        projectUUID: elementObj.uuid
                     };
-
-                    break;
-
-                case 'virtual-machine':
-
-                    config = {
-                        elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_ID]),
-                        view: "SectionView",
-                        viewConfig: {
-                            rows: [
-                                {
-                                    columns: [
-                                        {
-                                            elementId: ctwl.MONITOR_INSTANCE_VIEW_ID,
-                                            view: "InstanceTabView",
-                                            app: cowc.APP_CONTRAIL_CONTROLLER,
-                                            viewConfig: options
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    };
-
-                    break;
-
-                case 'project':
 
                     config = {
                         elementId: cowu.formatElementId([ctwl.MONITOR_PROJECT_ID]),
@@ -457,7 +417,63 @@ define([
 
                     break;
 
-                case 'connected-network':
+                case ctwc.GRAPH_ELEMENT_NETWORK:
+
+                    var options = {
+                        networkFQN: elementObj.fqName,
+                        networkUUID: elementObj.uuid
+                    };
+
+                    config = {
+                        elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_ID]),
+                        view: "SectionView",
+                        viewConfig: {
+                            rows: [
+                                {
+                                    columns: [
+                                        {
+                                            elementId: ctwl.MONITOR_NETWORK_VIEW_ID,
+                                            view: "NetworkTabView",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: options
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+
+                    break;
+
+                case ctwc.GRAPH_ELEMENT_INSTANCE:
+
+                    var options = {
+                        networkFQN: elementObj.fqName,
+                        instanceUUID: elementObj.uuid
+                    };
+
+                    config = {
+                        elementId: cowu.formatElementId([ctwl.MONITOR_INSTANCE_ID]),
+                        view: "SectionView",
+                        viewConfig: {
+                            rows: [
+                                {
+                                    columns: [
+                                        {
+                                            elementId: ctwl.MONITOR_INSTANCE_VIEW_ID,
+                                            view: "InstanceTabView",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: options
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+
+                    break;
+
+                case ctwc.GRAPH_ELEMENT_CONNECTED_NETWORK:
 
                     config = {
                         elementId: cowu.formatElementId([ctwl.MONITOR_CONNECTED_NETWORK_ID]),
@@ -470,7 +486,7 @@ define([
                                             elementId: ctwl.MONITOR_CONNECTED_NETWORK_VIEW_ID,
                                             view: "ConnectedNetworkTabView",
                                             app: cowc.APP_CONTRAIL_CONTROLLER,
-                                            viewConfig: options
+                                            viewConfig: elementObj
                                         }
                                     ]
                                 }
@@ -485,32 +501,44 @@ define([
             return config;
         };
 
-        this.setProjectURLHashParams = function(projectFQN, triggerHashChange) {
-            layoutHandler.setURLHashParams({
+        this.setProjectURLHashParams = function(hashParams, projectFQN, triggerHashChange) {
+            var hashObj = {
                 type: "project",
                 view: "details",
                 focusedElement: {
                     fqName: projectFQN,
                     type: ctwc.GRAPH_ELEMENT_PROJECT
                 }
-            }, {p: "mon_networking_projects", merge: false, triggerHashChange: triggerHashChange});
+            };
+
+            if(contrail.checkIfKeyExistInObject(true, hashParams, 'clickedElement')) {
+                hashObj.clickedElement = hashParams.clickedElement;
+            }
+
+            layoutHandler.setURLHashParams(hashObj, {p: "mon_networking_projects", merge: false, triggerHashChange: triggerHashChange});
 
         };
 
-        this.setNetworkURLHashParams = function(networkFQN, triggerHashChange) {
-            layoutHandler.setURLHashParams({
+        this.setNetworkURLHashParams = function(hashParams, networkFQN, triggerHashChange) {
+            var hashObj = {
                 type: "network",
                 view: "details",
                 focusedElement: {
-                fqName: networkFQN,
+                    fqName: networkFQN,
                     type: ctwc.GRAPH_ELEMENT_NETWORK
                 }
-            }, {p: "mon_networking_networks", merge: false, triggerHashChange: triggerHashChange});
+            };
+
+            if(contrail.checkIfKeyExistInObject(true, hashParams, 'clickedElement')) {
+                hashObj.clickedElement = hashParams.clickedElement;
+            }
+
+            layoutHandler.setURLHashParams(hashObj, {p: "mon_networking_networks", merge: false, triggerHashChange: triggerHashChange});
 
         };
 
-        this.setInstanceURLHashParams = function(networkFQN, instanceUUID, triggerHashChange) {
-            layoutHandler.setURLHashParams({
+        this.setInstanceURLHashParams = function(hashParams, networkFQN, instanceUUID, triggerHashChange) {
+            var hashObj = {
                 type: "instance",
                 view: "details",
                 focusedElement: {
@@ -518,7 +546,13 @@ define([
                     uuid: instanceUUID,
                     type: ctwc.GRAPH_ELEMENT_NETWORK
                 }
-            }, {p: "mon_networking_instances", merge: false});
+            };
+
+            if(contrail.checkIfKeyExistInObject(true, hashParams, 'clickedElement')) {
+                hashObj.clickedElement = hashParams.clickedElement;
+            }
+
+            layoutHandler.setURLHashParams(hashObj, {p: "mon_networking_instances", merge: false});
         };
     };
 
