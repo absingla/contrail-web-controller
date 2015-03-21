@@ -226,15 +226,17 @@ define([
                         var statDataList = tenantNetworkMonitorUtils.statsOracleParseFn(response[0], type),
                             dataItems = contrailListModel.getItems(),
                             statData;
-
-                        for (var j = 0; j < statDataList.length; j++) {
-                            statData = statDataList[j];
-                            for (var i = 0; i < dataItems.length; i++) {
-                                var dataItem = dataItems[i];
+                        for (var i = 0; i < dataItems.length; i++) {
+                            var dataItem = dataItems[i];
+                            for (var j = 0; j < statDataList.length; j++) {
+                                statData = statDataList[j];
                                 if (statData['name'] == dataItem['name']) {
                                     dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
                                     dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
                                     break;
+                                } else if(j == (statDataList.length - 1)) {
+                                    dataItem['inBytes60'] = 0;
+                                    dataItem['outBytes60'] = 0;
                                 }
                             }
                         }

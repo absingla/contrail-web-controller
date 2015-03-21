@@ -35,17 +35,23 @@ define([
 
         this.FILTERS_COLUMN_VN = ['UveVirtualNetworkAgent:interface_list', 'UveVirtualNetworkAgent:in_bandwidth_usage', 'UveVirtualNetworkAgent:out_bandwidth_usage',
             'UveVirtualNetworkConfig:connected_networks', 'UveVirtualNetworkAgent:virtualmachine_list', 'UveVirtualNetworkAgent:acl', 'UveVirtualNetworkAgent:total_acl_rules',
-            //'UveVirtualNetworkAgent:ingress_flow_count', 'UveVirtualNetworkAgent:egress_flow_count', 'UveVirtualNetworkAgent:vrf_stats_list',
-            'UveVirtualNetworkAgent:in_bytes', 'UveVirtualNetworkAgent:out_bytes'];
+            'UveVirtualNetworkAgent:ingress_flow_count', 'UveVirtualNetworkAgent:egress_flow_count',
+            'UveVirtualNetworkAgent:in_tpkts', 'UveVirtualNetworkAgent:out_tpkts',
+            //'UveVirtualNetworkAgent:vrf_stats_list', 'UveVirtualNetworkAgent:vn_stats',
+            'UveVirtualNetworkAgent:in_bytes', 'UveVirtualNetworkAgent:out_bytes'
+         ];
 
         this.FILTERS_COLUMN_VM = ['UveVirtualMachineAgent:interface_list', 'UveVirtualMachineAgent:vrouter', 'UveVirtualMachineAgent:fip_stats_list',
-            'UveVirtualMachineAgent:cpu_info', 'UveVirtualMachineAgent:if_bmap_list'];
+            'UveVirtualMachineAgent:cpu_info', 'UveVirtualMachineAgent:if_bmap_list'
+            //'VirtualMachineStats:if_stats'
+        ];
 
         this.TYPE_VIRTUAL_NETWORK = "virtual-network";
         this.TYPE_VIRTUAL_MACHINE = "virtual-machine";
 
         this.URL_NETWORK = '/#p=mon_networking_networks&q[type]=network&q[view]=details&q[focusedElement][fqName]={{key}}&q[focusedElement][type]=virtual-network';
         this.URL_INSTANCE = '/#p=mon_networking_instances&q[type]=instance&q[view]=details&q[focusedElement][fqName]={{params.vn}}&q[focusedElement][uuid]={{key}}&q[focusedElement][type]=virtual-network';
+        this.URL_VROUTER = '/#p=mon_infra_vrouter&q[node]={{key}}';
 
         this.get = function () {
             var args = arguments;

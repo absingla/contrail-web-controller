@@ -50,11 +50,15 @@ define([
             acl: 'ACL',
             total_acl_rules: 'Total ACL Rules',
             interface_list: 'Interfaces',
-            in_bytes: 'Traffic In',
-            out_bytes: 'Traffic Out',
+            in_bytes: 'Total In Bytes',
+            out_bytes: 'Total Out bytes',
             virtualmachine_list: 'Instances',
             encaps: 'Encaps',
             l2_encaps: 'L2 Encaps',
+            out_tpkts: "Total Out packets",
+            in_tpkts: "Total In packets",
+            ingressFlowCount: "Ingress Flow Count",
+            egressFlowCount: "Egress Flow Count",
 
             /* Instance Details */
             cpu_one_min_avg: 'CPU',
@@ -65,7 +69,7 @@ define([
             /*Interface Details */
             uuid: 'UUID',
             mac_address: 'MAC Address',
-            ip_address: 'IPV4 Address',
+            ip_address: 'IP Address',
             ip6_address: 'IPV6 Address',
             gateway: 'Gateway',
             label: 'Label',
@@ -76,7 +80,16 @@ define([
             src: 'Source Network',
             dst: 'Destination Network',
             service_inst: 'Service Instances',
-            pkts: "Packets"
+            pkts: "Packets",
+
+            /*Project Details*/
+            intfCnt: "Interfaces",
+            vnCnt: "Virtual Networks",
+            inBytes: "Total In Bytes",
+            outBytes: "Total Out Bytes",
+            outTpkts: "Total Out Packets",
+            inTpkts: "Total In Packets",
+            throughput: "Total Throughput"
         };
 
         this.TOP_CONTENT_CONTAINER = "top-content-container";
@@ -106,9 +119,7 @@ define([
 
         this.DOMAINS_BREADCRUMB_DROPDOWN = "domains-breadcrumb-dropdown";
 
-        this.TITLE_PROJECTS = "Projects";
         this.PROJECTS_ID = "projects";
-        this.TITLE_PROJECTS_SUMMARY = "Projects Summary";
         this.PROJECT_GRAPH_ID = "project-graph";
         this.PROJECT_DETAILS_ID = "project-details";
         this.PROJECT_TABS_ID = "project-tabs";
@@ -151,6 +162,11 @@ define([
 
         this.FLOWS_SCATTER_CHART_ID = "flows-scatter-chart";
         this.FLOWS_GRID_ID = "flows-grid";
+
+        this.TITLE_PROJECTS = "Projects";
+        this.TITLE_PROJECTS_SUMMARY = "Projects Summary";
+        this.TITLE_PROJECT_DETAILS = "Project Details";
+
 
         this.TITLE_NETWORKS = "Networks";
         this.TITLE_NETWORKS_SUMMARY = "Networks Summary";

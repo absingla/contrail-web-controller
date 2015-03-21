@@ -166,6 +166,13 @@ define([
                                             templateGenerator: 'BlockListTemplateGenerator',
                                             templateGeneratorConfig: [
                                                 {
+                                                    key: 'throughput',
+                                                    templateGenerator: 'TextGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'throughput'
+                                                    }
+                                                },
+                                                {
                                                     key: 'value.UveVirtualNetworkAgent.ingress_flow_count',
                                                     templateGenerator: 'TextGenerator'
                                                 },
@@ -187,6 +194,14 @@ define([
                                                         formatter: 'byte'
                                                     }
                                                 },
+                                                {
+                                                    key: 'in_tpkts',
+                                                    templateGenerator: 'TextGenerator'
+                                                },
+                                                {
+                                                    key: 'out_tpkts',
+                                                    templateGenerator: 'TextGenerator'
+                                                }
                                             ]
                                         }
                                     ]
