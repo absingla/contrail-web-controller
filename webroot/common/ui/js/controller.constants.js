@@ -88,6 +88,9 @@ define([
 
         this.GRAPH_DIR_LR = "LR";
         this.GRAPH_DIR_TB = "TB";
+
+        this.DEFAULT_GRAPH_DIR = this.GRAPH_DIR_LR;
+
         this.MAX_VM_TO_PLOT = 100;
 
         this.get = function () {

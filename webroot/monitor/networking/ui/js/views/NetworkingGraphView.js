@@ -38,40 +38,34 @@ define([
                 tooltipConfig: ctwgrc.getConnectedGraphTooltipConfig(),
                 clickEvents: {
                     'cell:pointerclick': cgPointerClick,
-                    //'blank:pointerclick': '',
                     'cell:pointerdblclick': cgPointerDblClick,
                     'blank:pointerdblclick': getCgBlankDblClick(connectedSelectorId, graphConfig)
                 },
-                showControlPanel: true,
-                successCallback: function (connectedGraphView, directedGraphSize, jointObject) {
-                    var currentHashParams = layoutHandler.getURLHashParams();
+                controlPanel: getControlPanelConfig(graphConfig, selectorId, connectedSelectorId, configSelectorId),
+                successCallback: function (jointObject, directedGraphSize) {
+                    var currentHashParams = layoutHandler.getURLHashParams(),
+                        connectedGraphView = jointObject.paper;
 
-                    $(selectorId).parent().find('.graph-loading').remove(); // TODO - move class name to constants
-
-                    connectedGraphView.setDimensions((($(selectorId).width() > directedGraphSize.width) ? $(selectorId).width() : directedGraphSize.width) + GRAPH_MARGIN, directedGraphSize.height + GRAPH_MARGIN, 1);
                     $(connectedSelectorId).data('graph-size', directedGraphSize);
-                    //$(connectedSelectorId).data('offset', {x: 0, y: 0});
-
                     $(connectedSelectorId).data('joint-object', jointObject);
 
-                    //TODO: Make control panel as a common view to grid and graph
-                    initNetworkingGraphControlEvents(graphConfig.focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
-
-                    //TODO: Execute only in refresh case.
-                    setTimeout(function(){
-                        $(selectorId).find('.refresh i').removeClass('icon-spin icon-spinner').addClass('icon-repeat');
-                    }, 1000);
-
-                    adjustNetworkingGraphHeight(graphConfig.focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
+                    adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId);
+                    panConnectedGraph2Center(graphConfig.focusedElement, connectedSelectorId);
 
                     if (contrail.checkIfExist(currentHashParams.clickedElement)) {
                         highlightConnectedClickedElement(currentHashParams.clickedElement, connectedGraphView)
                     } else {
-                        removeFaint4AllElements()
-                        removeHighlight4AllElements()
+                        removeFaint4AllElements();
+                        removeHighlight4AllElements();
                     }
 
                     highlightElement4ZoomedElement(connectedSelectorId, jointObject, graphConfig);
+
+                    if (!$(selectorId).find('.refresh i').hasClass('icon-repeat')) {
+                        setTimeout(function(){
+                            $(selectorId).find('.refresh i').removeClass('icon-spin icon-spinner').addClass('icon-repeat');
+                        }, 1000);
+                    }
                 }
             };
 
@@ -101,6 +95,73 @@ define([
             return configGraphView;
         }
     });
+
+    var getControlPanelConfig = function(graphConfig, selectorId, connectedSelectorId, configSelectorId) {
+        return {
+            default: {
+                panzoom: {
+                    enable: true,
+                    selectorId: connectedSelectorId,
+                    config: {
+                        onReset: function() {
+                            var focusedElement = graphConfig.focusedElement;
+                            panConnectedGraph2Center(focusedElement, connectedSelectorId)
+                        }
+                    }
+                }
+            },
+            custom: {
+                resize: {
+                    iconClass: 'icon-resize-full',
+                    title: 'Resize',
+                    events: {
+                        click: function(jointObject) {
+                            return function(event) {
+                                var focusedElement = graphConfig.focusedElement;
+                                $(this).find('i').toggleClass('icon-resize-full').toggleClass('icon-resize-small');
+                                adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId);
+                                panConnectedGraph2Center(focusedElement, connectedSelectorId)
+                            }
+                        }
+                    }
+                },
+                realign: {
+                    iconClass: function (jointObject) {
+                        var rankDir = jointObject.graph.rankDir;
+                        return ((rankDir == ctwc.GRAPH_DIR_TB) ? 'icon-align-left' : 'icon-align-center');
+                    },
+                    title: 'Change Direction',
+                    events: {
+                        click: function(jointObject) {
+                            var connectedGraphView = jointObject.paper;
+                            return function (event) {
+                                if ($(this).find('i').hasClass('icon-align-left')) {
+                                    connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_LR);
+                                } else if ($(this).find('i').hasClass('icon-align-center')) {
+                                    connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_TB);
+                                }
+                            }
+                        }
+                    }
+                },
+                refresh: {
+                    iconClass: 'icon-repeat',
+                    title: 'Refresh',
+                    events: {
+                        click: function(jointObject) {
+                            var connectedGraphView = jointObject.paper;
+                            return function (event) {
+                                if ($(this).find('i').hasClass('icon-repeat')) {
+                                    $(this).find('i').removeClass('icon-repeat').toggleClass('icon-spin icon-spinner');
+                                    connectedGraphView.refreshData();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+    };
 
     function getElements4ConnectedGraphFn(graphconfig, selectorId) {
         var focusedElementType = graphconfig.focusedElement.type,
@@ -166,57 +227,6 @@ define([
         };
     };
 
-    function generateVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
-        var vmMargin = options['VMMargin'],
-            vmWidth = options['VMWidth'],
-            vmHeight = options['VMHeight'],
-            xSeparation = vmWidth + vmMargin,
-            ySeparation = vmHeight + vmMargin,
-            vmPerRow = options['vmPerRow'],
-            vmLength = options['noOfVMsToDraw'],
-            vmNode, vmList = options['vmList'];
-
-        var xOrigin = vmMargin / 2,
-            yOrigin = vmMargin / 2;
-
-        var centerLineHeight = 0.1,
-            xFactor = 0, yFactor = -1;
-
-        for (var i = 0; i < vmLength; i++) {
-            if (i % vmPerRow == 0) {
-                xFactor = 0;
-                yFactor++;
-            }
-            vmNode = createVirtualMachine(xOrigin + (xSeparation * xFactor), yOrigin + ((ySeparation + centerLineHeight) * yFactor), vmList[i], options['srcVNDetails']);
-            elementMap.node[vmList[i]] = vmNode.id;
-            xFactor++;
-            zoomedElements.push(vmNode);
-        }
-
-        function createVirtualMachine(x, y, node, srcVNDetails) {
-            var nodeType = ctwc.GRAPH_ELEMENT_INSTANCE,
-                element, options;
-
-            options = {
-                position: {x: x, y: y},
-                size: {width: vmWidth, height: vmHeight},
-                font: {
-                    iconClass: 'icon-contrail-virtual-machine'
-                },
-                nodeDetails: {
-                    fqName: node,
-                    node_type: nodeType,
-                    srcVNDetails: srcVNDetails
-                },
-                elementType: nodeType
-            };
-            element = new ContrailElement(nodeType, options);
-            return element;
-        };
-
-        return zoomedElements;
-    };
-
     function getElements4ConfigGraph(response, elementMap) {
         var configElements = [],
             collections = {},
@@ -233,132 +243,7 @@ define([
         };
     };
 
-    function generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
-        var vmMargin = options['VMMargin'],
-            vmWidth = options['VMWidth'],
-            vmHeight = options['VMHeight'],
-            xSeparation = vmWidth + vmMargin,
-            ySeparation = vmHeight + vmMargin,
-            vmPerRow = options['vmPerRow'],
-            vmLength = options['noOfVMsToDraw'],
-            vmNode, vmList = options['vmList'];
-
-        var xOrigin = vmMargin / 2,
-            yOrigin = vmMargin / 2;
-
-        var xFactor = 0, yFactor = 0, linkThickness = 1, rectThickness = 2, horizontalAdjustFactor = 6;
-        if(vmLength !== 0){
-            var longRect = createRect(xOrigin - vmWidth/2, yOrigin + ySeparation - horizontalAdjustFactor, vmLength * xSeparation + vmWidth/2, rectThickness);
-            zoomedElements.push(longRect);
-        }
-
-        for (var i = 0; i < vmLength; i++) {
-
-            vmNode = createVirtualMachine(xOrigin + (xSeparation * xFactor), yOrigin + ((ySeparation) * yFactor), vmList[i], options['srcVNDetails']);
-            elementMap.node[vmList[i]] = vmNode.id;
-            zoomedElements.push(vmNode);
-            linkRect = createRect(xOrigin + (xSeparation * xFactor)+ vmWidth/2 +1, yOrigin + ((ySeparation) * yFactor) + vmHeight, linkThickness, ySeparation/2 -6);
-            zoomedElements.push(linkRect);
-            xFactor++;
-        }
-
-        function createRect (x, y, width, height){
-            var rect = new joint.shapes.basic.Rect({
-                type: 'VirtualMachineLink',
-                position: { x: x, y: y}, size: { width: width, height: height},
-                attrs: {rect:{stroke: '#3182bd', opacity: 1, fill: '#3182bd'}}
-            });
-            return rect;
-        }
-        function createVirtualMachine(x, y, node, srcVNDetails) {
-            var nodeType = 'virtual-machine',
-                element, options;
-
-            options = {
-                position: {x: x, y: y},
-                size: {width: vmWidth, height: vmHeight},
-                font: {
-                    iconClass: 'icon-contrail-virtual-machine'
-                },
-                nodeDetails: {
-                    fqName: node,
-                    node_type: nodeType,
-                    srcVNDetails: srcVNDetails
-                },
-                elementType: nodeType
-            };
-            element = new ContrailElement(nodeType, options);
-            return element;
-        };
-
-        return zoomedElements;
-    };
-
-    function generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
-        var vmMargin = options['VMMargin'],
-            vmWidth = options['VMWidth'],
-            vmHeight = options['VMHeight'],
-            xSeparation = vmWidth + vmMargin,
-            ySeparation = vmHeight + vmMargin,
-            vmPerRow = options['vmPerRow'],
-            vmLength = options['noOfVMsToDraw'],
-            vmNode, vmList = options['vmList'];
-
-        var xOrigin = vmMargin / 2,
-            yOrigin = vmMargin / 2;
-
-        var centerLineHeight = 0.1,
-            xFactor = 0, yFactor = -1,
-            linkThickness = 1, rectThickness = 2;
-        if(vmLength !== 0){
-            var longRect = createRect(xOrigin + vmWidth + xSeparation/2, yOrigin - vmMargin/2, rectThickness, vmLength * ySeparation);
-            zoomedElements.push(longRect);
-        }
-
-        for (var i = 0; i < vmLength; i++) {
-            if (i % vmPerRow == 0) {
-                xFactor = 0;
-                yFactor++;
-            }
-            vmNode = createVirtualMachine(xOrigin + (xSeparation * xFactor), yOrigin + ((ySeparation) * yFactor), vmList[i], options['srcVNDetails']);
-            elementMap.node[vmList[i]] = vmNode.id;
-            zoomedElements.push(vmNode);
-            linkRect = createRect(xOrigin + vmWidth + 2, yOrigin + ((ySeparation) * yFactor) + vmHeight/2, xSeparation/2 - 2, linkThickness);
-            zoomedElements.push(linkRect);
-        }
-
-        function createRect (x, y, width, height){
-            var rect = new joint.shapes.basic.Rect({
-                position: { x: x, y: y}, size: { width: width, height: height},
-                attrs: {rect:{stroke: '#3182bd', opacity: 1, fill: '#3182bd'}}
-            });
-            return rect;
-        }
-        function createVirtualMachine(x, y, node, srcVNDetails) {
-            var nodeType = ctwc.GRAPH_ELEMENT_INSTANCE,
-                element, options;
-
-            options = {
-                position: {x: x, y: y},
-                size: {width: vmWidth, height: vmHeight},
-                font: {
-                    iconClass: 'icon-contrail-virtual-machine'
-                },
-                nodeDetails: {
-                    fqName: node,
-                    node_type: nodeType,
-                    srcVNDetails: srcVNDetails
-                },
-                elementType: nodeType
-            };
-            element = new ContrailElement(nodeType, options);
-            return element;
-        };
-
-        return zoomedElements;
-    };
-
-    function adjustNetworkingGraphHeight(focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView) {
+    function adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId) {
         /*
          * Height logic (graphHeight[g], availableHeight[g], minHeight[m])
          * a < m     = m
@@ -371,7 +256,10 @@ define([
             tabHeight = resizeFlag ? 155 : 435, //TODO - move to constants
             minHeight = 300,
             availableHeight = window.innerHeight - tabHeight,
-            connectedGraphHeight = ($(connectedSelectorId).data('graph-size').height) ? $(connectedSelectorId).data('graph-size').height : 0,
+            directedGraphSize = $(connectedSelectorId).data('graph-size'),
+            jointObject = $(connectedSelectorId).data('joint-object'),
+            connectedGraphView = jointObject.paper,
+            connectedGraphHeight = (directedGraphSize.height) ? directedGraphSize.height : 0,
             configGraphHeight = $(configSelectorId + ' svg').attr('height'),
             graphHeight = Math.max(connectedGraphHeight, configGraphHeight),
             adjustedHeight = availableHeight;
@@ -390,6 +278,8 @@ define([
             }
         }
 
+        connectedGraphView.setDimensions((($(selectorId).width() > directedGraphSize.width) ? $(selectorId).width() : directedGraphSize.width) + GRAPH_MARGIN, directedGraphSize.height + GRAPH_MARGIN, 1);
+
         $(selectorId).parent().height(adjustedHeight);
         $(selectorId).parent().css('width', '100%');
 
@@ -404,11 +294,9 @@ define([
         if(configGraphHeight < adjustedHeight) { //TODO - Needs to be tested with multiple config elements
             $(configSelectorId + ' svg').attr('height', adjustedHeight);
         }
-
-        panConnectedGraph2Center(focusedElement, selectorId, connectedSelectorId);
     };
 
-    function panConnectedGraph2Center(focusedElement, selectorId, connectedSelectorId) {
+    var panConnectedGraph2Center = function(focusedElement, connectedSelectorId) {
         var connectedGraphWidth = $(connectedSelectorId).data('graph-size').width,
             connectedGraphHeight = $(connectedSelectorId).data('graph-size').height,
             availableGraphWidth = $(connectedSelectorId).parents('.col1').width(),
@@ -425,54 +313,154 @@ define([
         $(connectedSelectorId).css({'backface-visibility':'initial'});
     };
 
-    function initNetworkingGraphControlEvents(focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView) {
-        var graphControlElement = $(selectorId).find('.graph-controls');
+    var createVirtualMachineNode = function(position, size, node, srcVNDetails) {
+        var nodeType = ctwc.GRAPH_ELEMENT_INSTANCE,
+            element, options;
 
-        /* Pan and Zoom events */
-        $(connectedSelectorId).panzoom("reset");
-        $(connectedSelectorId).panzoom("resetPan");
-        $(connectedSelectorId).panzoom("destroy");
-        $(connectedSelectorId).panzoom({
-            increment: 0.3,
-            minScale: 0.3,
-            maxScale: 2,
-            duration: 300,
-            $zoomIn: graphControlElement.find(".zoom-in"),
-            $zoomOut: graphControlElement.find(".zoom-out"),
-            $reset: graphControlElement.find(".zoom-reset"),
-            onReset: function() {
-                panConnectedGraph2Center(focusedElement, selectorId, connectedSelectorId)
-            }
+        options = {
+            position: position,
+            size: size,
+            font: {
+                iconClass: 'icon-contrail-virtual-machine'
+            },
+            nodeDetails: {
+                fqName: node,
+                node_type: nodeType,
+                srcVNDetails: srcVNDetails
+            },
+            elementType: nodeType
+        };
+        element = new ContrailElement(nodeType, options);
+        return element;
+    };
+
+    var createVirtualMachineLink = function(position, size){
+        var rect = new joint.shapes.basic.Rect({
+            type: 'VirtualMachineLink',
+            position: position, size: size,
+            attrs: {rect:{stroke: '#3182bd', opacity: 1, fill: '#3182bd'}}
         });
+        return rect;
+    };
 
-        /* Resize Events */
-        graphControlElement.find('.resize')
-            .off('click')
-            .on('click', function (event) {
-                $(this).find('i').toggleClass('icon-resize-full').toggleClass('icon-resize-small');
-                adjustNetworkingGraphHeight(focusedElement, selectorId, connectedSelectorId, configSelectorId, connectedGraphView);
-            }
-        );
+    function generateVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
+        var vmMargin = options['VMMargin'],
+            vmWidth = options['VMWidth'],
+            vmHeight = options['VMHeight'],
+            xSeparation = vmWidth + vmMargin,
+            ySeparation = vmHeight + vmMargin,
+            vmPerRow = options['vmPerRow'],
+            vmLength = options['noOfVMsToDraw'],
+            vmNode, vmList = options['vmList'];
 
-        graphControlElement.find('.realign')
-            .off('click')
-            .on('click', function () {
-                if ($(this).find('i').hasClass('icon-align-left')) {
-                    connectedGraphView.model.reLayoutGraph("LR");
-                } else if ($(this).find('i').hasClass('icon-align-center')) {
-                    connectedGraphView.model.reLayoutGraph("TB");
-                }
-            }
-        );
+        var xOrigin = vmMargin / 2,
+            yOrigin = vmMargin / 2,
+            position = {},
+            size = {width: vmWidth, height: vmHeight};
 
-        graphControlElement.find('.refresh')
-            .off('click')
-            .on('click', function () {
-                $(this).find('i').removeClass('icon-repeat').toggleClass('icon-spin icon-spinner');
-                connectedGraphView.refreshData();
-                //TODO: If spinning don't call refreshData
+        var centerLineHeight = 0.1,
+            xFactor = 0, yFactor = -1;
+
+        for (var i = 0; i < vmLength; i++) {
+            if (i % vmPerRow == 0) {
+                xFactor = 0;
+                yFactor++;
             }
-        );
+
+            position = {x: xOrigin + (xSeparation * xFactor), y: yOrigin + ((ySeparation + centerLineHeight) * yFactor)};
+            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails']);
+            elementMap.node[vmList[i]] = vmNode.id;
+            xFactor++;
+            zoomedElements.push(vmNode);
+        }
+
+        return zoomedElements;
+    };
+
+    function generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
+        var vmMargin = options['VMMargin'],
+            vmWidth = options['VMWidth'],
+            vmHeight = options['VMHeight'],
+            xSeparation = vmWidth + vmMargin,
+            ySeparation = vmHeight + vmMargin,
+            vmPerRow = options['vmPerRow'],
+            vmLength = options['noOfVMsToDraw'],
+            vmNode, vmList = options['vmList'];
+
+        var xOrigin = vmMargin / 2,
+            yOrigin = vmMargin / 2,
+            position = {},
+            size = {width: vmWidth, height: vmHeight},
+            virtualMachineCommonLinkPosition = {}, virtualMachineCommonLinkSize = {},
+            virtualMachineLinkPosition = {}, virtualMachineLinkSize = {};
+
+        var xFactor = 0, yFactor = 0, linkThickness = 1, rectThickness = 2, horizontalAdjustFactor = 6;
+        if(vmLength !== 0){
+            virtualMachineCommonLinkPosition = {x: xOrigin - vmWidth/2, y: yOrigin + ySeparation - horizontalAdjustFactor};
+            virtualMachineCommonLinkSize = {width: vmLength * xSeparation + vmWidth/2, height: rectThickness};
+
+            zoomedElements.push(createVirtualMachineLink(virtualMachineCommonLinkPosition, virtualMachineCommonLinkSize));
+        }
+
+        for (var i = 0; i < vmLength; i++) {
+            position = {x: xOrigin + (xSeparation * xFactor), y: yOrigin + ((ySeparation) * yFactor)};
+            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails']);
+            elementMap.node[vmList[i]] = vmNode.id;
+            zoomedElements.push(vmNode);
+
+            virtualMachineLinkPosition = {x: xOrigin + (xSeparation * xFactor)+ vmWidth/2 +1, y: yOrigin + ((ySeparation) * yFactor) + vmHeight};
+            virtualMachineLinkSize = {width: linkThickness, height: (ySeparation/2) - 6};
+            zoomedElements.push(createVirtualMachineLink(virtualMachineLinkPosition, virtualMachineLinkSize));
+
+            xFactor++;
+        }
+
+        return zoomedElements;
+    };
+
+    function generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
+        var vmMargin = options['VMMargin'],
+            vmWidth = options['VMWidth'],
+            vmHeight = options['VMHeight'],
+            xSeparation = vmWidth + vmMargin,
+            ySeparation = vmHeight + vmMargin,
+            vmPerRow = options['vmPerRow'],
+            vmLength = options['noOfVMsToDraw'],
+            vmNode, vmList = options['vmList'];
+
+        var xOrigin = vmMargin / 2,
+            yOrigin = vmMargin / 2,
+            position = {},
+            size = {width: vmWidth, height: vmHeight},
+            virtualMachineCommonLinkPosition = {}, virtualMachineCommonLinkSize = {},
+            virtualMachineLinkPosition = {}, virtualMachineLinkSize = {};
+
+        var centerLineHeight = 0.1,
+            xFactor = 0, yFactor = -1,
+            linkThickness = 1, rectThickness = 2;
+
+        if(vmLength !== 0){
+            virtualMachineCommonLinkPosition = {x: xOrigin + vmWidth + xSeparation/2, y: yOrigin - vmMargin/2};
+            virtualMachineCommonLinkSize = {width: rectThickness, height: vmLength * ySeparation};
+            zoomedElements.push(createVirtualMachineLink(virtualMachineCommonLinkPosition, virtualMachineCommonLinkSize));
+        }
+
+        for (var i = 0; i < vmLength; i++) {
+            if (i % vmPerRow == 0) {
+                xFactor = 0;
+                yFactor++;
+            }
+            position = {x: xOrigin + (xSeparation * xFactor), y: yOrigin + ((ySeparation) * yFactor)};
+            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails']);
+            elementMap.node[vmList[i]] = vmNode.id;
+            zoomedElements.push(vmNode);
+
+            virtualMachineLinkPosition = {x: xOrigin + vmWidth + 2, y: yOrigin + ((ySeparation) * yFactor) + vmHeight/2};
+            virtualMachineLinkSize = {width: xSeparation/2 - 2, height: linkThickness};
+            zoomedElements.push(createVirtualMachineLink(virtualMachineLinkPosition, virtualMachineLinkSize));
+        }
+
+        return zoomedElements;
     };
 
     var cgPointerClick = function(cellView, evt, x, y) {
@@ -649,7 +637,6 @@ define([
                     var networkFQN = graphConfig.focusedElement.name.fqName;
 
                     if (contrail.checkIfExist(currentHashParams.clickedElement)) {
-
                         var instanceUUID = graphConfig.focusedElement.name.instanceUUID;
 
                         tabConfig = ctwgrc.getTabsViewConfig(focusedElementType, {
@@ -695,7 +682,7 @@ define([
         highlightSVGElements([$('g.ZoomedElement')]);
 
         var jointObject = $(connectedSelectorId).data('joint-object'),
-            graphElements = jointObject.connectedGraph.getElements(),
+            graphElements = jointObject.graph.getElements(),
             vmFqName = graphConfig.focusedElement.name.instanceUUID;
 
         $.each(graphElements, function (graphElementKey, graphElementValue) {
@@ -714,7 +701,7 @@ define([
                 elementNodeType= clickedElement.elementType,
                 elementMap = connectedGraphView.model.elementMap,
                 jointObject = {
-                    connectedGraph: connectedGraphView.model
+                    graph: connectedGraphView.model
                 };
 
             switch (elementNodeType) {
@@ -773,7 +760,7 @@ define([
             if (elementMap.link[policyRuleLinkKey.join('<->')] || elementMap.link[policyRuleLinkKey.reverse().join('<->')]) {
                 highlightedElements.nodes = $.unique(highlightedElements.nodes);
                 $.each(highlightedElements.nodes, function (nodeKey, nodeValue) {
-                    var nodeElement = jointObject.connectedGraph.getCell(elementMap.node[nodeValue]);
+                    var nodeElement = jointObject.graph.getCell(elementMap.node[nodeValue]);
                     $('g[model-id="' + nodeElement.id + '"]').removeClassSVG('fainted').addClassSVG('highlighted');
                     $('div[font-element-model-id="' + nodeElement.id + '"]').removeClass('fainted').addClass('highlighted');
 
@@ -812,7 +799,7 @@ define([
     };
 
     var highlightLinkElement = function(jointObject, elementId) {
-        var linkElement = jointObject.connectedGraph.getCell(elementId);
+        var linkElement = jointObject.graph.getCell(elementId);
         if (linkElement) {
             highlightSVGElements([$('g[model-id="' + linkElement.id + '"]')]);
         }
