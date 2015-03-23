@@ -793,10 +793,12 @@ define([
     };
 
     var highlightCurrentElement = function(elementNodeId) {
-        faintAllElements();
+        if ($('g[model-id="' + elementNodeId + '"]'). length != 0 && $('div.font-element[font-element-model-id="' + elementNodeId + '"]').length != 0) {
+            faintAllElements();
 
-        highlightElements([$('div.font-element[font-element-model-id="' + elementNodeId + '"]')]);
-        highlightSVGElements([$('g[model-id="' + elementNodeId + '"]')])
+            highlightElements([$('div.font-element[font-element-model-id="' + elementNodeId + '"]')]);
+            highlightSVGElements([$('g[model-id="' + elementNodeId + '"]')]);
+        }
     };
 
     var highlightLinkElement = function(jointObject, elementId) {
