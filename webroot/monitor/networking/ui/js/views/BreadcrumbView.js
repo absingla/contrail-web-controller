@@ -10,7 +10,7 @@ define([
     var BreadcrumbView = Backbone.View.extend({
 
         renderDomainBreadcrumbDropdown: function(fqName, initCB, changeCB) {
-            var contrailListModel = ctwch.getAllDomains();
+            var contrailListModel = cowch.getAllDomains();
 
             if(contrailListModel.loadedFromCache || !(contrailListModel.isRequestInProgress())) {
                 populateDomainBreadcrumbDropdown(contrailListModel, fqName, initCB, changeCB);
@@ -23,7 +23,7 @@ define([
 
         renderProjectBreadcrumbDropdown: function(fqName, initCB, changeCB) {
             var domain = getDomainFromFQN(fqName),
-                contrailListModel = ctwch.getProjects4Domain(domain);
+                contrailListModel = cowch.getProjects4Domain(domain);
 
             if(contrailListModel != null) {
                 if(contrailListModel.loadedFromCache || !(contrailListModel.isRequestInProgress())) {
@@ -40,7 +40,7 @@ define([
             var domain = getDomainFromFQN(fqName),
                 project = getProjectFromFQN(fqName),
                 projectFQN = domain + ':' + project,
-                contrailListModel = ctwch.getNetworks4Project(projectFQN);
+                contrailListModel = cowch.getNetworks4Project(projectFQN);
 
             if(contrailListModel.loadedFromCache || !(contrailListModel.isRequestInProgress())) {
                 populateNetworkBreadcrumbDropdown(contrailListModel, fqName, initCB, changeCB);

@@ -10,16 +10,14 @@ define([
     'controller-labels',
     'controller-utils',
     'controller-messages',
-    'controller-parsers',
-    'controller-cache'
-], function (_, Constants, GridConfig, GraphConfig, Labels, Utils, Messages, Parsers, Cache) {
+    'controller-parsers'
+], function (_, Constants, GridConfig, GraphConfig, Labels, Utils, Messages, Parsers) {
     ctwc = new Constants();
     ctwl = new Labels();
     ctwm = new Messages();
     ctwgc = new GridConfig();
     ctwgrc = new GraphConfig();
     ctwp = new Parsers();
-    ctwch = new Cache();
     ctwu = new Utils;
-    ctwch.init();
+    ctInitComplete = true;
 });

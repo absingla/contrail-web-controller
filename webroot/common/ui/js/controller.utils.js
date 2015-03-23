@@ -88,23 +88,23 @@ define([
 
             if (fqArray.length == 1) {
                 ucid = ctwc.UCID_BC_ALL_DOMAINS;
-                cachedData = ctwch.get(ucid);
+                cachedData = cowch.get(ucid);
                 if (cachedData == null) {
-                    ctwch.getAllDomains();
+                    cowch.getAllDomains();
                     return null;
                 }
             } else if (fqArray.length == 2) {
                 ucid = ctwc.get(ctwc.UCID_BC_DOMAIN_ALL_PROJECTS, fqArray[0]);
-                cachedData = ctwch.get(ucid);
+                cachedData = cowch.get(ucid);
                 if (cachedData == null) {
-                    ctwch.getProjects4Domain(fqArray[0]);
+                    cowch.getProjects4Domain(fqArray[0]);
                     return getUUIDByName(fqName);
                 }
             } else if (fqArray.length == 3) {
                 ucid = ctwc.get(ctwc.UCID_BC_PROJECT_ALL_NETWORKS, fqArray[0] + ":" + fqArray[1]);
-                cachedData = ctwch.get(ucid);
+                cachedData = cowch.get(ucid);
                 if (cachedData == null) {
-                    ctwch.getNetworks4Project(fqArray[0] + ":" + fqArray[1]);
+                    cowch.getNetworks4Project(fqArray[0] + ":" + fqArray[1]);
                     return getUUIDByName(fqName);
                 }
             }
