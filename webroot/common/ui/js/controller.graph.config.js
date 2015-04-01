@@ -31,7 +31,7 @@ define([
                         return tooltipContent({
                             info: [
                                 {
-                                    lbl: 'Project',
+                                    label: 'Project',
                                     value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
                                 }
                             ],
@@ -71,7 +71,7 @@ define([
                         return tooltipContent({
                             info: [
                                 {
-                                    lbl: 'Project',
+                                    label: 'Project',
                                     value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
                                 }
                             ],
@@ -111,7 +111,7 @@ define([
                         return tooltipContent({
                             info: [
                                 {
-                                    lbl: 'Project',
+                                    label: 'Project',
                                     value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
                                 }
                             ],
@@ -168,16 +168,16 @@ define([
 
                         return tooltipContent({
                             info: [
-                                {lbl: 'Project', value: virtualNetworkName[0] + ':' + virtualNetworkName[1]},
+                                {label: 'Project', value: virtualNetworkName[0] + ':' + virtualNetworkName[1]},
                                 {
-                                    lbl: 'Traffic In',
+                                    label: 'Traffic In',
                                     value: formatNumberByCommas(viewElement.attributes.nodeDetails.more_attr.in_tpkts) + ' packets | ' + formatBytes(viewElement.attributes.nodeDetails.more_attr.in_bytes)
                                 },
                                 {
-                                    lbl: 'Traffic Out',
+                                    label: 'Traffic Out',
                                     value: formatNumberByCommas(viewElement.attributes.nodeDetails.more_attr.out_tpkts) + ' packets  |  ' + formatBytes(viewElement.attributes.nodeDetails.more_attr.out_bytes)
                                 },
-                                {lbl: 'Instance Count', value: viewElement.attributes.nodeDetails.more_attr.vm_cnt}
+                                {label: 'Instance Count', value: viewElement.attributes.nodeDetails.more_attr.vm_cnt}
                             ],
                             iconClass: 'icon-contrail-virtual-network',
                             actions: actions
@@ -232,7 +232,7 @@ define([
 
                         return tooltipContent({
                             info: [
-                                {lbl: 'Status', value: viewElement.attributes.nodeDetails['status']}
+                                {label: 'Status', value: viewElement.attributes.nodeDetails['status']}
                             ],
                             iconClass: 'icon-check-empty icon-rotate-45 icn-service-instance',
                             actions: actions
@@ -265,9 +265,9 @@ define([
 
                         return tooltipContent({
                             info: [
-                                {lbl: 'UUID', value: viewElement.attributes.nodeDetails['fqName']},
-                                {lbl: 'Network', value: srcVNDetails.name},
-                                {lbl: 'Interface Count', value: srcVNDetails.more_attr.interface_list.length}
+                                {label: 'UUID', value: viewElement.attributes.nodeDetails['fqName']},
+                                {label: 'Network', value: srcVNDetails.name},
+                                {label: 'Interface Count', value: srcVNDetails.more_attr.interface_list.length}
                             ],
                             iconClass: 'icon-contrail-virtual-machine font-size-30'
                         });
@@ -300,42 +300,42 @@ define([
                             var dst = viewElementDetails.dst;
                             var loss = viewElementDetails.loss;
                             /*if(loss.diff && loss.loss_percent>0) commented the percentage loss code for while
-                             data.push({lbl:"Link",value:"Packet Loss % "+loss.loss_percent});
+                             data.push({label:"Link",value:"Packet Loss % "+loss.loss_percent});
                              else*/
                             if (partial_msg != "")
-                                data.push({lbl: "", value: partial_msg});
+                                data.push({label: "", value: partial_msg});
                             for (var i = 0; i < in_stats.length; i++) {
                                 if (src == in_stats[i].src && dst == in_stats[i].dst) {
                                     data.push({
-                                        lbl: "Link",
+                                        label: "Link",
                                         value: in_stats[i].src.split(':').pop() + " - " + in_stats[i].dst.split(':').pop()
                                     });
                                     data.push({
-                                        lbl: "Traffic In",
+                                        label: "Traffic In",
                                         value: formatNumberByCommas(in_stats[i].pkts) + " packets | " + formatBytes(in_stats[i].bytes)
                                     });
                                     for (var j = 0; j < out_stats.length; j++) {
                                         if (src == out_stats[j].src && dst == out_stats[j].dst) {
                                             data.push({
-                                                lbl: "Traffic Out",
+                                                label: "Traffic Out",
                                                 value: formatNumberByCommas(out_stats[j].pkts) + " packets | " + formatBytes(out_stats[i].bytes)
                                             });
                                         }
                                     }
                                 } else if (src == in_stats[i].dst && dst == in_stats[i].src) {
                                     data.push({
-                                        lbl: "Link",
+                                        label: "Link",
                                         value: in_stats[i].src.split(':').pop() + " - " + in_stats[i].dst.split(':').pop(),
                                         dividerClass: 'margin-5-0-0'
                                     });
                                     data.push({
-                                        lbl: "Traffic In",
+                                        label: "Traffic In",
                                         value: formatNumberByCommas(in_stats[i].pkts) + " packets | " + formatBytes(in_stats[i].bytes)
                                     });
                                     for (var j = 0; j < out_stats.length; j++) {
                                         if (src == out_stats[j].dst && dst == out_stats[j].src) {
                                             data.push({
-                                                lbl: "Traffic Out",
+                                                label: "Traffic Out",
                                                 value: formatNumberByCommas(out_stats[j].pkts) + " packets | " + formatBytes(out_stats[i].bytes)
                                             });
                                         }
@@ -347,16 +347,16 @@ define([
                             var src = viewElementDetails.src.split(':').pop();
                             var dst = viewElementDetails.dst.split(':').pop();
                             if (partial_msg != "")
-                                data.push({lbl: "", value: partial_msg});
+                                data.push({label: "", value: partial_msg});
 
-                            data.push({lbl: "Link", value: src + " - " + dst});
-                            data.push({lbl: "Traffic In", value: "0 packets | 0 B"});
-                            data.push({lbl: "Traffic Out", value: "0 packets | 0 B"});
+                            data.push({label: "Link", value: src + " - " + dst});
+                            data.push({label: "Traffic In", value: "0 packets | 0 B"});
+                            data.push({label: "Traffic Out", value: "0 packets | 0 B"});
 
                             if (viewElementDetails.dir == 'bi') {
-                                data.push({lbl: "Link", value: dst + " - " + src, dividerClass: 'margin-5-0-0'});
-                                data.push({lbl: "Traffic In", value: "0 packets | 0 B"});
-                                data.push({lbl: "Traffic Out", value: "0 packets | 0 B"});
+                                data.push({label: "Link", value: dst + " - " + src, dividerClass: 'margin-5-0-0'});
+                                data.push({label: "Traffic In", value: "0 packets | 0 B"});
+                                data.push({label: "Traffic Out", value: "0 packets | 0 B"});
                             }
                         } else if (viewElementDetails.more_attributes != undefined && viewElementDetails.more_attributes.in_stats != undefined
                             && viewElementDetails.more_attributes.out_stats != undefined && viewElementDetails.more_attributes.in_stats.length == 0
@@ -364,16 +364,16 @@ define([
                             var src = viewElementDetails.src.split(':').pop();
                             var dst = viewElementDetails.dst.split(':').pop();
                             if (partial_msg != "")
-                                data.push({lbl: "", value: partial_msg});
+                                data.push({label: "", value: partial_msg});
 
-                            data.push({lbl: "Link", value: src + " - " + dst});
-                            data.push({lbl: "Traffic In", value: "0 packets | 0 B"});
-                            data.push({lbl: "Traffic Out", value: "0 packets | 0 B"});
+                            data.push({label: "Link", value: src + " - " + dst});
+                            data.push({label: "Traffic In", value: "0 packets | 0 B"});
+                            data.push({label: "Traffic Out", value: "0 packets | 0 B"});
 
                             if (viewElementDetails.dir == 'bi') {
-                                data.push({lbl: "Link", value: dst + " - " + src, dividerClass: 'margin-5-0-0'});
-                                data.push({lbl: "Traffic In", value: "0 packets | 0 B"});
-                                data.push({lbl: "Traffic Out", value: "0 packets | 0 B"});
+                                data.push({label: "Link", value: dst + " - " + src, dividerClass: 'margin-5-0-0'});
+                                data.push({label: "Traffic In", value: "0 packets | 0 B"});
+                                data.push({label: "Traffic Out", value: "0 packets | 0 B"});
                             }
                         }
 
