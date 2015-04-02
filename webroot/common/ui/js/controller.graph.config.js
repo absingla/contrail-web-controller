@@ -383,6 +383,44 @@ define([
             };
         };
 
+        this.getPortDistributionTooltipConfig = function(onScatterChartClick) {
+            return function(data) {
+                var type, name = data['name'];
+
+                if(data['type'] == 'sport') {
+                    type = 'Source Port';
+                } else if(data['type'] == 'dport') {
+                    type = 'Destination Port';
+                }
+
+                if(data['name'].toString().indexOf('-') > -1) {
+                    type += ' Range';
+                }
+
+                return {
+                    title: {
+                        name: name,
+                        type: type
+                    },
+                    content: {
+                        iconClass: false,
+                        info: [
+                            {label: 'Flows', value: data['flowCnt']},
+                            {label: 'Bandwidth', value: formatBytes(ifNull(data['origY'], data['y']))}
+                        ],
+                        actions: [
+                            {
+                                type: 'link',
+                                text: 'View',
+                                iconClass: 'icon-external-link',
+                                callback: onScatterChartClick
+                            }
+                        ]
+                    }
+                };
+            }
+        };
+
         this.getTabsViewConfig = function(tabType, elementObj) {
 
             var config = {};

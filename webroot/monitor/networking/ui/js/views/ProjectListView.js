@@ -120,10 +120,7 @@ define([
                         type: 'link',
                         text: 'View',
                         iconClass: 'icon-external-link',
-                        callback: function(data) {
-                            var projectFQN = data.name;
-                            ctwgrc.setProjectURLHashParams(null, projectFQN, true);
-                        }
+                        callback: onScatterChartClick
                     }
                 ]
             }

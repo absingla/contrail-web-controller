@@ -147,30 +147,12 @@ define([
                                                             }
                                                         },
                                                         chartOptions: {
-                                                            clickFn: function(chartConfig){
-                                                                var obj= {
-                                                                    fqName:chartConfig['fqName'],
-                                                                    port:chartConfig['range']
-                                                                };
-                                                                if(chartConfig['startTime'] != null && chartConfig['endTime'] != null) {
-                                                                    obj['startTime'] = chartConfig['startTime'];
-                                                                    obj['endTime'] = chartConfig['endTime'];
-                                                                }
-
-                                                                if(chartConfig['type'] == 'sport')
-                                                                    obj['portType']='src';
-                                                                else if(chartConfig['type'] == 'dport')
-                                                                    obj['portType']='dst';
-
-                                                                obj['type'] = "flow";
-                                                                obj['view'] = "list";
-                                                                layoutHandler.setURLHashParams(obj, {p:"mon_networking_networks", merge:false});
-                                                            },
-                                                            tooltipFn: tenantNetworkMonitor.portTooltipFn
+                                                            clickFn: onScatterChartClick,
+                                                            tooltipFn: ctwgrc.getPortDistributionTooltipConfig(onScatterChartClick)
                                                         },
                                                         title: ctwl.TITLE_PORT_DISTRIBUTION,
                                                         xLbl: ctwl.X_AXIS_TITLE_PORT
-                                                    }
+                                                    };
                                                     return retObj;
                                                 }
                                             }
@@ -328,6 +310,26 @@ define([
                 ]
             }
         };
+    };
+
+    var onScatterChartClick = function(chartConfig) {
+        var obj= {
+            fqName:chartConfig['fqName'],
+            port:chartConfig['range']
+        };
+        if(chartConfig['startTime'] != null && chartConfig['endTime'] != null) {
+            obj['startTime'] = chartConfig['startTime'];
+            obj['endTime'] = chartConfig['endTime'];
+        }
+
+        if(chartConfig['type'] == 'sport')
+            obj['portType']='src';
+        else if(chartConfig['type'] == 'dport')
+            obj['portType']='dst';
+
+        obj['type'] = "flow";
+        obj['view'] = "list";
+        layoutHandler.setURLHashParams(obj, {p:"mon_networking_networks", merge:false});
     };
 
     return NetworkTabView;

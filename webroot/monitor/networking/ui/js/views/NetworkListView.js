@@ -121,10 +121,7 @@ define([
                         type: 'link',
                         text: 'View',
                         iconClass: 'icon-external-link',
-                        callback: function(data) {
-                            var networkFQN = data['name'];
-                            ctwgrc.setNetworkURLHashParams(null, networkFQN, true);
-                        }
+                        callback: onScatterChartClick
                     }
                 ]
             }
