@@ -153,6 +153,7 @@ define([
         this.INSTANCE_TRAFFIC_STATS_ID = "instance-traffic-stats";
         this.INSTANCE_TRAFFIC_STATS_DROPDOWN_ID = "instance-traffic-stats-dropdown";
         this.INSTANCE_TRAFFIC_STATS_CHART_ID = "instance-traffic-stats-chart";
+        this.INSTANCE_PORT_HEAT_CHART_ID = "instance-port-heat-chart";
 
         this.MONITOR_CONNECTED_NETWORK_ID = "monitor-connected-network";
         this.MONITOR_CONNECTED_NETWORK_VIEW_ID = "monitor-connected-network-view";

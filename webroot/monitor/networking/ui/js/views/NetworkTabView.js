@@ -165,7 +165,8 @@ define([
                                                 ajaxConfig: {
                                                     url: ctwc.get(ctwc.URL_NETWORK_SUMMARY, networkFQN),
                                                     type: 'GET'
-                                                }
+                                                },
+                                                chartOptions: {getClickFn: getHeatChartClickFn}
                                             }
                                         }
                                     ]
@@ -319,6 +320,26 @@ define([
         obj['type'] = "flow";
         obj['view'] = "list";
         layoutHandler.setURLHashParams(obj, {p:"mon_networking_networks", merge:false});
+    };
+
+    function getHeatChartClickFn (selector, response) {
+        return function(clickData) {
+            var currHashObj = layoutHandler.getURLHashObj();
+            var startRange = ((64 * clickData.y) + clickData.x) * 256;
+            var endRange = startRange + 255;
+            var params = {};
+            var protocolMap = {'icmp': 1, 'tcp': 6, 'udp': 17};
+            var divId = $($(selector)[0]).attr('id');
+            params['fqName'] = currHashObj['q']['fqName'];
+            params['port'] = startRange + "-" + endRange;
+            params['startTime'] = new XDate().addMinutes(-10).getTime();
+            params['endTime'] = new XDate().getTime();
+            params['portType'] = response['type'];
+            params['protocol'] = protocolMap[response['pType']];
+            params['type'] = "flow";
+            params['view'] = "list";
+            layoutHandler.setURLHashParams(params, {p: 'mon_networking_networks'});
+        }
     };
 
     return NetworkTabView;
