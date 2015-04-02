@@ -57,11 +57,11 @@ define([
                                     parseFn: function (response) {
                                         return {
                                             d: [{key: 'Instances', values: response}],
-                                            xLbl: 'Memory',
-                                            yLbl: 'Avg. CPU (1 min)',
-                                            forceX: [0, 1],
-                                            xLblFormat: function(xValue) {
-                                                var formattedValue = formatBytes(xValue);
+                                            yLbl: 'Memory',
+                                            xLbl: '% CPU Utilization',
+                                            forceY: [0, 1],
+                                            yLblFormat: function(yValue) {
+                                                var formattedValue = formatBytes(yValue * 1024, true);
                                                 return formattedValue;
                                             },
                                             chartOptions: {tooltipFn: getInstanceTooltipConfig, clickFn: onScatterChartClick},
@@ -109,8 +109,8 @@ define([
                     {label: 'Network', value: data.vnFQN},
                     {label: 'Name', value: data.vmName},
                     {label: 'UUID', value: vmUUID},
-                    {label:'Avg. CPU (1 min)', value: data['y']},
-                    {label:'Memory', value: formatBytes(data['x'])}
+                    {label:'% CPU Utilization', value: d3.format('.02f')(data['x'])},
+                    {label:'Memory', value: formatBytes(data['y'] * 1024, false, null, 1)}
                 ],
                 actions: [
                     {

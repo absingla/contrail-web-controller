@@ -172,11 +172,11 @@ define([
 
                 var cpuInfo = getValueByJsonPath(currObj,'UveVirtualMachineAgent;cpu_info');
                 if(contrail.checkIfExist(cpuInfo)) {
-                    currObject['y'] = cpuInfo['cpu_one_min_avg'];
-                    currObject['x'] = cpuInfo['virt_memory'];
+                    currObject['x'] = cpuInfo['cpu_one_min_avg'];
+                    currObject['y'] = cpuInfo['rss'];
                 } else {
-                    currObject['y'] = 0;
                     currObject['x'] = 0;
+                    currObject['y'] = 0;
                 }
 
                 currObject['size'] = 0;
