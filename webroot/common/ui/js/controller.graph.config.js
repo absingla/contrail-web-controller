@@ -21,7 +21,7 @@ define([
                     },
                     content: function (element, jointObject) {
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
-                            actions = [];
+                            actions = [], nodeDetails = viewElement.attributes.nodeDetails;
 
                         actions.push({
                             text: 'Configure',
@@ -33,7 +33,16 @@ define([
                                 {
                                     label: 'Project',
                                     value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
+                                },
+                                {
+                                    label: 'UUID',
+                                    value: nodeDetails['uuid']
+                                },
+                                {
+                                    label: 'Rule Count',
+                                    value: nodeDetails['network_policy_entries']['policy_rule'].length
                                 }
+
                             ],
                             iconClass: 'icon-contrail-network-policy',
                             actions: actions
@@ -61,7 +70,7 @@ define([
                     },
                     content: function (element, jointObject) {
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
-                            actions = [];
+                            actions = [], nodeDetails = viewElement.attributes.nodeDetails;
 
                         actions.push({
                             text: 'Configure',
@@ -73,6 +82,10 @@ define([
                                 {
                                     label: 'Project',
                                     value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
+                                },
+                                {
+                                    label: 'UUID',
+                                    value: nodeDetails['uuid']
                                 }
                             ],
                             iconClass: 'icon-contrail-security-group',
@@ -101,7 +114,7 @@ define([
                     },
                     content: function (element, jointObject) {
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
-                            actions = [];
+                            actions = [], nodeDetails = viewElement.attributes.nodeDetails;
 
                         actions.push({
                             text: 'Configure',
@@ -113,6 +126,10 @@ define([
                                 {
                                     label: 'Project',
                                     value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
+                                },
+                                {
+                                    label: 'UUID',
+                                    value: nodeDetails['uuid']
                                 }
                             ],
                             iconClass: 'icon-contrail-network-ipam',
