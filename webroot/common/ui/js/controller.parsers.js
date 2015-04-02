@@ -179,7 +179,7 @@ define([
                     currObject['x'] = 0;
                 }
 
-                currObject['size'] = 6;
+                currObject['size'] = 0;
 
                 return currObject;
             });

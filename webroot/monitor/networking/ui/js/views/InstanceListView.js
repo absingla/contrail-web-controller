@@ -96,8 +96,7 @@ define([
     };
 
     var getInstanceTooltipConfig = function(data) {
-        var networkFQNObj = data.vnFQN.split(':'),
-            vmUUID = data.name;
+        var vmUUID = data.name;
 
         return {
             title: {
@@ -107,9 +106,9 @@ define([
             content: {
                 iconClass: 'icon-contrail-virtual-machine',
                 info: [
-                    {label: 'Domain', value: networkFQNObj[0]},
-                    {label: 'Project', value: networkFQNObj[1]},
-                    {label: 'Network', value: networkFQNObj[2]},
+                    {label: 'Network', value: data.vnFQN},
+                    {label: 'Name', value: data.vmName},
+                    {label: 'UUID', value: vmUUID},
                     {label:'Avg. CPU (1 min)', value: data['y']},
                     {label:'Memory', value: formatBytes(data['x'])}
                 ],
