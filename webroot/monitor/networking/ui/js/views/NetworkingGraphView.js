@@ -260,7 +260,8 @@ define([
             directedGraphSize = $(connectedSelectorId).data('graph-size'),
             jointObject = $(connectedSelectorId).data('joint-object'),
             connectedGraphView = jointObject.paper,
-            connectedGraphHeight = (directedGraphSize.height) ? directedGraphSize.height : 0,
+            connectedGraphWidth = contrail.checkIfKeyExistInObject(true, directedGraphSize, 'width') ? directedGraphSize.width : 0,
+            connectedGraphHeight = contrail.checkIfKeyExistInObject(true, directedGraphSize, 'height') ? directedGraphSize.height : 0,
             configGraphHeight = $(configSelectorId + ' svg').attr('height'),
             graphHeight = Math.max(connectedGraphHeight, configGraphHeight),
             adjustedHeight = availableHeight;
@@ -279,8 +280,8 @@ define([
             }
         }
 
-        connectedGraphView.setDimensions((($(selectorId).width() > directedGraphSize.width) ? $(selectorId).width() : directedGraphSize.width) + cowc.GRAPH_MARGIN_RIGHT,
-            directedGraphSize.height + cowc.GRAPH_MARGIN_BOTTOM, 1);
+        connectedGraphView.setDimensions(Math.max($(selectorId).width(), connectedGraphWidth) + cowc.GRAPH_MARGIN_RIGHT,
+            connectedGraphHeight + cowc.GRAPH_MARGIN_BOTTOM, 1);
 
         $(selectorId).parent().height(adjustedHeight);
         $(selectorId).parent().css('width', '100%');
@@ -298,8 +299,9 @@ define([
     };
 
     var panConnectedGraph2Center = function(focusedElement, connectedSelectorId) {
-        var connectedGraphWidth = $(connectedSelectorId).data('graph-size').width,
-            connectedGraphHeight = $(connectedSelectorId).data('graph-size').height,
+        var directedGraphSize = $(connectedSelectorId).data('graph-size'),
+            connectedGraphWidth = contrail.checkIfKeyExistInObject(true, directedGraphSize, 'width') ? directedGraphSize.width : 0,
+            connectedGraphHeight = contrail.checkIfKeyExistInObject(true, directedGraphSize, 'height') ? directedGraphSize.height : 0,
             availableGraphWidth = $(connectedSelectorId).parents('.col1').width(),
             availableGraphHeight = $(connectedSelectorId).parents('.col1').height(),
             panX = (availableGraphWidth - connectedGraphWidth) / 2,

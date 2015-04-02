@@ -262,6 +262,9 @@ define([
         };
 
         this.parseLineChartData = function(responseArray) {
+            if (responseArray.length == 0) {
+                return [];
+            }
             var response = responseArray[0],
                 rawdata = response['flow-series'],
                 inBytes = {key: "In Bytes", values: [], color: d3_category5[0]}, outBytes = {
