@@ -57,16 +57,6 @@ define([
                                             yLbl: 'Networks',
                                             forceX: [0, 5],
                                             forceY: [0, 10],
-                                            link: {
-                                                hashParams: {
-                                                    q: {
-                                                        view: 'details',
-                                                        type: 'project',
-                                                        source: 'uve'
-                                                    }
-                                                },
-                                                conf: {p: 'mon_networking_project', merge: false}
-                                            },
                                             chartOptions: {tooltipFn: getProjectTooltipConfig, clickFn: onScatterChartClick},
                                             hideLoadingIcon: false
                                         }

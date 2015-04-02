@@ -62,12 +62,6 @@ define([
                                             yLbl: 'Connected Networks',
                                             forceX: [0, 5],
                                             forceY: [0, 10],
-                                            link: {
-                                                hashParams: {
-                                                    q: { view: 'list', type: 'network', fqName: 'default:domain', source: 'uve', context: 'domain' }
-                                                },
-                                                conf: {p: 'mon_networking_networks', merge: false}
-                                            },
                                             chartOptions: {tooltipFn: getNetworkTooltipConfig, clickFn: onScatterChartClick},
                                             hideLoadingIcon: false
                                         }

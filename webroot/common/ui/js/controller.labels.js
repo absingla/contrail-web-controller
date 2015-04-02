@@ -147,6 +147,7 @@ define([
         this.NETWORKS_BREADCRUMB_DROPDOWN = "networks-breadcrumb-dropdown";
 
         this.INSTANCE_GRAPH_ID = "instance-graph";
+        this.INSTANCES_CPU_MEM_CHART_ID = "instances-cpu-mem-chart";
         this.INSTANCE_TABS_ID = "instance-tabs";
         this.INSTANCE_DETAILS_ID = "instance-details";
         this.INSTANCE_TRAFFIC_STATS_ID = "instance-traffic-stats";

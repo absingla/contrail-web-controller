@@ -169,6 +169,18 @@ define([
                     currObject['floatingIP'].push(contrail.format('{0}<br/> ({1}/{2})', fipObj['ip_address'],formatBytes(ifNull(fipObj['in_bytes'],'-')),
                         formatBytes(ifNull(fipObj['out_bytes'],'-'))));
                 });
+
+                var cpuInfo = getValueByJsonPath(currObj,'UveVirtualMachineAgent;cpu_info');
+                if(contrail.checkIfExist(cpuInfo)) {
+                    currObject['y'] = cpuInfo['cpu_one_min_avg'];
+                    currObject['x'] = cpuInfo['virt_memory'];
+                } else {
+                    currObject['y'] = 0;
+                    currObject['x'] = 0;
+                }
+
+                currObject['size'] = 6;
+
                 return currObject;
             });
             return retArr;

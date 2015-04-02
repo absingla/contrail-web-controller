@@ -581,6 +581,24 @@ define([
                 view: "details",
                 focusedElement: {
                     fqName: networkFQN,
+                    type: ctwc.GRAPH_ELEMENT_NETWORK,
+                    uuid: instanceUUID
+                }
+            };
+
+            if(contrail.checkIfKeyExistInObject(true, hashParams, 'clickedElement')) {
+                hashObj.clickedElement = hashParams.clickedElement;
+            }
+
+            layoutHandler.setURLHashParams(hashObj, {p: "mon_networking_instances", merge: false, triggerHashChange: triggerHashChange});
+        };
+
+        this.setInstanceURLHashParams = function(hashParams, networkFQN, instanceUUID, triggerHashChange) {
+            var hashObj = {
+                type: "instance",
+                view: "details",
+                focusedElement: {
+                    fqName: networkFQN,
                     uuid: instanceUUID,
                     type: ctwc.GRAPH_ELEMENT_NETWORK
                 }

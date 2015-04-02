@@ -53,7 +53,7 @@ define([
                 formatter: function (r, c, v, cd, dc) {
                     return cellTemplateLinks({cellText: 'vmName', tooltip: true, name: 'instance', rowData: dc});
                 },
-                minWidth: 150,
+                minWidth: 250,
                 searchable: true,
                 events: {
                     onClick: onClickGrid
