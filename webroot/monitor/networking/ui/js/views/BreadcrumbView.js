@@ -74,7 +74,9 @@ define([
             });
 
             if(urlDomainFQN != null && urlDataKey == null) {
-                $(contentContainer).html('<p id="content-container-error"><i class="icon-warning-sign"></i> &nbsp; ' + urlDomainFQN + ' is not a valid domain.</p>'); //TODO - Styles
+                var errorTemplate = contrail.getTemplate4Id(cowc.TMPL_404_NOT_FOUND),
+                    errorMessage = urlDomainFQN + ' was not found.';
+                $(contentContainer).html(errorTemplate({errorMessage: errorMessage}));
             } else {
                 selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
                 selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
@@ -129,7 +131,9 @@ define([
             });
 
             if(urlProjectFQN != null && urlDataKey == null) {
-                $(contentContainer).html('<p id="content-container-error"><i class="icon-warning-sign"></i> &nbsp; ' + urlProjectFQN + ' is not a valid project.</p>'); //TODO - Styles
+                var errorTemplate = contrail.getTemplate4Id(cowc.TMPL_404_NOT_FOUND),
+                    errorMessage = urlProjectFQN + ' was not found.';
+                $(contentContainer).html(errorTemplate({errorMessage: errorMessage}));
             } else {
                 selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
                 selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
@@ -180,7 +184,9 @@ define([
             });
 
             if(urlNetworkFQN != null && urlDataKey == null) {
-                $(contentContainer).html('<p id="content-container-error"><i class="icon-warning-sign"></i> &nbsp; ' + urlNetworkFQN + ' is not a valid Network.</p>'); //TODO - Styles
+                var errorTemplate = contrail.getTemplate4Id(cowc.TMPL_404_NOT_FOUND),
+                    errorMessage = urlNetworkFQN + ' was not found.';
+                $(contentContainer).html(errorTemplate({errorMessage: errorMessage}));
             } else {
 
                 selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
