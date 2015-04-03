@@ -104,7 +104,7 @@ define([
                 type: ctwl.TITLE_GRAPH_ELEMENT_VIRTUAL_MACHINE
             },
             content: {
-                iconClass: 'icon-contrail-virtual-machine',
+                iconClass: 'icon-contrail-virtual-machine font-size-30',
                 info: [
                     {label: 'Network', value: data.vnFQN},
                     {label: 'Name', value: data.vmName},
@@ -120,6 +120,9 @@ define([
                         callback: onScatterChartClick
                     }
                 ]
+            },
+            dimension: {
+                width: 350
             }
         };
     };

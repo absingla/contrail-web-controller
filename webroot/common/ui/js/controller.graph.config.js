@@ -48,6 +48,9 @@ define([
                             actions: actions
                         });
                     },
+                    dimension: {
+                        width: 360
+                    },
                     actionsCallback: function (element, jointObject) {
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
                             actions = [];
@@ -92,6 +95,9 @@ define([
                             actions: actions
                         });
                     },
+                    dimension: {
+                        width: 355
+                    },
                     actionsCallback: function (element, jointObject) {
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
                             actions = [];
@@ -135,6 +141,9 @@ define([
                             iconClass: 'icon-contrail-network-ipam',
                             actions: actions
                         });
+                    },
+                    dimension: {
+                        width: 355
                     },
                     actionsCallback: function (element, jointObject) {
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
@@ -182,7 +191,6 @@ define([
                             });
                         }
 
-
                         return tooltipContent({
                             info: [
                                 {label: 'Project', value: virtualNetworkName[0] + ':' + virtualNetworkName[1]},
@@ -199,6 +207,9 @@ define([
                             iconClass: 'icon-contrail-virtual-network',
                             actions: actions
                         });
+                    },
+                    dimension: {
+                        width: 340
                     },
                     actionsCallback: function (element, jointObject) {
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
@@ -255,7 +266,9 @@ define([
                             actions: actions
                         });
                     },
-
+                    dimension: {
+                        width: 355
+                    },
                     actionsCallback: function (element, jointObject) {
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
                             actions = [];
@@ -288,6 +301,9 @@ define([
                             ],
                             iconClass: 'icon-contrail-virtual-machine font-size-30'
                         });
+                    },
+                    dimension: {
+                        width: 355
                     }
                 },
                 link: {
@@ -395,6 +411,9 @@ define([
                         }
 
                         return tooltipContent({info: data, iconClass: 'icon-long-arrow-right'});
+                    },
+                    dimension: {
+                        width: 355
                     }
                 }
             };
