@@ -43,6 +43,19 @@ define([
                 },
                 controlPanel: getControlPanelConfig(graphConfig, selectorId, connectedSelectorId, configSelectorId),
                 successCallback: function (jointObject, directedGraphSize) {
+                    if (jointObject.graph.elementsDataObj.nodes.length == 0) {
+                        var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
+                            notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {
+                                title: ctwm.NO_NETWORK_FOUND,
+                                iconClass: false,
+                                defaultErrorMessage: false,
+                                navLinks: [ctwc.CONFIGURE_NETWORK_LINK_CONFIG]
+                            });
+
+                        $(selectorId).html(notFoundTemplate(notFoundConfig));
+                        return;
+                    }
+
                     var currentHashParams = layoutHandler.getURLHashParams(),
                         connectedGraphView = jointObject.paper,
                         focusedElement = graphConfig.focusedElement;

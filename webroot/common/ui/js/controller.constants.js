@@ -107,6 +107,12 @@ define([
         this.GRAPH_ELEMENT_INSTANCE = 'virtual-machine';
         this.GRAPH_ELEMENT_CONNECTED_NETWORK = 'connected-network';
         this.GRAPH_ELEMENT_NETWORK_POLICY = 'network-policy';
+
+        this.CONFIGURE_NETWORK_LINK_CONFIG = {
+            text: 'Go to configure network page',
+            href: '/#p=config_net_vn'
+        }
+
     };
     return CTConstants;
 });

@@ -74,9 +74,10 @@ define([
             });
 
             if(urlDomainFQN != null && urlDataKey == null) {
-                var errorTemplate = contrail.getTemplate4Id(cowc.TMPL_404_NOT_FOUND),
-                    errorMessage = urlDomainFQN + ' was not found.';
-                $(contentContainer).html(errorTemplate({errorMessage: errorMessage}));
+                var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
+                    notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {errorMessage: urlDomainFQN + ' was not found.'});
+
+                $(contentContainer).html(notFoundTemplate(notFoundConfig));
             } else {
                 selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
                 selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
@@ -86,6 +87,7 @@ define([
                     dataTextField: "name",
                     dataValueField: "value",
                     data: dropdownData,
+                    dropdownCssClass: 'min-width-150',
                     change: function (e) {
                         var selectedValueData = {
                             name: domainDropdownElement.data('contrailDropdown').text(),
@@ -131,9 +133,10 @@ define([
             });
 
             if(urlProjectFQN != null && urlDataKey == null) {
-                var errorTemplate = contrail.getTemplate4Id(cowc.TMPL_404_NOT_FOUND),
-                    errorMessage = urlProjectFQN + ' was not found.';
-                $(contentContainer).html(errorTemplate({errorMessage: errorMessage}));
+                var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
+                    notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {errorMessage: urlProjectFQN + ' was not found.'});
+
+                $(contentContainer).html(notFoundTemplate(notFoundConfig));
             } else {
                 selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
                 selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
@@ -143,6 +146,7 @@ define([
                     dataTextField: "name",
                     dataValueField: "value",
                     data: dropdownData,
+                    dropdownCssClass: 'min-width-150',
                     selecting: function (e) {
                         var selectedValueData = {
                             name: e.object['name'],
@@ -184,9 +188,10 @@ define([
             });
 
             if(urlNetworkFQN != null && urlDataKey == null) {
-                var errorTemplate = contrail.getTemplate4Id(cowc.TMPL_404_NOT_FOUND),
-                    errorMessage = urlNetworkFQN + ' was not found.';
-                $(contentContainer).html(errorTemplate({errorMessage: errorMessage}));
+                var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
+                    notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {errorMessage: urlNetworkFQN + ' was not found.'});
+
+                $(contentContainer).html(notFoundTemplate(notFoundConfig));
             } else {
 
                 selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
@@ -197,6 +202,7 @@ define([
                     dataTextField: "name",
                     dataValueField: "value",
                     data: dropdownData,
+                    dropdownCssClass: 'min-width-150',
                     change: function (e) {
                         var selectedValueData = {
                             name: networkDropdownElement.data('contrailDropdown').text(),
