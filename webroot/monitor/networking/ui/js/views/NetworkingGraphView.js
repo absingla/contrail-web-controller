@@ -43,7 +43,7 @@ define([
                 },
                 controlPanel: getControlPanelConfig(graphConfig, selectorId, connectedSelectorId, configSelectorId),
                 successCallback: function (jointObject, directedGraphSize) {
-                    if (jointObject.graph.elementsDataObj.nodes.length == 0) {
+                    if (jointObject.graph.elementsDataObj.elements.length == 0) {
                         var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
                             notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {
                                 title: ctwm.NO_NETWORK_FOUND,

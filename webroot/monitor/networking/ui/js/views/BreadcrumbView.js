@@ -56,9 +56,7 @@ define([
         var dropdownData = contrailListModel.getItems();
 
         if (dropdownData.length > 0) {
-            var domainDropdownElementId = ctwl.DOMAINS_BREADCRUMB_DROPDOWN,
-                domainDropdownElement = constructBreadcrumbDropdownDOM(domainDropdownElementId),
-                selectedValueData = null,
+            var selectedValueData = null,
                 urlDomainFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,1).join(':') : null),
                 cookieDomainFQN = contrail.getCookie(cowc.COOKIE_DOMAIN),
                 urlDataKey = null, cookieDataKey = null;
@@ -79,6 +77,9 @@ define([
 
                 $(contentContainer).html(notFoundTemplate(notFoundConfig));
             } else {
+                var domainDropdownElementId = ctwl.DOMAINS_BREADCRUMB_DROPDOWN,
+                    domainDropdownElement = constructBreadcrumbDropdownDOM(domainDropdownElementId);
+
                 selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
                 selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
                 selectedValueData = (selectedValueData == null) ? dropdownData[0] : selectedValueData;
@@ -115,9 +116,7 @@ define([
         var dropdownData = contrailListModel.getItems();
 
         if (dropdownData.length > 0) {
-            var projectDropdownElementId = ctwl.PROJECTS_BREADCRUMB_DROPDOWN,
-                projectDropdownElement = constructBreadcrumbDropdownDOM(projectDropdownElementId),
-                selectedValueData = null,
+            var selectedValueData = null,
                 urlProjectFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,2).join(':') : null),
                 cookieProjectFQN = contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' + contrail.getCookie(cowc.COOKIE_PROJECT),
                 urlDataKey = null, cookieDataKey = null;
@@ -138,6 +137,9 @@ define([
 
                 $(contentContainer).html(notFoundTemplate(notFoundConfig));
             } else {
+                var projectDropdownElementId = ctwl.PROJECTS_BREADCRUMB_DROPDOWN,
+                    projectDropdownElement = constructBreadcrumbDropdownDOM(projectDropdownElementId);
+
                 selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
                 selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
                 selectedValueData = (selectedValueData == null) ? dropdownData[0] : selectedValueData;
@@ -170,9 +172,7 @@ define([
         var dropdownData = contrailListModel.getItems();
 
         if (dropdownData.length > 0) {
-            var networkDropdownElementId = ctwl.NETWORKS_BREADCRUMB_DROPDOWN,
-                networkDropdownElement = constructBreadcrumbDropdownDOM(networkDropdownElementId),
-                selectedValueData = null,
+            var selectedValueData = null,
                 urlNetworkFQN = ((contrail.checkIfExist(fqName)) ? fqName.split(':').splice(0,3).join(':') : null),
                 cookieNetworkFQN = contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' + contrail.getCookie(cowc.COOKIE_PROJECT) + ':' + contrail.getCookie(cowc.COOKIE_VIRTUAL_NETWORK),
                 urlDataKey = null, cookieDataKey = null;
@@ -193,6 +193,8 @@ define([
 
                 $(contentContainer).html(notFoundTemplate(notFoundConfig));
             } else {
+                var networkDropdownElementId = ctwl.NETWORKS_BREADCRUMB_DROPDOWN,
+                    networkDropdownElement = constructBreadcrumbDropdownDOM(networkDropdownElementId);
 
                 selectedValueData = (selectedValueData == null && urlDataKey != null) ? dropdownData[urlDataKey] : selectedValueData;
                 selectedValueData = (selectedValueData == null && cookieDataKey != null) ? dropdownData[cookieDataKey] : selectedValueData;
