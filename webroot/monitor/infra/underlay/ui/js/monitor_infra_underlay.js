@@ -91,16 +91,19 @@ underlayModel.prototype.getChildChassisType = function(parent_chassis_type) {
     }
 }
 
-underlayModel.prototype.parseTree = function(parents, tree) {
+underlayModel.prototype.parseTree = function(parents, tree, tmpTree) {
     if(null !== parents && false !== parents && 
         typeof parents === "object" && parents.length > 0) {
         for(var i=0; i<parents.length; i++) {
+            if(tmpTree.hasOwnProperty(parents[i].name)) {
+                delete tmpTree[parents[i].name];
+            }
             var parent_chassis_type = parents[i].chassis_type;
             var children_chassis_type = this.getChildChassisType(parent_chassis_type);
             tree[parents[i].name] = parents[i];
             var children = this.getChildren(parents[i].name, children_chassis_type)
             tree[parents[i].name]["children"] = {};
-            this.parseTree(children, tree[parents[i].name]["children"]);
+            this.parseTree(children, tree[parents[i].name]["children"], tmpTree);
         }
     }
     return tree;
@@ -111,7 +114,11 @@ underlayModel.prototype.formTree = function() {
     var links = this.getLinks();
     var cores = this.getCores();
     var tree = this.getTree();
+    var tmpTree = {};
     var firstLevelNodes = [];
+    for(var i=0; i<nodes.length; i++) {
+        tmpTree[nodes[i].name] = nodes[i];
+    }
     if(cores.length > 0) {
         firstLevelNodes = cores;
     } else {
@@ -125,7 +132,12 @@ underlayModel.prototype.formTree = function() {
             }
         }
     }
-    this.parseTree(firstLevelNodes, tree);
+    this.parseTree(firstLevelNodes, tree, tmpTree);
+    if(JSON.stringify(tmpTree) !== "{}") {
+        $.each(tmpTree, function (elementKey, elementValue) {
+            tree[elementKey] = elementValue;
+        });
+    }
     this.setTree(tree);
 }
 
@@ -448,8 +460,8 @@ underlayView.prototype.calculateDimensions = function(expand) {
     var viewAreaHeight = viewArea.height;
     var viewAreaWidth = viewArea.width;
 
-    var topologyHeight = (expand === true) ? viewAreaHeight*90/100 : viewAreaHeight*60/100;
-    var detailsTabHeight = (expand === true) ? viewAreaHeight*10/100 : viewAreaHeight*40/100;
+    var topologyHeight = (expand === true) ? viewAreaHeight*90/100 : viewAreaHeight*70/100;
+    var detailsTabHeight = (expand === true) ? viewAreaHeight*10/100 : viewAreaHeight*30/100;
     return {
         "underlay_topology": {
             width: viewAreaWidth,
@@ -876,12 +888,18 @@ underlayView.prototype.createNode = function(node) {
         width = 40,
         height = 40,
         imageLink, element, options, imageName;
+        var refX, refY;
+        var labelNodeName = contrail.truncateText(nodeName,20);
         switch(chassis_type) {
             case "spine":
                 chassis_type = 'router';
                 break;
             case "tor":
                 chassis_type = 'switch';
+                break;
+            case "virtual-machine":
+                labelNodeName = contrail.truncateText(nodeName,10);
+                refY = .9;
                 break;
         }
         imageName = getImageName(node);
@@ -894,7 +912,8 @@ underlayView.prototype.createNode = function(node) {
                     height: height
                 },
                 text: {
-                    text: contrail.truncateText(nodeName,20)
+                    text: labelNodeName,
+                    "ref-y": refY
                 }
             },
             size: {
@@ -1440,6 +1459,7 @@ underlayView.prototype.initGraphEvents = function() {
                     _this.updateWhereClause();
                     data['type'] = VROUTER;
                     data['name'] = nodeDetails['name'];
+                    data['ip'] = getValueByJsonPath(nodeDetails,'more_attributes;VrouterAgent;self_ip_list;0','-');
                     _this.populateDetailsTab(data);
                     break;
                 case 'contrail.VirtualMachine':
@@ -1452,17 +1472,18 @@ underlayView.prototype.initGraphEvents = function() {
                             intfLen = intfList.length;
                             instDetails = instances[i];
                             vmName = instances[i]['more_attributes']['vm_name'];
-                            if (intfLen > 1) {
-                                for(var j = 0; j < intfLen; j++) {
-                                    ip.push(intfList[j]['ip_address']);
-                                    vnList.push(intfList[j]['virtual_network']);
+                            for(var j = 0; j < intfLen; j++) {
+                                var intfObj = intfList[j];
+                                ip.push(ifNull(intfObj['ip_address'],'-'));
+                                vnList.push(ifNull(intfObj['virtual_network'],'-'));
+                                for(var k = 0; k < ifNull(intfObj['floating_ips'],[]).length > 0; k++) {
+                                    ip.push(ifNull(intfObj['floating_ips'][k]['ip_address'],'-'));
+                                    vnList.push(ifNull(intfObj['floating_ips'][k]['virtual_network'],'-'));
                                 }
-                            } else {
-                               ip[0] =  intfList[0]['ip_address'];
-                               vnList[0] = intfList[0]['virtual_network'];
                             }
-                            var networkName = vnList[0].split(':')[2];
-                            var projectName = '('+vnList[0].split(':')[1]+')';
+                            var vnNameArr = ifNull(vnList[0].split(':'),[]);
+                            var networkName = ifNull(vnNameArr[2],'-');
+                            var projectName = '('+ifNull(vnNameArr[2],'-')+')';
                             srcVN += networkName +" "+ projectName;
                             break;
                         }
@@ -1870,19 +1891,17 @@ underlayView.prototype.renderFlowRecords = function() {
 underlayView.prototype.updateWhereClause = function () {
     var nodeType = $("#underlay_topology").data('nodeType');
     var nodeName = $("#underlay_topology").data('nodeName');
-    var whereClauseStr;
+    var whereClauseStr = '';
     if(nodeType == VROUTER) {
         whereClauseStr = '(vrouter = '+nodeName+')';
     } else if(nodeType == VIRTUALMACHINE) {
         var nodeIp = ifNull($("#underlay_topology").data('nodeIp'),[]);
         var vnList = ifNull($("#underlay_topology").data('vnList'),[]);
-        whereClauseStr = '(';
         for(var i = 0; i < nodeIp.length; i++) {
-            whereClauseStr += 'sourcevn = '+vnList[i]+' AND sourceip = '+nodeIp[i];
+            whereClauseStr += '( sourcevn = '+vnList[i]+' AND sourceip = '+nodeIp[i]+' )';
             if((i+1) < nodeIp.length)
-                whereClauseStr += 'AND';
+                whereClauseStr += ' OR ';
         }
-        whereClauseStr += ')';
     }
     $('#fr-where').val(whereClauseStr);
 }
@@ -2077,6 +2096,20 @@ underlayView.prototype.renderTracePath = function(options) {
                                 $("#btnNextFlows").attr('disabled','disabled'); 
                             return monitorInfraComputeFlowsClass.parseFlowsData(response,gridRenderDefObj);
                         },
+                    },
+                    events:{
+                        onDataBoundCB : function () {
+                            var gridObj = $("#vrouterflows").data('contrailGrid');
+                            if(gridObj != null) {
+                                var dataItems = gridObj._dataView.getItems();
+                                var dataItemsLen = dataItems.length;
+                                for(var i = 0; i < dataItemsLen; i++) {
+                                    if(dataItems[i]['peer_vrouter'] == null) {
+                                        $("[data-cgrid='"+dataItems[i]['cgrid']+"']").find('input.rowCheckbox').attr('disabled',true);
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 statusMessages: {
@@ -2892,6 +2925,7 @@ underlayController.prototype.getModelData = function(cfg) {
                 $("#network_topology").find('.topology-visualization-loading').hide();
                 if(getValueByJsonPath(forceResponse,'nodes',[]).length == 0 ) {
                     showEmptyInfo('network_topology');
+                    $("#underlay_tabstrip").tabs('disable');
                 } else if(forceResponse['topologyChanged']) {
                     var graph = _this.getView().getGraph();
                     graph.clear();
@@ -2917,11 +2951,13 @@ underlayController.prototype.getModelData = function(cfg) {
         callback : function (response) {
             //removing the progress bar
             $("#network_topology").find('.topology-visualization-loading').hide();
-            //Enabling the below tabs only on success of ajax calls.
-            $("#underlay_tabstrip").tabs('enable');
-            //Rendering the first search flows tab
-            underlayView.prototype.renderFlowRecords();
             topologyCallback(response);
+            if(getValueByJsonPath(response,'nodes',[]).length > 0) {
+                //Enabling the below tabs only on success of ajax calls.
+                $("#underlay_tabstrip").tabs('enable');
+                //Rendering the first search flows tab
+                underlayView.prototype.renderFlowRecords();
+            }
             _this.getModel().getData(forceCallCfg);
         },
         //Calling the force refresh call on failure of the cache call
