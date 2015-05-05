@@ -1102,6 +1102,19 @@ function getVirtualMachinesSummary (req, res, appData)
     sendOpServerResponseByURL(url, req, res, appData);
 }
 
+function getVirtualInterfacesSummary (req, res, appData)
+{
+    var postData = req.body,
+        kfilt = postData['kfilt'],
+        cfilt = postData['cfilt'],
+        url = '/analytics/uves/virtual-machine-interface/*?kfilt=' + kfilt;
+
+    if(cfilt != null && cfilt != '') {
+        url += "&cfilt=" + cfilt;
+    }
+    sendOpServerResponseByURL(url, req, res, appData);
+}
+
 function vnLinkListed (srcVN, dstVN, dir, vnNodeList)
 {
     var cnt = vnNodeList.length;
@@ -2991,6 +3004,8 @@ function getStats(req, res) {
         "where":[[{"name":"name","value":"94e7640f-de61-4499-ac61-cfa54ce904f0","op":1}],
                  [{"name":"name","value":"e2d54418-a40c-48d8-968f-2769abbd25e2","op":1}]],"dir":1}*/
 
+    console.log(JSON.stringify(queryJSON));
+
     nwMonUtils.getStatDataByQueryJSON(queryJSON,null,function(err, data) {
        logutils.logger.debug(JSON.stringify(data)); 
        commonUtils.handleJSONResponse(err, res, data);
@@ -3057,6 +3072,7 @@ exports.getPortLevelFlowSeries = getPortLevelFlowSeries;
 exports.getFlowSeriesByCPU = getFlowSeriesByCPU;
 exports.getVirtualNetworksSummary = getVirtualNetworksSummary;
 exports.getVirtualMachinesSummary = getVirtualMachinesSummary;
+exports.getVirtualInterfacesSummary = getVirtualInterfacesSummary;
 exports.getNetworkTreeTopology = getNetworkTreeTopology;
 exports.getProjectTreeTopology = getProjectTreeTopology;
 exports.getVMDetails = getVMDetails;
