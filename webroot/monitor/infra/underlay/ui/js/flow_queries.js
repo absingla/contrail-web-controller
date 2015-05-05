@@ -41,38 +41,54 @@ fsQuery['fcColumnDisplay'] = [
 ];
 
 frQuery['columnDisplay'] = [
-    {select:"other_vrouter_ip", display:{id:'other_vrouter_ip', field:'other_vrouter_ip', width:170, name:"Other Virtual Router", groupable:false,formatter: 
+    {select:"other_vrouter_ip", display:{id:'other_vrouter_ip', field:'other_vrouter_ip', width:150, name:"Other Virtual Router", groupable:false,formatter: 
             function(r, c, v, cd, dc){
                     var ip = validateIPAddress(handleNull4Grid(dc['other_vrouter_ip'])) == true ? handleNull4Grid(dc['other_vrouter_ip']) : noDataStr,
                         retStr = '-';    
                     if(ip != noDataStr) {
-                        var vRouterDetails = underlayView.prototype.getvRouterVMDetails(ip,'self_ip_list',VROUTER);
-                        retStr = contrail.format('{0} ({1})',ifNull(vRouterDetails['name'],'-'), ip);
+                        if(null !== underlayRenderer && typeof underlayRenderer === "object") {
+                            var vRouterDetails = underlayRenderer.getView().getvRouterVMDetails(ip,'self_ip_list',VROUTER);
+                            retStr = contrail.format('{0} ({1})',ifNull(vRouterDetails['name'],'-'), ip);
+                        }
                     }
                 return retStr;
             }
         }
     },
-    {select:"protocol", display:{id:"protocol", field:"protocol", width:80, name:"Protocol", groupable:true, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(getProtocolName(dc.protocol));}}},
-    {select:"sourcevn", display:{id:"sourcevn", field:"sourcevn", width:175, name:"Source VN", groupable:true, formatter: 
+    {select:"vrouter_ip", display:{id:'vrouter_ip', field:'vrouter_ip', width:150, name:"Virtual Router", groupable:false,formatter: 
+            function(r, c, v, cd, dc){
+                    var ip = validateIPAddress(handleNull4Grid(dc['vrouter_ip'])) == true ? handleNull4Grid(dc['vrouter_ip']) : noDataStr,
+                        retStr = '-';    
+                    if(ip != noDataStr) {
+                        if(null !== underlayRenderer && typeof underlayRenderer === "object") {
+                            var vRouterDetails = underlayView.prototype.getvRouterVMDetails(ip,'self_ip_list',VROUTER);
+                            retStr = contrail.format('{0} ({1})',ifNull(vRouterDetails['name'],'-'), ip);
+                        }
+                    }
+                return retStr;
+            }
+        }
+    },
+    {select:"protocol", display:{id:"protocol", field:"protocol", width:75, name:"Protocol", groupable:true, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(getProtocolName(dc.protocol));}}},
+    {select:"sourcevn", display:{id:"sourcevn", field:"sourcevn", width:125, name:"Source VN", groupable:true, formatter: 
             function(r, c, v, cd, dc){
                     var vn = handleNull4Grid(dc.sourcevn);
                     return formatVN(vn);
             }
         }
     },
-    {select:"sourceip", display:{id:"sourceip", field:"sourceip", width:100, name:"Source IP", groupable:true, formatter: function(r, c, v, cd, dc){ return (
+    {select:"sourceip", display:{id:"sourceip", field:"sourceip", width:90, name:"Source IP", groupable:true, formatter: function(r, c, v, cd, dc){ return (
                         validateIPAddress(handleNull4Grid(dc['sourceip'])) == true ? handleNull4Grid(dc['sourceip']) : noDataStr)}}},
     {select:"sport", display:{id:"sport", field:"sport", width:70, name:"Source Port", groupable:true, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.sport);}}},
     {select:"direction_ing", display:{id:"direction_ing", field:"direction_ing", width:90, name:"Direction", groupable:true, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(getDirName(dc.direction_ing));}}},
-    {select:"destvn", display:{id:"destvn", field:"destvn", width:175, name:"Destination VN", groupable:true, formatter: 
+    {select:"destvn", display:{id:"destvn", field:"destvn", width:125, name:"Destination VN", groupable:true, formatter: 
             function(r, c, v, cd, dc){ 
                 var vn = handleNull4Grid(dc.destvn);
                 return formatVN(vn); 
             }
         }
     },
-    {select:"destip", display:{id:"destip", field:"destip", width:100, name:"Destination IP", groupable:true, formatter: function(r, c, v, cd, dc){ return (validateIPAddress(handleNull4Grid(dc['destip'])) == true ? handleNull4Grid(dc['destip']) : noDataStr)}}},
+    {select:"destip", display:{id:"destip", field:"destip", width:90, name:"Destination IP", groupable:true, formatter: function(r, c, v, cd, dc){ return (validateIPAddress(handleNull4Grid(dc['destip'])) == true ? handleNull4Grid(dc['destip']) : noDataStr)}}},
     {select:"dport", display:{id:"dport", field:"dport", width:70, name:"Destination Port", groupable:true, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.dport);}}},
     {select:"agg-bytes", display:{id:'agg-bytes', field:'agg-bytes', width:120, name:"Bytes/Packets", groupable:false,formatter: function(r, c, v, cd, dc) {return contrail.format("{0}/{1}",formatBytes(dc['agg-bytes'],'-'),dc['agg-packets']);}}},
 ];
@@ -724,17 +740,21 @@ function runFRQuery() {
         //validator = initValidateDate("fr"),
         queryPrefix = 'fr',
         options = getFRDefaultOptions(),
-        select = "other_vrouter_ip,agg-bytes",
         columnDisplay, selectArray, queryId;
     //if ($("#" + queryPrefix + "-query-form").valid()) {
     	//collapseWidget('#fr-query-widget');
-        queryId = randomUUID();
         collapseWidget('#fr-query-widget');
+        var select = '',vrouterRegex = /\(?\s*vrouter\s?=/;
+        //vrouter should in query only when it is not there in where clause
+        if(reqQueryObj['where'] != null && !vrouterRegex.test(reqQueryObj['where'])) {
+            select = "other_vrouter_ip,vrouter_ip,agg-bytes";
+        } else {
+            select = "other_vrouter_ip,agg-bytes";
+        }
         var option = {};
         reqQueryObj = setUTCTimeObj('fr', reqQueryObj, option);
         reqQueryObj.table = 'FlowRecordTable';
-        reqQueryObj.queryId = queryId;
-        reqQueryObj.async = 'true';
+        reqQueryObj.async = 'false';
         selectArray = parseStringToArray(select, ',');
         selectArray = selectArray.concat(queries['fr']['defaultColumns']);
         columnDisplay = getColumnDisplay4Grid(queries['fr']['columnDisplay'], selectArray, true);
@@ -786,7 +806,9 @@ function viewFRQueryResults(dataItem, params) {
 function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridDisplay,reverseTraceFlow) {
     var grid = $('#' + options.elementId).data('contrailGrid'),
         url = "/api/admin/reports/query",
-        btnId = options.btnId;
+        btnId = options.btnId,
+        dataView = new ContrailDataView(),
+        gridObject;
     
     var gridConfig = {
         header: {
@@ -808,16 +830,7 @@ function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridD
                 forceFitColumns: true,
             },
             dataSource : {
-                remote: {
-                    ajaxConfig: {
-                        url: url,
-                        timeout: options.timeOut,
-                        type: "POST",
-                        data: reqQueryObj
-                    },
-                    serverSidePagination: true,
-                    exportFunction: exportServersideQueryResults
-                },
+                dataView: dataView,
                 events : {
                     onRequestStartCB : function() {
                         onQueryRequestStart(btnId);
@@ -878,7 +891,6 @@ function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridD
             }
         }
     };
-    
     if(options.queryPrefix == 'fs'){
         if (grid) {
             $('#ts-chart').empty();
@@ -915,7 +927,8 @@ function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridD
                     $(e['currentTarget']).attr('checked',true);
                 }
             },
-            actionCell: []
+            actionCell: [],
+            lazyLoading:true,
         };
         $("#mapflow").die('click').live('click',function(e){
             var startTime = $("#"+options.queryPrefix+"-results").data('startTimeUTC');
@@ -927,8 +940,22 @@ function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridD
             showUnderlayPaths(dataItem);
         });
     }
-
     $("#" + options.elementId).contrailGrid(gridConfig);
+    gridObject = $("#"+options.elementId).data('contrailGrid');
+    $.ajax({
+        url:url+'?'+$.param(reqQueryObj),
+    }).done(function(response){
+        dataView.setData(response['data']);
+        if(response['data'].length == 0 && gridObject != null) {
+            gridObject.showGridMessage('empty');
+        }
+    }).fail(function(error){
+        if(gridObject != null) {
+            gridObject.showGridMessage('error');
+        }
+    }).always(function() {
+          $("#" + options.elementId).find('.grid-header-icon-loading').hide();
+    });
     $("#" + options.elementId).find('input.headerRowCheckbox').parent('span').remove();
     $('#fs-results').find('a[data-action="collapse"]').on('click', function(){
         if($(this).find('i.collapse-icon').hasClass('icon-chevron-up')){
@@ -948,7 +975,7 @@ function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridD
 function getFRDefaultOptions() {
     return {
         elementId:'fr-results', gridHeight:480,
-        timeOut:60000, pageSize:15, queryPrefix:'fr', export:true,
+        timeOut:60000, pageSize:10, queryPrefix:'fr', export:true,
         btnId:'fr-query-submit'
     };
 };
