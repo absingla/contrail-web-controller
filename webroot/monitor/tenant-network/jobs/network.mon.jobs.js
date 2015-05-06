@@ -1620,12 +1620,12 @@ function processVMFlowSeriesData(pubChannel, saveChannelKey, jobData, done) {
     if (fip) {
         table = 'StatTable_UveVMInterfaceAgent_fip_diff_stats';
         selectArr = ['SUM(fip_stats.out_bytes)', 'SUM(fip_stats.in_bytes)', 'SUM(fip_stats.out_pkts)', 'SUM(fip_stats.in_pkts)', strTimeGran, 'name'];
-        whereClause = [ {'name': vmVnName} ];
+        whereClause = [ {'fip_diff_stats.ip_address': ip} ];
         context = 'fip';
     }
     var queryJSON = formatQueryString(table, whereClause, selectArr, timeObj, true, null, global.TRAFFIC_DIR_INGRESS, true);
 
-    logutils.logger.debug(JSON.stringify(queryJSON));
+    //logutils.logger.debug(JSON.stringify(queryJSON));
 
     //Removing the flow_count select field from query as not required for the OracleStats
     var flowCountIdx = queryJSON['select_fields'].indexOf('flow_count');
