@@ -67,6 +67,7 @@ define([
             vm_memory_quota: 'Total Memory',
             vrouter: 'Virtual Router',
             vm_name: "Name",
+            vn: "Virtual Networks",
 
             /*Interface Details */
             uuid: 'UUID',
@@ -185,7 +186,7 @@ define([
         this.TITLE_INSTANCE_DETAILS = "Instance Details";
 
         this.TITLE_INTERFACES = "Interfaces";
-        this.TITLE_INTERFACE_DETAILS = "Instance Details";
+        this.TITLE_INTERFACE_DETAILS = "Interface Details";
         this.TITLE_INTERFACES_SUMMARY = "Interfaces Summary";
 
         this.TITLE_CONNECTED_NETWORK_DETAILS = "Connected Network Details";

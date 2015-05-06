@@ -68,7 +68,7 @@ define([
             {
                 field: 'virtual_network',
                 name: 'Network',
-                minWidth: 150,
+                minWidth: 200,
                 searchable: true
             },
             {
@@ -98,7 +98,7 @@ define([
                 formatter: function (r, c, v, cd, dc) {
                     return cellTemplateLinks({cellText: 'vmName', tooltip: true, name: 'instance', rowData: dc});
                 },
-                minWidth: 250,
+                minWidth: 150,
                 searchable: true,
                 events: {
                     onClick: onClickGrid
@@ -111,13 +111,13 @@ define([
                 formatter: function (r, c, v, cd, dc) {
                     return getMultiValueStr(dc['vn']);
                 },
-                minWidth: 200,
+                minWidth: 150,
                 searchable: true
             },
             {
                 field: 'intfCnt',
                 name: 'Interfaces',
-                minWidth: 100
+                minWidth: 80
             },
             {
                 field: 'vRouter',
@@ -137,8 +137,9 @@ define([
                 formatter: function (r, c, v, cd, dc) {
                     return formatIPArr(dc['ip']);
                 },
-                minWidth: 100
+                minWidth: 150
             },
+            /*
             {
                 field: 'floatingIP',
                 name: 'Floating IPs In/Out',
@@ -147,9 +148,10 @@ define([
                 },
                 minWidth: 200
             },
+            */
             {
                 field: '',
-                name: 'Traffic In/Out (Last 1 Hr)',
+                name: 'Aggr. Traffic In/Out (Last 1 Hr)',
                 formatter: function (r, c, v, cd, dc) {
                     return formatBytes(dc['inBytes60']) + ' / ' + formatBytes(dc['outBytes60']);
                 },

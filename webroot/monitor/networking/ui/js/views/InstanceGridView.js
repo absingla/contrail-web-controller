@@ -127,6 +127,14 @@ define([
                                                     }
                                                 },
                                                 {
+                                                    key: 'vn',
+                                                    templateGenerator: 'TextGenerator'
+                                                },
+                                                {
+                                                    key: 'ip',
+                                                    templateGenerator: 'TextGenerator'
+                                                },
+                                                {
                                                     key: 'intfCnt',
                                                     templateGenerator: 'TextGenerator'
                                                 }
