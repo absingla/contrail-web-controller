@@ -336,7 +336,7 @@ define([
                         return lazyAjaxConfig;
                     },
                     successCallback: function (response, contrailListModel) {
-                        var statDataList = tenantNetworkMonitorUtils.statsOracleParseFn(response[0], type),
+                        var statDataList = ctwp.parseInstanceStats(response[0], type),
                             dataItems = contrailListModel.getItems(),
                             statData;
                         for (var j = 0; j < statDataList.length; j++) {

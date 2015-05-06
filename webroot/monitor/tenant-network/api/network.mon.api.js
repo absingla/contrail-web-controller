@@ -2965,46 +2965,55 @@ function getInstancesDetailsForUser(req, appData, callback)
 
 function getStats(req, res) {
 
-    var reqParams = req.body['data']
-    var type = reqParams['type'];
-    var uuids = reqParams['uuids'];
-    var minSince = reqParams['minSince'];
-    var useServerTime = reqParams['userServerTime'];
-    var whereClause = [],table,context;
-    var timeObj = nwMonJobs.createTimeQueryJsonObjByServerTimeFlag (minSince,
-            useServerTime);
-    if (uuids.indexOf(',') > -1) {
-        uuids = uuids.split(',');
-        var uuidsLen = uuids.length;
-        for (var i = 0; i < uuidsLen; i++) {
-            whereClause.push({name:uuids[i]});
-        }
-    } else {
-        whereClause.push({name:uuids});
-    }
+    var reqParams = req.body['data'],
+        type = reqParams['type'],
+        uuids = reqParams['uuids'],
+        minSince = reqParams['minSince'],
+        useServerTime = reqParams['userServerTime'],
+        whereClauseArray = [],table,context,
+        timeObj = nwMonJobs.createTimeQueryJsonObjByServerTimeFlag (minSince, useServerTime),
+        whereFieldName = "name", whereClause;
+
     if ('virtual-machine' == type) {
-        table = 'StatTable_VirtualMachineStats_if_stats';
+        table = 'StatTable_UveVMInterfaceAgent_if_stats';
         context = 'vm';
+        whereFieldName = 'vm_uuid';
     } else if ('virtual-network' == type) {
         table = 'StatTable_UveVirtualNetworkAgent_vn_stats';
         context = 'vn';
     }
-    var props = global.STATS_PROP[context];
-    var selectArr = [props['inBytes'], props['outBytes'],props['inPkts'],
-                     props['outPkts'], 'name'];
-    var queryJSON = nwMonJobs.formatQueryString(table, whereClause,
-            selectArr, timeObj, true, null);
+
+    if (uuids.indexOf(',') > -1) {
+        uuids = uuids.split(',');
+        var uuidsLen = uuids.length;
+        for (var i = 0; i < uuidsLen; i++) {
+            whereClause = {};
+            whereClause[whereFieldName] = uuids[i];
+            whereClauseArray.push(whereClause);
+        }
+    } else {
+        whereClause = {};
+        whereClause[whereFieldName] = uuids;
+        whereClauseArray.push(whereClause);
+    }
+
+    var props = global.STATS_PROP[context],
+        selectArr = [props['inBytes'], props['outBytes'],props['inPkts'], props['outPkts'], whereFieldName],
+        queryJSON = nwMonJobs.formatQueryString(table, whereClauseArray, selectArr, timeObj, true, null);
+
     //Removing the flow_count select field from query as not required for the OracleStats 
     var flowCountIdx = queryJSON['select_fields'].indexOf('flow_count');
-    if (flowCountIdx > -1)
-        queryJSON['select_fields'].splice(flowCountIdx,1);
-    //logutils.logger.debug("Query json is "+JSON.stringify(queryJSON));
+
+    if (flowCountIdx > -1) {
+        queryJSON['select_fields'].splice(flowCountIdx, 1);
+    }
+
+    //logutils.logger.debug("########### Query json is " + JSON.stringify(queryJSON));
+
     /*{"table":"StatTable.VirtualMachineStats.if_stats","start_time":1410335210823000,"end_time":1410535210823000,
         "select_fields":["SUM(if_stats.out_bytes)","SUM(if_stats.in_bytes)","SUM(if_stats.out_pkts)","SUM(if_stats.in_pkts)","name"],
         "where":[[{"name":"name","value":"94e7640f-de61-4499-ac61-cfa54ce904f0","op":1}],
                  [{"name":"name","value":"e2d54418-a40c-48d8-968f-2769abbd25e2","op":1}]],"dir":1}*/
-
-    console.log(JSON.stringify(queryJSON));
 
     nwMonUtils.getStatDataByQueryJSON(queryJSON,null,function(err, data) {
        logutils.logger.debug(JSON.stringify(data)); 

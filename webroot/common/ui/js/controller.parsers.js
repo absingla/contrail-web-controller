@@ -397,6 +397,18 @@ define([
             }
             return portArr;
         };
+
+        this.parseInstanceStats = function (response, type) {
+            var retArr = $.map(ifNull(response['value'], response), function (obj, idx) {
+                var item = {};
+                var props = STATS_PROP[type];
+                item['name'] = obj['vm_uuid'];
+                item['inBytes'] = ifNull(obj[props['inBytes']], '-');
+                item['outBytes'] = ifNull(obj[props['outBytes']], '-');
+                return item;
+            });
+            return retArr;
+        };
     };
 
     function isServiceVN(vnFQN) {
