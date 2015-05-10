@@ -1041,6 +1041,9 @@ underlayView.prototype.initTooltipConfig = function() {
                     tooltipLblValues.push({
                         lbl:'Interfaces',
                         value: ifLength
+                    },{
+                        lbl:'Management IP',
+                        value: ifNull(nodeDetails['mgmt_ip'],'-')
                     }); 
                 }
                 return tooltipContent(tooltipLblValues);
@@ -1509,8 +1512,9 @@ underlayView.prototype.initGraphEvents = function() {
                         nodeDetails['more_attributes']['ifTable'] = [];
                     data = {
                         host_name : ifNull(nodeDetails['name'],'-'),
-                        description: ifNull(nodeDetails['more_attributes']['lldpLocSysDesc'],'-'),
-                        intfCnt   : nodeDetails['more_attributes']['ifTable'].length,
+                        description: getValueByJsonPath(nodeDetails,'more_attributes;lldpLocSysDesc','-'),
+                        intfCnt   : getValueByJsonPath(nodeDetails,'more_attributes;ifTable',[]).length,
+                        managementIP : ifNull(nodeDetails['mgmt_ip'],'-'),
                     };
                     data['type'] = PROUTER;
                     data['response'] = nodeDetails;
@@ -2372,6 +2376,8 @@ underlayView.prototype.renderTracePath = function(options) {
                 destIP: dataItem['destip'] != null ? dataItem['destip'] : dataItem['dip'],
                 srcPort: dataItem['sport'] != null ? dataItem['sport'] : dataItem['src_port'],
                 destPort: dataItem['dport'] != null ? dataItem['dport'] : dataItem['dst_port'],
+                srcVN: dataItem['src_vn'] != null ? dataItem['src_vn'] : dataItem['sourcevn'],
+                destVN: dataItem['dst_vn'] != null ? dataItem['dst_vn'] : dataItem['destvn'],
                 protocol: dataItem['protocol'],
                 maxAttempts: 3,
                 interval: 5,
@@ -2464,6 +2470,8 @@ underlayView.prototype.renderTracePath = function(options) {
                 destIP: dataItem['sourceip'] != null ? dataItem['sourceip'] : dataItem['sip'],
                 srcPort: dataItem['dport'] != null ? dataItem['dport'] : dataItem['dst_port'],
                 destPort: dataItem['sport'] != null ? dataItem['sport'] : dataItem['src_port'],
+                srcVN: dataItem['src_vn'] != null ? dataItem['src_vn'] : dataItem['sourcevn'],
+                destVN: dataItem['dst_vn'] != null ? dataItem['dst_vn'] : dataItem['destvn'],
                 protocol: dataItem['protocol'],
                 maxAttempts: 3,
                 interval: 5,
@@ -2522,7 +2530,7 @@ underlayView.prototype.renderTracePath = function(options) {
             }).done(function(response) {
                 _this.highlightPath(response, {data: postData});
             }).fail(function(error,status) {
-                _this.resetTopology();
+                _this.resetTopology(false);
                 if(status == 'timeout') {
                     showInfoWindow('Timeout in fetching details','Error');
                 } else if (status != 'success') {
@@ -2693,7 +2701,8 @@ underlayView.prototype.populateDetailsTab = function(data) {
             type      : PROUTER,
             hostName : ifNull(data['host_name'],'-'),
             description: ifNull(data['description'],'-'),
-            intfCnt   : data['intfCnt']
+            intfCnt   : data['intfCnt'],
+            managementIP: data['managementIP']
         };
         details = Handlebars.compile($("#device-summary-template").html())(content);
         $("#detailsTab").html(details);

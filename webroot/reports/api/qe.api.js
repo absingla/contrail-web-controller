@@ -919,7 +919,7 @@ function parseWhereANDClause(whereANDClause)
     for (i = 0; i < whereANDLength; i += 1) {
         whereANDArray[i] = whereANDArray[i].trim();
         whereANDClause = whereANDArray[i];
-        if (whereANDClause.indexOf('|') == -1) {
+        if (whereANDClause.indexOf('&') == -1) {
             if (whereANDClause.indexOf('Starts with') != -1) {
                 operator = 'Starts with';
                 whereANDClauseArray = whereANDClause.split(operator);
@@ -931,7 +931,7 @@ function parseWhereANDClause(whereANDClause)
             populateWhereANDClause(whereANDClause, whereANDClauseArray[0].trim(), whereANDClauseArray[1].trim(), operator);
             whereANDArray[i] = whereANDClause;
         } else {
-            whereANDClauseWithSuffixArrray = whereANDClause.split('|');
+            whereANDClauseWithSuffixArrray = whereANDClause.split('&');
             // Treat whereANDClauseWithSuffixArrray[0] as a normal AND term and
             // whereANDClauseWithSuffixArrray[1] as a special suffix term
             if (whereANDClauseWithSuffixArrray != null && whereANDClauseWithSuffixArrray.length != 0) {
