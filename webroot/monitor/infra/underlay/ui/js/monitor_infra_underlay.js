@@ -141,6 +141,10 @@ underlayModel.prototype.formTree = function() {
     this.setTree(tree);
 }
 
+underlayModel.prototype.getFlowPath = function() {
+    return this.flowPath;
+}
+
 underlayModel.prototype.getNodes = function() {
     return this.nodes;
 }
@@ -255,6 +259,14 @@ underlayModel.prototype.getVMsUnderVrouter = function(vrouter) {
 
 underlayModel.prototype.getVNsUnderVrouter = function(vrouter) {
     return this.getChildren(vrouter, "virtual-network");
+}
+
+underlayModel.prototype.setFlowPath = function(response) {
+    if(null !== response && typeof response !== "undefined") {
+        this.flowPath = response;
+    } else {
+        this.flowPath = {};
+    }
 }
 
 underlayModel.prototype.setTors = function(tors) {
@@ -1723,8 +1735,8 @@ underlayView.prototype.highlightPath = function(response, data) {
     var elementMap = _this.getElementMap();
     var conElements = _this.getConnectedElements();
     var graph      = _this.getGraph();
-    var nodes      = response.nodes;
-    var links      = response.links;
+    var nodes      = ifNull(response.nodes,[]);
+    var links      = ifNull(response.links,[]);
     var adjList = this.prepareData("virtual-router");
     var nodeNames = [];
     for(var i=0; i<nodes.length; i++) {
@@ -1872,8 +1884,8 @@ underlayView.prototype.getMarkers = function() {
     marker.setAttribute('orient', 'auto');
     marker.setAttribute('markerWidth', '30');
     marker.setAttribute('markerHeight', '30');
-    marker.setAttribute('refX', '3');
-    marker.setAttribute('refY', '.5');
+    marker.setAttribute('refX', '2.5');
+    marker.setAttribute('refY', '3');
 
     var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('d', "M0,0 L0,3 L3,0");
@@ -1905,8 +1917,60 @@ underlayView.prototype.getMarkers = function() {
     path2.setAttribute('d', "M0,0 L3,3 L3,0");
     path2.setAttribute('style', "stroke:#85b9dd; fill:#85b9dd;");
     marker2.appendChild(path2);
+    
+    var marker3 = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker3.setAttribute('id', 'bezierUp');
+    marker3.setAttribute('orient', 'auto');
+    marker3.setAttribute('markerWidth', '30');
+    marker3.setAttribute('markerHeight', '30');
+    marker3.setAttribute('refX', '.5');
+    marker3.setAttribute('refY', '3.7');  
 
-    return [marker, marker1, marker2];
+    var path3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path3.setAttribute('d', "M0,4 L4,0 L4,4");
+    path3.setAttribute('style', "stroke-width:0px;fill:#85b9dd;");
+    marker3.appendChild(path3);
+    
+    var marker4 = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker4.setAttribute('id', 'upDeviated');
+    marker4.setAttribute('orient', 'auto');
+    marker4.setAttribute('markerWidth', '30');
+    marker4.setAttribute('markerHeight', '30');
+    marker4.setAttribute('refX', '-1');
+    marker4.setAttribute('refY', '1');    
+
+    var path4 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path4.setAttribute('d', "M0,0 L3,3 L0,3");
+    path4.setAttribute('style', "stroke:#85b9dd; fill:#85b9dd;");
+    marker4.appendChild(path4);
+    
+    var marker5 = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker5.setAttribute('id', 'bezierDown');
+    marker5.setAttribute('orient', 'auto');
+    marker5.setAttribute('markerWidth', '30');
+    marker5.setAttribute('markerHeight', '30');
+    marker5.setAttribute('refX', '2.5');
+    marker5.setAttribute('refY', '.5');
+
+    var path5 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path5.setAttribute('d', "M0,0 L0,3 L3,0");
+    path5.setAttribute('style', "stroke:#85b9dd; fill:#85b9dd;");
+    marker5.appendChild(path5);
+    
+    var marker6 = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+    marker6.setAttribute('id', 'downDeviated');
+    marker6.setAttribute('orient', 'auto');
+    marker6.setAttribute('markerWidth', '30');
+    marker6.setAttribute('markerHeight', '30');
+    marker6.setAttribute('refX', '5.5');
+    marker6.setAttribute('refY', '3');    
+
+    var path6 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path6.setAttribute('d', "M0,0 L3,3 L3,0");
+    path6.setAttribute('style', "stroke:#85b9dd; fill:#85b9dd;");
+    marker6.appendChild(path6);
+
+    return [marker, marker1, marker2, marker3, marker4, marker5, marker6];
 }
 
 underlayView.prototype.showChildrenOfType = function(parent, child_type) {
@@ -2046,7 +2110,7 @@ underlayView.prototype.renderTracePath = function(options) {
                                       {
                                           field:"src_vn",
                                           name:"Source Network",
-                                          minWidth:125,
+                                          minWidth:110,
                                           formatter: function (r,c,v,cd,dc) {
                                               var srcVN = dc['src_vn'] != null ? dc['src_vn'] : noDataStr;
                                               return formatVN(srcVN);
@@ -2055,7 +2119,7 @@ underlayView.prototype.renderTracePath = function(options) {
                                       {
                                           field:"sip",
                                           name:"Source IP",
-                                          minWidth:70,
+                                          minWidth:60,
                                           formatter:function(r,c,v,cd,dc) {
                                               if(validateIPAddress(dc['sip']))
                                                   return dc['sip']
@@ -2071,7 +2135,7 @@ underlayView.prototype.renderTracePath = function(options) {
                                       {
                                           field:"direction",
                                           name:"Direction",
-                                          minWidth:50,
+                                          minWidth:40,
                                           formatter: function(r,c,v,cd,dc) {
                                               if (dc['direction'] == 'ingress')
                                                   return 'INGRESS'
@@ -2084,7 +2148,7 @@ underlayView.prototype.renderTracePath = function(options) {
                                       {
                                           field:"dst_vn",
                                           name:"Destination Network",
-                                          minWidth:125,
+                                          minWidth:110,
                                           formatter: function (r,c,v,cd,dc) {
                                               var destVN = dc['dst_vn'] != null ? dc['dst_vn'] : noDataStr;
                                               return formatVN(destVN);
@@ -2093,7 +2157,7 @@ underlayView.prototype.renderTracePath = function(options) {
                                       {
                                           field:"dip",
                                           name:"Destination IP",
-                                          minWidth:70,
+                                          minWidth:60,
                                           formatter:function(r,c,v,cd,dc) {
                                               if(validateIPAddress(dc['dip']))
                                                   return dc['dip']
@@ -2109,7 +2173,7 @@ underlayView.prototype.renderTracePath = function(options) {
                                       {
                                           field:"stats_bytes",
                                           name:"Bytes/Pkts",
-                                          minWidth:80,
+                                          minWidth:120,
                                           formatter:function(r,c,v,cd,dc){
                                               return contrail.format("{0}/{1}",formatBytes(dc['stats_bytes']),dc['stats_packets']);
                                           },
@@ -2143,20 +2207,18 @@ underlayView.prototype.renderTracePath = function(options) {
                 options : {
                     forceFitColumns: true,
                     sortable : false,
+                    multiRowSelection : false,
                     checkboxSelectable: {
                         enableRowCheckbox: true,
                         onNothingChecked: function(e){
-                            $("div.slick-cell-checkboxsel > input").removeAttr('disabled')
                             $("#mapflow").attr('disabled','disabled');
                             $("#traceFlowBtn").attr('disabled','disabled');
                             $("#revTraceFlowBtn").attr('disabled','disabled');
                         },
                         onSomethingChecked: function(e){
-                            $("div.slick-cell-checkboxsel > input").attr('checked',false);
                             $("#mapflow").removeAttr('disabled');
                             $("#traceFlowBtn").removeAttr('disabled');
                             $("#revTraceFlowBtn").removeAttr('disabled');
-                            $(e['currentTarget']).attr('checked',true);
                         }
                     },
                 },
@@ -2179,6 +2241,7 @@ underlayView.prototype.renderTracePath = function(options) {
                     events:{
                         onDataBoundCB : function () {
                             var gridObj = $("#vrouterflows").data('contrailGrid');
+                            $("#vrouterflows").find('input.headerRowCheckbox').parent('span').remove();
                             if(gridObj != null) {
                                 var dataItems = gridObj._dataView.getItems();
                                 var dataItemsLen = dataItems.length;
@@ -2438,6 +2501,9 @@ underlayView.prototype.renderTracePath = function(options) {
                     data: postData
                 }
             }).done(function(response) {
+                if(typeof underlayRenderer === 'object') {
+                    underlayRenderer.getModel().setFlowPath(response);
+                }
                 _this.highlightPath(response, {data: postData});
             }).fail(function(error,status) {
                 _this.resetTopology(false);
@@ -2528,6 +2594,9 @@ underlayView.prototype.renderTracePath = function(options) {
                     data: postData
                 }
             }).done(function(response) {
+                if(typeof underlayRenderer === 'object') {
+                    underlayRenderer.getModel().setFlowPath(response);
+                }
                 _this.highlightPath(response, {data: postData});
             }).fail(function(error,status) {
                 _this.resetTopology(false);
@@ -2811,13 +2880,11 @@ underlayView.prototype.populateDetailsTab = function(data) {
         });
     } else if (type == 'link') {
         var endpoints = ifNull(data['endpoints'],[]);
-        var sourceType = data['sourceElement']['attributes']['nodeDetails']['node_type'];
-        var targetType = data['targetElement']['attributes']['nodeDetails']['node_type'];
+        var sourceType = getValueByJsonPath(data,'sourceElement;attributes;nodeDetails;node_type','-');
+        var targetType = getValueByJsonPath(data,'targetElement;attributes;nodeDetails;node_type','-');
         var url = '',link = '';
         var type = 'GET';
         var ajaxData = {};
-        if(sourceType == VIRTUALMACHINE || targetType == VIRTUALMACHINE)
-            return;
         _this.renderUnderlayTabs();
         $("#detailsLink").show();
         $("#underlay_tabstrip").tabs({active:2});
@@ -2830,7 +2897,7 @@ underlayView.prototype.populateDetailsTab = function(data) {
                     "data": {
                         "endpoints": endpoints,
                         "sampleCnt": 150, 
-                        "minsSince":60
+                        "minsSince":180
                       }
                     };
             link = 'prouter';
@@ -2850,6 +2917,21 @@ underlayView.prototype.populateDetailsTab = function(data) {
             link = 'vrouter';
             details = Handlebars.compile($("#link-summary-template").html())({link:link,title:title});
             $("#detailsTab").html(details);
+        } else if(sourceType == VROUTER && targetType == VIRTUALMACHINE) {
+            check4CTInit(function() {
+                var instanceUUID = getValueByJsonPath(data,'targetElement;attributes;nodeDetails;name','-');
+                var virtualNetwork = getValueByJsonPath(data,'targetElement;attributes;nodeDetails;more_attributes;interface_list;0;virtual_network','-');
+                _this.renderUnderlayTabs();
+                var tabConfig = ctwu.getInstanceTabViewConfig({
+                    networkFQN: virtualNetwork,
+                    instanceUUID: instanceUUID,
+                    tabsToDisplay: ['InstanceTrafficStatsView'],
+                });
+                var modelMap = {};
+                modelMap[ctwc.get(ctwc.UMID_INSTANCE_UVE, instanceUUID)] = ctwu.getInstanceTabViewModelConfig(instanceUUID);
+                cowu.renderView4Config($('#underlay_tabstrip'), null, tabConfig, null, null, modelMap);
+                _this.addCommonTabs('contrail-tabs');
+            });
         }
         $.ajax({
             url:url,
@@ -2979,16 +3061,47 @@ underlayView.prototype.showPath = function(connectionWrapIds, offsetWidth) {
         return;
     var hopLength = connectionWrapIds.length;
     for(var i=0;i<hopLength;i++) {
-        this.addOffsetPath(connectionWrapIds[i],offsetWidth);
+        var isDirectionCrt = this.checkLinkDirection(connectionWrapIds[i]);
+        this.addOffsetPath(connectionWrapIds[i],offsetWidth,isDirectionCrt);
     }
 }
 
-underlayView.prototype.addOffsetPath = function(connectionWrapId, offsetWidth) {
-    var connectionWrapElem = $('#' + connectionWrapId);
-    if(connectionWrapElem.length > 0)
+underlayView.prototype.checkLinkDirection = function (connectionWrapId) {
+    var connectionWrapElem = $('#' + connectionWrapId),flowPath = {};
+    if(typeof underlayRenderer === 'object') {
+        flowPath = underlayRenderer.getModel().getFlowPath();
+    }
+    if(connectionWrapElem.length > 0) {
         connectionWrapElem = $(connectionWrapElem[0]);
-    else
+    } else {
         return;
+    }
+    var linkId = $(connectionWrapElem).parent().attr('model-id');
+    var linkAttrs = this.getGraph().getCell(linkId).attributes;
+    var sourceId = linkAttrs.source.id;
+    var destId = linkAttrs.target.id;
+    var srcEl = this.getGraph().getCell(sourceId);
+    var destEl = this.getGraph().getCell(destId);
+    var srcNodeName = getValueByJsonPath(srcEl,'attributes;nodeDetails;name','-');
+    var destNodeName = getValueByJsonPath(destEl,'attributes;nodeDetails;name','-');
+    var isDirectionCrt = false,links = getValueByJsonPath(flowPath,'links',[]);
+    for(var i = 0; i < links.length; i ++) {
+        if(srcNodeName == getValueByJsonPath(links[i],'endpoints;0','-') &&
+                destNodeName == getValueByJsonPath(links[i],'endpoints;1','-')) {
+            isDirectionCrt = true
+            break;
+        }
+    }
+    return isDirectionCrt;
+}
+
+underlayView.prototype.addOffsetPath = function(connectionWrapId, offsetWidth,isDirectionCrt) {
+    var connectionWrapElem = $('#' + connectionWrapId);
+    if(connectionWrapElem.length > 0) {
+        connectionWrapElem = $(connectionWrapElem[0]);
+    } else {
+        return;
+    }
     var path = connectionWrapElem.attr('d');
     var pathCoords;
     if(typeof(path) == 'string') {
@@ -2998,29 +3111,49 @@ underlayView.prototype.addOffsetPath = function(connectionWrapId, offsetWidth) {
             pathCoords = $.map(pathCoords,function(val) {
                 return parseFloat(val);
             });
-            var offsetPath; 
+            var offsetPath;
             if(offsetWidth < 0) {
                 offsetPath = connectionWrapElem.clone().prop('id',connectionWrapId + '_down');
             } else {
                 offsetPath = connectionWrapElem.clone().prop('id',connectionWrapId + '_up');
             }
             var curve = new Bezier(pathCoords);
-            offsetPath.attr('marker-end',"url(#head)");
+            var inclinedVerticalLine = false;
             if(curve._linear != true) {
+            	if(isDirectionCrt) {
+            	    offsetWidth = -offsetWidth;
+            	    offsetPath.attr('marker-start',"url(#bezierUp)");
+            	} else {
+            	    offsetPath.attr('marker-end',"url(#bezierDown)");
+            	}
+            	//Hack,till we fix the issue,links b/w TOR and SPINES are not vertical 
+            	if(Math.abs(pathCoords[pathCoords.length - 2] - pathCoords[0]) <= 10) {
+            	    inclinedVerticalLine = true;
+            	    if(isDirectionCrt) {
+            	        offsetPath.attr('marker-start','url(#upDeviated)');
+            	    } else {
+            	        offsetPath.attr('marker-end','url(#downDeviated)');
+            	    }
+            	}
                 var offsetPathStr = this.getOffsetBezierPath(pathCoords,offsetWidth);
                 var offsetPathCords = offsetPathStr.split(' ');
                 var offsetPathCordsLen = offsetPathCords.length;
                 var lastX = offsetPathCords[offsetPathCords.length - 2];
-                lastX = parseFloat(lastX) - 10;
-                offsetPathCords[offsetPathCords.length - 2] = lastX;
+                if(!isDirectionCrt && !inclinedVerticalLine) {
+                    lastX = parseFloat(lastX) - 10;
+                    offsetPathCords[offsetPathCords.length - 2] = lastX;
+                } else if (isDirectionCrt && !inclinedVerticalLine)  {
+                    lastX = parseFloat(lastX) + 10;
+                    offsetPathCords[offsetPathCords.length - 2] = lastX;
+                }
                 offsetPath.attr('d',offsetPathCords.join(' '));
             } else {
                 //Vertical line
                 if(pathCoords[0] == pathCoords[6]) {
                     //Pointing upwards/downwards
-                    if(pathCoords[1] > pathCoords[7]) {
+                    if(isDirectionCrt) {
                         offsetPath.attr('transform','translate(' + offsetWidth + ',0)');
-                        offsetPath.attr('marker-end',"url(#up)");
+                        offsetPath.attr('marker-start',"url(#up)");
                     } else {
                         offsetPath.attr('transform','translate(-' + offsetWidth + ',0)');
                         offsetPath.attr('marker-end',"url(#down)");
@@ -3032,10 +3165,10 @@ underlayView.prototype.addOffsetPath = function(connectionWrapId, offsetWidth) {
                 }
             }
             
-            if(offsetWidth < 0) {
-                offsetPath.attr('class','connection-wrap-down');
-            } else {
+            if(isDirectionCrt) {
                 offsetPath.attr('class','connection-wrap-up');
+            } else {
+                offsetPath.attr('class','connection-wrap-down');
             }
             offsetPath.insertAfter(connectionWrapElem);
         }
@@ -3067,8 +3200,6 @@ underlayView.prototype.destroy = function() {
         vizTemplate = $();
     }
 }
-
-
 
 var underlayController = function (model, view) {
     this.model = model || new underlayModel({nodes:[], links:[]});
@@ -3107,7 +3238,9 @@ underlayController.prototype.getModelData = function(cfg) {
                     //Enabling the below tabs only on success of ajax calls.
                     $("#underlay_tabstrip").tabs('enable');
                     //Rendering the first search flows tab
-                    underlayView.prototype.renderFlowRecords();
+                    if(typeof underlayRenderer === "object"){
+                        underlayRenderer.getView().renderFlowRecords();
+                    }
                 }
             },
             failureCallback : function (err) {
