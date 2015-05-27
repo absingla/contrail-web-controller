@@ -195,6 +195,8 @@ monitorInfraComputeSummaryClass = (function() {
                 });
             
             var source = 'datasource';
+            //Set source accordingly,as certain UI widgets need no reload/refresh if updates comes from certain sources
+            //Like populating generators information for vRouter nodes does not need refresh on scatter chart
             if(filteredNodes[0] != null && filteredNodes[0]['isGeneratorRetrieved'] == true){
                 source = 'generator';
             }
@@ -230,20 +232,7 @@ monitorInfraComputeSummaryClass = (function() {
                 options: {
                     autoHeight : true,
                     enableAsyncPostRender:true,
-                    forceFitColumns:true,
-                    detail:{
-                        template: $("#computenode-template").html(),
-                        onExpand: function (e,dc) {
-                            //scaling down the content
-                            $('#compute_tabstrip_' + dc['name']).attr('style', 'margin:10px 150px 10px 150px');
-                            cmpNodeView.populateComputeNode({name:dc['name'], ip:dc['ip'], detailView : true});
-                            $('#divcomputesgrid > .grid-body > .slick-viewport > .grid-canvas > .slick-row-detail').addClass('slick-grid-detail-content-height');
-                            $('#divcomputesgrid > .grid-body > .slick-viewport > .grid-canvas > .slick-row-detail > .slick-cell').addClass('slick-grid-detail-sub-content-height');
-                        },
-                        detailView : true,
-                        onCollapse:function (e,dc) {
-                        }
-                    }
+                    forceFitColumns:true
                 },
                 dataSource: {
                     dataView: emptyDataSource,
@@ -311,7 +300,7 @@ monitorInfraComputeSummaryClass = (function() {
                             return getNodeStatusContentForSummayPages(dc,'html');
                         },
                         searchFn: function(d) {
-                            return getNodeStatusContentForSummayPages(dc,'text');
+                            return getNodeStatusContentForSummayPages(d,'text');
                         },
                         minWidth:150,
                         exportConfig: {
@@ -328,7 +317,7 @@ monitorInfraComputeSummaryClass = (function() {
                             return getDisplayNameForVRouterType(v);
                         },
                         searchFn: function(d) {
-                            return getDisplayNameForVRouterType(v);
+                            return getDisplayNameForVRouterType(d.vRouterType);
                         },
                         minWidth:120
                     },
@@ -337,7 +326,7 @@ monitorInfraComputeSummaryClass = (function() {
                         name:"CPU (%)",
                         minWidth:150,
                         formatter:function(r,c,v,cd,dc) {
-                            return '<div class="gridSparkline display-inline"></div><span class="display-inline">'  + dc['cpu'] +  '</span>';
+                            return '<div class="gridSparkline display-inline"></div><span class="display-inline">'  + ifNotNumeric(dc['cpu'],'-') +  '</span>';
                         },
                         asyncPostRender: renderSparkLines,
                         searchFn:function(d){

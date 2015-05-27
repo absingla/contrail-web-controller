@@ -197,6 +197,9 @@ var infraMonitorAlertUtils = {
     processvRouterAlerts : function(obj) {
         var alertsList = [];
         var infoObj = {name:obj['name'],type:'vRouter',ip:obj['ip'],link:obj['link']};
+        if(obj['isNTPUnsynced']){
+            alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['NTP_UNSYNCED_ERROR']},infoObj));
+        }
         if(obj['isUveMissing'] == true)
             alertsList.push($.extend({},{msg:infraAlertMsgs['UVE_MISSING'],sevLevel:sevLevels['ERROR'],tooltipLbl:'Events'},infoObj));
         if(obj['isConfigMissing'] == true)
@@ -220,6 +223,9 @@ var infraMonitorAlertUtils = {
     processControlNodeAlerts : function(obj) {
         var alertsList = [];
         var infoObj = {name:obj['name'],type:'Control Node',ip:obj['ip'],link:obj['link']};
+        if(obj['isNTPUnsynced']){
+            alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['NTP_UNSYNCED_ERROR']},infoObj));
+        }
         if(obj['isUveMissing'] == true)
             alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['UVE_MISSING']},infoObj));
         if(obj['isConfigMissing'] == true)
@@ -248,13 +254,24 @@ var infraMonitorAlertUtils = {
     processConfigNodeAlerts : function(obj) {
         var alertsList = [];
         var infoObj = {name:obj['name'],type:'Config Node',ip:obj['ip'],link:obj['link']};
-        if(obj['isPartialUveMissing'] == true)
-            alertsList.push($.extend({},{sevLevel:sevLevels['INFO'],msg:infraAlertMsgs['PARTIAL_UVE_MISSING']},infoObj));
+        if(obj['isNTPUnsynced'])
+            alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['NTP_UNSYNCED_ERROR']},infoObj));
+        if(obj['isUveMissing'] == true)
+            alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['UVE_MISSING']},infoObj));
+//        if(obj['isConfigMissing'] == true)
+//            alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['CONFIG_MISSING']},infoObj));
+        if(obj['isUveMissing'] == false){
+            if(obj['isPartialUveMissing'] == true)
+                alertsList.push($.extend({},{sevLevel:sevLevels['INFO'],msg:infraAlertMsgs['PARTIAL_UVE_MISSING']},infoObj));
+        }
         return alertsList.sort(dashboardUtils.sortInfraAlerts);
     },
     processAnalyticsNodeAlerts : function(obj) {
         var alertsList = [];
         var infoObj = {name:obj['name'],type:'Analytics Node',ip:obj['ip'],link:obj['link']};
+        if(obj['isNTPUnsynced']){
+            alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['NTP_UNSYNCED_ERROR']},infoObj));
+        }
         if(obj['isUveMissing'] == true){
             alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['UVE_MISSING']},infoObj));
         }
@@ -273,7 +290,17 @@ var infraMonitorAlertUtils = {
     processDbNodeAlerts : function(obj) {
         var alertsList = [];
         var infoObj = {name:obj['name'],type:'Database Node',ip:obj['ip'],link:obj['link']};
-        if(obj['isPartialUveMissing'] == true){
+       
+        if(obj['isNTPUnsynced']){
+            alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['NTP_UNSYNCED_ERROR']},infoObj));
+        }
+        if(obj['isUveMissing'] == true){
+            alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['UVE_MISSING']},infoObj));
+        }
+//        if(obj['isConfigMissing'] == true){
+//            alertsList.push($.extend({},{sevLevel:sevLevels['ERROR'],msg:infraAlertMsgs['CONFIG_MISSING']},infoObj));
+//        }
+        if(obj['isUveMissing'] == false && obj['isPartialUveMissing'] == true){    
             alertsList.push($.extend({},{sevLevel:sevLevels['INFO'],msg:infraAlertMsgs['PARTIAL_UVE_MISSING']},infoObj));
         }
         if(obj['usedPercentage'] >= 70 && obj['usedPercentage'] < 90){
@@ -366,7 +393,7 @@ var infraMonitorUtils = {
             var d = result[i];
             var dValue = result[i]['value'];
             obj['cpu'] = parseFloat(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;cpu_share','--'));
-            obj['cpu'] = $.isNumeric(obj['cpu']) ? parseFloat(obj['cpu'].toFixed(2)) : '-';
+            obj['cpu'] = $.isNumeric(obj['cpu']) ? parseFloat(obj['cpu'].toFixed(2)) : NaN;
             obj['ip'] = getValueByJsonPath(dValue,'VrouterAgent;control_ip','-');
             obj['xField'] = 'cpu';
             obj['yField'] = 'resMemory';
@@ -378,6 +405,7 @@ var infraMonitorUtils = {
             obj['uveIP'] = iplist;
             obj['isConfigMissing'] = $.isEmptyObject(getValueByJsonPath(dValue,'ConfigData')) ? true : false;
             obj['isUveMissing'] = ($.isEmptyObject(getValueByJsonPath(dValue,'VrouterAgent')) && $.isEmptyObject(getValueByJsonPath(dValue,'VrouterStatsAgent'))) ? true : false;
+            obj['isNTPUnsynced'] = isNTPUnsynced(jsonPath(dValue,'$..NodeStatus')[0]);
             obj['configIP'] = getValueByJsonPath(dValue,'ConfigData;virtual-router;virtual_router_ip_address','-');
             obj['vRouterType'] = getValueByJsonPath(dValue,'ConfigData;virtual-router;virtual_router_type;0','hypervisor');
             if(obj['vRouterType'] == ''){
@@ -394,10 +422,12 @@ var infraMonitorUtils = {
             obj['memory'] = formatMemory(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo','--'));
             //Used for plotting in scatterChart
             obj['resMemory'] = getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo;res','-');
-            obj['resMemory'] = $.isNumeric(obj['resMemory']) ? parseFloat(parseFloat(obj['resMemory']/1024).toFixed(2)) : '-';
+            obj['resMemory'] = $.isNumeric(obj['resMemory']) ? parseFloat(parseFloat(obj['resMemory']/1024).toFixed(2)) : NaN;
             obj['virtMemory'] = parseInt(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo;virt','--'))/1024;
             obj['size'] = getValueByJsonPath(dValue,'VrouterStatsAgent;phy_if_1min_usage;0;out_bandwidth_usage',0) + 
                 getValueByJsonPath(dValue,'VrouterStatsAgent;phy_if_1min_usage;0;in_bandwidth_usage',0) + 1;
+            obj['size'] = getValueByJsonPath(dValue,'VrouterStatsAgent;phy_if_5min_usage;0;out_bandwidth_usage',0) + 
+                getValueByJsonPath(dValue,'VrouterStatsAgent;phy_if_5min_usage;0;in_bandwidth_usage',0);
             obj['shape'] = 'circle';
             var xmppPeers = getValueByJsonPath(dValue,'VrouterAgent;xmpp_peer_list',[]);
             obj['xmppPeerDownCnt'] = 0;
@@ -516,6 +546,7 @@ var infraMonitorUtils = {
                     obj['ifmapDownAt'] = ifNull(ifmapObj['connection_status_change_at'],'-');
                 }
             }
+            obj['isNTPUnsynced'] = isNTPUnsynced(jsonPath(d,'$..NodeStatus')[0]);
             if(obj['downBgpPeerCnt'] > 0){
                 obj['downBgpPeerCntText'] = ", <span class='text-error'>" + obj['downBgpPeerCnt'] + " Down</span>";
             } else {
@@ -589,6 +620,7 @@ var infraMonitorUtils = {
             obj['name'] = d['name'];
             obj['link'] = {p:'mon_infra_analytics',q:{node:obj['name'],tab:''}};
             obj['errorStrings'] = ifNull(jsonPath(d,"$.value.ModuleCpuState.error_strings")[0],[]);
+            obj['isNTPUnsynced'] = isNTPUnsynced(jsonPath(d,'$..NodeStatus')[0]);
             obj['processAlerts'] = infraMonitorAlertUtils.getProcessAlerts(d,obj);
             var isConfigDataAvailable = $.isEmptyObject(jsonPath(d,'$..ConfigData')[0]) ? false : true;
             obj['isUveMissing'] = ($.isEmptyObject(jsonPath(d,'$..CollectorState')[0]) && isConfigDataAvailable)? true : false;
@@ -630,6 +662,9 @@ var infraMonitorUtils = {
             obj['display_type'] = 'Config Node';
             obj['name'] = d['name'];
             obj['link'] = {p:'mon_infra_config',q:{node:obj['name'],tab:''}};
+            obj['isNTPUnsynced'] = isNTPUnsynced(jsonPath(d,'$..NodeStatus')[0]);
+            obj['isConfigMissing'] = $.isEmptyObject(getValueByJsonPath(d,'value;ConfigData')) ? true : false;
+            obj['isUveMissing'] = ($.isEmptyObject(getValueByJsonPath(d,'value;configNode'))) ? true : false;
             obj['processAlerts'] = infraMonitorAlertUtils.getProcessAlerts(d,obj);
             obj['isPartialUveMissing'] = false;
             try{
@@ -680,6 +715,15 @@ var infraMonitorUtils = {
             obj['x'] = $.isNumeric(dbSpaceAvailable)? dbSpaceAvailable / 1024 / 1024 : 0;
             obj['y'] = $.isNumeric(dbSpaceUsed)? dbSpaceUsed / 1024 / 1024 : 0;
             
+            obj['isConfigMissing'] = $.isEmptyObject(getValueByJsonPath(d,'value;ConfigData')) ? true : false;
+            obj['isUveMissing'] = ($.isEmptyObject(getValueByJsonPath(d,'value;databaseNode'))) ? true : false;
+            var configData;
+            if(!obj['isConfigMissing']){
+                configData = getValueByJsonPath(d,'value;ConfigData');
+                obj['ip'] = configData.database_node_ip_address;
+            } else {
+                obj['ip'] = noDataStr;
+            }
             obj['availableSpace'] = formatBytes($.isNumeric(dbSpaceAvailable)? dbSpaceAvailable * 1024 : 0);
             obj['usedSpace'] = formatBytes($.isNumeric(dbSpaceUsed)? dbSpaceUsed * 1024 : 0);
             obj['analyticsDbSize'] = formatBytes($.isNumeric(analyticsDbSize)? analyticsDbSize * 1024 : 0);
@@ -694,24 +738,11 @@ var infraMonitorUtils = {
             obj['processAlerts'] = infraMonitorAlertUtils.getProcessAlerts(d,obj);
             obj['isPartialUveMissing'] = false;
             try{
-                obj['status'] = getOverallNodeStatus(d,"config");
+                obj['status'] = getOverallNodeStatus(d,"db");
             }catch(e){
                 obj['status'] = 'Down';
             }
-//            var iplist = jsonPath(d,'$..config_node_ip')[0];
-//             obj['ip'] = obj['summaryIps'] = noDataStr;
-//                if(iplist != null && iplist != noDataStr && iplist.length > 0){
-//                obj['ip'] = iplist[0];
-//                var ipString = "";
-//                $.each(iplist, function (idx, ip){
-//                    if(idx+1 == iplist.length) {
-//                        ipString = ipString + ip;
-//                       } else {
-//                        ipString = ipString + ip + ', ';
-//                       }
-//                });
-//                obj['summaryIps'] = ipString;
-//            }
+            obj['isNTPUnsynced'] = isNTPUnsynced(jsonPath(d,'$..NodeStatus')[0]);
             obj['nodeAlerts'] = infraMonitorAlertUtils.processDbNodeAlerts(obj);
             obj['alerts'] = obj['nodeAlerts'].concat(obj['processAlerts']).sort(dashboardUtils.sortInfraAlerts);
             obj['color'] = getDbNodeColor(d,obj);
@@ -837,28 +868,26 @@ var infraMonitorUtils = {
     },
     populateMessagesTab : function (nodeType, options, obj) {
         var consoleTabTemplate = Handlebars.compile($('#console-tab-template').html());
-        var cboMsgType, cboMsgCategory, cboMsgLevel, cboTimeRange;  
+        var cboMsgType, cboMsgCategory, cboMsgLevel, cboTimeRange;
         var lastMsgLogTime, lastLogLevel, userChangedQuery = false, defaultTimeRange = 5 * 60;//5 mins by default
-        if(obj.detailView === undefined && obj.page === null) {
-            layoutHandler.setURLHashParams({tab:'console', node: obj['name']},{triggerHashChange:false});
-        }    
+        layoutHandler.setURLHashParams({tab:'console', node: obj['name']},{triggerHashChange:false});
         if (nodeType == 'control') {
-            $('#ctrlNodeMessagesTab' + '_' + obj.name).html(consoleTabTemplate(obj));
+            $('#ctrlNodeMessagesTab').html(consoleTabTemplate({}));
         } else if (nodeType == "analytics"){
-            $('#analyticsNodeMessagesTab' + '_' + obj.name).html(consoleTabTemplate(obj));
+            $('#analyticsNodeMessagesTab').html(consoleTabTemplate({}));
         } else if (nodeType == "config"){
-            $('#configNodeMessagesTab' + '_' + obj.name).html(consoleTabTemplate(obj));
+            $('#configNodeMessagesTab').html(consoleTabTemplate({}));
         } else {
-            $('#computeNodeMessagesTab' + '_' + obj.name).html(consoleTabTemplate(obj));
+            $('#computeNodeMessagesTab').html(consoleTabTemplate({}));
         }
-        initWidget4Id('#console-msgs' + '_' + obj.name + '-box');
+        initWidget4Id('#console-msgs-box');
         //Disable Auto-refresh for time-being
         //$('#msgAutoRefresh').attr('disabled','disabled');
 
         var MIN = 60, HOUR = MIN * 60;
-        if ($('#msgTimeRange' + '_' + obj.name).data('contrailDropdown') == null) {
-            $('#msgAutoRefresh' + '_' + obj.name).attr('checked', 'checked');
-            $('#msgAutoRefresh' + '_' + obj.name).on('click', function () {
+        if ($('#msgTimeRange').data('contrailDropdown') == null) {
+            $('#msgAutoRefresh').attr('checked', 'checked');
+            $('#msgAutoRefresh').on('click', function () {
                 if ($(this).is(':checked')) {
                     if (userChangedQuery)
                         loadLogs();
@@ -868,7 +897,7 @@ var infraMonitorUtils = {
                     infraMonitorUtils.clearTimers();
                 }
             });
-            $('#msgTimeRange' + '_' + obj.name).contrailDropdown({
+            $('#msgTimeRange').contrailDropdown({
                 data:[
                     {lbl:'Last 5 mins', value:'5m'},
                     {lbl:'Last 10 mins', value:'10m'},
@@ -889,14 +918,14 @@ var infraMonitorUtils = {
             });
             var defaultToTime = new Date();
             var defaultFromTime = new Date(defaultToTime.getTime() - 300000);
-            createNewDTPicker('console', 'console-from-time' + '_' + obj.name, showFromTime, onSelectFromDate, defaultFromTime);
-            createNewDTPicker('console', 'console-to-time' + '_' + obj.name, showToTime, onSelectToDate, defaultToTime);
-            $('#msgType' + '_' + obj.name).contrailCombobox({
+            createNewDTPicker('console', 'console-from-time', showFromTime, onSelectFromDate, defaultFromTime);
+            createNewDTPicker('console', 'console-to-time', showToTime, onSelectToDate, defaultToTime);
+            $('#msgType').contrailCombobox({
                 dataSource:[],
                 dataTextField:'text',
                 dataValueField:'value'
             });
-            $('#msgCategory' + '_' + obj.name).contrailDropdown({
+            $('#msgCategory').contrailDropdown({
                 dataSource:{
                     type:'remote',
                     url: '/api/admin/table/values/MessageTable/Category',
@@ -923,7 +952,7 @@ var infraMonitorUtils = {
                 dataValueField:'value',
                 placeholder:'All'
             });
-            $('#msgLevel' + '_' + obj.name).contrailDropdown({
+            $('#msgLevel').contrailDropdown({
                 dataSource:{
                     type:'remote',
                     url: '/api/admin/table/values/MessageTable/Level',
@@ -940,7 +969,7 @@ var infraMonitorUtils = {
                 dataTextField:'text',
                 dataValueField:'value'
             });
-            $('#msgLimit' + '_' + obj.name).contrailDropdown({
+            $('#msgLimit').contrailDropdown({
                 data:$.map(['All',10, 50, 100, 200, 500], function (value) {
                     return {value:value, text:(value == 'All')? 'All':contrail.format('{0} messages', value)};
                 }),
@@ -948,23 +977,22 @@ var infraMonitorUtils = {
                 dataValueField:'value'                    
             });
         }
-        cboTimeRange = $('#msgTimeRange' + '_' + obj.name).data('contrailDropdown');
-        cboMsgCategory = $('#msgCategory' + '_' + obj.name).data('contrailDropdown');
-        cboMsgType = $('#msgType' + '_' + obj.name).data('contrailCombobox');
-        cboMsgLevel = $('#msgLevel' + '_' + obj.name).data('contrailDropdown');
-        cboMsgLimit = $('#msgLimit' + '_' + obj.name).data('contrailDropdown');
-        cboMsgFromTime = $('#console-from-time' + '_' + obj.name).data('contrailDateTimePicker');
-        cboMsgToTime = $('#console-to-time' + '_' + obj.name).data('contrailDateTimePicker');
-        toTimeEle = $('#console-to-time' + '_' + obj.name);
-        fromTimeEle = $('#console-from-time' + '_' + obj.name);
-        keywords = $('#console-keywords' + '_' + obj.name);
+        cboTimeRange = $('#msgTimeRange').data('contrailDropdown');
+        cboMsgCategory = $('#msgCategory').data('contrailDropdown');
+        cboMsgType = $('#msgType').data('contrailCombobox');
+        cboMsgLevel = $('#msgLevel').data('contrailDropdown');
+        cboMsgLimit = $('#msgLimit').data('contrailDropdown');
+        cboMsgFromTime = $('#console-from-time').data('contrailDateTimePicker');
+        cboMsgToTime = $('#console-to-time').data('contrailDateTimePicker');
+        toTimeEle = $('#console-to-time');
+        fromTimeEle = $('#console-from-time');
+        keywords = $('#console-keywords');
 
         cboTimeRange.value('custom');
         cboMsgLevel.value('5');
         cboMsgLimit.value('50')
         
-        $('#btnDisplayLogs' + '_' + obj.name).on('click', function () {
-            obj.name = arguments[0].target.id.split('_')[1];
+        $('#btnDisplayLogs').on('click', function () {
             userChangedQuery = true;
             loadLogs();
         });
@@ -988,7 +1016,7 @@ var infraMonitorUtils = {
                         selectGridPage(lastPageNo);
                     }, 100);
                 }*/
-                if ($('#msgAutoRefresh' + '_' + obj.name).is(':checked')) {
+                if ($('#msgAutoRefresh').is(':checked')) {
                     //Don't start the timer,if one is already pending
                     if (consoleTimer.length == 0) {
                         var timerId = setTimeout(function () {
@@ -1055,7 +1083,7 @@ var infraMonitorUtils = {
                     }
                 }
             }
-            var cbMsgType = $('#msgType' + '_' + obj.name).data('contrailCombobox');
+            var cbMsgType = $('#msgType').data('contrailCombobox');
             cbMsgType.setData(msgTypeStatsList);
             cbMsgType.value('');
         }
@@ -1095,25 +1123,25 @@ var infraMonitorUtils = {
                 if(lastTimeStamp == null || lastMsgLogTime != lastTimeStamp){
                     lastMsgLogTime = lastTimeStamp;
                     if(lastMsgLogTime != null && lastLogLevel != null){
-                        var dateTimePicker = $("#console-to-time" + '_' + obj.name).data("contrailDateTimePicker");
+                        var dateTimePicker = $("#console-to-time").data("contrailDateTimePicker");
                         dateTimePicker.val(new Date(lastMsgLogTime));
-                        dateTimePicker = $("#console-from-time" + '_' + obj.name).data("contrailDateTimePicker");
+                        dateTimePicker = $("#console-from-time").data("contrailDateTimePicker");
                         //dateTimePicker.val(adjustDate(new Date(lastMsgLogTime), {sec:-1 * defaultTimeRange}));
                         dateTimePicker.val(moment(new Date(lastMsgLogTime)).subtract('s', defaultTimeRange));
                         //select the level option which has the last log
                         //$("#msgLevel option:contains(" + lastLogLevel + ")").attr('selected', 'selected');
-                        var dropdownlist = $("#msgLevel" + '_' + obj.name).data("contrailDropdown");
+                        var dropdownlist = $("#msgLevel").data("contrailDropdown");
                         dropdownlist.text(lastLogLevel);
                         cboTimeRange.value('custom');
                         selectTimeRange({val:"custom"}) ;
                     } else {
-                        var timerangedropdownlistvalue = $("#msgTimeRange" + '_' + obj.name).data("contrailDropdown");
+                        var timerangedropdownlistvalue = $("#msgTimeRange").data("contrailDropdown");
                         timerangedropdownlistvalue.value('5m');
 
-                        $('#consoleFromTimeDiv' + '_' + obj.name).hide();
-                        $('#consoleToTimeDiv' + '_' + obj.name).hide();
-                        $('#msgFromTime' + '_' + obj.name).hide();
-                        $('#msgToTime' + '_' + obj.name).hide();
+                        $('#consoleFromTimeDiv').hide();
+                        $('#consoleToTimeDiv').hide();
+                        $('#msgFromTime').hide();
+                        $('#msgToTime').hide();
                         selectTimeRange({val:"5m"}) ;
                     }
                     loadLogs(timerId,true);
@@ -1121,35 +1149,22 @@ var infraMonitorUtils = {
 //                    gridConsole.dataSource.bind('requestEnd', moveToLastPage);
                    moveToLastPage();
                 }
-            }).fail(displayAjaxError.bind(null, $('#computenode-dashboard' + '_' + obj.name)));
+            }).fail(displayAjaxError.bind(null, $('#computenode-dashboard')));
         }
-        function selectTimeRange(obj1) {
-            if(obj1.target != null) {
-                obj.name = obj1.target.id.split('_')[1];        
-            }    
-            if (obj1.val == 'custom') {
-                $('#consoleFromTimeDiv' + '_' + obj.name).show();
-                $('#consoleToTimeDiv' + '_' + obj.name).show();
-                $('#msgFromTime' + '_' + obj.name).show();
-                $('#msgToTime' + '_' + obj.name).show();
+        function selectTimeRange(obj) {
+            if (obj.val == 'custom') {
+                $('#consoleFromTimeDiv').show();
+                $('#consoleToTimeDiv').show();
+                $('#msgFromTime').show();
+                $('#msgToTime').show();
             } else {
-                $('#consoleFromTimeDiv' + '_' + obj.name).hide();
-                $('#consoleToTimeDiv' + '_' + obj.name).hide();
-                $('#msgFromTime' + '_' + obj.name).hide();
-                $('#msgToTime' + '_' + obj.name).hide();
+                $('#consoleFromTimeDiv').hide();
+                $('#consoleToTimeDiv').hide();
+                $('#msgFromTime').hide();
+                $('#msgToTime').hide();
             }
         }
         function loadLogs(timerId) {
-            cboTimeRange = $('#msgTimeRange' + '_' + obj.name).data('contrailDropdown');
-            cboMsgCategory = $('#msgCategory' + '_' + obj.name).data('contrailDropdown');
-            cboMsgType = $('#msgType' + '_' + obj.name).data('contrailCombobox');
-            cboMsgLevel = $('#msgLevel' + '_' + obj.name).data('contrailDropdown');
-            cboMsgLimit = $('#msgLimit' + '_' + obj.name).data('contrailDropdown');
-            cboMsgFromTime = $('#console-from-time' + '_' + obj.name).data('contrailDateTimePicker');
-            cboMsgToTime = $('#console-to-time' + '_' + obj.name).data('contrailDateTimePicker');
-            toTimeEle = $('#console-to-time' + '_' + obj.name);
-            fromTimeEle = $('#console-from-time' + '_' + obj.name);
-        
             logMessage("Timer triggered:", timerId);
             if ((timerId != null) && (timerId != '') && $.inArray(timerId, consoleTimer) == -1) {
                 logMessage("Timer cancelled:", timerId);
@@ -1158,7 +1173,7 @@ var infraMonitorUtils = {
                 //Remove timerId from self.consoleTimer (pending timers)
                 consoleTimer.splice($.inArray(timerId, consoleTimer), 1);
             }
-            var timerangedropdownlistvalue = $("#msgTimeRange" + '_' + obj.name).data("contrailDropdown").value();
+            var timerangedropdownlistvalue = $("#msgTimeRange").data("contrailDropdown").value();
              
             var filterObj = {
                 table:'MessageTable',
@@ -1235,10 +1250,10 @@ var infraMonitorUtils = {
             if(keywords.val() != null && keywords.val() != ''){
                 filterObj['keywords'] = keywords.val();
             }
-            loadSLResults({elementId:'gridConsole' + '_' + obj.name, btnId:'btnDisplayLogs', timeOut:60000,
+            loadSLResults({elementId:'gridConsole', btnId:'btnDisplayLogs', timeOut:60000,
                 pageSize:20, //gridHeight:500,
                 reqFields:['MessageTS', 'Category','Messagetype', 'Xmlmessage']}, filterObj);
-            gridConsole = $('#gridConsole' + '_' + obj.name).data('contrailGrid');
+            gridConsole = $('#gridConsole').data('contrailGrid');
             //Take to the last page and scroll to bottom
             //gridConsole.bind('dataBound',function() {
             //gridConsole.bind('dataBinding',function() {
@@ -1257,15 +1272,7 @@ var infraMonitorUtils = {
             fetchLastLogtimeAndCallLoadLogs('',nodeType);
         }
         
-        $('#btnResetLogs' + '_' + obj.name).on('click', function () {
-            obj.name = arguments[0].target.id.split('_')[1];
-            cboTimeRange = $('#msgTimeRange' + '_' + obj.name).data('contrailDropdown');
-            cboMsgCategory = $('#msgCategory' + '_' + obj.name).data('contrailDropdown');
-            cboMsgType = $('#msgType' + '_' + obj.name).data('contrailCombobox');
-            cboMsgLevel = $('#msgLevel' + '_' + obj.name).data('contrailDropdown');
-            cboMsgLimit = $('#msgLimit' + '_' + obj.name).data('contrailDropdown');
-            cboMsgFromTime = $('#console-from-time' + '_' + obj.name).data('contrailDateTimePicker');
-           
+        $('#btnResetLogs').on('click', function () {
             cboTimeRange.value('5m');
             selectTimeRange({val:"5m"});
             cboMsgType.value('');
@@ -1369,15 +1376,14 @@ function closeObjectLogWindow() {
     //clearValuesFromDomElements();
 }
 
-function showStatus(node, action){
-    var ip = node.ip;
+function showStatus(ip, action){
     if(CONTRAIL_STATUS_USER["ip_"+ip] == null || CONTRAIL_STATUS_PWD["ip_"+ip] == null){
-        showLoginWindow(node, action);
+        showLoginWindow(ip, action);
     }else {
         if(action === 'log') {
             showLogDirWindow(CONTRAIL_STATUS_USER["ip_"+ip], CONTRAIL_STATUS_PWD["ip_"+ip], ip);
         } else {
-            populateStatus(CONTRAIL_STATUS_USER["ip_"+ip], CONTRAIL_STATUS_PWD["ip_"+ip], node);
+            populateStatus(CONTRAIL_STATUS_USER["ip_"+ip], CONTRAIL_STATUS_PWD["ip_"+ip], ip);
         }
     }
 }
@@ -1386,8 +1392,7 @@ function showLogs(ip) {
     showStatus(ip, 'log');
 }
 
-function showLoginWindow(node, action){
-    var ip = node.ip;
+function showLoginWindow(ip, action){
     var username;
     var password;
     /*if ($('body').find('loginWindow')){
@@ -1423,7 +1428,7 @@ function showLoginWindow(node, action){
             if(action === 'log') {
                 showLogDirWindow(username, password, ip, loginWindow);
             }else { 
-                populateStatus(username, password, node, loginWindow);
+                populateStatus(username, password, ip, loginWindow);
             }
         }
         //loginWindow.hide();
@@ -1431,33 +1436,32 @@ function showLoginWindow(node, action){
     loginWindow.modal('show');
 };
 
-function populateStatus(usrName,pwd,node,loginWindow) {
-    var ip = node.ip;
-    startWidgetLoading('dashboard' + '_' + node.name);
-    $('#divBasic' + '_' + node.name).hide();
-    $('#divAdvanced' + '_' + node.name).hide();
-    $('#divStatus' + '_' + node.name).show();
+function populateStatus(usrName,pwd,ip,loginWindow) {
+    startWidgetLoading('dashboard');
+    $('#divBasic').hide();
+    $('#divAdvanced').hide();
+    $('#divStatus').show();
     var postData = {"username":usrName,"password":pwd};
     $.ajax({
         url:'/api/service/networking/device-status/' + ip,
         type:'post',
         data:postData
     }).done(function(response) {
-        endWidgetLoading('dashboard' + '_' + node.name);
+        endWidgetLoading('dashboard');
         CONTRAIL_STATUS_USER["ip_"+ip] = usrName;
         CONTRAIL_STATUS_PWD["ip_"+ip] = pwd;
         if(loginWindow != null){
             loginWindow.hide();
         }
         var htmlString = '<pre>' + response + '</pre>';
-        $('#divContrailStatus' + '_' + node.name).html(htmlString);
-        $('#divBasic' + '_' + node.name).hide();
-        $('#divAdvanced' + '_' + node.name).hide();
-        $('#divStatus' + '_' + node.name).show();
-        $('#divAdvanced' + '_' + node.name).parents('.widget-box').find('.widget-header h4 .subtitle').remove();
-        $('#divAdvanced' + '_' + node.name).parents('.widget-box').find('.widget-header h4').append('<span class="subtitle">(Status)</span>')
+        $('#divContrailStatus').html(htmlString);
+        $('#divBasic').hide();
+        $('#divAdvanced').hide();
+        $('#divStatus').show();
+        $('#divAdvanced').parents('.widget-box').find('.widget-header h4 .subtitle').remove();
+        $('#divAdvanced').parents('.widget-box').find('.widget-header h4').append('<span class="subtitle">(Status)</span>')
     }).fail(function(response) {
-        endWidgetLoading('dashboard' + '_' + node.name);
+        endWidgetLoading('dashboard');
         if(response != null && response.responseText != null && response.responseText.search("Error: Authentication failure") != -1){
             $('#divLoginError').html("Invalid username or password");
             showLoginWindow(ip);
@@ -2184,7 +2188,7 @@ function formatMemory(memory) {
 }
 
 function updateChartsForSummary(dsData, nodeType) {
-    var title,key,chartId,isChartInitialized = false,tooltipFn,bucketTooltipFn,isBucketize,crossFilter;
+    var title,key,chartId,isChartInitialized = false,tooltipFn,bucketTooltipFn,isBucketize,crossFilter,bubbleSizeFn;
     var nodeData = dsData;
     var showLegend,xLbl,yLbl,useSizeAsRadius = false;
     var data = []
@@ -2194,6 +2198,7 @@ function updateChartsForSummary(dsData, nodeType) {
 		key = 'vRouters';
 		chartId = 'vrouters-bubble';
         tooltipFn = bgpMonitor.vRouterTooltipFn;
+        bubbleSizeFn = bgpMonitor.vRouterBubbleSizeFn;
         bucketTooltipFn = bgpMonitor.vRouterBucketTooltipFn;
         isBucketize = false;
         clickFn = bgpMonitor.onvRouterDrillDown;
@@ -2250,6 +2255,7 @@ function updateChartsForSummary(dsData, nodeType) {
             yLbl:yLbl,
             tooltipFn: tooltipFn,
             bucketTooltipFn: bucketTooltipFn,
+            bubbleSizeFn: bubbleSizeFn,
             clickFn: clickFn,
             xPositive: true,
             addDomainBuffer: true,
@@ -2277,25 +2283,26 @@ function updateChartsForSummary(dsData, nodeType) {
     };
     var chartObj = {},nwObj = {};
     if(isBucketize) {
-        //Move to MVC
-        cowu.renderView4Config($('#' + chartId),null,{
-            "elementId":chartId,
-            "title": "Port Distribution",
-            "view": "ScatterChartView",
-            "viewConfig": {
-                modelConfig : {
-                    remote: {},
-                    data:data
-                },
-                parseFn: function(response) {
-                    return {
-                        d: chartsData['d'],
-                        chartOptions: chartsData['chartOptions']
-                    }
-                },
-                "class": "port-distribution-chart",
-            }
-        });
+            //Move to MVC
+            cowu.renderView4Config($('#' + chartId),null,{
+                "elementId":chartId,
+                "title": "Port Distribution",
+                "view": "ScatterChartView",
+                "viewConfig": {
+                    // reInitialize : false,
+                    modelConfig : {
+                        remote: {},
+                        data:data
+                    },
+                    parseFn: function(response) {
+                        return {
+                            d: chartsData['d'],
+                            chartOptions: chartsData['chartOptions']
+                        }
+                    },
+                    "class": "port-distribution-chart",
+                }
+            });
     } else {
         $('#' + chartId).initScatterChart(chartsData);
     }
@@ -2340,6 +2347,7 @@ function getAllvRouters(defferedObj,dataSource,dsObj){
             }
         defferedObj.done(function(){
             dsObj['getFromCache'] = false;
+            manageDataSource.refreshDataSource('computeNodeDS');
         });
     } else {
         obj['transportCfg'] = {
@@ -2598,7 +2606,7 @@ function getNodeTooltipContents(currObj,formatType) {
     var tooltipContents = [
         {label:'Host Name', value: currObj['name']},
         {label:'Version', value:currObj['version']},
-        {label:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  + '%' : currObj['cpu']},
+        {label:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  + '%' : '-'},
         {label:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
     ];
     if(formatType == 'simple') {
@@ -2626,12 +2634,15 @@ function getNodeTooltipContents(currObj,formatType) {
 //Tooltip contents to show for database nodes
 function getDbNodeTooltipContents(currObj) {
     var tooltipContents = [
-        {lbl:'Host Name', value: currObj['name']},
-//        {lbl:'Version', value:currObj['version']},
-        {lbl:'Available Space', value:currObj['availableSpace']},
-        {lbl:'Used Space', value:currObj['usedSpace']},
-        {lbl:'Analytics DB Size', value:currObj['analyticsDbSize']},
-        {lbl:'Usage', value:currObj['usedPercentage'].toFixed(2) + ' %'}
+        {label:'Host Name', value: currObj['name']},
+//        {label:'Version', value:currObj['version']},
+        {label:'Disk Space', value: '',options:{noLabelColon:true}},
+        {label:'Available', value:currObj['availableSpace']},
+        {label:'Used', value:currObj['usedSpace']},
+        {label:'Usage', value:currObj['usedPercentage'].toFixed(2) + ' %'},
+        {label:'Analytics DB', value:'',options:{noLabelColon:true}},
+        {label:'Used', value:currObj['analyticsDbSize']},
+        
     ];
     return tooltipContents;
 }
@@ -2670,6 +2681,11 @@ function getNodeTooltipContentsForBucket(currObj,formatType) {
 }
 
 var bgpMonitor = {
+    vRouterBubbleSizeFn: function(mergedNodes) {
+        return d3.max(mergedNodes,function(d) { 
+            return d.size;
+        });
+    },
     onvRouterDrillDown:function(currObj) {
          layoutHandler.setURLHashParams({node:currObj['name'], tab:''}, {p:'mon_infra_vrouter'});
     },
@@ -2701,7 +2717,7 @@ var bgpMonitor = {
         var tooltipContents = [];
         if(currObj['pendingQueryCnt'] != null && currObj['pendingQueryCnt'] > 0)
             tooltipContents.push({label:'Pending Queries', value:currObj['pendingQueryCnt']});
-        return getNodeTooltipContents(currObj).concat(tooltipContents,formatType);
+        return getNodeTooltipContents(currObj,formatType).concat(tooltipContents);
     },
     configNodeTooltipFn: function(currObj,formatType) {
         return getNodeTooltipContents(currObj,formatType);
@@ -3006,6 +3022,17 @@ function updatevRouterLabel(selector,filteredCnt,totalCnt){
     infoElem.text(innerText);
 }
 
-
+function isNTPUnsynced (nodeStatus){
+    if(nodeStatus == null || !nodeStatus || nodeStatus.process_status == null){
+        return false;
+    }
+    var processStatus = nodeStatus.process_status;
+    for(var i = 0; i < processStatus.length; i++){
+        var procstat = processStatus[i];
+        if(procstat.description != null && procstat.description.toLowerCase().indexOf("ntp state unsynchronized") != -1){
+            return true;
+        }
+    }
+}
 
 

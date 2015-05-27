@@ -26,12 +26,12 @@ global.QUERY_JSON = {
         "SUM(ifStats.ifOutPkts)"],
         "where":[[{"name":"name","value":"","op":1,"value2":null,
             "suffix":{"name":"ifStats.ifIndex","value":"","suffix":null,"op":1,"value2":null}}]]},
-    'StatTable.DatabaseUsageInfo.database_usage_stats': {
-        "table": "StatTable.DatabaseUsageInfo.database_usage_stats",
+    'StatTable.DatabaseUsageInfo.database_usage': {
+        "table": "StatTable.DatabaseUsageInfo.database_usage",
         "start_time": "", "end_time": "", "select_fields":
-            ["T","database_usage_stats.disk_space_used_1k",
-             "database_usage_stats.disk_space_available_1k",
-             "database_usage_stats.analytics_db_size_1k"],
+            ["T","database_usage.disk_space_used_1k",
+             "database_usage.disk_space_available_1k",
+             "database_usage.analytics_db_size_1k"],
          "where":[[{"name":"Source","op":1,"value":""}]]}
 }
 
@@ -45,6 +45,8 @@ global.NODE_CHASSIS_TYPE_SPINE = 'spine';
 global.NODE_CHASSIS_TYPE_CORE = 'coreswitch';
 global.NODE_CHASSIS_TYPE_NONE = '-';
 
+/* 5 Minutes */
+global.INSTANCE_SPAWNING_TIMEOUT = 5 * 60 * 1000;
 
 module.exports = global;
 

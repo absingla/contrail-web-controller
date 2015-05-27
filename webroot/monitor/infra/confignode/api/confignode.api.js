@@ -51,12 +51,8 @@ function getConfigNodeDetails (req, res, appData)
     commonUtils.createReqObj(dataObjArr, reqUrl, null, null,
                              configApiServer, null, appData);
     async.map(dataObjArr,
-              commonUtils.getServerResponseByRestApi(configApiServer, false),
+              commonUtils.getServerResponseByRestApi(configApiServer, true),
               function(err, results) {
-        if (err || (results[0]['ModuleCpuState'] == null)) {
-            commonUtils.handleJSONResponse(err, res, resultJSON);
-            return;
-        }
         resultJSON = postProcessConfigNodeDetails(results, hostName);
         resultJSON = 
             infraCmn.filterOutGeneratorInfoFromGenerators(excludeProcessList, 
@@ -135,7 +131,7 @@ function parseConfigNodeProcessUVEs (resultJSON, configProcessUVEs, configData, 
         var confLen = configData.length;
         for (var i = 0; i < confLen; i++) {
             if (configData[i]['config-node']['fq_name'][1] == host) {
-                resultJSON['ConfigNode'] = configData[i]['config-node'];
+                resultJSON['ConfigData'] = configData[i]['config-node'];
                 break;
             }
         }
@@ -198,14 +194,15 @@ function postProcessConfigNodeSummary (configUVEData)
     } else {
         configData = configData['config-nodes'];
     }
+    var uveLen = 0;
     if ((null == uveData) || (null == uveData['value'])) {
         uveData = null;
     } else {
         uveData = uveData['value'];
+        uveLen = uveData.length;
     }
 
     var resultJSON = [];
-    var uveLen = uveData.length;
     for (var i = 0; i < uveLen; i++) {
         var host = uveData[i]['name'];
         resultJSON[i] = {};
@@ -237,7 +234,7 @@ function postProcessConfigNodeSummary (configUVEData)
         resultJSON[resCnt] = {};
         resultJSON[resCnt]['name'] = key;
         resultJSON[resCnt]['value'] = {};
-        resultJSON[resCnt]['value']['ConfigNode'] = tmpConfigObjs[key];
+        resultJSON[resCnt]['value']['ConfigData'] = tmpConfigObjs[key];
     }
     return resultJSON;
 }

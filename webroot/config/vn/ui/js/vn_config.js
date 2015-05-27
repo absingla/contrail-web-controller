@@ -48,6 +48,8 @@ function VirtualNetworkConfig() {
     var ajaxParam;
     var dynamicID;
     var selectedProuters;
+    var getUUIDCallCount;
+    var vxlan_identifier_mode;
 
     //Method definitions
     this.load = load;
@@ -78,6 +80,8 @@ function VirtualNetworkConfig() {
     this.getDNSStatus = getDNSStatus;
     this.getAllDNSServer = getAllDNSServer;
     this.dynamicID = dynamicID;
+    this.getUUIDCallCount = getUUIDCallCount;
+    this.vxlan_identifier_mode = vxlan_identifier_mode;
     this.destroy = destroy;
 }
 
@@ -103,6 +107,8 @@ function fetchData() {
 
 function initComponents() {
     dynamicID = 0;
+    getUUIDCallCount = 200;
+    vxlan_identifier_mode = "automatic";
     $("#gridVN").contrailGrid({
         header : {
             title : {
@@ -734,6 +740,11 @@ function initActions() {
             vnConfig["virtual-network"]["virtual_network_properties"]["allow_transit"] = true;
         else
             vnConfig["virtual-network"]["virtual_network_properties"]["allow_transit"] = false;
+        if($("#chk_flood_unknown_unicast")[0].checked === true)
+            vnConfig["virtual-network"]["flood_unknown_unicast"] = true;
+        else
+            vnConfig["virtual-network"]["flood_unknown_unicast"] = false;
+		
         //vnConfig["virtual-network"]["display_name"] = vnConfig["virtual-network"]["fq_name"][vnConfig["virtual-network"]["fq_name"].length-1];
 
         selectedProuters = $("#msPhysicalRouters").data('contrailMultiselect').value();
@@ -1848,23 +1859,78 @@ function fetchDataForGridVN() {
     idCount = 0;
     vnAjaxcount = vnAjaxcount+1;
     ajaxParam = $("#ddProjectSwitcher").data("contrailDropdown").value()+"_"+vnAjaxcount;
-    doAjaxCall("/api/admin/config/get-data?type=virtual-network&count=20&fqnUUID="+$("#ddProjectSwitcher").data("contrailDropdown").value(),
-        "GET", null, "successHandlerForGridVNLoop", "failureHandlerForGridVN", null, ajaxParam);
+    var getAjaxs = [];
+    getAjaxs[0] = $.ajax({
+        url:"/api/tenants/config/get-config-uuid-list?type=virtual-network&parentUUID="+$("#ddProjectSwitcher").data("contrailDropdown").value(),
+        type:"GET"
+    });
+    getAjaxs[1] = $.ajax({
+        url:"/api/tenants/config/global-vrouter-config",
+        type:"GET"
+    });
+
+    $.when.apply($, getAjaxs).then(
+        function () {
+            //all success
+            var results = arguments;
+            if(null != results[1] &&
+               null != results[1][0] &&
+            'global-vrouter-config' in results[1][0] &&
+            'vxlan_network_identifier_mode' in results[1][0]['global-vrouter-config']) {
+                vxlan_identifier_mode = results[1][0]['global-vrouter-config']['vxlan_network_identifier_mode'];
+            }
+            successHandlerForAllUUIDGet(results[0][0], ajaxParam);
+        },
+        function () {
+            //If atleast one api fails
+            var results = arguments;
+            failureHandlerForAllUUIDGet(results);
+        }
+    );
+    /*doAjaxCall("/api/admin/config/get-data?type=virtual-network&count=20&fqnUUID="+$("#ddProjectSwitcher").data("contrailDropdown").value(),
+        "GET", null, "successHandlerForGridVNLoop", "failureHandlerForGridVN", null, ajaxParam);*/
 }
 
-
-function successHandlerForGridVNLoop(result,cbparam){
+function successHandlerForAllUUIDGet(allUUID, cbparam)
+{
     if(cbparam != ajaxParam){
         return;
     }
-    if(result.more == true || result.more == "true"){
-        
-        doAjaxCall("/api/admin/config/get-data?type=virtual-network&count=20&fqnUUID="+ 
-            $("#ddProjectSwitcher").data("contrailDropdown").value() +"&lastKey="+result.lastKey, 
-            "GET", null, "successHandlerForGridVNLoop", "failureHandlerForGridVN", null, cbparam); 
+    if(allUUID.length > 0) {
+        var vnUUIDObj = {};
+        var sendUUIDArr = [];
+        vnUUIDObj.type = "virtual-network";
+        sendUUIDArr = allUUID.slice(0, getUUIDCallCount);
+        vnUUIDObj.uuidList = sendUUIDArr;
+        vnUUIDObj.fields = ["floating_ip_pools"];
+        allUUID = allUUID.slice(getUUIDCallCount, allUUID.length);
+        doAjaxCall("/api/tenants/config/get-config-data-paged", "POST", JSON.stringify(vnUUIDObj),
+            "successHandlerForGridVNLoop", "successHandlerForGridVNLoop", null, allUUID);
+	} else {
+        $("#btnCreateVN").removeClass('disabled-link');
+        gridVN.showGridMessage('empty');
+	}
+}
+
+function failureHandlerForAllUUIDGet(result){
+    $("#btnCreateVN").removeClass('disabled-link');
+    gridVN.showGridMessage('errorGettingData');
+}
+
+function successHandlerForGridVNLoop(result, allUUID){
+    if(allUUID.length > 0) {
+        var vnUUIDObj = {};
+        var sendUUIDArr = [];
+        vnUUIDObj.type = "virtual-network";
+        sendUUIDArr = allUUID.slice(0, getUUIDCallCount);
+        vnUUIDObj.uuidList = sendUUIDArr;
+        vnUUIDObj.fields = ["floating_ip_pools"];
+        allUUID = allUUID.slice(getUUIDCallCount, allUUID.length);
+        doAjaxCall("/api/tenants/config/get-config-data-paged", "POST", JSON.stringify(vnUUIDObj),
+            "successHandlerForGridVNLoop", "successHandlerForGridVNLoop", null, allUUID);
     } else {
         doAjaxCall("/api/tenants/config/shared-virtual-networks/", 
-            "GET", null, "successHandlerForAppendShared", "failureHandlerForAppendShared", null, cbparam);        
+            "GET", null, "successHandlerForAppendShared", "failureHandlerForAppendShared", null, allUUID);        
     }
     successHandlerForGridVNRow(result);
 }
@@ -2136,18 +2202,17 @@ function successHandlerForGridVNRow(result) {
         } else {
             fwdMode = "L2 and L3";
         }
-
-        var automaticVxlanID = vn.virtual_network_network_id;
-        var vxlanid = jsonPath(vn, "$.virtual_network_properties.vxlan_network_identifier");
-        if (vxlanid !== false && typeof vxlanid !== "undefined" && vxlanid.length > 0) {
-            vxlanid = vxlanid[0];
-            if(null === vxlanid) {
-                vxlanid = "Automatic";
-                if (automaticVxlanID != false && automaticVxlanID != null && automaticVxlanID != "undefined"){
-                    vxlanid += " ( " + automaticVxlanID + " )";
-                }
-            } 
+        var vxlanid= "";
+        if(vxlan_identifier_mode == "configured") {
+            vxlanidval = jsonPath(vn, "$.virtual_network_properties.vxlan_network_identifier");
+            if (vxlanidval !== false && typeof vxlanidval !== "undefined" && vxlanidval.length > 0 &&
+                vxlanidval[0] != null) {
+                vxlanid = vxlanidval[0] ;
+            } else {
+                vxlanid = "Unconfigured";
+            }
         } else {
+            var automaticVxlanID = vn["virtual_network_network_id"];
             vxlanid = "Automatic";
             if(automaticVxlanID != false && automaticVxlanID != null && automaticVxlanID != "undefined"){
                 vxlanid += " ( " + automaticVxlanID + " )";
@@ -2177,6 +2242,12 @@ function successHandlerForGridVNRow(result) {
                 }
             }
         }
+        var flood_unknown_unicast = "Disabled";
+        if(vn["flood_unknown_unicast"] != undefined) {
+            if(String(vn["flood_unknown_unicast"]) == "true") {
+                flood_unknown_unicast = "Enabled";
+            }
+        }
         //if(vn.fq_name[1] == selectedProject){
             vnData.push({
                 "id": idCount++,
@@ -2198,6 +2269,7 @@ function successHandlerForGridVNRow(result) {
                 "ForwardingMode": fwdMode,
                 "VxLanId": vxlanid,
                 "AllowTransit": AllowTransit,
+                "flood_unknown_unicast": flood_unknown_unicast,
                 "staticIPAddressing" : staticIPAddressing,
                 "NetworkUUID": uuid,
                 "parent_uuid": parent_uuid,
@@ -2531,6 +2603,7 @@ function showVNEditWindow(mode, rowIndex) {
                     $('#btnCommonAddIpam').trigger('click');
                     $('#btnCommonAddIpam').hide();
                 }
+                $("#chk_flood_unknown_unicast")[0].checked = false;
             } else if (mode === "edit") {
                 if(isVCenter()) {
                     $('#btnCommonAddIpam').hide();
@@ -2660,10 +2733,15 @@ function showVNEditWindow(mode, rowIndex) {
                 //place to add edid of AdminState, Extend/Shared,DNS Server
                 var AdminState = selectedVN["id_perms"]["enable"];
                 var isShared = selectedVN["is_shared"];
+                var isflood_unknown_unicast = false;
+                if(selectedVN["flood_unknown_unicast"] != null && selectedVN["flood_unknown_unicast"] != undefined) {
+                    isflood_unknown_unicast = selectedVN["flood_unknown_unicast"];
+                }
                 var isExternal = selectedVN["router_external"];
                 $("#ddAdminState").data("contrailDropdown").value(String(AdminState));
                 $("#is_shared")[0].checked = isShared;
                 $("#router_external")[0].checked = isExternal;
+                $("#chk_flood_unknown_unicast")[0].checked = isflood_unknown_unicast;
 
                 if(null !== selectedVN["virtual_network_properties"] &&
                     typeof selectedVN["virtual_network_properties"] !== "undefined") {

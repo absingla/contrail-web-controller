@@ -44,6 +44,7 @@ function portsConfigObj() {
     var mac_address;
     var ip_address;
     var selectedParentVMIObject;
+    var getPortUUIDCallCount;
             
     //Method definitions
     this.load = load;
@@ -71,6 +72,7 @@ function portsConfigObj() {
     this.allfloatingIP = allfloatingIP;
     this.allNetworkData = allNetworkData;
     this.currentVNSubnetDetail = currentVNSubnetDetail;
+    this.getPortUUIDCallCount = getPortUUIDCallCount;
     this.mac_address = mac_address;
     this.ip_address = ip_address;
     this.selectedParentVMIObject = selectedParentVMIObject;
@@ -119,6 +121,7 @@ function groupBy( array , f )
 }
 
 function initComponents() {
+    getPortUUIDCallCount = 200;
     var deletePortsDropdownTemplate = contrail.getTemplate4Id('delete-port-action-template');
     var columnsToBeAddedDynamically = [];
     var displayOwnerNameColumn = {
@@ -224,22 +227,33 @@ function initComponents() {
                         $('#btnDeletePorts').removeClass('disabled-link');
                     }
                 },
-                actionCell: [
-                    {
+                actionCell: function(dc){
+                    var menu = [];
+                    menu.push({
                         title: 'Edit',
                         iconClass: 'icon-edit',
                         onClick: function(rowIndex){
                             showPortEditWindow('edit',rowIndex);
                         }
-                    },
-                    {
+                    });
+                    if(dc.chiled == false) {
+                        menu.push({
+                            title: 'Add Sub Interface',
+                            iconClass: 'icon-edit',
+                            onClick: function(rowIndex){
+                                showPortEditWindow('add',rowIndex, 'true');
+                            }
+                        });
+                    }
+                    menu.push({
                         title: 'Delete',
                         iconClass: 'icon-trash',
                         onClick: function(rowIndex){
                             showRemoveWindow(rowIndex);
                         }
-                    }
-                ],
+                    });
+                    return menu;
+                },
                 detail:{
                     template: $("#gridPortsDetailTemplate").html()
                 }
@@ -1150,18 +1164,47 @@ function fetchDataForgridPorts() {
     gridPorts.showGridMessage('loading');
     var proid = $("#ddProjectSwitcher").data("contrailDropdown").value();
     ajaxParam = proid + "_" + polAjaxcount;
-    doAjaxCall("/api/admin/config/get-data?type=virtual-machine-interface&count="+pageCount+"&fqnUUID="+proid,
-        "GET", null, "successHandlerForgridPorts", "failureHandlerForgridPortsRow", null, ajaxParam);
+    doAjaxCall("/api/tenants/config/get-config-uuid-list?type=virtual-machine-interface&parentUUID="+proid,
+        "GET", null, "successHandlerForAllPortUUIDGet", "failureHandlerForAllPortUUIDGet", null, ajaxParam);
 }
 
-function successHandlerForgridPorts(result , cbparam) {
-    if(cbparam != ajaxParam){
+function successHandlerForAllPortUUIDGet(allUUID, cbparam)
+{
+    if (cbparam != ajaxParam){
         return;
     }
-    if(result.more == true || result.more == "true"){
-        doAjaxCall("/api/admin/config/get-data?type=virtual-machine-interface&count="+pageCount+"&fqnUUID="+
-            $("#ddProjectSwitcher").data("contrailDropdown").value() +"&lastKey="+result.lastKey,
-            "GET", null, "successHandlerForgridPorts", "failureHandlerForgridPortsRow", null, cbparam);
+    if (allUUID.length > 0) {
+        var vmiUUIDObj = {};
+        var sendUUIDArr = [];
+        vmiUUIDObj.type = "virtual-machine-interface";
+        sendUUIDArr = allUUID.slice(0, getPortUUIDCallCount);
+        vmiUUIDObj.uuidList = sendUUIDArr;
+        //vmiUUIDObj.fields = ["floating_ip_pools"];
+        allUUID = allUUID.slice(getPortUUIDCallCount, allUUID.length);
+        doAjaxCall("/api/tenants/config/get-virtual-machine-details-paged", "POST", JSON.stringify(vmiUUIDObj),
+            "successHandlerForgridPorts", "failureHandlerForgridPorts", null, allUUID);
+    } else {
+        $("#btnCreatePorts").removeClass('disabled-link');
+        gridPorts.showGridMessage("empty");
+    }
+}
+
+function failureHandlerForAllPortUUIDGet(result){
+    $("#btnCreatePorts").removeClass('disabled-link');
+    gridPorts.showGridMessage('errorGettingData');
+}
+
+function successHandlerForgridPorts(result , allUUID) {
+    if(allUUID.length > 0) {
+        var vmiUUIDObj = {};
+        var sendUUIDArr = [];
+        vmiUUIDObj.type = "virtual-machine-interface";
+        sendUUIDArr = allUUID.slice(0, getPortUUIDCallCount);
+        vmiUUIDObj.uuidList = sendUUIDArr;
+        //vmiUUIDObj.fields = ["floating_ip_pools"];
+        allUUID = allUUID.slice(getPortUUIDCallCount, allUUID.length);
+        doAjaxCall("/api/tenants/config/get-virtual-machine-details-paged", "POST", JSON.stringify(vmiUUIDObj),
+            "successHandlerForgridPorts", "failureHandlerForgridPorts", null, allUUID);
     }
     successHandlerForgridPortsRow(result);
 }
@@ -1175,7 +1218,7 @@ function successHandlerForgridPortsRow(result) {
     var selectedDomain = $("#ddDomainSwitcher").data("contrailDropdown").text();
     var selectedProject = $("#ddProjectSwitcher").data("contrailDropdown").text();
     var PortsData = $("#gridPorts").data("contrailGrid")._dataView.getItems();
-    var Ports = result.data;
+    var Ports = result;
     if(Ports != undefined && Ports != null){
         for (var i = 0; i < Ports.length; i++) {
             if(Ports[i] != null && Ports[i] != undefined){
@@ -1646,7 +1689,7 @@ function clearValuesFromDomElements() {
 
 }
 
-function showPortEditWindow(mode, rowIndex) {
+function showPortEditWindow(mode, rowIndex, enableSubInterfaceFlag) {
     if($("#btnCreatePorts").hasClass('disabled-link')) {
         return;
     }
@@ -1659,9 +1702,14 @@ function showPortEditWindow(mode, rowIndex) {
         windowCreatePorts.find('.modal-header-title').text('Create Port');
     } else {
         windowCreatePorts.find('.modal-header-title').text('Edit Port');
-        var selectedRow = $("#gridPorts").data("contrailGrid")._dataView.getItem(rowIndex);
-        selectedPortUUID = selectedRow["portUUID"];
-        vnUUID = selectedRow["vnUUID"];
+    }
+    if(enableSubInterfaceFlag == "true" || mode == "edit") {
+	    var mapedData = $("#gridPorts").data("contrailGrid")._dataView.getItem(rowIndex);
+        selectedPortUUID = mapedData["portUUID"];
+        vnUUID = mapedData["vnUUID"];
+    }
+    if(enableSubInterfaceFlag == "true") {
+        windowCreatePorts.find('.modal-header-title').text('Add SubInterface to port ' + selectedPortUUID);
     }
     var selectedDomain = $("#ddDomainSwitcher").data("contrailDropdown").text();
     var selectedProject = $("#ddProjectSwitcher").data("contrailDropdown").text();
@@ -1797,7 +1845,11 @@ function showPortEditWindow(mode, rowIndex) {
             $("#ddVN").data("contrailDropdown").setData(allNetworks);
 
             if(allNetworks.length > 0) {
-                $("#ddVN").data("contrailDropdown").value(allNetworks[0].value);
+                if(enableSubInterfaceFlag == "true"){
+                    $("#ddVN").data("contrailDropdown").value(mapedData.vnValues[0]["values"]);
+                } else {
+                    $("#ddVN").data("contrailDropdown").value(allNetworks[0].value);
+			    }
                 updateSubnet();
             } else {
                 //Disable port create and show a popup 
@@ -1838,6 +1890,7 @@ function showPortEditWindow(mode, rowIndex) {
             var mainDS = [];
             routerUUID = [];
             computeUUID = [];
+            var subnetValue = "";
             
             if(results[3][0] != null && results[3][0] != "" && results[3][0]["data"] && results[3][0]["data"].length > 0) {
                 vmiArray = results[3][0]["data"];
@@ -1858,7 +1911,8 @@ function showPortEditWindow(mode, rowIndex) {
                         (ip["virtual_network_refs"] != undefined && 
                              ip["virtual_network_refs"] != null &&
                              ip["virtual_network_refs"][0]["to"][1] == selectedProject) &&
-                             selectedPortUUID != ip["uuid"]){
+                             ((selectedPortUUID != ip["uuid"]) || 
+                              ((selectedPortUUID == ip["uuid"]) && enableSubInterfaceFlag == "true"))){
 
                         subInterfaceParentText += ip["uuid"] + "\xa0\xa0";
                         if(ip["instance_ip_back_refs"] != undefined &&
@@ -1884,8 +1938,8 @@ function showPortEditWindow(mode, rowIndex) {
 
                         subInterfaceParentValObj.virtual_network_refs = ip["virtual_network_refs"][0]["to"];
                         var value = {"uuid":ip["uuid"],"to":ip["fq_name"]};
+                        console.log("inc:"+JSON.stringify(value));
                         subInterfaceParentDatas.push({"text":subInterfaceParentText, "value":JSON.stringify(value)});
-                        
                         /*if(ip["virtual_machine_interface_device_owner"] == "compute:nova"){
                             //take it from VMR
                             if("virtual_machine_refs" in ip && ip["virtual_machine_refs"].length >=0){
@@ -1897,13 +1951,19 @@ function showPortEditWindow(mode, rowIndex) {
                             }
                         }*/
                     }
+                        if(ip["uuid"] == selectedPortUUID && enableSubInterfaceFlag == "true"){
+                            var value = {"uuid":ip["uuid"],"to":ip["fq_name"]};
+                            console.log(JSON.stringify(value));
+                            subnetValue = JSON.stringify(value);
+                        }
                 }
             }
             $("#ddSubInterfaceParent").data("contrailDropdown").setData(subInterfaceParentDatas);
             $("#is_subInterface").attr("disabled","disabled")
+            $("#ddSubInterfaceParent").data("contrailDropdown").value("");
             if(subInterfaceParentDatas.length > 0) {
                 $("#is_subInterface").removeAttr("disabled","disabled")
-                $("#ddSubInterfaceParent").data("contrailDropdown").value(subInterfaceParentDatas[0].value);
+                //$("#ddSubInterfaceParent").data("contrailDropdown").value(subInterfaceParentDatas[0].value);
             }
 
             var vmArray = [];
@@ -1932,8 +1992,21 @@ function showPortEditWindow(mode, rowIndex) {
             }
             
             if (mode === "add") {
-                windowCreatePorts.find('.modal-header-title').text('Create Port');
-                $(txtPortName).focus();
+                if(enableSubInterfaceFlag == "true") {
+                    $("#is_subInterface").attr("checked", true);
+                    $("#txtVlan").val("");
+                    $("#ddSubInterfaceParent").data('contrailDropdown').enable(false);
+                    $(".subInterface").removeClass("hide");
+                    $("#ddSubInterfaceParent").data("contrailDropdown").value(subnetValue);
+                    $(".AdvanceExpandBox").removeClass("collapsed");
+                    $($($(".AdvanceExpandBox").find("i"))[0]).removeClass("icon-caret-right");
+                    $($($(".AdvanceExpandBox").find("i"))[0]).addClass("icon-caret-down");
+                    $(txtVlan).focus();
+                } else {
+                    $("#ddSubInterfaceParent").data('contrailDropdown').enable(true);
+                    windowCreatePorts.find('.modal-header-title').text('Create Port');
+                    $(txtPortName).focus();
+                }
             } else if (mode === "edit") {
                 var selectedVMI = null;
                 for(var j=0;j < vmiArrayLen;j++){
@@ -1949,7 +2022,7 @@ function showPortEditWindow(mode, rowIndex) {
                 }
                 
                 //var mapedData = mapVMIData(selectedVMI,selectedDomain,selectedProject);
-                var mapedData = $("#gridPorts").data("contrailGrid")._dataView.getItem(rowIndex);
+                //var mapedData = $("#gridPorts").data("contrailGrid")._dataView.getItem(rowIndex);
                 windowCreatePorts.find('.modal-header-title').text('Edit Port ' + mapedData.portName);
 
                 // Not editable fields
@@ -2150,6 +2223,11 @@ function validate() {
         var vlanVal = Number($("#txtVlan").val().trim());
         if(vlanVal < 1 || vlanVal > 4094 ){
             showInfoWindow("VLAN has to be between 1 to 4094", "Invalid Input");
+            return false
+        }
+        var subInterfaceVal = $("#ddSubInterfaceParent").data("contrailDropdown").value();
+        if(subInterfaceVal.trim() == "" ){
+            showInfoWindow("Sub Interface cannot be empty.", "Invalid Input");
             return false
         }
     }

@@ -393,7 +393,20 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                         -->
             <item>
-              <label>BGP Peers</label>
+              <label>Global Config</label>
+              <hash>config_infra_gblconfig</hash>
+              <resources>
+                <resource>
+                  <rootDir>/config/forwardingoptions/ui</rootDir>
+                  <view>global_options_config.view</view>
+                  <js>global_options_config.js</js>
+                  <class>fwdOptionsConfigObj</class>
+                </resource>
+              </resources>
+              <searchStrings>Configure Global Config</searchStrings>
+            </item>
+            <item>
+              <label>BGP Routers</label>
               <hash>config_infra_bgp</hash>
               <resources>
                 <resource>
@@ -403,20 +416,7 @@ and need to add the iconClass tag wherever we need to show some icons
                   <class>bgpConfigObj</class>
                 </resource>
               </resources>
-              <searchStrings>Configure BGP Peers</searchStrings>
-            </item>
-            <item>
-              <label>Forwarding Options</label>
-              <hash>config_infra_fwdoptions</hash>
-              <resources>
-                <resource>
-                  <rootDir>/config/forwardingoptions/ui</rootDir>
-                  <view>fwd_options_config.view</view>
-                  <js>fwd_options_config.js</js>
-                  <class>fwdOptionsConfigObj</class>
-                </resource>
-              </resources>
-              <searchStrings>Configure Fowarding Options</searchStrings>
+              <searchStrings>Configure BGP Routers</searchStrings>
             </item>
             <item>
               <label>Link Local Services</label>
@@ -768,7 +768,7 @@ and need to add the iconClass tag wherever we need to show some icons
             </item>
           </items>
         </item>
-        <item>
+        <!-- <item>
           <label>Analytics DB</label>
           <iconClass>icon-contrail-analytics-db</iconClass>
           <items>
@@ -785,7 +785,7 @@ and need to add the iconClass tag wherever we need to show some icons
                   </resources>
               </item>
           </items>
-        </item>
+        </item> -->
       </items>
     </item>
     <item>

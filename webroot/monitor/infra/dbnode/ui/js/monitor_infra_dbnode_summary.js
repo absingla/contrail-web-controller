@@ -15,6 +15,7 @@ monitorInfraDatabaseSummaryClass = (function() {
         var dbNodesResult = dbNodeDS.getDataSourceObj();
         var dbNodesDataSource = dbNodesResult['dataSource'];
         var dbDeferredObj = dbNodesResult['deferredObj'];
+        var dbPurgeTemplate = contrail.getTemplate4Id('purge-action-template');
         //Initialize widget header
         $('#dbNodes-header').initWidgetHeader({title:'Database Nodes', widgetBoxId:'recent'});
         $('#db-nodes-grid').contrailGrid({
@@ -22,24 +23,13 @@ monitorInfraDatabaseSummaryClass = (function() {
                 title : {
                     text : 'Database Nodes'
                 },
-                customControls: []
+                customControls: [dbPurgeTemplate()],
             },
             body: {
                 options: {
                     autoHeight : true,
                     enableAsyncPostRender:true,
-                    forceFitColumns:true,
-                    detail:{
-                        template: $("#dbnode-template").html(),
-                        onExpand: function (e,dc) {
-                            $('#db_tabstrip_' + dc['name']).attr('style', 'margin:10px 150px 10px 150px');
-                            databaseNodeView.populateDbNode({name:dc['name'], ip:dc['ip'], detailView : true});
-                            $('#db-nodes-grid > .grid-body > .slick-viewport > .grid-canvas > .slick-row-detail').addClass('slick-grid-detail-content-height');
-                            $('#db-nodes-grid > .grid-body > .slick-viewport > .grid-canvas > .slick-row-detail > .slick-cell').addClass('slick-grid-detail-sub-content-height');
-                        },
-                        onCollapse:function (e,dc) {
-                        }
-                    }
+                    forceFitColumns:true
                 },
                 dataSource: {
                     dataView: dbNodesDataSource,
@@ -83,21 +73,31 @@ monitorInfraDatabaseSummaryClass = (function() {
             				}
             			},
                     },
-//                    {
-//                        field:"ip",
-//                        name:"IP address",
-//                        minWidth:90,
-//                        formatter:function(r,c,v,cd,dc){
-//                            return summaryIpDisplay(dc['ip'],dc['summaryIps']);
-//                        },
-//                        exportConfig: {
-//            				allow: true,
-//            				advFormatter: function(dc) {
-//            					return dc.ip;
-//            				}
-//            			},
-//            			sorter : comparatorIP
-//                    },
+                    {
+                        field:"ip",
+                        name:"IP Address",
+                        minWidth:110,
+                        sorter : comparatorIP
+                    },
+                    {
+                        field:"status",
+                        id:"status",
+                        name:"Status",
+                        sortable:true,
+                        formatter:function(r,c,v,cd,dc) {
+                            return getNodeStatusContentForSummayPages(dc,'html');
+                        },
+                        searchFn:function(d) {
+                            return getNodeStatusContentForSummayPages(d,'text');
+                        },
+                        minWidth:110,
+                        exportConfig: {
+                            allow: true,
+                            advFormatter: function(dc) {
+                                return getNodeStatusContentForSummayPages(dc,'text');
+                            }
+                        }
+                    },
                     {
                         field:"availableSpace",
                         name:"Available Space",
@@ -142,4 +142,22 @@ monitorInfraDatabaseSummaryClass = (function() {
 
 function onDbNodeRowSelChange(dc) {
     databaseNodeView.load({name:dc['name'], ip:dc['ip']});
+}
+
+function purgeAnalyticsDB(purgePercentage) {
+    var ajaxConfig = {
+        type: "GET",
+        url: "/api/analytics/db/purge?purge_input=" + purgePercentage
+    };
+
+    contrail.ajaxHandler(ajaxConfig, null, function(response) {
+        if(response != null && response['status'] == 'started') {
+            showInfoWindow("Analytics DB purge has been started.", "Success");
+        } else {
+            showInfoWindow(response, "Purge Response");
+        }
+    }, function(response){
+        var errorMsg = contrail.parseErrorMsgFromXHR(response);
+        showInfoWindow(errorMsg, "Error");
+    });
 }

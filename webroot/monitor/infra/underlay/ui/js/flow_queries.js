@@ -58,13 +58,10 @@ frQuery['columnDisplay'] = [
     {select:"vrouter_ip", display:{id:'vrouter_ip', field:'vrouter_ip', width:150, name:"Virtual Router", groupable:false,formatter: 
             function(r, c, v, cd, dc){
                     var ip = validateIPAddress(handleNull4Grid(dc['vrouter_ip'])) == true ? handleNull4Grid(dc['vrouter_ip']) : noDataStr,
-                        retStr = '-';    
-                    if(ip != noDataStr) {
-                        if(null !== underlayRenderer && typeof underlayRenderer === "object") {
-                            var vRouterDetails = underlayView.prototype.getvRouterVMDetails(ip,'self_ip_list',VROUTER);
-                            retStr = contrail.format('{0} ({1})',ifNull(vRouterDetails['name'],'-'), ip);
-                        }
-                    }
+                        retStr = '-';
+                    var vrouter = ifNull(dc['vrouter'],noDataStr);
+                    if(ip != noDataStr || vrouter != noDataStr)
+                        retStr = contrail.format('{0} ({1})',vrouter, ip);
                 return retStr;
             }
         }
@@ -91,7 +88,7 @@ frQuery['columnDisplay'] = [
     {select:"destip", display:{id:"destip", field:"destip", width:90, name:"Destination IP", groupable:true, formatter: function(r, c, v, cd, dc){ return (validateIPAddress(handleNull4Grid(dc['destip'])) == true ? handleNull4Grid(dc['destip']) : noDataStr)}}},
     {select:"dport", display:{id:"dport", field:"dport", width:70, name:"Destination Port", groupable:true, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.dport);}}},
     {select:"agg-bytes", display:{id:'agg-bytes', field:'agg-bytes', width:120, name:"Bytes/Packets", groupable:false,formatter: function(r, c, v, cd, dc) {return contrail.format("{0}/{1}",formatBytes(dc['agg-bytes'],'-'),dc['agg-packets']);}}},
-];
+                        ];
 
 frQuery['defaultColumns'] = ['sourcevn', 'sourceip', 'sport', 'destvn', 'destip', 'dport', 'protocol', 'direction_ing'];
 fsQuery['defaultColumns'] = ['flow_class_id', 'direction_ing'];
@@ -766,6 +763,7 @@ function runFRQuery() {
             $("#"+queryPrefix+"-results").data('startTimeUTC',option['fromTime']);
         }
         reqQueryObj.select = "other_vrouter_ip,agg-bytes,agg-packets",
+        reqQueryObj.excludeInSelect = ['UuidKey', 'action', 'sg_rule_uuid', 'nw_ace_uuid','underlay_proto', 'underlay_source_port'],
         reqQueryObj.engQueryStr = getEngQueryStr(reqQueryObj);
         loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay);
     //}
@@ -803,7 +801,7 @@ function viewFRQueryResults(dataItem, params) {
     loadFlowResultsForUnderlay(options, reqQueryObj, queryColumnDisplay);
 };
 
-function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridDisplay,reverseTraceFlow) {
+function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridDisplay,traceFlow) {
     var grid = $('#' + options.elementId).data('contrailGrid'),
         url = "/api/admin/reports/query",
         btnId = options.btnId,
@@ -879,6 +877,10 @@ function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridD
                     type: 'status',
                     iconClasses: '',
                     text: 'Your query has been queued.'
+                },error: {
+                    type: 'error',
+                    iconClasses: 'icon-warning',
+                    text: 'Error in fetching details'
                 }
             }
         },
@@ -886,7 +888,7 @@ function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridD
             pager : {
                 options : {
                     pageSize : options.pageSize,
-                    pageSizeSelect : [10, 15, 50, 100, 200, 500 ]
+                    pageSizeSelect : [10, 50, 100, 200 ]
                 }
             }
         }
@@ -900,43 +902,57 @@ function loadFlowResultsForUnderlay(options, reqQueryObj, columnDisplay, fcGridD
                               <a title="View Results as Chart" id="fs-chart-link" class="margin-0-5 disabled-link" onclick=toggleToChart("fs");><i class="icon-bar-chart"></i></a>'];
     }
     else if(options.queryPrefix == 'fr'){
-        var customControls = [
-               '<button id="mapflow" class="btn btn-primary btn-mini" disabled="disabled" title="Map Flow">Map Flow</button>'
-        ];
-        if(reverseTraceFlow == true){
-            customControls = [
-                              '<button id="revTraceFlowBtn" class="btn btn-primary btn-mini" disabled="disabled" title="Reverse Trace Flow">Reverse Trace Flow</button>',
-                              '<button id="traceFlowBtn" class="btn btn-primary btn-mini" disabled="disabled" title="Trace Flow">Trace Flow</button>',
-                       ];
-        }
-        gridConfig.header.customControls = customControls,
         gridConfig.body.options = {
-            checkboxSelectable: {
-                enableRowCheckbox: true,
-                onNothingChecked: function(e){
-                    $("#mapflow").attr('disabled','disabled');
-                    $("#traceFlowBtn").attr('disabled','disabled');
-                    $("#revTraceFlowBtn").attr('disabled','disabled');
-                },
-                onSomethingChecked: function(e){
-                    $("#mapflow").removeAttr('disabled');
-                    $("#traceFlowBtn").removeAttr('disabled');
-                    $("#revTraceFlowBtn").removeAttr('disabled');
-                }
-            },
             actionCell: [],
             lazyLoading:true,
-            multiRowSelection : false,
+            actionCellPosition : 'start'
         };
-        $("#mapflow").die('click').live('click',function(e){
-            var startTime = $("#"+options.queryPrefix+"-results").data('startTimeUTC');
-            var endTime = $("#"+options.queryPrefix+"-results").data('endTimeUTC');
-            var checkedRows = $("#"+options.queryPrefix+"-results").data('contrailGrid').getCheckedRows();
-            var dataItem = ifNull(checkedRows[0],{});
-            dataItem['startTime'] = startTime;
-            dataItem['endTime'] = endTime;
-            showUnderlayPaths(dataItem);
-        });
+        if(getValueByJsonPath(globalObj['webServerInfo'],'disabledFeatures;disabled',[]).indexOf('mon_infra_underlay') == -1) {
+            if(traceFlow == true) {
+                gridConfig.body.options.actionCell.push({
+                    title:'TraceFlow',
+                    iconClass: 'icon-contrail-trace-flow',
+                    onClick: function(rowId,targetElement){
+                        if(typeof underlayRenderer === 'object') {
+                            $("#"+options.elementId+" div.selected-slick-row").each(function(idx,obj){
+                                $(obj).removeClass('selected-slick-row');
+                            });
+                            $(targetElement).parent().parent().addClass('selected-slick-row');
+                            underlayRenderer.getView().doTraceFlow(rowId);
+                        }
+                    }
+                },{
+                    title:'Reverse TraceFlow',
+                    iconClass: 'icon-contrail-reverse-flow',
+                    onClick: function(rowId,targetElement){
+                        if(typeof underlayRenderer === 'object') {
+                            $("#"+options.elementId+" div.selected-slick-row").each(function(idx,obj){
+                                $(obj).removeClass('selected-slick-row');
+                            });
+                            $(targetElement).parent().parent().addClass('selected-slick-row');
+                            underlayRenderer.getView().doReverseTraceFlow(rowId);
+                        }
+                    }
+                });
+            } else {
+                gridConfig.body.options.actionCell.push({
+                    title: 'Show Underlay Path(s)',
+                    iconClass: 'icon-contrail-trace-flow',
+                    onClick: function(rowIndex,targetElement){
+                        var dataItem = $('#' + options.elementId).data('contrailGrid')._grid.getDataItem(rowIndex);
+                        var startTime = $("#"+options.queryPrefix+"-results").data('startTimeUTC');
+                        var endTime = $("#"+options.queryPrefix+"-results").data('endTimeUTC');
+                        dataItem['startTime'] = startTime;
+                        dataItem['endTime'] = endTime;
+                        $("#fr-results div.selected-slick-row").each(function(idx,obj){
+                            $(obj).removeClass('selected-slick-row');
+                        });
+                        $(targetElement).parent().parent().addClass('selected-slick-row');
+                        showUnderlayPaths(dataItem);
+                    }
+                });
+            }
+        };
     }
     $("#" + options.elementId).contrailGrid(gridConfig);
     gridObject = $("#"+options.elementId).data('contrailGrid');

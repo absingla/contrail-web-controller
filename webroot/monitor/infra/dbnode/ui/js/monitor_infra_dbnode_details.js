@@ -15,48 +15,46 @@ monitorInfraDbDetailsClass = (function() {
         if(obj.detailView === undefined) {
             layoutHandler.setURLHashParams({tab:'', node:obj['name']},{triggerHashChange:false});
         }    
-        startWidgetLoading('db-sparklines' + '_' + obj.name);
-        toggleWidgetsVisibility(['apiServer-chart' + '_' + obj.name + '-box'], ['serviceMonitor-chart' + '_' + obj.name + '-box', 'schema-chart' + '_' + obj.name + '-box']);
+        startWidgetLoading('db-sparklines');
+        toggleWidgetsVisibility(['apiServer-chart-box'], ['serviceMonitor-chart-box', 'schema-chart-box']);
         var dashboardTemplate = contrail.getTemplate4Id('dashboard-template');
-        $('#dbnode-dashboard' + '_' + obj.name).html(dashboardTemplate({title:'Database Node',colCount:2, showSettings:true, widgetBoxId:'dashboard' + '_' + obj.name, name:obj.name}));
-        startWidgetLoading('dashboard' + '_' + obj.name);
+        $('#dbnode-dashboard').html(dashboardTemplate({title:'Database Node',colCount:2, showSettings:true, widgetBoxId:'dashboard', name:obj.name}));
+        startWidgetLoading('dashboard');
         $.ajax({
             url: contrail.format(monitorInfraUrls['DATABASE_DETAILS'] , obj['name'])
         }).done(function (result) {
                 var noDataStr = "--";
-                /*$.ajax({
-                    url: '/api/service/networking/web-server-info'
+                $.ajax({
+                    url: '/api/admin/monitor/infrastructure/dbnode/flow-series/stats?&minsSince=30&source='+ obj['name']
                 }).done(function (resultJSON) {
-                    endTime = resultJSON['serverUTCTime'];
-                }).fail(function() {
-                    endTime = getCurrentTime4MemCPUCharts();
-                }).always(function() {
                     var slDb;
                     startTime = endTime - 600000;
                     slDb = {startTime: startTime, endTime: endTime};
-                    $('#apiServer-sparklines' + '_' + obj.name).initMemCPUSparkLines(result.dbNode, 'parseMemCPUData4SparkLines', {'ModuleCpuState': [
-                        {name: 'api_server_cpu_share', color: 'blue-sparkline'},
-                        {name: 'api_server_mem_virt', color: 'green-sparkline'}
-                    ]}, slDb);
-                    $('#serviceMonitor-sparklines' + '_' + obj.name).initMemCPUSparkLines(result.dbNode, 'parseMemCPUData4SparkLines', {'ModuleCpuState': [
-                        {name: 'service_monitor_cpu_share', color: 'blue-sparkline'},
-                        {name: 'service_monitor_mem_virt', color: 'green-sparkline'}
-                    ]}, slDb);
-                    $('#schema-sparklines' + '_' + obj.name).initMemCPUSparkLines(result.dbNode, 'parseMemCPUData4SparkLines', {'ModuleCpuState': [
-                        {name: 'schema_xmer_cpu_share', color: 'blue-sparkline'},
-                        {name: 'schema_xmer_mem_virt', color: 'green-sparkline'}
-                    ]}, slDb);
-                    endWidgetLoading('db-sparklines' + '_' + obj.name);
-                    $('#apiServer-chart' + '_' + obj.name).initMemCPULineChart($.extend({url:function() {
-                        return contrail.format(monitorInfraUrls['FLOWSERIES_CPU'], 'contrail-api', '30', '10', obj['name'], endTime);
-                    }, parser: "parseProcessMemCPUData", parser: "parseProcessMemCPUData", plotOnLoad: true, lineChartId: 'apiServer-sparklines' + '_' + obj.name, showWidgetIds: ['apiServer-chart' + '_' + obj.name + '-box'], hideWidgetIds: ['serviceMonitor-chart' + '_' + obj.name + '-box', 'schema-chart' + '_' + obj.name + '-box'], titles: {memTitle:'Memory',cpuTitle:'% CPU Utilization'}}),110);
-                    $('#serviceMonitor-chart' + '_' + obj.name).initMemCPULineChart($.extend({url:function() {
-                        return contrail.format(monitorInfraUrls['FLOWSERIES_CPU'], 'contrail-svc-monitor', '30', '10', obj['name'], endTime);
-                    }, parser: "parseProcessMemCPUData", plotOnLoad: false, lineChartId: 'serviceMonitor-sparklines' + '_' + obj.name, showWidgetIds: ['serviceMonitor-chart' + '_' + obj.name + '-box'], hideWidgetIds: ['apiServer-chart' + '_' + obj.name + '-box', 'schema-chart' + '_' + obj.name + '-box'], titles: {memTitle:'Memory',cpuTitle:'% CPU Utilization'}}),110);
-                    $('#schema-chart' + '_' + obj.name).initMemCPULineChart($.extend({url:function() {
-                        return contrail.format(monitorInfraUrls['FLOWSERIES_CPU'], 'contrail-schema', '30', '10', obj['name'], endTime);
-                    }, parser: "parseProcessMemCPUData", plotOnLoad: false, lineChartId: 'schema-sparklines' + '_' + obj.name, showWidgetIds: ['schema-chart' + '_' + obj.name + '-box'], hideWidgetIds: ['apiServer-chart' + '_' + obj.name + '-box', 'serviceMonitor-chart' + '_' + obj.name + '-box'], titles: {memTitle:'Memory',cpuTitle:'% CPU Utilization'}}),110);
-                });*/
+                    var flowSeriesData = resultJSON['flow-series'];
+                    var slineDataDiskUsage = parseDataForSparkline(flowSeriesData,'database_usage.disk_space_used_1k');
+                    var slineDataAnalDbSize = parseDataForSparkline(flowSeriesData,'database_usage.analytics_db_size_1k');
+                    try {
+                        drawSparkLine('dbnode-sparklines', 'db_usage_sparkline', 'blue-sparkline', slineDataDiskUsage);
+                    } catch (error) {
+                        console.log(error.stack);
+                    }
+                    try {
+                        drawSparkLine('dbnode-sparklines', 'analytics_db_size_sparkline', 'blue-sparkline', slineDataAnalDbSize);
+                    } catch (error) {
+                        console.log(error.stack);
+                    }
+                    endWidgetLoading('dbnode-sparklines');
+                    $('#dbnode-chart').initDbUsageLineChart({data:resultJSON, 
+                                                                                parser: "parseUsageData", 
+                                                                                plotOnLoad: true, 
+                                                                                lineChartId: 'dbnode-sparklines', 
+                                                                                showWidgetIds: [], 
+                                                                                hideWidgetIds: [], 
+                                                                                titles: {diskUsageTitle:'Database Disk Usage',analyticsDbSizeTitle:'Analytics DB Size'}},110);
+                                                                                                                               
+                }).fail(function() {
+                    //Fail condition
+                });
                 databaseNodeData = result;
                 var parsedData = infraMonitorUtils.parseDbNodesDashboardData([{name:obj['name'],value:databaseNodeData}])[0];
                 var cpu = "N/A",
@@ -101,31 +99,31 @@ monitorInfraDbDetailsClass = (function() {
                   databaseNodeDashboardInfo.push(cores[i]);
                 //showProgressMask('#dbnode-dashboard');
                 var dashboardBodyTemplate = Handlebars.compile($("#dashboard-body-template").html());
-                $('#dbnode-dashboard' + '_' + obj.name + ' .widget-body').html(dashboardBodyTemplate({colCount:2, d:databaseNodeDashboardInfo, nodeData:databaseNodeData, showSettings:true, ip:nodeIp, name:obj.name}));
+                $('#dbnode-dashboard' + ' .widget-body').html(dashboardBodyTemplate({colCount:2, d:databaseNodeDashboardInfo, nodeData:databaseNodeData, showSettings:true, ip:nodeIp, name:obj.name}));
                 var ipDeferredObj = $.Deferred();
                 getReachableIp(iplist,"8084",ipDeferredObj);
                 ipDeferredObj.done(function(nodeIp){
                    if(nodeIp != null && nodeIp != noDataStr) {
-                     $('#linkIntrospect' + '_' + obj.name).unbind('click');
-                       $('#linkIntrospect' + '_' + obj.name).click(function(){
+                     $('#linkIntrospect').unbind('click');
+                       $('#linkIntrospect').click(function(){
                            window.open('/proxy?proxyURL=http://'+nodeIp+':8084&indexPage', '_blank');
                        });
-                       $('#linkStatus' + '_' + obj.name).unbind('click');
-                       $('#linkStatus' + '_' + obj.name).on('click', function(){
+                       $('#linkStatus').unbind('click');
+                       $('#linkStatus').on('click', function(){
                            showStatus({ip : nodeIp, name : obj.name});
                        });
-                       $('#linkLogs' + '_' + obj.name).unbind('click');
-                       $('#linkLogs' + '_' + obj.name).on('click', function(){
+                       $('#linkLogs').unbind('click');
+                       $('#linkLogs').on('click', function(){
                            showLogs(nodeIp);
                        });
                    }
                 });
             
-                endWidgetLoading('dashboard' + '_' + obj.name);
-                initWidget4Id('#apiServer-chart' + '_' + obj.name + '-box');
-                initWidget4Id('#serviceMonitor-chart' + '_' + obj.name + '-box');
-                initWidget4Id('#schema-chart' + '_' + obj.name + '-box');
-            }).fail(displayAjaxError.bind(null, $('#dbnode-dashboard' + '_' + obj.name)));
+                endWidgetLoading('dashboard');
+                initWidget4Id('#apiServer-chart' + '-box');
+                initWidget4Id('#serviceMonitor-chart' + '-box');
+                initWidget4Id('#schema-chart' + '-box');
+            }).fail(displayAjaxError.bind(null, $('#dbnode-dashboard')));
     }
     return {populateDetailsTab:populateDetailsTab};
 })();
@@ -144,3 +142,11 @@ function getStatusesForAllDbProcesses(processStateList){
     }
     return ret;
  }
+
+function parseDataForSparkline(flowSeriesData,field){
+    var slData = [];
+    $.each(flowSeriesData,function(i,d){
+        slData.push(d[field]);
+    });
+    return slData;
+}

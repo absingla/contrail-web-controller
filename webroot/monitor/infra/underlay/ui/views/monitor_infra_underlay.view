@@ -13,130 +13,44 @@ body > svg {
 }
 </style>
 <script type="text/x-handlebars-template" id="device-summary-template">
-	<div class="span8">
-	    <div class="widget-box transparent">
-	        <div class="widget-body">
-	            <div class="widget-main" id="system-info-stat">
-                    <ul class="item-list">	            
-                    {{#IfCompare type 'physical-router' operator='=='}}
-                       <li>
-                           <label class="inline">
-                               <span class="key"> Host name </span>
-                               <span class="value"> {{hostName}} </span>
+	<div class="row-fluid detail-section-content group-detail-container">
+        <div class="span6 detail-section-column-content">
+            <div class="detail-block-list-content row-fluid">
+                <h6>Physical Router Details</h6>
+                <ul class="item-list">
+                {{#IfCompare type 'physical-router' operator='=='}}
+                        <li>
+                           <label class="inline row-fluid">
+                               <span class="key span5"> Host name </span>
+                               <span class="value span7"> {{hostName}} </span>
                            </label>
                        </li>
                        <li>
-                            <label class="inline">
-                                <span class="key"> Management IP </span>
-                                <span class="value">{{managementIP}}</span>
+                            <label class="inline row-fluid">
+                                <span class="key span5"> Management IP </span>
+                                <span class="value span7">{{managementIP}}</span>
                             </label>
                        </li>
                        <li>
-                            <label class="inline">
-                                <span class="key"> Interfaces </span>
-                                <span class="value"> {{intfCnt}} </span>
-                            </label>
-                        </li>
-                        <li>
-                           <label class="inline">
-                               <span class="key"> Description </span>
-                               <span class="value"> {{description}} </span>
-                           </label>
-                       </li>
-                    {{/IfCompare}}
-                    {{#IfCompare type 'virtual-router' operator='=='}}
-                        <li>
-                            <label class="inline">
-                                <span class="key"> Host name </span>
-                                <span class="value"> {{hostName}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key"> Version </span>
-                                <span class="value"> {{version}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key"> Memory </span>
-                                <span class="value"> {{memory}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key"> Instances </span>
-                                <span class="value"> {{instanceCount}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key"> Interfaces </span>
-                                <span class="value"> {{interfaceCnt}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key"> Virtual Networks </span>
-                                <span class="value"> {{virtualNetworkCnt}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key hyperlink" onclick=javascript:layoutHandler.setURLHashObj({{#jsonStringify link}}{{/jsonStringify}})>more</span>
-                            </label>
-                        </li>
-                    {{/IfCompare}}
-                    {{#IfCompare type 'virtual-machine' operator='=='}}
-                        <li>
-                            <label class="inline">
-                                <span class="key"> Name </span>
-                                <span class="value"> {{name}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key"> UUID </span>
-                                <span class="value"> {{uuid}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key"> IP Address </span>
-                                <span class="value"> {{ipAddr}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key"> Interfaces </span>
-                                <span class="value"> {{interfaceCount}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key"> Virtual Networks </span>
-                                <span class="value"> {{formattedVN}} </span>
-                            </label>
-                        </li>
-                        <li>
-                            <label class="inline">
-                                <span class="key"> Traffic (In/Out) (Last 1 hr) </span>
-                                <span id = "VMstats" class="value"> 
-                                    <i class="grid-header-icon-loading icon-spinner icon-spin"></i> 
+                            <label class="inline row-fluid">
+                                <span class="key span5"> Interfaces </span>
+                                <span id="pRouterIntfCnt" class="value span7"> 
+                                    <a class="blue">{{intfCnt}}</a> 
                                 </span>
                             </label>
                         </li>
                         <li>
-                            <label class="inline">
-                                <span class="key hyperlink" onclick=underlayRenderer.getView().launchVMPage({{#encodedVN link}}{{/encodedVN}})>more</span>
-                            </label>
-                        </li>
-                    {{/IfCompare}}
-	                </ul>
-	            </div>
-	        </div>
-	    </div>
-	</div>
+                           <label class="inline row-fluid">
+                               <span class="key span5"> Description </span>
+                               <span class="value span7"> {{description}} </span>
+                           </label>
+                       </li>
+                {{/IfCompare}}
+                </ul>
+                <br>
+            </div>
+        </div>
+    </div>
 </script>
 <script type="text/x-handlebars-template" id="visualization-template">
     <div id="underlay_topology">
@@ -158,11 +72,8 @@ body > svg {
                     <div title="Zoom Out" class="topology-control-item zoom-out">
                         <i class="icon-zoom-out"></i>
                     </div>
-                    <div title="Zoom Reset" class="topology-control-item zoom-reset" onclick="underlayRenderer.getView().resetTopology();">
+                    <div title="Zoom Reset" class="topology-control-item zoom-reset">
                         <i class="icon-remove-circle"></i>
-                    </div>
-                    <div title="Expand/Collapse Visualization" class="topology-control-item" onclick="underlayRenderer.getView().expandTopology();">
-                        <i class="icon-resize-small"></i>
                     </div>
                 </div>
             </div>
@@ -193,34 +104,32 @@ body > svg {
 </script>
 
 <script type="text/x-handlebars-template" id="tracePath-template">
-	<div class='row-fluid'>
-        <div class='row-fluid margin-0-0-10'>
-            <div class="span4">
-                <div>    
-                    <div id='tracePathDropdown' class='span12' tabindex=0></div>
-                </div>
-            </div>
-            <div class="span4">
-                <div>
-                    <input type='radio' name='flowtype' id='vrouterRadiobtn' checked='checked' tabindex=0/><span class="ace-lbl" style="padding-left:5px;">Virtual Router&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <input type='radio' name='flowtype' id='instRadiobtn'  tabindex=0/><span class="ace-lbl" style="padding-left:5px;">Instances&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                </div>
+	<div class="widget-box transparent">
+	   <div class="widget-header">
+	       <h4 class="smaller">
+	           Trace Flows
+	       </h4>
+	       <div class="widget-toolbar pull-right">
+                <a data-action="collapse">
+                    <i class="icon-chevron-up"></i>
+                </a>
+           </div>
+       </div>
+       <div class="widget-body">
+            <div class="widget-main">
+                <div class='row-fluid margin-0-0-10'>
+                    <div class="span3">
+                            <input type='radio' name='flowtype' id='vrouterRadiobtn' checked='checked' tabindex=0/><span class="ace-lbl" style="padding-left:5px;">Virtual Router&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                            <input type='radio' name='flowtype' id='instRadiobtn'  tabindex=0/><span class="ace-lbl" style="padding-left:5px;">Instances&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    </div>
+                    <div class="span4">
+                            <div id='tracePathDropdown' class='span12' tabindex=0></div>
+                    </div>
+                </div>            
             </div>
         </div>
-        <div class="widget-box transparent">
-            <div class="widget-header">
-                <h4 class="smaller">
-                    <i class="icon-spinner hide icon-spin blue bigger-125"></i>
-                </h4>
-                <div class='row-fluid show' id="prevNextBtns">
-                    <div class='pull-right'>
-                    </div>
-                </div>
-            </div>
-            <div class="widget-body">
-                <div id='vrouterflows'></div>
-            </div>
-        </div
+    </div>
+    <div id='vrouterflows'></div>
     </div>
 </script>
 <script type="text/x-handlebars-template" id="pRouterInterfaces">
