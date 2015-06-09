@@ -44,7 +44,6 @@ function portsConfigObj() {
     var mac_address;
     var ip_address;
     var selectedParentVMIObject;
-    var getPortUUIDCallCount;
             
     //Method definitions
     this.load = load;
@@ -72,7 +71,6 @@ function portsConfigObj() {
     this.allfloatingIP = allfloatingIP;
     this.allNetworkData = allNetworkData;
     this.currentVNSubnetDetail = currentVNSubnetDetail;
-    this.getPortUUIDCallCount = getPortUUIDCallCount;
     this.mac_address = mac_address;
     this.ip_address = ip_address;
     this.selectedParentVMIObject = selectedParentVMIObject;
@@ -121,7 +119,6 @@ function groupBy( array , f )
 }
 
 function initComponents() {
-    getPortUUIDCallCount = 200;
     var deletePortsDropdownTemplate = contrail.getTemplate4Id('delete-port-action-template');
     var columnsToBeAddedDynamically = [];
     var displayOwnerNameColumn = {
@@ -759,7 +756,7 @@ function initActions() {
             }
         
         
-        console.log(JSON.stringify(portConfig));
+        //console.log(JSON.stringify(portConfig));
         if (mode === "add") {
             doAjaxCall("/api/tenants/config/ports", "POST", JSON.stringify(portConfig),
                 "createPortsSuccessCb", "createPortsFailureCb");
@@ -1177,12 +1174,15 @@ function successHandlerForAllPortUUIDGet(allUUID, cbparam)
         var vmiUUIDObj = {};
         var sendUUIDArr = [];
         vmiUUIDObj.type = "virtual-machine-interface";
-        sendUUIDArr = allUUID.slice(0, getPortUUIDCallCount);
+        sendUUIDArr = allUUID.slice(0, 50);
         vmiUUIDObj.uuidList = sendUUIDArr;
         //vmiUUIDObj.fields = ["floating_ip_pools"];
-        allUUID = allUUID.slice(getPortUUIDCallCount, allUUID.length);
+        allUUID = allUUID.slice(50, allUUID.length);
+        var param = {};
+        param.allUUID = allUUID;
+        param.cbparam = cbparam;
         doAjaxCall("/api/tenants/config/get-virtual-machine-details-paged", "POST", JSON.stringify(vmiUUIDObj),
-            "successHandlerForgridPorts", "failureHandlerForgridPorts", null, allUUID);
+            "successHandlerForgridPorts", "failureHandlerForgridPorts", null, param);
     } else {
         $("#btnCreatePorts").removeClass('disabled-link');
         gridPorts.showGridMessage("empty");
@@ -1194,19 +1194,31 @@ function failureHandlerForAllPortUUIDGet(result){
     gridPorts.showGridMessage('errorGettingData');
 }
 
-function successHandlerForgridPorts(result , allUUID) {
+function successHandlerForgridPorts(result , param) {
+    var allUUID = param.allUUID;
+    var cbparam = param.cbparam;
+    if (cbparam != ajaxParam){
+        return;
+    }
     if(allUUID.length > 0) {
         var vmiUUIDObj = {};
         var sendUUIDArr = [];
         vmiUUIDObj.type = "virtual-machine-interface";
-        sendUUIDArr = allUUID.slice(0, getPortUUIDCallCount);
+        sendUUIDArr = allUUID.slice(0, 200);
         vmiUUIDObj.uuidList = sendUUIDArr;
         //vmiUUIDObj.fields = ["floating_ip_pools"];
-        allUUID = allUUID.slice(getPortUUIDCallCount, allUUID.length);
+        allUUID = allUUID.slice(200, allUUID.length);
+        var param = {};
+        param.allUUID = allUUID;
+        param.cbparam = cbparam;
         doAjaxCall("/api/tenants/config/get-virtual-machine-details-paged", "POST", JSON.stringify(vmiUUIDObj),
-            "successHandlerForgridPorts", "failureHandlerForgridPorts", null, allUUID);
+            "successHandlerForgridPorts", "failureHandlerForgridPorts", null, param);
     }
+    gridPorts.showGridMessage('loading');
     successHandlerForgridPortsRow(result);
+    if (allUUID.length <= 0) {
+        gridPorts.removeGridMessage();
+    }
 }
 
 function failureHandlerForgridPorts(result) {
@@ -1269,12 +1281,8 @@ function successHandlerForgridPortsRow(result) {
         }
     }
     var gridPageSize = $("#gridPorts").data("contrailGrid")._dataView.getPagingInfo().pageSize;
-    if((result.more == true || result.more == "true") && PortsData.length < gridPageSize){
-        gridPorts.showGridMessage('loading');
-    } else {
-        if(!PortsData || PortsData.length<=0)
-            gridPorts.showGridMessage('empty');
-    }
+    if(!PortsData || PortsData.length<=0)
+        gridPorts.showGridMessage('empty');
     $("#gridPorts").data("contrailGrid")._dataView.setData(PortsData);
 }
 
@@ -1753,7 +1761,7 @@ function showPortEditWindow(mode, rowIndex, enableSubInterfaceFlag) {
         type:"GET"
     });
     getAjaxs[4] = $.ajax({
-        url:"/api/admin/config/get-data?type=logical-router&fqnUUID="+selectedProjectVal,
+        url:"/api/tenants/config/list-logical-routers?projUUID="+selectedProjectVal,
         timeout:300000,
         type:"GET"
     });
@@ -1938,7 +1946,6 @@ function showPortEditWindow(mode, rowIndex, enableSubInterfaceFlag) {
 
                         subInterfaceParentValObj.virtual_network_refs = ip["virtual_network_refs"][0]["to"];
                         var value = {"uuid":ip["uuid"],"to":ip["fq_name"]};
-                        console.log("inc:"+JSON.stringify(value));
                         subInterfaceParentDatas.push({"text":subInterfaceParentText, "value":JSON.stringify(value)});
                         /*if(ip["virtual_machine_interface_device_owner"] == "compute:nova"){
                             //take it from VMR
@@ -1953,7 +1960,6 @@ function showPortEditWindow(mode, rowIndex, enableSubInterfaceFlag) {
                     }
                         if(ip["uuid"] == selectedPortUUID && enableSubInterfaceFlag == "true"){
                             var value = {"uuid":ip["uuid"],"to":ip["fq_name"]};
-                            console.log(JSON.stringify(value));
                             subnetValue = JSON.stringify(value);
                         }
                 }
@@ -1967,23 +1973,27 @@ function showPortEditWindow(mode, rowIndex, enableSubInterfaceFlag) {
             }
 
             var vmArray = [];
-            if(results[6][0] != null && results[6][0] != "" && results[6][0].length > 0) {
-                vmArray = results[6][0];
+            if(results[6][0] != null && results[6][0] != "" &&
+               (null != results[6][0]['virtual-machines'])) {
+                vmArray = results[6][0]['virtual-machines'];
             }
             var vmArrayLen = vmArray.length;
             for(var j=0;j < vmArrayLen;j++){
-                var vm = vmArray[j]["virtual-machine"];
+                var vm = vmArray[j];
                 var text = vm["uuid"];
                 var valArr = [];
                 valArr.push({"to":vm["fq_name"], "uuid":vm["uuid"]});
                 computeUUID.push({"text":text,"value":JSON.stringify(valArr)});
             }
             
-            if(results[4][0] != null && results[4][0] != "" && results[4][0]["data"] && results[4][0]["data"].length > 0) {
-                var logicalRouter = results[4][0]["data"];
-                for(var lrInc = 0; lrInc < logicalRouter.length; lrInc++){
+            if(results[4][0] != null && results[4][0] != "" &&
+               results[4][0]["logical-routers"] &&
+               results[4][0]["logical-routers"].length > 0) {
+                var logicalRouters = results[4][0]['logical-routers'];
+                var logicalRoutersCnt = logicalRouters.length;
+                for(var lrInc = 0; lrInc < logicalRoutersCnt; lrInc++){
                     // take it from logical router
-                    var localLogicalRout = logicalRouter[lrInc]["logical-router"]
+                    var localLogicalRout = logicalRouters[lrInc];
                     var text = localLogicalRout["fq_name"][2] + " (" + localLogicalRout["uuid"] + ")";
                     var valArr = [];
                     valArr.push({"to":localLogicalRout["fq_name"], "uuid":localLogicalRout["uuid"]});

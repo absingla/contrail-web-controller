@@ -21,6 +21,7 @@ var rest = require(process.mainModule.exports["corePath"] + '/src/serverroot/com
     configApiServer = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/configServer.api'),
     opApiServer = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/opServer.api'),
     infraCmn = require('../../../../common/api/infra.common.api'),
+    _ = require('underscore'),
     bgpNode = require('../../controlnode/jobs//controlnode.jobs.api');
 
 computeNode = module.exports;
@@ -318,7 +319,7 @@ function getComputeNodeInterface (pubChannel, saveChannelKey,
     var vRouterRestAPI = 
         commonUtils.getRestAPIServer(ip,
                                      infraCmn.getvRtrIntrospectPortByJobData(jobData));
-    commonUtils.createReqObj(dataObjArr, '/Snh_ItfReq?name=');
+    commonUtils.createReqObj(dataObjArr,jobData.taskData.appData.url);
     
     async.map(dataObjArr,
               commonUtils.getServerRespByRestApi(vRouterRestAPI, true),
@@ -430,27 +431,9 @@ function processComputeNodeInterface (pubChannel, saveChannelKey,
 {
     /* We get the interface details from Sandesh */
     var url = jobData.taskData.url;
-    var allDetails = false;
-    var pos = url.indexOf('/Snh_ItfReq?name=');
-    
-    pos = ('/Snh_ItfReq?name=').length;
-    var nodeIp = url.slice(pos);
-    if ((nodeIp == null) || (nodeIp.length == 0)) {
-        allDetails = true;
-    }
-    if (allDetails == true) {
-        /* Currently UI does not send this request, so will implement 
-           later when requires 
-         */
-        redisPub.publishDataToRedis(pubChannel, saveChannelKey,
-                                    global.HTTP_STATUS_INTERNAL_ERROR,
-                                    global.STR_CACHE_RETRIEVE_ERROR,
-                                    global.STR_CACHE_RETRIEVE_ERROR, 0,
-                                    0, done);
-    } else {
-        getComputeNodeInterface(pubChannel, saveChannelKey,
-                                            nodeIp, jobData, done);
-    }
+    console.log("jobData.taskData.url as:", jobData.taskData);
+    getComputeNodeInterface(pubChannel, saveChannelKey,
+                                        jobData.taskData.appData.ip, jobData, done);
 }
 
 function getAclFlowByACLSandeshResponse (jobData, ip, aclSandeshResp, callback)
@@ -521,6 +504,8 @@ function processComputeNodeAcl (pubChannel, saveChannelKey,
 
     pos = reqUrl.length;
     var nodeIp = url.slice(pos);
+    console.log("jobData.taskData.url as:", jobData.taskData);
+    nodeIp = jobData.taskData.appData.ip;
     if ((nodeIp == null) || (nodeIp.length == 0)) {
         allDetails = true;
     }
@@ -538,7 +523,7 @@ function processComputeNodeAcl (pubChannel, saveChannelKey,
     var vRouterRestAPI =
         commonUtils.getRestAPIServer(nodeIp,
                                      infraCmn.getvRtrIntrospectPortByJobData(jobData));
-    commonUtils.createReqObj(dataObjArr, '/Snh_AclReq?uuid=');
+    commonUtils.createReqObj(dataObjArr,url);
     async.map(dataObjArr,
               commonUtils.getServerRespByRestApi(vRouterRestAPI, false),
               commonUtils.doEnsureExecution(function(err, data) {
@@ -626,13 +611,48 @@ function getvRouterSummaryByJob (pubChannel, saveChannelKey, jobData, done)
                 nodeCnt = 0;
             }
             for (var i = 0; i < nodeCnt; i++) {
-                nodesHostIp['hosts'][resultJSON[i]['name']] = [];
+                var httpSandeshPort = null;
+                try {
+                    httpSandeshPort =
+                        resultJSON[i]['value']['VrouterAgent']['sandesh_http_port'];
+                    httpSandeshPort = httpSandeshPort.toString();
+                } catch(e) {
+                    httpSandeshPort = null;
+                }
+                if (null == nodesHostIp['hosts'][resultJSON[i]['name']]) {
+                    nodesHostIp['hosts'][resultJSON[i]['name']] = [];
+		}
+                if (null != httpSandeshPort) {
+                    nodesHostIp['hosts'][resultJSON[i]['name']].push(httpSandeshPort);
+                }
                 try {
                     var configIp =
                         resultJSON[i]['value']['ConfigData']['virtual-router']['virtual_router_ip_address'];
-                    nodesHostIp['ips'][configIp] = [];
+                    if (null != configIp) {
+                        if (null == nodesHostIp['ips'][configIp]) {
+                            nodesHostIp['ips'][configIp] = [];
+                        }
+                        if (null != httpSandeshPort) {
+                            nodesHostIp['ips'][configIp].push(httpSandeshPort);
+                        }
+                    }
                 } catch(e) {
                     logutils.logger.error("vRouter Config IP parse error:" + e);
+                }
+                try {
+                    var ctrlIP =
+                        resultJSON[i]['value']['VrouterAgent']['control_ip'];
+                    if (null != ctrlIP) {
+                        if (null == nodesHostIp['ips'][ctrlIP]) {
+                            nodesHostIp['ips'][ctrlIP] = [];
+                        }
+                        if (null != httpSandeshPort) {
+                            nodesHostIp['ips'][ctrlIP].push(httpSandeshPort);
+                        }
+                    }
+                } catch(e) {
+                    logutils.logger.error("vRouter Control IP parse error:" +
+                                          e);
                 }
                 var uveIpsCnt = 0;
                 try {
@@ -644,8 +664,16 @@ function getvRouterSummaryByJob (pubChannel, saveChannelKey, jobData, done)
                     uveIpsCnt = 0;
                 }
                 for (var j = 0; j < uveIpsCnt; j++) {
-                    nodesHostIp['ips'][uveIps[j]] = [];
+                    if (null == nodesHostIp['ips'][uveIps[j]]) {
+                        nodesHostIp['ips'][uveIps[j]] = [];
+                    }
+                    if (null != httpSandeshPort) {
+                        nodesHostIp['ips'][uveIps[j]].push(httpSandeshPort);
+                    }
                 }
+            }
+            for (key in nodesHostIp['ips']) {
+                nodesHostIp['ips'][key] = _.uniq(nodesHostIp['ips'][key]);
             }
             if (nodeCnt > 0) {
                 infraCmn.saveNodesHostIPToRedis(nodesHostIp,

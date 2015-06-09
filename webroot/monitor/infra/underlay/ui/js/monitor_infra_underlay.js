@@ -3,7 +3,6 @@
  *
  * Underlay Overlay Visualisation Page
  */
-
 var underlayRenderer = new underlayRenderer();
 var PROUTER_DBL_CLICK =  'config_net_vn';
 var PROUTER = 'physical-router';
@@ -11,7 +10,8 @@ var VROUTER = 'virtual-router';
 var VIRTUALMACHINE = 'virtual-machine';
 var timeout;
 var expanded = true;
-
+var underlayLastInteracted;
+var defaultUnderlayFlowLimit = 5000;
 function underlayRenderer() {
     this.load = function(obj) {
         this.configTemplate = Handlebars.compile($("#visualization-template").html());
@@ -203,14 +203,15 @@ underlayModel.prototype.getChildren = function(parent, child_type) {
     child_type = child_type.trim();
     var nodes = this.getNodes();
     var links = this.getLinks();
-    var srcPoint = jsonPath(links, "$[?(@.endpoints[0]=='" + parent + "')]");
-    var dstPoint = jsonPath(links, "$[?(@.endpoints[1]=='" + parent + "')]");
+    //fix 
+    var srcPoint = jsonPath(links, '$[?(@.endpoints[0]=="' + parent + '")]');
+    var dstPoint = jsonPath(links, '$[?(@.endpoints[1]=="' + parent + '")]');
     var children = [], childNodes = [];
     if(false !== srcPoint && srcPoint.length > 0) {
         for(var i=0; i<srcPoint.length; i++) {
             var sp = srcPoint[i].endpoints;
             var otherEndNode =
-                jsonPath(nodes, "$[?(@.name=='" + sp[1] + "')]");
+                jsonPath(nodes, '$[?(@.name=="' + sp[1] + '")]');
             if(false !== otherEndNode && otherEndNode.length == 1 &&
                 otherEndNode[0].chassis_type == child_type) {
                 children.push(otherEndNode[0].name);
@@ -221,7 +222,7 @@ underlayModel.prototype.getChildren = function(parent, child_type) {
         for(var i=0; i<dstPoint.length; i++) {
             var sp = dstPoint[i].endpoints;
             var otherEndNode =
-                jsonPath(nodes, "$[?(@.name=='" + sp[0] + "')]");
+                jsonPath(nodes, '$[?(@.name=="' + sp[0] + '")]');
             if(false !== otherEndNode && otherEndNode.length == 1 &&
                 otherEndNode[0].chassis_type == child_type) {
                 children.push(otherEndNode[0].name);
@@ -230,7 +231,7 @@ underlayModel.prototype.getChildren = function(parent, child_type) {
     }
     children = children.unique();
     for(var i=0; i<children.length; i++) {
-        var childNode = jsonPath(nodes, "$[?(@.name=='" + children[i] + "')]");
+        var childNode = jsonPath(nodes, '$[?(@.name=="' + children[i] + '")]');
         if(null !== childNode  && false !== childNode && typeof childNode === "object" &&
             childNode.length == 1) {
             childNode = childNode[0];
@@ -402,37 +403,37 @@ underlayModel.prototype.categorizeNodes = function(nodes) {
         this.setVNs([]);
         return;
     }
-    var tors = jsonPath(nodes, "$[?(@.chassis_type=='tor')]");
+    var tors = jsonPath(nodes, '$[?(@.chassis_type=="tor")]');
     if(false !== tors)
         this.setTors(tors);
     else
         this.setTors([]);
 
-    var spines = jsonPath(nodes, "$[?(@.chassis_type=='spine')]");
+    var spines = jsonPath(nodes, '$[?(@.chassis_type=="spine")]');
     if(false !== spines)
         this.setSpines(spines);
     else
         this.setSpines([]);
 
-    var cores = jsonPath(nodes, "$[?(@.chassis_type=='coreswitch')]");
+    var cores = jsonPath(nodes, '$[?(@.chassis_type=="coreswitch")]');
     if(false !== cores)
         this.setCores(cores);
     else
         this.setCores([]);
 
-    var vrs = jsonPath(nodes, "$[?(@.chassis_type=='virtual-router')]");
+    var vrs = jsonPath(nodes, '$[?(@.chassis_type=="virtual-router")]');
     if(false !== vrs)
         this.setVrouters(vrs);
     else
         this.setVrouters([]);
 
-    var vms = jsonPath(nodes, "$[?(@.chassis_type=='virtual-machine')]");
+    var vms = jsonPath(nodes, '$[?(@.chassis_type=="virtual-machine")]');
     if(false !== vms)
         this.setVMs(vms);
     else
         this.setVMs([]);
 
-    var vns = jsonPath(nodes, "$[?(@.chassis_type=='virtual-network')]");
+    var vns = jsonPath(nodes, '$[?(@.chassis_type=="virtual-network")]');
     if(false !== vns)
         this.setVNs(vns);
     else
@@ -600,12 +601,12 @@ underlayView.prototype.formElementTree = function(prop, propObj, elTree, elMap, 
         {} === prop || false === prop)
         return;
     elTree[prop] = {};
-    var nodeElement = jsonPath(elMap, "$..nodes[" + prop + "]");
+    var nodeElement = jsonPath(elMap, '$..nodes[' + prop + ']');
 
     if(false !== nodeElement && null !== nodeElement && typeof nodeElement === "object" &&
         nodeElement.length == 1) {
         nodeElement = nodeElement[0];
-        var node = jsonPath(conElements, "$[?(@.id=='" + nodeElement + "')]");
+        var node = jsonPath(conElements, '$[?(@.id=="' + nodeElement + '")]');
         if(false !== node && node.length == 1) {
             node = node[0];
             elTree[prop]["element_id"] = nodeElement;
@@ -618,13 +619,13 @@ underlayView.prototype.formElementTree = function(prop, propObj, elTree, elMap, 
         elTree[prop]["children"] = {};
         var children = propObj["children"];
         for(var child in children) {
-            var childElement = jsonPath(conElements, "$[?(@.id=='" + nodeElement + "')]");
+            var childElement = jsonPath(conElements, '$[?(@.id=="' + nodeElement + '")]');
             if(false !== childElement && childElement.length == 1) {
                 childElement = childElement[0];
                 if(null === stopAt || typeof stopAt === "undefined" ||
                     (typeof stopAt === "string" && stopAt.trim() === "") ||
                     (typeof stopAt === "string" && node.attributes.nodeDetails.chassis_type !== stopAt)) {
-                    var linkId = jsonPath(elMap, "$..links[" + prop + "<->" + child + "]");
+                    var linkId = jsonPath(elMap, '$..links[' + prop + '<->' + child + ']');
                     if(false !== linkId && linkId.length == 1) {
                         linkId = linkId[0];
                         elTree[prop]["link_id"] = linkId;
@@ -805,14 +806,14 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
                 elements.push(el);
                 return;
             } else {
-                el = jsonPath(conElements, "$[?(@.id=='" + elMap["nodes"][parentElementLabel] + "')]");
+                el = jsonPath(conElements, '$[?(@.id=="' + elMap["nodes"][parentElementLabel] + '")]');
                 if(typeof el === "object" && el.length === 1) {
                     elements.push(el[0]);
                     return;
                 }
             }
         }        
-        var parentNode = jsonPath(nodes, "$[?(@.name=='" + parentElementLabel + "')]");
+        var parentNode = jsonPath(nodes, '$[?(@.name=="' + parentElementLabel + '")]');
         if(false !== parentNode && parentNode.length === 1) {
             parentNode = parentNode[0];
             var parentName = parentNode.name;
@@ -826,7 +827,7 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
     });
 
     _.each(adjacencyList, function(edges, parentElementLabel) {        
-        var parentNode = jsonPath(nodes, "$[?(@.name=='" + parentElementLabel + "')]");
+        var parentNode = jsonPath(nodes, '$[?(@.name=="' + parentElementLabel + '")]');
         if(false !== parentNode && parentNode.length === 1) {
             parentNode = parentNode[0];
             var parentNodeType = parentNode.node_type;
@@ -839,14 +840,14 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
                         linkElements.push(linkEl);
                         return;
                     } else {
-                        linkEl = jsonPath(conElements, "$[?(@.id=='" + elMap["links"][parentElementLabel + "<->" + childElementLabel] + "')]");
+                        linkEl = jsonPath(conElements, '$[?(@.id=="' + elMap["links"][parentElementLabel + '<->' + childElementLabel] + '")]');
                         if(typeof linkEl === "object" && linkEl.length === 1) {
                             linkElements.push(linkEl[0]);
                             return;
                         }
                     }
                 }
-                var childNode = jsonPath(nodes, "$[?(@.name=='" + childElementLabel + "')]");
+                var childNode = jsonPath(nodes, '$[?(@.name=="' + childElementLabel + '")]');
                 if(false !== childNode && childNode.length === 1) {
                     childNode = childNode[0];
                     var childNodeType = childNode.node_type;
@@ -889,7 +890,7 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
         var altLinkName = endpoint1 + "<->" + endpoint0;
         if(null !== elMap["nodes"] && typeof elMap["nodes"] !== "undefined") {
             if(null == elMap["nodes"][endpoint0] && typeof elMap["nodes"][endpoint0] == "undefined") {
-                var node = jsonPath(nodes, "$[?(@.name=='" + endpoint0 + "')]");
+                var node = jsonPath(nodes, '$[?(@.name=="' + endpoint0 + '")]');
                 if(false !== node && node.length === 1) {
                     node = node[0];
                     var nodeName = node.name;
@@ -903,7 +904,7 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
                 }
             }
             if(null == elMap["nodes"][endpoint1] && typeof elMap["nodes"][endpoint1] == "undefined") {
-                var node = jsonPath(nodes, "$[?(@.name=='" + endpoint1 + "')]");
+                var node = jsonPath(nodes, '$[?(@.name=="' + endpoint1 + '")]');
                 if(false !== node && node.length === 1) {
                     node = node[0];
                     var nodeName = node.name;
@@ -921,12 +922,12 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
         if(null !== elMap["links"] && typeof elMap["links"] !== "undefined") {
             if((null == elMap["links"][linkName] && typeof elMap["links"][linkName] == "undefined") ||
                 null == elMap["links"][altLinkName] && typeof elMap["links"][altLinkName] == "undefined") {
-                var parentNode = jsonPath(nodes, "$[?(@.name=='" + endpoint0 + "')]");
+                var parentNode = jsonPath(nodes, '$[?(@.name=="' + endpoint0 + '")]');
                 if(false !== parentNode && parentNode.length === 1) {
                     parentNode = parentNode[0];
                     var parentNodeType = parentNode.node_type;
                     var parentId = elMap.nodes[parentNode.name];
-                    var childNode = jsonPath(nodes, "$[?(@.name=='" + endpoint1 + "')]");
+                    var childNode = jsonPath(nodes, '$[?(@.name=="' + endpoint1 + '")]');
                     if(false !== childNode && childNode.length === 1) {
                         childNode = childNode[0];
                         var childNodeType = childNode.node_type;
@@ -946,7 +947,7 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
                 }
             } else {
                 //Check if already added to linkElements to be rendered. If yes, do nothing.
-                linkEl = jsonPath(linkElements, "$[?(@.id=='" + elMap["links"][linkName] + "')]");
+                linkEl = jsonPath(linkElements, '$[?(@.id=="' + elMap["links"][linkName] + '")]');
                 if(typeof linkEl === "object" && linkEl.length === 1) {
                     //already exists, dont do anything.
                 } else {
@@ -960,7 +961,7 @@ underlayView.prototype.createElementsFromAdjacencyList = function() {
                     } else {
                         //Check if this element already created. If yes, add to linkElements if this link
                         // exists in adjList
-                        linkEl = jsonPath(conElements, "$[?(@.id=='" + elMap["links"][linkName] + "')]");
+                        linkEl = jsonPath(conElements, '$[?(@.id=="' + elMap["links"][linkName] + '")]');
                         if(typeof linkEl === "object" && linkEl.length === 1) {
                             if(adjacencyList.hasOwnProperty(endpoint0) &&
                                 adjacencyList.hasOwnProperty(endpoint1)) {
@@ -1017,7 +1018,12 @@ underlayView.prototype.createNode = function(node) {
                 chassis_type = 'switch';
                 break;
             case "virtual-machine":
-                labelNodeName = contrail.truncateText(nodeName,10);
+                if(node.hasOwnProperty('more_attributes') && node.more_attributes.hasOwnProperty('vm_name') &&
+                node.more_attributes.vm_name.trim() !== "" && node.more_attributes.vm_name.trim() !== "-") {
+                    labelNodeName = contrail.truncateText(node.more_attributes.vm_name.trim(),10);
+                } else {    
+                    labelNodeName = contrail.truncateText(nodeName,10);
+                }
                 refY = .9;
                 break;
         }
@@ -1330,7 +1336,7 @@ underlayView.prototype.addHighlightToNodesAndLinks = function(nodes, els) {
         for(var i=0; i<nodes.length; i++) {
             var node = nodes[i];
             nodeNames.push(node.name);
-            var node_model_id = jsonPath(elMap, "$.nodes[" + node.name + "]");
+            var node_model_id = jsonPath(elMap, '$.nodes[' + node.name + ']');
             if(false !== node_model_id && typeof node_model_id === "object" &&
                 node_model_id.length === 1) {
                 node_model_id = node_model_id[0];
@@ -1746,7 +1752,7 @@ underlayView.prototype.highlightPath = function(response, data) {
         null !== response.nodes && typeof response.nodes !== "undefined"){
 
     }
-    if(response.nodes <=0 || response.links <= 0){
+    if(response.nodes.length <=0 || response.links.length <= 0){
         showInfoWindow("Cannot Map the path for selected flow", "Info");
         if(null !== underlayRenderer && typeof underlayRenderer === "object"){
             underlayRenderer.getView().resetTopology(false);
@@ -1888,7 +1894,7 @@ underlayView.prototype.highlightPath = function(response, data) {
         if(hlNode.node_type === 'virtual-machine') {
             var model_id = elementMap.nodes[hlNode.name];
             var associatedVRouter =
-            jsonPath(globalObj['topologyResponse']['VMList'], "$[?(@.name =='" + hlNode.name + "')]");
+            jsonPath(globalObj['topologyResponse']['VMList'], '$[?(@.name =="' + hlNode.name + '")]');
             var associatedVRouterUID = "";
             if(false !== associatedVRouter &&
                 "string" !== typeof associatedVRouter &&
@@ -2060,6 +2066,14 @@ underlayView.prototype.renderFlowRecords = function() {
         queries['fr'].queryViewModel.isCustomTRVisible(false);
         ko.applyBindings(queries.fr.queryViewModel, document.getElementById('fr-query'));
         whereClauseStr = this.updateWhereClause();
+        $("#fr-limit").contrailDropdown({
+            dataTextField:'text',
+            dataValueField:'value',
+        });
+        var limitDropdown = $("#fr-limit").data('contrailDropdown');
+        var dropdownData = [{value:500,text:'500'},{value:1000,text:'1000'},{value:2500,text:'2500'},{value:5000,text:'5000'}];
+        limitDropdown.setData(dropdownData);
+        $("#fr-limit").select2('val','5000');
     }
 }
 /*
@@ -2085,6 +2099,7 @@ underlayView.prototype.updateWhereClause = function () {
 }
 
 underlayView.prototype.renderTracePath = function(options) {
+    underlayLastInteracted = new Date().getTime();
     var _this = this;
     var nodeType = $("#underlay_topology").data('nodeType');
     var nodeName = $("#underlay_topology").data('nodeName');
@@ -2221,6 +2236,7 @@ underlayView.prototype.renderTracePath = function(options) {
                         iconClass: 'icon-contrail-trace-flow',
                         onClick: function(rowId,targetElement){
                             if(typeof underlayRenderer == 'object') {
+                                underlayLastInteracted = new Date().getTime();
                                 $("#vrouterflows div.selected-slick-row").each(function(idx,obj){
                                     $(obj).removeClass('selected-slick-row');
                                 });
@@ -2233,6 +2249,7 @@ underlayView.prototype.renderTracePath = function(options) {
                         iconClass: 'icon-contrail-reverse-flow',
                         onClick: function(rowId,targetElement){
                             if(typeof underlayRenderer == 'object') {
+                                underlayLastInteracted = new Date().getTime();
                                 $("#vrouterflows div.selected-slick-row").each(function(idx,obj){
                                     $(obj).removeClass('selected-slick-row');
                                 });
@@ -2260,10 +2277,10 @@ underlayView.prototype.renderTracePath = function(options) {
                     empty: {
                         text: 'No Flows to display'
                     }, 
-                    errorGettingData: {
+                    error: {
                         type: 'error',
                         iconClasses: 'icon-warning',
-                        text: 'Error in getting Data.'
+                        text: 'Error in fetching details.'
                     }
                 }
             },footer:false
@@ -2275,19 +2292,30 @@ underlayView.prototype.renderTracePath = function(options) {
             computeNodeInfo['ip'] = getValueByJsonPath(result,'VrouterAgent;self_ip_list;0',getValueByJsonPath(result,'ConfigData;virtual-router;virtual_router_ip_address'));
             computeNodeInfo['introspectPort'] = getValueByJsonPath(result,'VrouterAgent;sandesh_http_port',defaultIntrospectPort);
             $.ajax({
-                url:monitorInfraUrls['VROUTER_FLOWS'] + '?ip=' + getIPOrHostName(computeNodeInfo) + '&introspectPort=' + computeNodeInfo['introspectPort'],
+                url:monitorInfraUrls['VROUTER_FLOWS'] + '?ip=' + getIPOrHostName(computeNodeInfo) + '&introspectPort=' + computeNodeInfo['introspectPort']+'&startAt='+new Date().getTime(),
             }).done(function(response){
+                if($.deparam(this.url)['startAt'] != null && underlayLastInteracted > $.deparam(this.url)['startAt'])
+                    return;
+                $("#vrouterflows").find('.grid-header-icon-loading').hide();
                 if(response != null && response[0] != null && response[0]['FlowRecordsResp'] != null 
                         && response[0]['FlowRecordsResp']['flow_key'] == '0:0:0:0:0.0.0.0:0.0.0.0')
                     $("#btnNextFlows").attr('disabled','disabled'); 
-                dataView.setData(monitorInfraComputeFlowsClass.parseFlowsData(response));
+                var parsedData = monitorInfraComputeFlowsClass.parseFlowsData(response);
+                dataView.setData(parsedData);
+                if(parsedData.length == 0 && vrouterflowsGrid != null) {
+                    vrouterflowsGrid.showGridMessage('empty');
+                }
             }).fail(function(error){
+                if($.deparam(this.url)['startAt'] != null && underlayLastInteracted > $.deparam(this.url)['startAt'])
+                    return;
+                $("#vrouterflows").find('.grid-header-icon-loading').hide();
                 if(vrouterflowsGrid != null)
                     vrouterflowsGrid.showGridMessage('error');
             });
         }).fail(function(error){
             if(vrouterflowsGrid != null)
                 vrouterflowsGrid.showGridMessage('error');
+            $("#vrouterflows").find('.grid-header-icon-loading').hide();
         });
         $("#btnNextFlows").click(function(){
             if(flowKeyStack.length > 0 && flowKeyStack[flowKeyStack.length - 1] != null){
@@ -2337,6 +2365,7 @@ underlayView.prototype.renderTracePath = function(options) {
         dataTextField: "text",
         dataValueField: "value",
         change: function(e) {
+            underlayLastInteracted = new Date().getTime();
             if($('#vrouterRadiobtn').is(':checked') == true) {
                 $("#prevNextBtns").toggleClass('show hide');
                 var vRouterData = {name:e['val']};
@@ -2420,6 +2449,7 @@ underlayView.prototype.renderTracePath = function(options) {
     }
     $('input[name="flowtype"]').change(function(){
         var ajaxConfig = {},selItem = {};
+        underlayLastInteracted = new Date().getTime();
         if($('#vrouterRadiobtn').is(':checked') == true) {
             $("#prevNextBtns").toggleClass('show hide');
             if(computeNodeCombobox.length > 0) {
@@ -2449,9 +2479,11 @@ underlayView.prototype.renderTracePath = function(options) {
                 select: 'agg-bytes,agg-packets,vrouter_ip,other_vrouter_ip',
                 fromTimeUTC: 'now-300s',
                 toTimeUTC: 'now',
-                queryId: randomUUID(),
-                async: true,
-                table:'FlowRecordTable'
+                startAt: new Date().getTime(),
+                async: false,
+                table:'FlowRecordTable',
+                filters : "limit:"+defaultUnderlayFlowLimit
+
         };
         var vmData = instMap[name];
         var intfData = getValueByJsonPath(vmData,'more_attributes;interface_list',[]);
@@ -2643,6 +2675,7 @@ underlayView.prototype.getvRouterVMDetails = function(value,key,type){
     else if (type == VROUTER)
         data = getValueByJsonPath(globalObj,'topologyResponse;vRouterList',[]);
     $.each(data,function(idx,item){
+        //check
         var details = jsonPath(item,'$..'+key);
         if($.isArray(details) && details.indexOf(value) > -1) {
             selectedNode = item;
@@ -3372,7 +3405,7 @@ function doTraceFlowRequest (postData) {
     var progressBar = $("#network_topology").find('.topology-visualization-loading');
     $(progressBar).show();
     $(progressBar).css('margin-bottom',$(progressBar).parent().height());
-    
+    postData['startAt'] = new Date().getTime();
     $.ajax({
         url:'/api/tenant/networking/trace-flow',
         type:'POST',
@@ -3381,15 +3414,51 @@ function doTraceFlowRequest (postData) {
             data: postData
         }
     }).done(function(response) {
+        if(postData['startAt'] != null && underlayLastInteracted > postData['startAt'])
+            return;
+        $(progressBar).hide();
         if(typeof underlayRenderer === 'object') {
             underlayRenderer.getModel().setFlowPath(response);
         }
-        if(response.nodes <=0 || response.links <= 0){
+        if(response.nodes.length <=0 || response.links.length <= 0){
             showInfoWindow("Cannot Trace the path for the selected flow.", "Info");
             if(null !== underlayRenderer && typeof underlayRenderer === "object"){
                 underlayRenderer.getView().resetTopology(false);
             }
             return;
+        }
+        if(response.nodes.length > 0) {
+            var maxAttempts = postData.maxAttempts;
+            var starString = '';
+            var fillString = '* ';
+
+            for (;;) {
+                if (maxAttempts & 1)
+                    starString += fillString;
+                maxAttempts >>= 1;
+                if (maxAttempts)
+                    fillString += fillString;
+                else
+                    break;
+            }
+
+            for(var i=0; i<response.nodes.length; i++) {
+                var node = response.nodes[i];
+                if(node.name === starString) {
+                    response.nodes.splice(i, 1);
+                    i--;
+                }
+            }
+            for(var i=0; i<response.links.length; i++) {
+                var link = response.links[i];
+                var endpoint0 = link.endpoints[0];
+                var endpoint1 = link.endpoints[1];
+                if(endpoint0 === starString ||
+                    endpoint1 === starString) {
+                    response.links.splice(i, 1);
+                    i--;
+                }
+            }
         }
         if(typeof underlayRenderer == 'object') {
             underlayRenderer.getView().highlightPath(response, {data: postData});
@@ -3397,6 +3466,9 @@ function doTraceFlowRequest (postData) {
         if(typeof response != 'string')
             $('html,body').animate({scrollTop:0}, 500);
     }).fail(function(error,status) {
+        if(postData['startAt'] != null && underlayLastInteracted > postData['startAt'])
+            return;
+        $(progressBar).hide();
         if(typeof underlayRenderer == 'object') {
             underlayRenderer.getView().resetTopology(false);
         }
@@ -3405,7 +3477,5 @@ function doTraceFlowRequest (postData) {
         } else if (status != 'success') {
             showInfoWindow('Error in fetching details','Error');
         } 
-    }).always(function(ajaxObj,status) {
-       $(progressBar).hide();
     });
 }

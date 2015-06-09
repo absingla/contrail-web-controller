@@ -48,7 +48,6 @@ function VirtualNetworkConfig() {
     var ajaxParam;
     var dynamicID;
     var selectedProuters;
-    var getUUIDCallCount;
     var vxlan_identifier_mode;
 
     //Method definitions
@@ -80,7 +79,6 @@ function VirtualNetworkConfig() {
     this.getDNSStatus = getDNSStatus;
     this.getAllDNSServer = getAllDNSServer;
     this.dynamicID = dynamicID;
-    this.getUUIDCallCount = getUUIDCallCount;
     this.vxlan_identifier_mode = vxlan_identifier_mode;
     this.destroy = destroy;
 }
@@ -107,7 +105,6 @@ function fetchData() {
 
 function initComponents() {
     dynamicID = 0;
-    getUUIDCallCount = 200;
     vxlan_identifier_mode = "automatic";
     $("#gridVN").contrailGrid({
         header : {
@@ -707,8 +704,8 @@ function initActions() {
                 routeTargets.push({RouteTarget:rt + ":" + asn});
             }
         }        
+        vnConfig["virtual-network"]["route_target_list"] = {};
         if (routeTargets && routeTargets.length > 0) {
-            vnConfig["virtual-network"]["route_target_list"] = {};
             vnConfig["virtual-network"]["route_target_list"]["route_target"] = [];
             for (var i = 0; i < routeTargets.length; i++) {
                 var routeTarget = routeTargets[i].RouteTarget;
@@ -1900,15 +1897,18 @@ function successHandlerForAllUUIDGet(allUUID, cbparam)
         var vnUUIDObj = {};
         var sendUUIDArr = [];
         vnUUIDObj.type = "virtual-network";
-        sendUUIDArr = allUUID.slice(0, getUUIDCallCount);
+        sendUUIDArr = allUUID.slice(0, 50);
         vnUUIDObj.uuidList = sendUUIDArr;
-        vnUUIDObj.fields = ["floating_ip_pools"];
-        allUUID = allUUID.slice(getUUIDCallCount, allUUID.length);
+        vnUUIDObj.fields = ["floating_ip_pools","physical_router_back_refs"];
+        allUUID = allUUID.slice(50, allUUID.length);
+        var param = {};
+        param.cbparam = cbparam;
+        param.allUUID = allUUID;
         doAjaxCall("/api/tenants/config/get-config-data-paged", "POST", JSON.stringify(vnUUIDObj),
-            "successHandlerForGridVNLoop", "successHandlerForGridVNLoop", null, allUUID);
+            "successHandlerForGridVNLoop", "successHandlerForGridVNLoop", null, param);
 	} else {
-        $("#btnCreateVN").removeClass('disabled-link');
-        gridVN.showGridMessage('empty');
+        doAjaxCall("/api/tenants/config/shared-virtual-networks/", 
+            "GET", null, "successHandlerForAppendShared", "failureHandlerForAppendShared", null, cbparam, 300000);
 	}
 }
 
@@ -1917,25 +1917,42 @@ function failureHandlerForAllUUIDGet(result){
     gridVN.showGridMessage('errorGettingData');
 }
 
-function successHandlerForGridVNLoop(result, allUUID){
+function failureHandlerForAppendShared(result){
+    $("#btnCreateVN").removeClass('disabled-link');
+    gridVN.showGridMessage('errorGettingData');
+}
+
+function successHandlerForGridVNLoop(result, param){
+    var allUUID = param.allUUID;
+    var cbparam = param.cbparam;
+    if(cbparam != ajaxParam){
+        return;
+    }
     if(allUUID.length > 0) {
         var vnUUIDObj = {};
         var sendUUIDArr = [];
         vnUUIDObj.type = "virtual-network";
-        sendUUIDArr = allUUID.slice(0, getUUIDCallCount);
+        sendUUIDArr = allUUID.slice(0, 600);
         vnUUIDObj.uuidList = sendUUIDArr;
-        vnUUIDObj.fields = ["floating_ip_pools"];
-        allUUID = allUUID.slice(getUUIDCallCount, allUUID.length);
+        vnUUIDObj.fields = ["floating_ip_pools", "physical_router_back_refs"];
+        allUUID = allUUID.slice(600, allUUID.length);
+        var param = {};
+        param.cbparam = cbparam;
+        param.allUUID = allUUID;
         doAjaxCall("/api/tenants/config/get-config-data-paged", "POST", JSON.stringify(vnUUIDObj),
-            "successHandlerForGridVNLoop", "successHandlerForGridVNLoop", null, allUUID);
+            "successHandlerForGridVNLoop", "successHandlerForGridVNLoop", null, param);
     } else {
         doAjaxCall("/api/tenants/config/shared-virtual-networks/", 
-            "GET", null, "successHandlerForAppendShared", "failureHandlerForAppendShared", null, allUUID);        
+            "GET", null, "successHandlerForAppendShared", "failureHandlerForAppendShared", null, cbparam, 300000);
     }
     successHandlerForGridVNRow(result);
+    gridVN.showGridMessage('loading');
 }
 
-function successHandlerForAppendShared(result){
+function successHandlerForAppendShared(result, param){
+    if(param != ajaxParam){
+        return;
+    }
     var uniqueNetwork = [];
     var vnData = $("#gridVN").data("contrailGrid")._dataView.getItems();
     for(var i=0;i<result.length;i++){
@@ -1952,7 +1969,13 @@ function successHandlerForAppendShared(result){
     }
     if(uniqueNetwork.length > 0){
         successHandlerForGridVNRow(uniqueNetwork);
+    } else {
+        if (vnData.length <= 0) {
+            gridVN.showGridMessage("empty");
+            return;
+        }
     }
+    gridVN.removeGridMessage();
 }
 
 
@@ -2009,7 +2032,6 @@ function showRemoveWindow(rowIndex) {
  }
 
 function successHandlerForGridVNRow(result) {
-    gridVN.removeGridMessage();
     var vnData = $("#gridVN").data("contrailGrid")._dataView.getItems();
     var selectedDomain = $("#ddDomainSwitcher").data("contrailDropdown").text();
     var selectedProject = $("#ddProjectSwitcher").data("contrailDropdown").text();
@@ -2279,12 +2301,8 @@ function successHandlerForGridVNRow(result) {
             });
         //}
     }
-    if(result.more == true || result.more == "true"){
-        gridVN.showGridMessage('loading');
-    } else {
-        if(!vnData || vnData.length<=0)
-            gridVN.showGridMessage('empty');
-    }
+    if(!vnData || vnData.length<=0)
+        gridVN.showGridMessage('empty');
     $("#gridVN").data("contrailGrid")._dataView.setData(vnData);
 }
 
