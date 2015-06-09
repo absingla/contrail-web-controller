@@ -208,7 +208,7 @@ define([
             fqName = graphconfig.focusedElement.name.fqName;
 
         return function (response, elementMap, rankDir) {
-            var connectedElements = [],
+            var elements4ConnectedGraph = [],
                 zoomedElements = [],
                 nodes = response['nodes'],
                 zoomedNodeElement = null,
@@ -216,7 +216,56 @@ define([
                 zoomedNode = null;
 
             if (focusedElementType == ctwc.GRAPH_ELEMENT_PROJECT) {
-                createNodeElements(nodes, connectedElements, elementMap);
+                createNodeElements(nodes, elements4ConnectedGraph, elementMap);
+                createLinkElements(links, elements4ConnectedGraph, elementMap);
+                var linkedElements = elementMap['linkedElements'],
+                    nodeSeparation = 90, groupedElements = [],
+                    groupedElementsCount, maxRowCount,
+                    groupedParentWidth, groupedParentHeight;
+
+                if(linkedElements.length > 0) {
+                    return {
+                        elements: elements4ConnectedGraph,
+                        nodes: nodes,
+                        links: links,
+                        zoomedNodeElement: zoomedNodeElement,
+                        zoomedElements: zoomedElements
+                    };
+                } else {
+                    groupedElements = elements4ConnectedGraph;
+                    groupedElementsCount = groupedElements.length;
+                    maxRowCount = Math.ceil(Math.sqrt(groupedElementsCount));
+                    groupedParentWidth = maxRowCount * nodeSeparation;
+                    groupedParentHeight = maxRowCount * nodeSeparation;
+
+                    for(var i = 0; i < groupedElements.length; i++) {
+                        var groupedElement = groupedElements[i],
+                            position = getGroupedElementPosition(i, maxRowCount, nodeSeparation);
+
+                        groupedElement.attributes.position.x = position.x;
+                        groupedElement.attributes.position.y = position.y;
+                    }
+
+                    if(groupedElements.length > 0) {
+                        var groupParentElement = new joint.shapes.contrail.GroupParentElement({
+                            size: {width: groupedParentWidth, height: groupedParentHeight},
+                            attrs: {
+                                rect: {width: groupedParentWidth, height: groupedParentHeight}
+                            }
+                        });
+
+                        linkedElements.push(groupParentElement);
+                    }
+
+                    return {
+                        elements: linkedElements,
+                        nodes: nodes,
+                        links: links,
+                        zoomedNodeElement: groupParentElement,
+                        zoomedElements: groupedElements
+                    };
+                }
+
             } else {
                 var zoomedNodeKey = null,
                     options = null;
@@ -239,7 +288,7 @@ define([
                             height: options['heightZoomedElement']
                         });
 
-                        connectedElements.push(zoomedNodeElement);
+                        elements4ConnectedGraph.push(zoomedNodeElement);
                         elementMap.node[fqName] = zoomedNodeElement.id;
 
                         if (rankDir == ctwc.GRAPH_DIR_TB) {
@@ -253,32 +302,44 @@ define([
                 });
 
                 nodes.splice(zoomedNodeKey, 1);
-                createNodeElements(nodes, connectedElements, elementMap);
-            }
-            createLinkElements(links, connectedElements, elementMap);
+                createNodeElements(nodes, elements4ConnectedGraph, elementMap);
+                createLinkElements(links, elements4ConnectedGraph, elementMap);
 
-            return {
-                elements: connectedElements,
-                nodes: nodes,
-                links: links,
-                zoomedNodeElement: zoomedNodeElement,
-                zoomedElements: zoomedElements
-            };
+                return {
+                    elements: elements4ConnectedGraph,
+                    nodes: nodes,
+                    links: links,
+                    zoomedNodeElement: zoomedNodeElement,
+                    zoomedElements: zoomedElements
+                };
+            }
         };
     };
 
+    function getGroupedElementPosition(index, maxRowCount, nodeSeparation) {
+        index = index + 1;
+
+        var row = Math.floor(index / maxRowCount),
+            column = index % maxRowCount;
+
+        return {
+            x: nodeSeparation * (column == 0 ? (maxRowCount - 1) : (column - 1)),
+            y: nodeSeparation * (column == 0 ? (row - 1) : row)
+        }
+    };
+
     function getElements4ConfigGraph(response, elementMap) {
-        var configElements = [],
+        var elements4ConfigGraph = [],
             collections = {},
             configData = response['configData'],
             configSVGHeight = 0;
 
         createNodes4ConfigData(configData, collections);
 
-        configSVGHeight = createCollectionElements(collections, configElements, elementMap);
+        configSVGHeight = createCollectionElements(collections, elements4ConfigGraph, elementMap);
 
         return {
-            elements: configElements,
+            elements: elements4ConfigGraph,
             configSVGHeight: configSVGHeight
         };
     };
