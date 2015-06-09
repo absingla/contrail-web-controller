@@ -6,9 +6,8 @@ define([
     'underscore',
     'backbone',
     'contrail-graph-model',
-    'joint',
     'graph-view'
-], function (_, Backbone, ContrailGraphModel, Joint, GraphView) {
+], function (_, Backbone, ContrailGraphModel, GraphView) {
     var NetworkingGraphView = Backbone.View.extend({
         render: function () {
             var graphTemplate = contrail.getTemplate4Id(cowc.TMPL_NETWORKING_GRAPH_VIEW),
@@ -17,12 +16,15 @@ define([
                 configGraph = viewConfig['configGraph'],
                 selectorId = '#networking-graph',
                 connectedSelectorId = '#graph-connected-elements',
-                configSelectorId = '#graph-config-elements';
+                configSelectorId = '#graph-config-elements',
+                self = this;
 
-            this.$el.html(graphTemplate);
+            self.$el.html(graphTemplate());
+            setTimeout(function(){
+                var connectedGraphView = self.renderConnectedGraph(connectedGraph, selectorId, connectedSelectorId, configSelectorId);
+                self.renderConfigGraph(configGraph, configSelectorId, connectedGraphView);
+            }, 100);
 
-            var connectedGraphView = this.renderConnectedGraph(connectedGraph, selectorId, connectedSelectorId, configSelectorId);
-            this.renderConfigGraph(configGraph, configSelectorId, connectedGraphView);
         },
 
         renderConnectedGraph: function (graphConfig, selectorId, connectedSelectorId, configSelectorId) {
@@ -43,13 +45,16 @@ define([
                 },
                 controlPanel: getControlPanelConfig(graphConfig, selectorId, connectedSelectorId, configSelectorId),
                 successCallback: function (jointObject, directedGraphSize) {
-                    if (jointObject.graph.attributes.focusedElement.type == 'project' && jointObject.graph.elementsDataObj.elements.length == 0) {
+                    if(!contrail.checkIfExist(jointObject) || !contrail.checkIfExist(jointObject.graph.elementsDataObj)) {
+                        return;
+                    } else if (jointObject.graph.attributes.focusedElement.type == 'project' && jointObject.graph.elementsDataObj.elements.length == 0) {
                         var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
                             notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {
                                 title: ctwm.NO_NETWORK_FOUND,
                                 iconClass: false,
                                 defaultErrorMessage: false,
-                                navLinks: [ctwc.CONFIGURE_NETWORK_LINK_CONFIG]
+                                defaultNavLinks: false
+                                //navLinks: [ctwc.CONFIGURE_NETWORK_LINK_CONFIG]
                             });
 
                         $(selectorId).html(notFoundTemplate(notFoundConfig));
@@ -59,7 +64,8 @@ define([
                             notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {
                                 title: ctwm.NO_VM_FOUND,
                                 iconClass: false,
-                                defaultErrorMessage: false
+                                defaultErrorMessage: false,
+                                defaultNavLinks: false
                             });
 
                         $(selectorId).html(notFoundTemplate(notFoundConfig));
@@ -73,7 +79,7 @@ define([
                     $(connectedSelectorId).data('graph-size', directedGraphSize);
                     $(connectedSelectorId).data('joint-object', jointObject);
 
-                    adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId);
+                    adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId, true);
                     panConnectedGraph2Center(focusedElement, connectedSelectorId);
 
                     highlightElement4ZoomedElement(connectedSelectorId, jointObject, graphConfig);
@@ -143,7 +149,7 @@ define([
                             return function(event) {
                                 var focusedElement = graphConfig.focusedElement;
                                 $(this).find('i').toggleClass('icon-resize-full').toggleClass('icon-resize-small');
-                                adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId);
+                                adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId, false);
                                 panConnectedGraph2Center(focusedElement, connectedSelectorId)
                             }
                         }
@@ -162,9 +168,15 @@ define([
                                     connectedGraphView = jointObject.paper;
 
                                 if ($(this).find('i').hasClass('icon-align-left')) {
-                                    connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_LR);
+                                    $(this).find('i').removeClass('icon-align-left').toggleClass('icon-spin icon-spinner');
+                                    setTimeout(function(){
+                                        connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_LR);
+                                    }, 1500)
                                 } else if ($(this).find('i').hasClass('icon-align-center')) {
-                                    connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_TB);
+                                    $(this).find('i').removeClass('icon-align-center').toggleClass('icon-spin icon-spinner');
+                                    setTimeout(function() {
+                                        connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_TB);
+                                    }, 1500);
                                 }
                             }
                         }
@@ -271,22 +283,19 @@ define([
         };
     };
 
-    function adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId) {
-        /*
-         * Height logic (graphHeight[g], availableHeight[g], minHeight[m])
-         * a < m     = m
-         * g < m < a = m
-         * m < g < a = g
-         * m < a < g = a
-         */
-
+    function adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId, initResizeFlag) {
         var resizeFlag = ($(selectorId).parents('.visualization-container').find('.icon-resize-small').is(':visible')),
             tabHeight = resizeFlag ? 155 : 435, //TODO - move to constants
             minHeight = 300,
             availableHeight = window.innerHeight - tabHeight,
             directedGraphSize = $(connectedSelectorId).data('graph-size'),
-            jointObject = $(connectedSelectorId).data('joint-object'),
-            connectedGraphView = jointObject.paper,
+            jointObject = $(connectedSelectorId).data('joint-object');
+
+        if(!contrail.checkIfExist(jointObject)) {
+            return;
+        }
+
+        var connectedGraphView = jointObject.paper,
             connectedGraphWidth = contrail.checkIfKeyExistInObject(true, directedGraphSize, 'width') ? directedGraphSize.width : 0,
             connectedGraphHeight = contrail.checkIfKeyExistInObject(true, directedGraphSize, 'height') ? directedGraphSize.height : 0,
             configGraphHeight = $(configSelectorId + ' svg').attr('height'),
@@ -307,8 +316,16 @@ define([
             }
         }
 
-        connectedGraphView.setDimensions(Math.max($(selectorId).width(), connectedGraphWidth) + cowc.GRAPH_MARGIN_RIGHT,
-            connectedGraphHeight + cowc.GRAPH_MARGIN_BOTTOM, 1);
+        if (initResizeFlag && ((connectedGraphHeight - cowc.GRAPH_MARGIN_BOTTOM - cowc.GRAPH_MARGIN_TOP - adjustedHeight) > 20)) {
+            $(selectorId).parents('.visualization-container').find('.icon-resize-full')
+                .removeClass('icon-resize-full').addClass('icon-resize-small');
+
+            adjustedHeight = window.innerHeight - 155;
+        }
+
+        connectedGraphView.setDimensions(connectedGraphWidth, connectedGraphHeight, 1);
+
+        $(connectedSelectorId).width(connectedGraphWidth);
 
         $(selectorId).parent().height(adjustedHeight);
         $(selectorId).parent().css('width', '100%');
@@ -334,8 +351,13 @@ define([
             panX = (availableGraphWidth - connectedGraphWidth) / 2,
             panY = (availableGraphHeight - connectedGraphHeight) / 2;
 
-        if (focusedElement.type == ctwc.GRAPH_ELEMENT_PROJECT && (connectedGraphHeight - cowc.GRAPH_MARGIN_BOTTOM - cowc.GRAPH_MARGIN_TOP) > availableGraphHeight) {
-            panY = 35 - cowc.GRAPH_MARGIN_TOP;
+        if (focusedElement.type == ctwc.GRAPH_ELEMENT_PROJECT) {
+            if ((connectedGraphHeight - cowc.GRAPH_MARGIN_BOTTOM - cowc.GRAPH_MARGIN_TOP) > availableGraphHeight) {
+                panY = 35 - cowc.GRAPH_MARGIN_TOP;
+            }
+            if ((connectedGraphWidth - cowc.GRAPH_MARGIN_LEFT - cowc.GRAPH_MARGIN_RIGHT) > availableGraphWidth) {
+                panX = 35 - cowc.GRAPH_MARGIN_LEFT;
+            }
         }
 
         $(connectedSelectorId).panzoom("resetPan");
@@ -500,6 +522,10 @@ define([
             bottomContainerElement = $('#' + ctwl.BOTTOM_CONTENT_CONTAINER),
             tabConfig = {};
 
+        setTimeout(function() {
+            $('.popover').remove();
+        }, cowc.TOOLTIP_DELAY);
+
         switch (elementNodeType) {
             case ctwc.GRAPH_ELEMENT_NETWORK:
                 var networkFQN = clickedElement.nodeDetails.name,
@@ -579,6 +605,10 @@ define([
             elementNodeType= dblClickedElement.elementType,
             elementNodeId = cellView.model.id;
 
+        setTimeout(function() {
+            $('.popover').remove();
+        }, cowc.TOOLTIP_DELAY);
+
         switch (elementNodeType) {
             case ctwc.GRAPH_ELEMENT_NETWORK:
                 loadFeature({
@@ -625,10 +655,10 @@ define([
 
             switch (focusedElementType) {
                 case ctwc.GRAPH_ELEMENT_PROJECT:
-                    if (contrail.checkIfExist(currentHashParams.clickedElement)) {
-                        removeFaint4AllElements();
-                        removeHighlight4AllElements();
+                    removeFaint4AllElements();
+                    removeHighlight4AllElements();
 
+                    if (contrail.checkIfExist(currentHashParams.clickedElement)) {
                         var projectFQN = graphConfig.focusedElement.name.fqName,
                             projectUUID = ctwu.getUUIDByName(projectFQN);
 
@@ -701,14 +731,16 @@ define([
     };
 
     var highlightNetwork4ZoomedElement = function(connectedSelectorId, graphConfig) {
-        faintAllElements();
-        highlightSVGElements([$('g.ZoomedElement')]);
+        faintElements([$(connectedSelectorId).find('div.font-element')]);
+        faintSVGElements([$(connectedSelectorId).find('g.element'), $(connectedSelectorId).find('g.link')]);
         highlightElements([$('div.VirtualMachine')]);
-        highlightSVGElements([$('g.VirtualMachine'), $('.VirtualMachineLink')]);
+        highlightSVGElements([$('g.ZoomedElement'), $('g.VirtualMachine'), $('.VirtualMachineLink')]);
     };
 
     var highlightInstance4ZoomedElement = function(connectedSelectorId, graphConfig) {
-        faintAllElements();
+        faintElements([$(connectedSelectorId).find('div.font-element')]);
+        faintSVGElements([$(connectedSelectorId).find('g.element'), $(connectedSelectorId).find('g.link')]);
+        highlightElements
         highlightSVGElements([$('g.ZoomedElement')]);
 
         var jointObject = $(connectedSelectorId).data('joint-object'),
@@ -853,6 +885,18 @@ define([
     var highlightSVGElements = function(elements) {
         $.each(elements, function (elementKey, elementValue) {
             $(elementValue).removeClassSVG('fainted').addClassSVG('highlighted');
+        });
+    };
+
+    var faintElements = function(elements) {
+        $.each(elements, function (elementKey, elementValue) {
+            $(elementValue).removeClass('highlighted').addClass('fainted');
+        });
+    };
+
+    var faintSVGElements = function(elements) {
+        $.each(elements, function (elementKey, elementValue) {
+            $(elementValue).removeClassSVG('highlighted').addClassSVG('fainted');
         });
     };
 

@@ -6,15 +6,18 @@ define([
     'underscore'
 ], function (_) {
     var CTParsers = function() {
+        var self = this;
         this.networkDataParser = function(response) {
             var retArr = $.map(ifNull(response['data']['value'], response), function (currObject) {
-                if(!isServiceVN(currObject['name'])) {
+                if(!self.isServiceVN(currObject['name'])) {
                     currObject['rawData'] = $.extend(true, {}, currObject);
                     currObject['url'] = '/api/tenant/networking/virtual-network/summary?fqNameRegExp=' + currObject['name'];
+                    /*
                     currObject['outBytes'] = getValueByJsonPath(currObject, 'value;UveVirtualNetworkAgent;out_bytes', 0);
                     currObject['inBytes'] = getValueByJsonPath(currObject, 'value;UveVirtualNetworkAgent;in_bytes', 0);
                     currObject['out_tpkts'] = getValueByJsonPath(currObject, 'value;UveVirtualNetworkAgent;out_tpkts', 0);
                     currObject['in_tpkts'] = getValueByJsonPath(currObject, 'value;UveVirtualNetworkAgent;in_tpkts', 0);
+                    */
                     currObject['egress_flow_count'] = getValueByJsonPath(currObject, 'value;UveVirtualNetworkAgent;egress_flow_count', 0);
                     currObject['ingress_flow_count'] = getValueByJsonPath(currObject, 'value;UveVirtualNetworkAgent;ingress_flow_count', 0);
                     currObject['outBytes60'] = '-';
@@ -66,6 +69,7 @@ define([
         };
 
         this.statsOracleParseFn = function(response,type) {
+            response = contrail.handleIfNull(response, {});
             var retArr = $.map(ifNull(response['value'],response), function (obj, idx) {
                 var item = {};
                 var props = STATS_PROP[type];
@@ -166,19 +170,14 @@ define([
                 currObject['outBytes60'] = '-';
                 // If we append * wildcard stats info are not there in response,so we changed it to flat
                 currObject['url'] = '/api/tenant/networking/virtual-machine/summary?fqNameRegExp=' + currObject['name'] + '?flat';
-                currObject['vmName'] = ifNull(jsonPath(currObj, '$..vm_name')[0], '-');
+                currObject['vmName'] = getValueByJsonPath(currObj,'UveVirtualMachineAgent;vm_name');
+                currObject['uuid'] = currObject['name'];
+
                 var vRouter = getValueByJsonPath(currObj,'UveVirtualMachineAgent;vrouter');
                 currObject['vRouter'] = ifNull(tenantNetworkMonitorUtils.getDataBasedOnSource(vRouter), '-');
                 currObject['intfCnt'] = ifNull(jsonPath(currObj, '$..interface_list')[0], []).length;
                 currObject['vn'] = false;
                 currObject['ip'] = [];
-                var fipStatsList = getValueByJsonPath(currObj,'UveVirtualMachineAgent;fip_stats_list');
-                var floatingIPs = ifNull(tenantNetworkMonitorUtils.getDataBasedOnSource(fipStatsList), []);
-                currObject['floatingIP'] = [];
-                $.each(floatingIPs, function(idx, fipObj){
-                    currObject['floatingIP'].push(contrail.format('{0}<br/> ({1}/{2})', fipObj['ip_address'],formatBytes(ifNull(fipObj['in_bytes'],'-')),
-                        formatBytes(ifNull(fipObj['out_bytes'],'-'))));
-                });
 
                 var cpuInfo = getValueByJsonPath(currObj,'UveVirtualMachineAgent;cpu_info');
                 if(contrail.checkIfExist(cpuInfo)) {
@@ -210,12 +209,26 @@ define([
                     uveVMInterfaceAgent = rawInterfaces[i]['value']['UveVMInterfaceAgent'];
                     interface = $.extend(true, interface, uveVMInterfaceAgent);
                     interface['name'] = rawInterfaces[i]['name'];
+
                     var ip6Active = interface['ip6_active'];
                     if(ip6Active) {
                         interface['ip'] = interface['ip6_address'];
                     } else {
                         interface['ip'] = interface['ip_address'];
                     }
+
+                    var fipStatsList = getValueByJsonPath(uveVMInterfaceAgent, 'fip_diff_stats'),
+                        floatingIPs = (fipStatsList == null) ? [] : fipStatsList;
+
+                    interface['floatingIP'] = [];
+                    $.each(floatingIPs, function (idx, fipObj) {
+                        interface['floatingIP'].push(contrail.format('{0} ({1} / {2})', fipObj['ip_address'], formatBytes(ifNull(fipObj['in_bytes'], '-')), formatBytes(ifNull(fipObj['out_bytes'], '-'))));
+                    });
+
+                    if(contrail.checkIfExist(interface['if_stats'])) {
+                        interface['if_stats']['throughput'] = interface['if_stats']['in_bw_usage'] + interface['if_stats']['out_bw_usage'];
+                    }
+
                     interfaceMap[interface['name']] = interface;
                 }
             }
@@ -230,6 +243,8 @@ define([
                 project = {};
                 project['name'] = projects[i]['fq_name'].join(":");
                 project['uuid'] = projects[i]['uuid'];
+                project['vnCnt'] = '-';
+                project['instCnt'] = '-';
                 projectList.push(project);
             }
 
@@ -323,7 +338,7 @@ define([
 
         this.parseNetwork4Breadcrumb = function(response) {
             return  $.map(response['virtual-networks'], function (n, i) {
-                if (!isServiceVN(n.fq_name.join(':'))) {
+                if (!self.isServiceVN(n.fq_name.join(':'))) {
                     return {
                         fq_name: n.fq_name.join(':'),
                         name: n.fq_name[2],
@@ -391,7 +406,7 @@ define([
                         range: range,
                         flowCnt: flowCnt,
                         size: flowCnt + 1,
-                        color: color,
+                        color: color
                         //type:portField
                     });
             }
@@ -399,7 +414,8 @@ define([
         };
 
         this.parseInstanceStats = function (response, type) {
-            var retArr = $.map(ifNull(response['value'], response), function (obj, idx) {
+            response = contrail.handleIfNull(response, {});
+            var retArr = $.map(ifNull(response['value'], []), function (obj, idx) {
                 var item = {};
                 var props = STATS_PROP[type];
                 item['name'] = obj['vm_uuid'];
@@ -409,16 +425,28 @@ define([
             });
             return retArr;
         };
-    };
 
-    function isServiceVN(vnFQN) {
-        var fqnArray = vnFQN.split(":");
+        this.parseInstanceInterfaceStats = function (response) {
+            var retArr = $.map(ifNull(response['value'], response), function (obj, idx) {
+                var item = {};
+                var props = STATS_PROP['virtual-machine'];
+                item['name'] = obj['name'];
+                item['inBytes'] = ifNull(obj[props['inBytes']], '-');
+                item['outBytes'] = ifNull(obj[props['outBytes']], '-');
+                return item;
+            });
+            return retArr;
+        };
 
-        if(ctwc.SERVICE_VN_EXCLUDE_LIST.indexOf(fqnArray[2]) != -1) {
-            return true;
-        }
+        this.isServiceVN = function (vnFQN) {
+            var fqnArray = vnFQN.split(":");
 
-        return false;
+            if(ctwc.SERVICE_VN_EXCLUDE_LIST.indexOf(fqnArray[2]) != -1) {
+                return true;
+            }
+
+            return false;
+        };
     };
 
     return CTParsers;
