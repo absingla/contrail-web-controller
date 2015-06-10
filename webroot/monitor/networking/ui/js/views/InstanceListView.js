@@ -50,24 +50,25 @@ define([
                             {
                                 elementId: ctwl.INSTANCES_CPU_MEM_CHART_ID,
                                 title: ctwl.TITLE_INSTANCES,
-                                view: "ScatterChartView",
+                                view: "ZoomScatterChartView",
                                 viewConfig: {
-                                    class: "port-distribution-chart",
                                     loadChartInChunks: true,
-                                    parseFn: function (response) {
-                                        return {
-                                            d: [{key: 'Instances', values: response}],
-                                            yLbl: 'Memory Usage',
-                                            xLbl: 'CPU Utilization (%)',
-                                            forceX: [0, 1],
-                                            yLblFormat: function(yValue) {
-                                                var formattedValue = formatBytes(yValue * 1024, true);
-                                                return formattedValue;
-                                            },
-                                            xLblFormat: d3.format(".01f"),
-                                            chartOptions: {tooltipFn: getInstanceTooltipConfig, clickFn: onScatterChartClick},
-                                            hideLoadingIcon: false
-                                        }
+                                    chartOptions: {
+                                        xLabel: 'CPU Utilization (%)',
+                                        yLabel: 'Memory Usage',
+                                        forceX: [0, 1],
+                                        dataParser: function (response) {
+                                            return response;
+                                        },
+                                        yLabelFormat: function(yValue) {
+                                            var formattedValue = formatBytes(yValue * 1024, true);
+                                            return formattedValue;
+                                        },
+                                        xLabelFormat: d3.format(".01f"),
+                                        tooltipConfigCB: getInstanceTooltipConfig,
+                                        clickCB: onScatterChartClick,
+                                        sizeFieldName: 'throughput',
+                                        margin: {left: 60}
                                     }
                                 }
                             },

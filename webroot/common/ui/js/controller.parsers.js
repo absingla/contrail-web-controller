@@ -31,7 +31,7 @@ define([
                     currObject['throughput'] = currObject['inThroughput'] + currObject['outThroughput'];
                     currObject['x'] = currObject['intfCnt'];
                     currObject['y'] = currObject['vnCnt'];
-                    currObject['size'] = currObject['throughput'] + 1;
+                    currObject['size'] = currObject['throughput'];
                     currObject['type'] = 'network';
                     currObject['name'] = currObject['name'];
                     currObject['uuid'] = currObject['uuid'];
@@ -146,7 +146,7 @@ define([
                 if(projectWithVNData != null) {
                     $.extend(true, project, projectWithVNData, {
                         type: 'project',
-                        size: projectWithVNData['throughput'] + 1,
+                        size: projectWithVNData['throughput'],
                         x: projectWithVNData['intfCnt'],
                         y: projectWithVNData['vnCnt']
                     });
@@ -188,7 +188,7 @@ define([
                     currObject['y'] = 0;
                 }
 
-                currObject['size'] = 1;
+                currObject['size'] = 0;
 
                 return currObject;
             });
@@ -245,6 +245,9 @@ define([
                 project['uuid'] = projects[i]['uuid'];
                 project['vnCnt'] = '-';
                 project['instCnt'] = '-';
+                project['size'] = 0;
+                project['x'] = 0;
+                project['y'] = 0;
                 projectList.push(project);
             }
 
