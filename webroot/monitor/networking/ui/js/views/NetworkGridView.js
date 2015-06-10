@@ -76,7 +76,8 @@ define([
                     checkboxSelectable: false,
                     detail: {
                         template: cowu.generateDetailTemplateHTML(getNetworkDetailsTemplateConfig(), cowc.APP_CONTRAIL_CONTROLLER, '{{{formatGridJSON2HTML this.rawData}}}')
-                    }
+                    },
+                    fixedRowHeight: 30
                 },
                 dataSource: {
                     remote: {
