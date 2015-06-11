@@ -351,37 +351,41 @@ define([
             });
         };
 
-        this.parsePortDistribution = function (result, cfg) {
-            var portCF = crossfilter(result);
-            var portField = ifNull(cfg['portField'], 'sport');
-            var portType = cfg['portType'];
-            if (portType == null)
+        this.parsePortDistribution = function (responseData, parserConfig) {
+            var portCF = crossfilter(responseData),
+                portField = ifNull(parserConfig['portField'], 'sport'),
+                portType = parserConfig['portType'],
+                color, parsedData = [],
+                fqName = parserConfig['fqName'];
+
+            if (portType == null) {
                 portType = (portField == 'sport') ? 'src' : 'dst';
-            var flowCntField = ifNull(cfg['flowCntField'], 'outFlowCnt');
-            var bandwidthField = ifNull(cfg['bandwidthField'], 'outBytes');
-            var portDim = portCF.dimension(function (d) {
-                return d[cfg['portField']];
-            });
-            var PORT_LIMIT = 65536;
-            var PORT_STEP = 256;
-            var startPort = ifNull(cfg['startPort'], 0);
-            var endPort = ifNull(cfg['endPort'], PORT_LIMIT);
-            if (endPort - startPort == 255)
-                PORT_STEP = 1;
-            //var PORT_LIMIT = 33400;
-            var color;
-            if (portType == 'src') {
-                color = d3Colors['green'];
-                color = '#1f77b4';
-            } else {
-                color = d3Colors['blue'];
-                color = '#aec7e8';
             }
 
-            var portArr = [];
+            var flowCntField = ifNull(parserConfig['flowCntField'], 'outFlowCnt'),
+                bandwidthField = ifNull(parserConfig['bandwidthField'], 'outBytes');
+
+            var portDim = portCF.dimension(function (d) {
+                    return d[parserConfig['portField']];
+                }),
+                PORT_LIMIT = 65536, PORT_STEP = 256,
+                startPort = ifNull(parserConfig['startPort'], 0),
+                endPort = ifNull(parserConfig['endPort'], PORT_LIMIT);
+
+            if (endPort - startPort == 255)
+                PORT_STEP = 1;
+
+            if (portType == 'src') {
+                color = 'default';
+            } else {
+                color = 'medium';
+            }
+
             //Have a fixed port bucket range of 256
             for (var i = startPort; i <= endPort; i = i + PORT_STEP) {
-                var name, range;
+                var name, range,
+                    totalBytes = 0, flowCnt = 0, x;
+
                 if (PORT_STEP == 1) {
                     portDim.filter(i);
                     name = i;
@@ -391,29 +395,31 @@ define([
                     name = i + ' - ' + Math.min(i + PORT_STEP - 1, 65536);
                     range = i + '-' + Math.min(i + PORT_STEP - 1, 65536);
                 }
-                var totalBytes = 0;
-                var flowCnt = 0;
+
                 $.each(portDim.top(Infinity), function (idx, obj) {
                     totalBytes += obj[bandwidthField];
                     flowCnt += obj[flowCntField];
                 });
-                var x = Math.floor(i + Math.min(i + PORT_STEP - 1, 65536)) / 2
+
+                x = Math.floor(i + Math.min(i + PORT_STEP - 1, 65536)) / 2
+
                 if (portDim.top(Infinity).length > 0)
-                    portArr.push({
-                        startTime: cfg['startTime'],
-                        endTime: cfg['endTime'],
+                    parsedData.push({
+                        startTime: parserConfig['startTime'],
+                        endTime: parserConfig['endTime'],
                         x: x,
                         y: totalBytes,
                         name: name,
                         type: portType == 'src' ? 'sport' : 'dport',
                         range: range,
                         flowCnt: flowCnt,
-                        size: flowCnt + 1,
-                        color: color
+                        size: flowCnt,
+                        color: color,
+                        fqName: fqName
                         //type:portField
                     });
             }
-            return portArr;
+            return parsedData;
         };
 
         this.parseInstanceStats = function (response, type) {
