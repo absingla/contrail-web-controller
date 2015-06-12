@@ -145,13 +145,16 @@ define([
                     iconClass: 'icon-resize-full',
                     title: 'Resize',
                     events: {
-                        click: function() {
-                            return function(event) {
-                                var focusedElement = graphConfig.focusedElement;
-                                $(this).find('i').toggleClass('icon-resize-full').toggleClass('icon-resize-small');
+                        click: function (e, self, controlPanelSelector) {
+                            $(self).find('i').addClass('icon-spin icon-spinner');
+                            setTimeout(function() {
+                                $(self).find('i').removeClass('icon-spin icon-spinner');
+                                $(self).find('i').toggleClass('icon-resize-full').toggleClass('icon-resize-small');
                                 adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId, false);
-                                panConnectedGraph2Center(focusedElement, connectedSelectorId)
-                            }
+                                $(connectedSelectorId).panzoom('reset');
+                                $(controlPanelSelector).find('.control-panel-item').removeClass('disabled');
+                                $(self).removeClass('active');
+                            }, 1000);
                         }
                     }
                 },
@@ -162,22 +165,23 @@ define([
                     },
                     title: 'Change Direction',
                     events: {
-                        click: function() {
-                            return function (event) {
-                                var jointObject = $(connectedSelectorId).data('joint-object'),
-                                    connectedGraphView = jointObject.paper;
+                        click: function (e, self, controlPanelSelector) {
+                            var jointObject = $(connectedSelectorId).data('joint-object'),
+                                connectedGraphView = jointObject.paper;
 
-                                if ($(this).find('i').hasClass('icon-align-left')) {
-                                    $(this).find('i').removeClass('icon-align-left').toggleClass('icon-spin icon-spinner');
-                                    setTimeout(function(){
-                                        connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_LR);
-                                    }, 1500)
-                                } else if ($(this).find('i').hasClass('icon-align-center')) {
-                                    $(this).find('i').removeClass('icon-align-center').toggleClass('icon-spin icon-spinner');
-                                    setTimeout(function() {
-                                        connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_TB);
-                                    }, 1500);
-                                }
+                            if ($(self).find('i').hasClass('icon-align-left')) {
+                                $(self).find('i').removeClass('icon-align-left').toggleClass('icon-spin icon-spinner');
+                                setTimeout(function(){
+                                    connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_LR);
+                                    //Hack to set width for Webkit browser
+                                    $(connectedSelectorId + ' svg').attr('width', '100%');
+                                }, 1500)
+                            } else if ($(self).find('i').hasClass('icon-align-center')) {
+                                $(self).find('i').removeClass('icon-align-center').toggleClass('icon-spin icon-spinner');
+                                setTimeout(function() {
+                                    connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_TB);
+                                    $(connectedSelectorId + ' svg').attr('width', '100%');
+                                }, 1500);
                             }
                         }
                     }
@@ -186,15 +190,13 @@ define([
                     iconClass: 'icon-repeat',
                     title: 'Refresh',
                     events: {
-                        click: function() {
-                            return function (event) {
-                                var jointObject = $(connectedSelectorId).data('joint-object'),
-                                    connectedGraphView = jointObject.paper;
+                        click: function (e, self, controlPanelSelector) {
+                            var jointObject = $(connectedSelectorId).data('joint-object'),
+                                connectedGraphView = jointObject.paper;
 
-                                if ($(this).find('i').hasClass('icon-repeat')) {
-                                    $(this).find('i').removeClass('icon-repeat').toggleClass('icon-spin icon-spinner');
-                                    connectedGraphView.refreshData();
-                                }
+                            if ($(self).find('i').hasClass('icon-repeat')) {
+                                $(self).find('i').removeClass('icon-repeat').toggleClass('icon-spin icon-spinner');
+                                connectedGraphView.refreshData();
                             }
                         }
                     }
@@ -449,7 +451,7 @@ define([
 
     var createVirtualMachineLink = function(position, size){
         var rect = new joint.shapes.basic.Rect({
-            type: 'VirtualMachineLink',
+            type: 'VirtualMachineLink no-drag-element',
             position: position, size: size,
             attrs: {rect:{stroke: '#3182bd', opacity: 1, fill: '#3182bd'}}
         });
@@ -485,6 +487,7 @@ define([
             elementMap.node[vmList[i]] = vmNode.id;
             xFactor++;
             zoomedElements.push(vmNode);
+            zoomedNodeElement.embed(vmNode);
         }
 
         return zoomedElements;
@@ -504,15 +507,16 @@ define([
             yOrigin = vmMargin / 2,
             position = {},
             size = {width: vmWidth, height: vmHeight},
-            virtualMachineCommonLinkPosition = {}, virtualMachineCommonLinkSize = {},
-            virtualMachineLinkPosition = {}, virtualMachineLinkSize = {};
+            virtualMachineCommonLinkPosition = {}, virtualMachineCommonLinkSize = {}, virtualMachineCommonLinkNode,
+            virtualMachineLinkPosition = {}, virtualMachineLinkSize = {}, virtualMachineLinkNode;
 
         var xFactor = 0, yFactor = 0, linkThickness = 1, rectThickness = 2, horizontalAdjustFactor = 6;
         if(vmLength !== 0){
             virtualMachineCommonLinkPosition = {x: xOrigin - vmWidth/2, y: yOrigin + ySeparation - horizontalAdjustFactor};
             virtualMachineCommonLinkSize = {width: vmLength * xSeparation + vmWidth/2, height: rectThickness};
-
-            zoomedElements.push(createVirtualMachineLink(virtualMachineCommonLinkPosition, virtualMachineCommonLinkSize));
+            virtualMachineCommonLinkNode = createVirtualMachineLink(virtualMachineCommonLinkPosition, virtualMachineCommonLinkSize);
+            zoomedElements.push(virtualMachineCommonLinkNode);
+            zoomedNodeElement.embed(virtualMachineCommonLinkNode);
         }
 
         for (var i = 0; i < vmLength; i++) {
@@ -520,10 +524,13 @@ define([
             vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails']);
             elementMap.node[vmList[i]] = vmNode.id;
             zoomedElements.push(vmNode);
+            zoomedNodeElement.embed(vmNode);
 
             virtualMachineLinkPosition = {x: xOrigin + (xSeparation * xFactor)+ vmWidth/2 +1, y: yOrigin + ((ySeparation) * yFactor) + vmHeight};
             virtualMachineLinkSize = {width: linkThickness, height: (ySeparation/2) - 6};
-            zoomedElements.push(createVirtualMachineLink(virtualMachineLinkPosition, virtualMachineLinkSize));
+            virtualMachineLinkNode = createVirtualMachineLink(virtualMachineLinkPosition, virtualMachineLinkSize);
+            zoomedElements.push(virtualMachineLinkNode);
+            zoomedNodeElement.embed(virtualMachineLinkNode);
 
             xFactor++;
         }
@@ -545,8 +552,8 @@ define([
             yOrigin = vmMargin / 2,
             position = {},
             size = {width: vmWidth, height: vmHeight},
-            virtualMachineCommonLinkPosition = {}, virtualMachineCommonLinkSize = {},
-            virtualMachineLinkPosition = {}, virtualMachineLinkSize = {};
+            virtualMachineCommonLinkPosition = {}, virtualMachineCommonLinkSize = {}, virtualMachineCommonLinkNode,
+            virtualMachineLinkPosition = {}, virtualMachineLinkSize = {}, virtualMachineLinkNode;
 
         var centerLineHeight = 0.1,
             xFactor = 0, yFactor = -1,
@@ -555,7 +562,9 @@ define([
         if(vmLength !== 0){
             virtualMachineCommonLinkPosition = {x: xOrigin + vmWidth + xSeparation/2, y: yOrigin - vmMargin/2};
             virtualMachineCommonLinkSize = {width: rectThickness, height: vmLength * ySeparation};
-            zoomedElements.push(createVirtualMachineLink(virtualMachineCommonLinkPosition, virtualMachineCommonLinkSize));
+            virtualMachineCommonLinkNode = createVirtualMachineLink(virtualMachineCommonLinkPosition, virtualMachineCommonLinkSize)
+            zoomedElements.push(virtualMachineCommonLinkNode);
+            zoomedNodeElement.embed(virtualMachineCommonLinkNode);
         }
 
         for (var i = 0; i < vmLength; i++) {
@@ -567,10 +576,13 @@ define([
             vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails']);
             elementMap.node[vmList[i]] = vmNode.id;
             zoomedElements.push(vmNode);
+            zoomedNodeElement.embed(vmNode);
 
             virtualMachineLinkPosition = {x: xOrigin + vmWidth + 2, y: yOrigin + ((ySeparation) * yFactor) + vmHeight/2};
             virtualMachineLinkSize = {width: xSeparation/2 - 2, height: linkThickness};
-            zoomedElements.push(createVirtualMachineLink(virtualMachineLinkPosition, virtualMachineLinkSize));
+            virtualMachineLinkNode = createVirtualMachineLink(virtualMachineLinkPosition, virtualMachineLinkSize)
+            zoomedElements.push(virtualMachineLinkNode);
+            zoomedNodeElement.embed(virtualMachineLinkNode);
         }
 
         return zoomedElements;
