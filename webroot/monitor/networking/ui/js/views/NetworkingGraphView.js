@@ -153,7 +153,7 @@ define([
                                 adjustConnectedGraphDimension(selectorId, connectedSelectorId, configSelectorId, false);
                                 $(connectedSelectorId).panzoom('reset');
                                 $(controlPanelSelector).find('.control-panel-item').removeClass('disabled');
-                                $(self).removeClass('active');
+                                $(self).removeClass('refreshing');
                             }, 1000);
                         }
                     }
@@ -174,13 +174,15 @@ define([
                                 setTimeout(function(){
                                     connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_LR);
                                     //Hack to set width for Webkit browser
-                                    $(connectedSelectorId + ' svg').attr('width', '100%');
+                                    var width = $(connectedSelectorId + ' svg').attr('width');
+                                    $(connectedSelectorId + ' svg').attr('width', width);
                                 }, 1500)
                             } else if ($(self).find('i').hasClass('icon-align-center')) {
                                 $(self).find('i').removeClass('icon-align-center').toggleClass('icon-spin icon-spinner');
                                 setTimeout(function() {
                                     connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_TB);
-                                    $(connectedSelectorId + ' svg').attr('width', '100%');
+                                    var width = $(connectedSelectorId + ' svg').attr('width');
+                                    $(connectedSelectorId + ' svg').attr('width', width);
                                 }, 1500);
                             }
                         }
