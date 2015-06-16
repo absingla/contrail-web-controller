@@ -92,9 +92,11 @@ define([
 
     function onScatterChartClick (chartConfig) {
         var instanceUUID = chartConfig['name'],
-            networkFQN = chartConfig['vnFQN'];
+            networkFQN = chartConfig['vnFQN'],
+            vmName = chartConfig['vmName'];
+
         if (contrail.checkIfExist(networkFQN) && !ctwp.isServiceVN(networkFQN)) {
-            ctwgrc.setInstanceURLHashParams(null, networkFQN, instanceUUID, true);
+            ctwgrc.setInstanceURLHashParams(null, networkFQN, instanceUUID, vmName, true);
         }
     };
 

@@ -430,7 +430,7 @@ define([
         $(connectedSelectorId).css({'backface-visibility':'initial'});
     };
 
-    var createVirtualMachineNode = function(position, size, node, srcVNDetails) {
+    var createVirtualMachineNode = function(position, size, node, srcVNDetails, uve) {
         var nodeType = ctwc.GRAPH_ELEMENT_INSTANCE,
             element, options;
 
@@ -443,7 +443,8 @@ define([
             nodeDetails: {
                 fqName: node,
                 node_type: nodeType,
-                srcVNDetails: srcVNDetails
+                srcVNDetails: srcVNDetails,
+                uve: uve
             },
             elementType: nodeType
         };
@@ -468,7 +469,9 @@ define([
             ySeparation = vmHeight + vmMargin,
             vmPerRow = options['vmPerRow'],
             vmLength = options['noOfVMsToDraw'],
-            vmNode, vmList = options['vmList'];
+            vmNode, vmList = options['vmList'],
+            vmDetailsMap = options['vmDetailsMap'],
+            vmUVE = null ;
 
         var xOrigin = vmMargin / 2,
             yOrigin = vmMargin / 2,
@@ -485,7 +488,8 @@ define([
             }
 
             position = {x: xOrigin + (xSeparation * xFactor), y: yOrigin + ((ySeparation + centerLineHeight) * yFactor)};
-            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails']);
+            vmUVE = contrail.checkIfExist(vmDetailsMap) ? vmDetailsMap[vmList[i]] : null;
+            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails'], vmUVE);
             elementMap.node[vmList[i]] = vmNode.id;
             xFactor++;
             zoomedElements.push(vmNode);
@@ -503,7 +507,9 @@ define([
             ySeparation = vmHeight + vmMargin,
             vmPerRow = options['vmPerRow'],
             vmLength = options['noOfVMsToDraw'],
-            vmNode, vmList = options['vmList'];
+            vmNode, vmList = options['vmList'],
+            vmDetailsMap = options['vmDetailsMap'],
+            vmUVE;
 
         var xOrigin = vmMargin / 2,
             yOrigin = vmMargin / 2,
@@ -523,7 +529,8 @@ define([
 
         for (var i = 0; i < vmLength; i++) {
             position = {x: xOrigin + (xSeparation * xFactor), y: yOrigin + ((ySeparation) * yFactor)};
-            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails']);
+            vmUVE = contrail.checkIfExist(vmDetailsMap) ? vmDetailsMap[vmList[i]] : null;
+            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails'], vmUVE);
             elementMap.node[vmList[i]] = vmNode.id;
             zoomedElements.push(vmNode);
             zoomedNodeElement.embed(vmNode);
@@ -548,7 +555,9 @@ define([
             ySeparation = vmHeight + vmMargin,
             vmPerRow = options['vmPerRow'],
             vmLength = options['noOfVMsToDraw'],
-            vmNode, vmList = options['vmList'];
+            vmNode, vmList = options['vmList'],
+            vmDetailsMap = options['vmDetailsMap'],
+            vmUVE;
 
         var xOrigin = vmMargin / 2,
             yOrigin = vmMargin / 2,
@@ -575,7 +584,8 @@ define([
                 yFactor++;
             }
             position = {x: xOrigin + (xSeparation * xFactor), y: yOrigin + ((ySeparation) * yFactor)};
-            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails']);
+            vmUVE = contrail.checkIfExist(vmDetailsMap) ? vmDetailsMap[vmList[i]] : null;
+            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails'], vmUVE);
             elementMap.node[vmList[i]] = vmNode.id;
             zoomedElements.push(vmNode);
             zoomedNodeElement.embed(vmNode);
@@ -701,7 +711,10 @@ define([
                 break;
 
             case ctwc.GRAPH_ELEMENT_INSTANCE:
-                var srcVN = dblClickedElement.nodeDetails.srcVNDetails.name;
+                var srcVN = dblClickedElement.nodeDetails.srcVNDetails.name,
+                    vmUVE = dblClickedElement.nodeDetails.uve,
+                    vmName = contrail.checkIfExist(vmUVE) ? vmUVE['UveVirtualMachineAgent']['vm_name'] : null;
+
                 loadFeature({
                     p: 'mon_networking_instances',
                     q: {
@@ -710,6 +723,7 @@ define([
                         focusedElement: {
                             fqName: srcVN,
                             uuid: dblClickedElement.nodeDetails['fqName'],
+                            vmName: vmName,
                             type: ctwc.GRAPH_ELEMENT_NETWORK
                         }
                     }
