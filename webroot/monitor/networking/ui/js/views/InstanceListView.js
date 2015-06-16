@@ -68,7 +68,8 @@ define([
                                         tooltipConfigCB: getInstanceTooltipConfig,
                                         clickCB: onScatterChartClick,
                                         sizeFieldName: 'throughput',
-                                        margin: {left: 60}
+                                        margin: {left: 60},
+                                        noDataMessage: "No virtual machine available."
                                     }
                                 }
                             },
