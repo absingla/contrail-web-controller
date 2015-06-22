@@ -428,6 +428,9 @@ define([
         $(connectedSelectorId).panzoom("resetPan");
         $(connectedSelectorId).panzoom("pan", panX, panY, { relative: true });
         $(connectedSelectorId).css({'backface-visibility':'initial'});
+
+        //Safari related hack to orient the graph correctly
+        $(connectedSelectorId).redraw();
     };
 
     var createVirtualMachineNode = function(position, size, node, srcVNDetails, uve) {
