@@ -620,9 +620,9 @@ var infraMonitorUtils = {
             obj['link'] = {p:'mon_infra_analytics',q:{node:obj['name'],tab:''}};
             obj['errorStrings'] = ifNull(jsonPath(d,"$.value.ModuleCpuState.error_strings")[0],[]);
             obj['isNTPUnsynced'] = isNTPUnsynced(jsonPath(d,'$..NodeStatus')[0]);
-            obj['processAlerts'] = infraMonitorAlertUtils.getProcessAlerts(d,obj);
             var isConfigDataAvailable = $.isEmptyObject(jsonPath(d,'$..ConfigData')[0]) ? false : true;
             obj['isUveMissing'] = ($.isEmptyObject(jsonPath(d,'$..CollectorState')[0]) && isConfigDataAvailable)? true : false;
+            obj['processAlerts'] = infraMonitorAlertUtils.getProcessAlerts(d,obj);
             obj['isPartialUveMissing'] = false;
             if(obj['isUveMissing'] == false) {
                 if(isEmptyObject(jsonPath(d,'$.value.ModuleCpuState.module_cpu_info[?(@.module_id=="contrail-collector")].cpu_info')[0]) || isEmptyObject(jsonPath(d,'$.value.CollectorState.build_info')[0])) {
@@ -2351,7 +2351,9 @@ function getAllvRouters(defferedObj,dataSource,dsObj){
     if(dsObj['getFromCache'] == null || dsObj['getFromCache'] == true){
         obj['transportCfg'] = { 
                 url: monitorInfraUrls['VROUTER_CACHED_SUMMARY'],
-                type:'GET'
+                type:'GET',
+                //set the default timeout as 5 mins
+                timeout:300000
             }
         defferedObj.done(function(){
             dsObj['getFromCache'] = false;
@@ -3087,12 +3089,12 @@ function onPrevNextClick(obj,cfg) {
     var xStrFormat = /(begin:)\d+(,end:)\d+(,table:.*)/;
     var entriesFormat = /.*\/(\d+)/;
     var totalCnt;
-    if(paginationInfo['entries'].match(entriesFormat) instanceof Array) {
+    if(paginationInfo['entries'] != null && paginationInfo['entries'].match(entriesFormat) instanceof Array) {
         var patternResults = paginationInfo['entries'].match(entriesFormat);
         //Get the total count from entries as with some filter applied,total count will not be same as table size
         totalCnt = parseInt(patternResults[1]);
     } 
-    if(paginationInfo['last_page'].match(xStrFormat) instanceof Array) {
+    if(paginationInfo['last_page'] != null && paginationInfo['last_page'].match(xStrFormat) instanceof Array) {
         if(totalCnt == null) {
             totalCnt = parseInt(paginationInfo['table_size']);
         }

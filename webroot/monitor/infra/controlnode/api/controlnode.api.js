@@ -597,17 +597,19 @@ function getControlNodeRoutingInstanceList (req, res, appData)
     var hostname = queryData.query['hostname'];
 
     var url = ip + '@' + global.SANDESH_CONTROL_NODE_PORT + '@' +
-                    '/Snh_ShowRoutingInstanceReq?name=';
+                    '/Snh_ShowRoutingInstanceSummaryReq?';
     var urlLists = [];
     urlLists[0] = [url];
-    async.map(urlLists, commonUtils.getDataFromSandeshByIPUrl(rest.getAPIServer, true),
+    var params = {'isRawData': true};
+
+    async.map(urlLists, commonUtils.getDataFromSandeshByIPUrl(rest.getAPIServer,
+                                                              false, params),
             function(err, results) {
-        if (!err) {
-            var resultJSON = {};
-            adminApiHelper.processControlNodeRoutingInstanceList(resultJSON, results);
-            commonUtils.handleJSONResponse(null, res, resultJSON);
+        if ((null == err) && (null != results) && (null != results[0])) {
+            var isJson = false;
+            commonUtils.handleJSONResponse(err, res, results[0], isJson);
         } else {
-            commonUtils.handleJSONResponse(err, res, resultJSON);
+            commonUtils.handleJSONResponse(err, res, null);
         }
     });
 }
@@ -643,8 +645,9 @@ function getControlNodeRoutes (req, res, appData)
 
     url =  '/Snh_ShowRouteReq?routing_table=' + encodeURIComponent(routingTable) +
         '&routing_instance=' + encodeURIComponent(routingInst) +
-        '&prefix=' + encodeURIComponent(prefix) + '&start_routing_instance=' +
-        '&start_routing_table=&start_prefix=&count=' + count;
+        '&prefix=' + encodeURIComponent(prefix) + '&longer_match=&count=' +
+        count + '&start_routing_table=' +
+        '&start_routing_instance=&start_prefix=';
 
     var resultJSON = [];
     var bgpRtrRestAPI =

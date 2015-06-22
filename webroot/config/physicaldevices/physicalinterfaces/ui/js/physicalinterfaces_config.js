@@ -737,6 +737,7 @@ function physicalInterfacesConfig() {
     }
     
     function populateCreateEditWindow(m, index) {
+        $("#btnAddPhysicalInterfaceOk").attr("disabled","disabled");
         mode = m;
         clearCreateEditWindow();
         prepareAccordionData();
@@ -799,29 +800,6 @@ function physicalInterfacesConfig() {
             }           
         }
         $('#addPhysicalInterfaceWindow').modal('show');       
-    }
-    
-    function getCurrentVirtualNetworkId(name) {
-        var data = $('#ddVN').data('contrailDropdown').getAllData();
-        for(var i = 0; i < data.length; i++) {
-            if(data[i].text.indexOf(name) !== -1) {
-                return data[i].value;
-            }    
-        }
-        return '';
-    }
-    
-    function getCurrentVMIId(name) {
-        if(name != '') {
-            name = name.trim();
-            var data = $('#ddVMI').data('contrailCombobox').getAllData();
-            for(var i = 0; i < data.length; i++) {
-                if(data[i].text.indexOf(name) !== -1) {
-                    return data[i].id;
-                }
-            }
-        }
-        return '';
     }
 
     function getActInterfaceName(name) {
@@ -1204,13 +1182,15 @@ function physicalInterfacesConfig() {
                      vnDataSrc.push({ text : textVN, value : vn.uuid, data : JSON.stringify(vnData)});
                  }
              }
+             $("#btnAddPhysicalInterfaceOk").removeAttr('disabled');
          } else {
              vnDataSrc.push({text : 'No Virtual Network found', value : 'empty'});
          }
+         $("#btnAddPhysicalInterfaceOk").removeAttr('disabled');
          var ddVN = $('#ddVN').data('contrailDropdown');         
          ddVN.setData(vnDataSrc);
-         if(gblSelRow != null && gblSelRow.vn != '-') {
-             ddVN.value(getCurrentVirtualNetworkId(gblSelRow.vn));
+         if(gblSelRow != null && gblSelRow.vnUUID != '-') {
+             ddVN.value(gblSelRow.vnUUID);
          }
          fetchVirtualNetworkInternals(ddVN.value());
     }
@@ -1467,7 +1447,8 @@ function physicalInterfacesConfig() {
                     vmi_uuid : liDetails.vmiUUID,
                     vm_uuid : liDetails.vmUUID,
                     subnetUUIDArr : liDetails.subnetUUIDArr != null ? liDetails.subnetUUIDArr : '-',
-                    subnetCIDRArr : liDetails.subnetCIDRArr != null ? liDetails.subnetCIDRArr : '-'
+                    subnetCIDRArr : liDetails.subnetCIDRArr != null ? liDetails.subnetCIDRArr : '-',
+                    vnUUID : liDetails.vnUUID != null ? liDetails.vnUUID : '-'
                 }); 
             }
         }
@@ -1529,7 +1510,8 @@ function physicalInterfacesConfig() {
                         vmi_uuid : liDetails.vmiUUID,
                         vm_uuid : liDetails.vmUUID,
                         subnetUUIDArr : liDetails.subnetUUIDArr != null ? liDetails.subnetUUIDArr : '-',
-                        subnetCIDRArr : liDetails.subnetCIDRArr != null ? liDetails.subnetCIDRArr : '-'
+                        subnetCIDRArr : liDetails.subnetCIDRArr != null ? liDetails.subnetCIDRArr : '-',
+                        vnUUID : liDetails.vnUUID != null ? liDetails.vnUUID : '-'
                     };
                     newData.splice(i + 1, 0, infObj);
                 }
@@ -1637,8 +1619,12 @@ function physicalInterfacesConfig() {
         var subnetCIDRArr = [];
         var subnetUUIDArr = [];
         var subnet = '-';
+        var vnUUID = '-';
         if(vmiDetails != '-') {
-            vnRefs = vmiDetail['vn_refs'] ? vmiDetail['vn_refs'][0].to : '-';
+            if(vmiDetail['vn_refs'] != null && vmiDetail['vn_refs'][0]) {
+                vnRefs = vmiDetail['vn_refs'][0].to;
+                vnUUID =  vmiDetail['vn_refs'][0].uuid;
+            }
             if(vnRefs != '-') {
                 vnRefs = vnRefs[2] + ' (' + vnRefs[0] + ':' + vnRefs[1] + ')';
             }
@@ -1652,7 +1638,7 @@ function physicalInterfacesConfig() {
         }
         
         return { vlanTag : vlanTag, liType : liType, vmiDetails : vmiDetailsArray, vnRefs : vnRefs,
-            vmiIP : vmiIPs, vmiUUID : vmiUUID, vmUUID : vmUUID, subnetCIDRArr : subnetCIDRArr, subnetUUIDArr:subnetUUIDArr};
+            vmiIP : vmiIPs, vmiUUID : vmiUUID, vmUUID : vmUUID, subnetCIDRArr : subnetCIDRArr, subnetUUIDArr:subnetUUIDArr, vnUUID:vnUUID};
     }
     
     window.failureHandlerForPhysicalInterfaces =  function(error) {

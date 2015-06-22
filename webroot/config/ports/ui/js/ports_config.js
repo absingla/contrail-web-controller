@@ -1491,8 +1491,8 @@ function mapVMIData(portData,selectedDomain,selectedProject){
     var displayOwnerName = devOwner;
     var logicalInterfaceName = "";
     if(devOwner == "network:router_interface"){
-        if("logical_router_back_refs" in portData && portData["logical_router_back_refs"].length >= 0 ){
             deviceOwnerValue = "router";
+        if("logical_router_back_refs" in portData && portData["logical_router_back_refs"].length > 0 ){
             //devOwnerName = "Router";
             var deviceUUIDArr = [];
             deviceUUIDArr.push({"to":portData["logical_router_back_refs"][0]["to"],"uuid":portData["logical_router_back_refs"][0]["uuid"]});
@@ -1722,7 +1722,7 @@ function showPortEditWindow(mode, rowIndex, enableSubInterfaceFlag) {
     var selectedDomain = $("#ddDomainSwitcher").data("contrailDropdown").text();
     var selectedProject = $("#ddProjectSwitcher").data("contrailDropdown").text();
     var selectedProjectVal = $("#ddProjectSwitcher").data("contrailDropdown").value();
-
+    $("#btnCreatePortsOK").attr("disabled","disabled");
     if(!isValidDomainAndProject(selectedDomain, selectedProject)) {
         gridPorts.showGridMessage('errorGettingData');
         return;
@@ -1735,7 +1735,7 @@ function showPortEditWindow(mode, rowIndex, enableSubInterfaceFlag) {
     });
     if(mode === "add") {
         getAjaxs[1] = $.ajax({
-            url:"/api/tenants/config/all-virtual-networks-fields?uuid="+selectedProjectVal,
+            url:"/api/tenants/config/all-virtual-networks?uuid="+selectedProjectVal,
             timeout:300000,
             type:"GET"
             
@@ -1777,11 +1777,11 @@ function showPortEditWindow(mode, rowIndex, enableSubInterfaceFlag) {
             //all success
             clearValuesFromDomElements();
             var results = arguments;
-
             //Security Group
             var securityGroupsData = [];
             var allSG = [];
             var sgValue = [];
+            $("#btnCreatePortsOK").removeAttr('disabled');
             securityGroupsData = results[0][0]["security-groups"];
             for (var i = 0; i < securityGroupsData.length; i++) {
                 var sg = securityGroupsData[i];
@@ -2075,7 +2075,11 @@ function showPortEditWindow(mode, rowIndex, enableSubInterfaceFlag) {
                 if(!isVCenter()) {
                     $("#ddDeviceOwnerName").data("contrailDropdown").value(mapedData.deviceOwnerValue);
                     updateDevice();
-                    $("#ddDeviceOwnerUUID").data("contrailCombobox").value(mapedData.deviceOwnerUUIDValue);
+                    if(mapedData.deviceOwnerValue == "compute") {
+                        $("#ddDeviceOwnerUUID").data("contrailCombobox").value(mapedData.deviceOwnerUUIDValue);
+                    } else if(mapedData.deviceOwnerValue == "router") {
+                        $("#ddDeviceOwnerUUIDRouter").data("contrailDropdown").value(mapedData.deviceOwnerUUIDValue);
+                    }
                 }
                 if(mapedData.sgMSValues.length > 0){
                     $("#is_SG")[0].checked = true;
@@ -2169,6 +2173,9 @@ function showPortEditWindow(mode, rowIndex, enableSubInterfaceFlag) {
         function () {
             //If atleast one api fails
             var results = arguments;
+            $("#btnCreatePortsOK").removeAttr('disabled');
+            windowCreatePorts.modal('hide');
+            showInfoWindow("Error fetching data", "Error");
         });
     windowCreatePorts.modal("show");
     windowCreatePorts.find('.modal-body').scrollTop(0);
@@ -2966,7 +2973,7 @@ function destroy() {
         ddDeviceOwnerUUID.destroy();
         ddDeviceOwnerUUID = $();
     }
-    ddDeviceOwnerUUIDRouter = $("#contrailDropdown").data("contrailCombobox");
+    ddDeviceOwnerUUIDRouter = $("#ddDeviceOwnerUUIDRouter").data("contrailDropdown");
     if(isSet(ddDeviceOwnerUUIDRouter)) {
         ddDeviceOwnerUUIDRouter.destroy();
         ddDeviceOwnerUUIDRouter = $();
