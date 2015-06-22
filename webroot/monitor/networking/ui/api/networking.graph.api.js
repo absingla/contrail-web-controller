@@ -986,7 +986,11 @@ function processProjectConfigGraph(fqName, projectConfigData, appData, callback)
     });
 }
 
-exports.getNetworkConnectedGraph = getNetworkConnectedGraph;
-exports.getNetworkConfigGraph = getNetworkConfigGraph;
 exports.getProjectConnectedGraph = getProjectConnectedGraph;
 exports.getProjectConfigGraph = getProjectConfigGraph;
+
+exports.getNetworkConnectedGraph = getNetworkConnectedGraph;
+exports.getNetworkConfigGraph = getNetworkConfigGraph;
+
+exports.getInstanceConnectedGraph = getNetworkConnectedGraph;
+exports.getInstanceConfigGraph = getNetworkConfigGraph;
