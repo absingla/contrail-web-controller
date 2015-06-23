@@ -28,9 +28,27 @@ define([
         },
 
         renderConnectedGraph: function (graphConfig, selectorId, connectedSelectorId, configSelectorId) {
+            var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
+                notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {
+                    iconClass: false,
+                    defaultErrorMessage: false,
+                    defaultNavLinks: false
+                });
+
             var cGraphModelConfig = $.extend(true, {}, graphConfig, {
                 forceFit: true,
-                generateElementsFn: getElements4ConnectedGraphFn(graphConfig, selectorId)
+                generateElementsFn: getElements4ConnectedGraphFn(graphConfig, selectorId),
+                remote: {
+                    successCallback: function (response, contrailGraphModel) {
+                        //TODO - #cleanup Add relevant code from View successCallback
+                    },
+                    failureCallback: function (xhr, contrailGraphModel) {
+                        var notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_ERROR_PAGE, {errorMessage: xhr.responseText});
+
+                        $(selectorId).html(notFoundTemplate(notFoundConfig));
+                        return;
+                    }
+                }
             });
 
             var cGraphViewConfig = {
@@ -48,26 +66,11 @@ define([
                     if(!contrail.checkIfExist(jointObject) || !contrail.checkIfExist(jointObject.graph.elementsDataObj)) {
                         return;
                     } else if (jointObject.graph.attributes.focusedElement.type == 'project' && jointObject.graph.elementsDataObj.elements.length == 0) {
-                        var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
-                            notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {
-                                title: ctwm.NO_NETWORK_FOUND,
-                                iconClass: false,
-                                defaultErrorMessage: false,
-                                defaultNavLinks: false
-                                //navLinks: [ctwc.CONFIGURE_NETWORK_LINK_CONFIG]
-                            });
-
+                        notFoundConfig.title = ctwm.NO_NETWORK_FOUND;
                         $(selectorId).html(notFoundTemplate(notFoundConfig));
                         return;
                     } else if (jointObject.graph.attributes.focusedElement.type == 'virtual-network' && jointObject.graph.elementsDataObj.zoomedElements.length == 0) {
-                        var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
-                            notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {
-                                title: ctwm.NO_VM_FOUND,
-                                iconClass: false,
-                                defaultErrorMessage: false,
-                                defaultNavLinks: false
-                            });
-
+                        notFoundConfig.title =  ctwm.NO_VM_FOUND;
                         $(selectorId).html(notFoundTemplate(notFoundConfig));
                         return;
                     }
@@ -167,12 +170,12 @@ define([
                     events: {
                         click: function (e, self, controlPanelSelector) {
                             var jointObject = $(connectedSelectorId).data('joint-object'),
-                                connectedGraphView = jointObject.paper;
+                                connectedGraphModel = jointObject.graph;
 
                             if ($(self).find('i').hasClass('icon-align-left')) {
                                 $(self).find('i').removeClass('icon-align-left').toggleClass('icon-spin icon-spinner');
                                 setTimeout(function(){
-                                    connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_LR);
+                                    connectedGraphModel.reLayoutGraph(ctwc.GRAPH_DIR_LR);
                                     //Hack to set width for Webkit browser
                                     var width = $(connectedSelectorId + ' svg').attr('width');
                                     $(connectedSelectorId + ' svg').attr('width', width);
@@ -180,7 +183,7 @@ define([
                             } else if ($(self).find('i').hasClass('icon-align-center')) {
                                 $(self).find('i').removeClass('icon-align-center').toggleClass('icon-spin icon-spinner');
                                 setTimeout(function() {
-                                    connectedGraphView.model.reLayoutGraph(ctwc.GRAPH_DIR_TB);
+                                    connectedGraphModel.reLayoutGraph(ctwc.GRAPH_DIR_TB);
                                     var width = $(connectedSelectorId + ' svg').attr('width');
                                     $(connectedSelectorId + ' svg').attr('width', width);
                                 }, 1500);
@@ -832,7 +835,6 @@ define([
     var highlightInstance4ZoomedElement = function(connectedSelectorId, graphConfig) {
         faintElements([$(connectedSelectorId).find('div.font-element')]);
         faintSVGElements([$(connectedSelectorId).find('g.element'), $(connectedSelectorId).find('g.link')]);
-        highlightElements
         highlightSVGElements([$('g.ZoomedElement')]);
 
         var jointObject = $(connectedSelectorId).data('joint-object'),
@@ -840,11 +842,13 @@ define([
             vmFqName = graphConfig.focusedElement.name.instanceUUID;
 
         $.each(graphElements, function (graphElementKey, graphElementValue) {
-            if (graphElementValue.attributes.type == 'contrail.VirtualMachine' && graphElementValue.attributes.nodeDetails.fqName == vmFqName) {
+            if (contrail.checkIfKeyExistInObject(true, graphElementValue, 'attributes.nodeDetails.node_type') && graphElementValue.attributes.nodeDetails.node_type == 'virtual-machine' && graphElementValue.attributes.nodeDetails.fqName == vmFqName) {
                 var modelId = graphElementValue.id;
 
                 highlightElements([$('div.font-element[font-element-model-id="' + modelId + '"]')]);
                 highlightSVGElements([$('g[model-id="' + modelId + '"]')]);
+
+                return;
             }
         });
     };
