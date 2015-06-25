@@ -62,16 +62,18 @@ function addTabs() {
                     type:'POST',
                     data:{}
                 }).done(function(response) {
-                    $.each(response,function(idx,obj) {
-                        if((obj['name'].indexOf(':default-project:') == -1) && obj['name'] != '__UNKNOWN__') {
-                            if($.isNumeric(vnCnt)) {
-                                vnCnt++;
-                            } else {
-                                vnCnt = 1;
+                    if(response != null) {
+                        $.each(response,function(idx,obj) {
+                            if((obj['name'].indexOf(':default-project:') == -1) && obj['name'] != '__UNKNOWN__') {
+                                if($.isNumeric(vnCnt)) {
+                                    vnCnt++;
+                                } else {
+                                    vnCnt = 1;
+                                }
                             }
-                        }
-                    });
-                    $('#infobox-vns .infobox-data-number').text(vnCnt);
+                        });
+                        $('#infobox-vns .infobox-data-number').text(vnCnt);
+                    }
                 });
             }
 
@@ -289,7 +291,8 @@ function addTabs() {
                     title:'Analytics Nodes',
                     template:'analyticnode-dashboard-tab',
                     dataSourceObj:'analyticsNodeDS',
-                    viewModel:viewModel
+                    viewModel:viewModel,
+                    tabId:'AnalyticsNode'
                 });
     }());
 
