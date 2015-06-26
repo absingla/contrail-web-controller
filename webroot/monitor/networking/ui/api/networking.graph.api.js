@@ -458,9 +458,9 @@ function getVNStats(links, vnUVE, jsonP, src, dest) {
 }
 
 function getVirtualNetworkNode(fqName, resultJSON, vnUVENode) {
-    var i = 0, j = 0,
-        nodeCnt = resultJSON['nodes'].length,
-        linkCnt = resultJSON['links'].length;
+    var i = 0, j = 0, nodeCnt = resultJSON['nodes'].length,
+        linkCnt = resultJSON['links'].length,
+        uveVirtualNetworkAgent;
 
     resultJSON['nodes'][nodeCnt] = {};
     resultJSON['nodes'][nodeCnt]['name'] = vnUVENode['name'];
@@ -468,15 +468,17 @@ function getVirtualNetworkNode(fqName, resultJSON, vnUVENode) {
     //resultJSON['nodes'][nodeCnt]['raw_uve_data'] = vnUVENode['value'];
 
     try {
-        var uveVirtualNetworkAgent = vnUVENode['value']['UveVirtualNetworkAgent'],
-            vmList = uveVirtualNetworkAgent['virtualmachine_list'],
-            vmiList = uveVirtualNetworkAgent['interface_list'];
+        uveVirtualNetworkAgent = vnUVENode['value']['UveVirtualNetworkAgent'];
+        if(uveVirtualNetworkAgent != null) {
+            var vmList = uveVirtualNetworkAgent['virtualmachine_list'],
+                vmiList = uveVirtualNetworkAgent['interface_list'];
 
-        resultJSON['nodes'][nodeCnt]['more_attributes']['vm_count'] = vmList.length;
-        resultJSON['nodes'][nodeCnt]['more_attributes']['vmi_count'] = vmiList.length;
-        resultJSON['nodes'][nodeCnt]['more_attributes']['in_throughput'] = uveVirtualNetworkAgent['in_bandwidth_usage'];
-        resultJSON['nodes'][nodeCnt]['more_attributes']['out_throughput'] = uveVirtualNetworkAgent['out_bandwidth_usage'];
-        resultJSON['nodes'][nodeCnt]['more_attributes']['virtualmachine_list'] = uveVirtualNetworkAgent['virtualmachine_list'];
+            resultJSON['nodes'][nodeCnt]['more_attributes']['vm_count'] = vmList.length;
+            resultJSON['nodes'][nodeCnt]['more_attributes']['vmi_count'] = vmiList.length;
+            resultJSON['nodes'][nodeCnt]['more_attributes']['in_throughput'] = uveVirtualNetworkAgent['in_bandwidth_usage'];
+            resultJSON['nodes'][nodeCnt]['more_attributes']['out_throughput'] = uveVirtualNetworkAgent['out_bandwidth_usage'];
+            resultJSON['nodes'][nodeCnt]['more_attributes']['virtualmachine_list'] = uveVirtualNetworkAgent['virtualmachine_list'];
+        }
     } catch (e) {
         logutils.logger.error(e.stack);
     }
