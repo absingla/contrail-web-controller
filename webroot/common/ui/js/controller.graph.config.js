@@ -293,7 +293,7 @@ define([
                             actions = [],
                             srcVNDetails = viewElement.attributes.nodeDetails.srcVNDetails,
                             vmUVE = viewElement.attributes.nodeDetails.uve,
-                            tooltipContent, uveVirtualMachineAgent;
+                            tooltipContent, uveVirtualMachineAgent, cpuInfo;
 
                         actions.push({
                             text: 'View',
@@ -307,11 +307,12 @@ define([
 
                         if(contrail.checkIfExist(vmUVE)) {
                             uveVirtualMachineAgent = vmUVE['UveVirtualMachineAgent'];
+                            cpuInfo = uveVirtualMachineAgent.cpu_info;
                             tooltipContent['info'] = [
                                 {label: 'UUID', value: viewElement.attributes.nodeDetails['fqName']},
                                 {label: 'Network', value: srcVNDetails.name},
-                                {label: 'CPU Utilization', value: (Math.round(uveVirtualMachineAgent.cpu_info.cpu_one_min_avg * 100) / 100) + " %"},
-                                {label: 'Memory Usage', value: formatBytes(uveVirtualMachineAgent.cpu_info.rss, false)},
+                                {label: 'CPU Utilization', value: contrail.checkIfExist(cpuInfo) ? ((Math.round(cpuInfo.cpu_one_min_avg * 100) / 100) + " %") : '-'},
+                                {label: 'Memory Usage', value: contrail.checkIfExist(cpuInfo) ? formatBytes(cpuInfo.rss, false) : '-'},
                                 {label: 'Interfaces', value: uveVirtualMachineAgent.interface_list.length}
                             ];
                         } else {
