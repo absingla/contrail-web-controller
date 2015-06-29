@@ -2,11 +2,12 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 
+var nwMonApi = module.exports;
+
 var cacheApi = require(process.mainModule.exports["corePath"] + '/src/serverroot/web/core/cache.api'),
     global = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/global'),
     messages = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/messages'),
     commonUtils = require(process.mainModule.exports["corePath"] + '/src/serverroot/utils/common.utils'),
-    tenantapi = require('./tenant.api'),
     config = process.mainModule.exports["config"],
     rest = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/rest.api'),
     async = require('async'),
@@ -19,15 +20,15 @@ var cacheApi = require(process.mainModule.exports["corePath"] + '/src/serverroot
     ctrlGlobal = require('../../../../common/api/global'),
     nwMonJobs = require('../jobs/network.mon.jobs.js'),
     appErrors = require(process.mainModule.exports["corePath"] + '/src/serverroot/errors/app.errors'),
-    assert = require('assert');
-authApi = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/auth.api'),
+    assert = require('assert'),
+    authApi = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/auth.api');
 
-    nwMonApi = module.exports;
-opServer = rest.getAPIServer({
+var opServer = rest.getAPIServer({
     apiName: global.label.OPS_API_SERVER,
     server: config.analytics.server_ip,
     port: config.analytics.server_port
 });
+
 var instanceDetailsMap = {
     vcenter: getInstancesDetailsForUser
 }
@@ -201,7 +202,7 @@ function getProjectSummary(req, res, appData) {
     var urlLists = [];
     var project = req.param('fqName');
     url = "/virtual-networks?parent_type=project&parent_fq_name_str=" + project;
-    tenantapi.getProjectData({url: url, appData: appData}, function (err, results) {
+    getProjectData({url: url, appData: appData}, function (err, results) {
         if (err || (null == results)) {
             commonUtils.handleJSONResponse(err, res, null);
         } else {
@@ -210,7 +211,7 @@ function getProjectSummary(req, res, appData) {
     });
 }
 
-function getNetworStats(req, res) {
+function getNetworkStats(req, res) {
     var fqName = req.query['fqName'];
     var type = req.query['type'];
     var limit = req.query['limit'];
@@ -253,67 +254,6 @@ function getNetworStats(req, res) {
         0, 1, 0, -1, true, appData);
 }
 
-function getVNVMData(vmJSON, vmName) {
-    var resultJSON = {};
-    resultJSON['ipList'] = [];
-    resultJSON['fipList'] = [];
-    var ipData = jsonPath(vmJSON, "$..interface_list");
-    try {
-        var len = ipData[0].length;
-        for (var i = 0; i < len; i++) {
-            var item = ipData[0][i];
-            var ipv4Obj = {};
-            ipv4Obj['ip_address'] = item['ip_address'];
-            ipv4Obj['virtual_network'] = item['virtual_network'];
-            ipv4Obj['vm_vn_name'] = item['name'];
-            resultJSON['ipList'].push(ipv4Obj);
-            if (item['ip6_active'] == true) {
-                var ipv6Obj = {};
-                ipv6Obj['ip_address'] = item['ip6_address'];
-                ipv6Obj['virtual_network'] = item['virtual_network'];
-                ipv6Obj['vm_vn_name'] = item['name'];
-                resultJSON['ipList'].push(ipv6Obj);
-            }
-        }
-    } catch (e) {
-        console.log("In getVNVMData(): IP List JSON Parse error:" + e);
-    }
-    try {
-        var fipData = jsonPath(vmJSON, "$..fip_stats_list");
-        if (fipData[0].length == 0) {
-            return resultJSON;
-        }
-        len = fipData[0].length;
-        for (i = 0; i < len; i++) {
-            resultJSON['fipList'][i] = {};
-            resultJSON['fipList'][i]['ip_address'] =
-                fipData[0][i]['ip_address'];
-            resultJSON['fipList'][i]['virtual_network'] =
-                fipData[0][i]['virtual_network'];
-            resultJSON['fipList'][i]['vm_vn_name'] =
-                fipData[0][i]['iface_name'];
-        }
-    } catch (e) {
-        console.log("In getVNVMData(): Floating IP List JSON Parse error:" + e);
-    }
-    return resultJSON;
-}
-
-function getVMFloatingIPList(req, res) {
-    var vmName = req.param('vmName');
-    var url = '/analytics/virtual-machine/' + vmName + '?flat';
-    opServer.authorize(function () {
-        opServer.api.get(url, function (error, vmJSON) {
-            if (!error && (vmJSON)) {
-                var resultJSON = getVNVMData(vmJSON, vmName);
-                commonUtils.handleJSONResponse(null, res, resultJSON);
-            } else {
-                commonUtils.handleJSONResponse(error, res, null);
-            }
-        });
-    });
-}
-
 function getVNStatsSummary(req, res) {
     var vnName = req.param('fqName');
     var url = '/analytics/virtual-network/' + vnName;
@@ -326,11 +266,11 @@ function getVNStatsSummary(req, res) {
                 resultJSON['virtual-networks'] = [];
                 resultJSON['virtual-networks'][0] = {};
                 resultJSON['virtual-networks'][0]['fq_name'] = vnName.split(':');
-                tenantapi.populateInOutTraffic(resultJSON, vnJSON, 0);
+                populateInOutTraffic(resultJSON, vnJSON, 0);
                 try {
                     json = resultJSON['virtual-networks'][0];
                 } catch (e) {
-                    console.log("In getVNStatsSummary(), JSON parse error: " + e);
+                    logutils.logger.error("In getVNStatsSummary(), JSON parse error: " + e);
                     json = {};
                 }
                 commonUtils.handleJSONResponse(null, res, json);
@@ -425,7 +365,7 @@ function getVMStatByInterface(vmStat, vmVnName) {
                     break;
                 }
             } catch (e) {
-                console.log("In getVMStatByInterface(): Data JSON Parse error:" + e);
+                logutils.logger.error("In getVMStatByInterface(): Data JSON Parse error:" + e);
                 continue;
             }
         }
@@ -434,7 +374,7 @@ function getVMStatByInterface(vmStat, vmVnName) {
         }
         resultJSON = commonUtils.createJSONByUVEResponse(resultJSON, data);
     } catch (e) {
-        console.log("In getVMStatByInterface(): JSON Parse error:" + e);
+        logutils.logger.error("In getVMStatByInterface(): JSON Parse error:" + e);
     }
     return resultJSON;
 }
@@ -527,79 +467,6 @@ function getConnectedNWsStatsByType(req, res) {
     cacheApi.queueDataFromCacheOrSendRequest(req, res,
         global.STR_JOB_TYPE_CACHE,
         reqKey, reqUrl,
-        0, 1, 0, -1, true,
-        appData);
-}
-
-function getFlowEntriesByFlowTuple(req, res) {
-    var srcVN = req.query['sourcevn'];
-    var destVN = req.query['destvn'];
-    var srcIP = req.query['sourceip'];
-    var destIP = req.query['destip'];
-    var sport = req.query['sport'];
-    var dport = req.query['dport'];
-    var proto = req.query['protocol'];
-    var type = req.query['type'];
-    var minsSince = req.query['minsSince'];
-    var limit = req.query['limit'];
-
-    var appData = {
-        srcVN: srcVN,
-        destVN: destVN,
-        srcIP: srcIP,
-        destIP: destIP,
-        sport: sport,
-        dport: dport,
-        proto: proto,
-        type: type,
-        minsSince: minsSince,
-        limit: limit
-    };
-
-    var reqUrl = "/stat_detail/top/";
-    cacheApi.queueDataFromCacheOrSendRequest(req, res,
-        global.STR_JOB_TYPE_CACHE,
-        global.STR_GET_FLOW_DETAILS_BY_FLOW_TUPLE,
-        reqUrl, 0, 1, 0, -1, true,
-        appData);
-}
-
-
-function getNetworkTopStatsDetails(req, res) {
-    var type = req.query['type'];
-    var limit = req.query['limit'];
-    var port = req.query['port'];
-    var ip = req.query['ip'];
-    var minsSince = req.query['minsSince'];
-    var fqName = req.query['fqName'];
-    var srcVN = req.query['srcVN'];
-    var destVN = req.query['destVN'];
-
-    if (type == 'port') {
-        reqType = global.STR_GET_TOP_PORT_DETAILS_BY_PEER;
-    } else if (type == 'peer') {
-        reqType = global.STR_GET_TOP_PEER_DETAILS_BY_PORT;
-    } else {
-        var err =
-            appErrors.RESTServerError(messages.error.monitoring.invalid_type_provided,
-                reqType);
-        commonUtils.handleJSONResponse(err, res, null);
-        return;
-    }
-    var appData = {
-        srcVN: srcVN,
-        destVN: destVN,
-        minsSince: minsSince,
-        limit: limit,
-        fqName: fqName,
-        ip: ip,
-        port: port,
-        reqType: reqType
-    };
-    var reqUrl = "/stat_detail/top/";
-    cacheApi.queueDataFromCacheOrSendRequest(req, res,
-        global.STR_JOB_TYPE_CACHE,
-        reqType, reqUrl,
         0, 1, 0, -1, true,
         appData);
 }
@@ -799,123 +666,6 @@ function getNetworkStatsSummary(req, res) {
     });
 }
 
-function getVNAllStatsJSONSummary(srcVN, inputJSON, callback) {
-    var index = 0;
-    var urlLists = [];
-    var otherVNList = [];
-    var inStat = inputJSON['in_stats'];
-    var outStat = inputJSON['out_stats'];
-    var inStatCnt = inStat.length;
-    var outStatCnt = outStat.length;
-    var statData;
-    var statCnt = 0;
-    if (inStatCnt > outStatCnt) {
-        statData = inStat;
-        statCnt = inStatCnt;
-    } else {
-        statData = outStat;
-        statCnt = outStatCnt;
-    }
-    for (var i = 0; i < statCnt; i++) {
-        url = '/analytics/virtual-network/' + srcVN;
-        urlLists[index++] = [url];
-        url = '/analytics/virtual-network/' + statData[i]['other_vn'];
-        otherVNList[i] = statData[i]['other_vn'];
-        urlLists[index++] = [url];
-    }
-    async.map(urlLists, commonUtils.getJsonViaInternalApi(opServer.api, true),
-        function (err, results) {
-            if ((null == err) && results) {
-                callback(null, otherVNList, results);
-            } else {
-                callback(err, otherVNList, results);
-            }
-        });
-}
-
-function parseVNAllStatSummary(resultJSON, srcVN, otherVNList, data) {
-    var index = 0;
-    var resultJSON = [];
-    var len = data.length;
-    var tempResults = [];
-
-    for (var i = 0; i < len; i++) {
-        tempResults[0] = data[i];
-        tempResults[1] = data[i + 1];
-        resultJSON[index] = [];
-        getVNStatsJSONSummary(resultJSON[index],
-            commonUtils.cloneObj(tempResults));
-        resultJSON[index][0] = getTrafficInEgrStat(resultJSON[index][0], srcVN,
-            otherVNList[i / 2]);
-        resultJSON[index][1] = getTrafficInEgrStat(resultJSON[index][1],
-            otherVNList[i / 2], srcVN);
-        index++;
-        i++;
-    }
-    return resultJSON;
-}
-
-function getAllConnNetStatDetails(req, res) {
-    var fqName = req.query['fqName'];
-    var url = '/analytics/virtual-network/' + fqName;
-    var resultJSON = [];
-
-    opServer.api.get(url, function (err, data) {
-        if (err || (null == data)) {
-            commonUtils.handleJSONResponse(err, res, null);
-            return;
-        }
-        results = [data];
-        getVNStatsJSONSummary(resultJSON, results);
-        getVNAllStatsJSONSummary(fqName, resultJSON[0],
-            function (err, otherVNList, data) {
-                resultJSON = parseVNAllStatSummary(resultJSON, fqName, otherVNList, data);
-                commonUtils.handleJSONResponse(null, res, resultJSON);
-            });
-    });
-}
-
-function getPortLevelFlowSeries(req, res) {
-    var ip = req.query['ip'];
-    var port = req.query['port'];
-    var fqName = req.query['fqName'];
-    var protocol = req.query['protocol'];
-    var minsSince = req.query['minsSince'];
-    var sampleCnt = req.query['sampleCnt'];
-    var srcVN = req.query['srcVN'];
-    var destVN = req.query['destVN'];
-    var startTime = req.query['startTime'];
-    var endTime = req.query['endTime'];
-    var relStartTime = req.query['relStartTime'];
-    var relEndTime = req.query['relEndTime'];
-    var timeGran = req.query['timeGran'];
-    var minsAlign = req.query['minsAlign'];
-
-    var url = '/flow_series/port';
-
-    var appData = {
-        ip: ip,
-        port: port,
-        srcVN: srcVN,
-        destVN: destVN,
-        fqName: fqName,
-        protocol: protocol,
-        minsSince: minsSince,
-        minsAlign: minsAlign,
-        sampleCnt: sampleCnt,
-        startTime: startTime,
-        endTime: endTime,
-        relStartTime: relStartTime,
-        relEndTime: relEndTime,
-        timeGran: timeGran
-    };
-    cacheApi.queueDataFromCacheOrSendRequest(req, res,
-        global.STR_JOB_TYPE_CACHE,
-        global.STR_GET_PORT_LEVEL_FLOW_SERIES,
-        url, 0, 1, 0, -1, true,
-        appData);
-}
-
 function getFlowSeriesByCPU(req, res) {
     var source = req.query['source'];
     var sampleCnt = req.query['sampleCnt'];
@@ -1089,24 +839,6 @@ function getVirtualInterfacesSummary(req, res, appData) {
             commonUtils.handleJSONResponse(null, res, data);
         }
     });
-}
-
-function vnLinkListed(srcVN, dstVN, dir, vnNodeList) {
-    var cnt = vnNodeList.length;
-    for (var i = 0; i < cnt; i++) {
-        if (((vnNodeList[i]['src'] == srcVN) &&
-            (vnNodeList[i]['dst'] == dstVN)) ||
-            ((vnNodeList[i]['src'] == dstVN) &&
-            (vnNodeList[i]['dst'] == srcVN))) {
-            if (dir != vnNodeList[i]['dir']) {
-                vnNodeList[i]['error'] =
-                    'Other link marked as ' + dir +
-                    'directional, attach policy';
-            }
-            return i;
-        }
-    }
-    return -1;
 }
 
 function isServiceVN(vnName) {
@@ -1669,19 +1401,6 @@ function getInstanceDetails(req, res, appData) {
     }
 }
 /*
- * This function list all the virtualmachines in the UVE
- */
-function getAllVirtualMachines(request, response, appData) {
-    var url = '/analytics/uves/virtual-machines';
-    opApiServer.apiGet(url, appData, function (error, data) {
-        if (error) {
-            commonUtils.handleJSONResponse(error, response, null);
-            return;
-        }
-        commonUtils.handleJSONResponse(error, response, data);
-    });
-}
-/*
  * This function fetch the virtual machines for the Admin role
  */
 function getInstanceDetailsForAdmin(req, appData, callback) {
@@ -1864,24 +1583,12 @@ function getStats(req, res) {
 
     //logutils.logger.debug("Query json is " + JSON.stringify(queryJSON));
 
-    /*{"table":"StatTable.VirtualMachineStats.if_stats","start_time":1410335210823000,"end_time":1410535210823000,
-     "select_fields":["SUM(if_stats.out_bytes)","SUM(if_stats.in_bytes)","SUM(if_stats.out_pkts)","SUM(if_stats.in_pkts)","name"],
-     "where":[[{"name":"name","value":"94e7640f-de61-4499-ac61-cfa54ce904f0","op":1}],
-     [{"name":"name","value":"e2d54418-a40c-48d8-968f-2769abbd25e2","op":1}]],"dir":1}*/
-
     nwMonUtils.getStatDataByQueryJSON(queryJSON, null, function (err, data) {
-        logutils.logger.debug(JSON.stringify(data));
+        //logutils.logger.debug(JSON.stringify(data));
         commonUtils.handleJSONResponse(err, res, data);
     });
 }
 
-function getvnStatsPerVrouter(req, res, appData) {
-    var reqUrl = '/analytics/uves/vrouter';
-    var urlKey = ctrlGlobal.STR_GET_VN_STATS_PER_VROUTER;
-    cacheApi.queueDataFromCacheOrSendRequest(req, res, global.STR_JOB_TYPE_CACHE,
-        urlKey, reqUrl,
-        0, 1, 0, -1, true, req.query);
-}
 /*
  * This function returns the detail Objects of all the Virtual machines from the
  * config server
@@ -1911,25 +1618,355 @@ function getVirtualMachinesFromConfig(request, response, appData) {
             });
     });
 }
+
+
+// Handle request to get a JSON of projects for a given domain.
+function getProjects(req, res, appData) {
+    var url, domain = req.param('domain');
+    //Re-check to add domain filtering
+    url = "/projects?domain=" + domain;
+    configApiServer.apiGet(url, appData, function (error, projectsJSON) {
+        commonUtils.handleJSONResponse(error, res, projectsJSON);
+    });
+}
+
+// Handle request to get a JSON of virtual networks under a given project name.
+function getVNetworks(req, res, appData) {
+    var url, fqName = req.param('fqname');
+    url = "/virtual-networks?parent_type=project&parent_fq_name_str=" + fqName;
+    configApiServer.apiGet(url, appData, function (error, vnsJSON) {
+        commonUtils.handleJSONResponse(error, res, vnsJSON);
+    });
+}
+
+function populateName(arr) {
+
+    for (var j = 0; j < arr.length; j++) {
+        var currData = arr[j];
+        currData['name'] = currData['fq_name'][currData['fq_name'].length - 1];
+    }
+}
+
+function populateInOutTraffic(vnJSON, trafficJSON, counter) {
+    try {
+        var inBytes = 0, outBytes = 0, inPkts = 0, outPkts = 0;
+        var interVNInBytes = 0, interVNOutBytes = 0, interVNInPkts = 0, interVNOutPkts = 0;
+        if (trafficJSON['UveVirtualNetworkAgent']) {
+            var inBytesData = trafficJSON['UveVirtualNetworkAgent']['in_bytes'];
+            var outBytesData = trafficJSON['UveVirtualNetworkAgent']['out_bytes'];
+            var inPktsData = trafficJSON['UveVirtualNetworkAgent']['in_tpkts'];
+            var outPktsData = trafficJSON['UveVirtualNetworkAgent']['out_tpkts'];
+            if ((inBytesData == null) || (inBytesData['#text'] == null)) {
+                inBytes = 0;
+            } else {
+                inBytes = inBytesData['#text'];
+            }
+            if ((outBytesData == null) || (outBytesData['#text'] == null)) {
+                outBytes = 0;
+            } else {
+                outBytes = outBytesData['#text'];
+            }
+
+            if ((inPktsData == null) || (inPktsData['#text'] == null))
+                inPkts = 0;
+            else
+                inPkts = inPktsData['#text'];
+            if ((outPktsData == null) || (outPktsData['#text'] == null))
+                outPkts = 0;
+            else
+                outPkts = outPktsData['#text'];
+
+            var inStatsData = [], outStatsData = [];
+
+            if ((trafficJSON['UveVirtualNetworkAgent']['in_stats'] != null) && (trafficJSON['UveVirtualNetworkAgent']['in_stats']['list'] != null) &&
+                (trafficJSON['UveVirtualNetworkAgent']['out_stats'] != null) && (trafficJSON['UveVirtualNetworkAgent']['out_stats']['list'] != null)) {
+                var inStatsData = trafficJSON['UveVirtualNetworkAgent']['in_stats']['list']['UveInterVnStats'];
+                var outStatsData = trafficJSON['UveVirtualNetworkAgent']['out_stats']['list']['UveInterVnStats'];
+                for (var i = 0; i < inStatsData.length; i++) {
+                    interVNInBytes += parseInt(inStatsData[i]['bytes']['#text']);
+                    interVNInPkts += parseInt(inStatsData[i]['tpkts']['#text']);
+                }
+                for (var i = 0; i < outStatsData.length; i++) {
+                    interVNOutBytes += parseInt(outStatsData[i]['bytes']['#text']);
+                    interVNOutPkts += parseInt(outStatsData[i]['tpkts']['#text']);
+                }
+            }
+        }
+        populateName([vnJSON['virtual-networks'][counter]]);
+        vnJSON["virtual-networks"][counter]['inBytes'] = parseInt(inBytes);
+        vnJSON["virtual-networks"][counter]['outBytes'] = parseInt(outBytes);
+        vnJSON["virtual-networks"][counter]['inPkts'] = parseInt(inPkts);
+        vnJSON["virtual-networks"][counter]['outPkts'] = parseInt(outPkts);
+        vnJSON["virtual-networks"][counter]['interVNInBytes'] = interVNInBytes;
+        vnJSON["virtual-networks"][counter]['interVNOutBytes'] = interVNOutBytes;
+        vnJSON["virtual-networks"][counter]['interVNInPkts'] = interVNInPkts;
+        vnJSON["virtual-networks"][counter]['interVNOutPkts'] = interVNOutPkts;
+    } catch (err) {
+        logutils.logger.error(err.stack);
+    }
+}
+
+function getProjectData(configObj, callback) {
+    var url = configObj.url;
+    var appData = configObj.appData;
+    configApiServer.apiGet(url, appData, function (error, jsonData) {
+        if (error) {
+            callback(error);
+        } else {
+            try {
+                var vnJSON = jsonData,
+                    uveUrls = [],
+                    vnCount = vnJSON["virtual-networks"].length,
+                    i, uuid, fq_name, url;
+                //logutils.logger.debug("vnJSONStr: " + JSON.stringify(vnJSON));
+                if (vnCount != 0) {
+                    for (i = 0; i < vnCount; i += 1) {
+                        uuid = vnJSON["virtual-networks"][i].uuid;
+                        fq_name = vnJSON['virtual-networks'][i].fq_name;
+                        url = '/analytics/virtual-network/' + fq_name.join(':');
+                        logutils.logger.debug('getProjectDetails URL:', url);
+                        uveUrls[i] = [url];
+                    }
+                    async.map(uveUrls, commonUtils.getJsonViaInternalApi(opServer.api, true),
+                        function (err, results) {
+                            var i, trafficJSON;
+                            if (!err) {
+                                for (i = 0; i < vnCount; i += 1) {
+                                    trafficJSON = results[i];
+                                    populateInOutTraffic(vnJSON, trafficJSON, i);
+                                }
+                                callback(null, vnJSON);
+                            } else {
+                                callback(error);
+                            }
+                        });
+                } else {
+                    callback(null, vnJSON);
+                }
+            } catch (error) {
+                callback(error);
+            }
+        }
+    });
+}
+
+function parseDomainSummary(resultJSON, results) {
+    resultJSON = {};
+    resultJSON['interVNInBytes'] = 0;
+    resultJSON['interVNInPkts'] = 0;
+    resultJSON['interVNOutBytes'] = 0;
+    resultJSON['interVNOutPkts'] = 0;
+    resultJSON['inBytes'] = 0;
+    resultJSON['inPkts'] = 0;
+    resultJSON['outBytes'] = 0;
+    resultJSON['outPkts'] = 0;
+    try {
+        var projCount = results.length;
+        for (var i = 0; i < projCount; i++) {
+            vnData = results[i]['virtual-networks'];
+            vnCount = vnData.length;
+            for (var j = 0; j < vnCount; j++) {
+                try {
+                    resultJSON['interVNInBytes'] = parseInt(resultJSON['interVNInBytes']) +
+                        parseInt(vnData[j]['interVNInBytes']);
+                } catch (e) {
+                    logutils.logger.error("In parseDomainSummary(), JSON Parse error:" + e);
+                }
+                try {
+                    resultJSON['interVNInPkts'] = parseInt(resultJSON['interVNInPkts']) +
+                        parseInt(vnData[j]['interVNInPkts']);
+                } catch (e) {
+                    logutils.logger.error("In parseDomainSummary(), JSON Parse error:" + e);
+                }
+                try {
+                    resultJSON['interVNOutBytes'] = parseInt(resultJSON['interVNOutBytes']) +
+                        parseInt(vnData[j]['interVNOutBytes']);
+                } catch (e) {
+                    logutils.logger.error("In parseDomainSummary(), JSON Parse error:" + e);
+                }
+                try {
+                    resultJSON['interVNOutPkts'] = parseInt(resultJSON['interVNOutPkts']) +
+                        parseInt(vnData[j]['interVNOutPkts']);
+                } catch (e) {
+                    logutils.logger.error("In parseDomainSummary(), JSON Parse error:" + e);
+                }
+                try {
+                    resultJSON['inBytes'] = parseInt(resultJSON['inBytes']) +
+                        parseInt(vnData[j]['inBytes']);
+                } catch (e) {
+                    logutils.logger.error("In parseDomainSummary(), JSON Parse error:" + e);
+                }
+                try {
+                    resultJSON['inPkts'] = parseInt(resultJSON['inPkts']) +
+                        parseInt(vnData[j]['interVNInBytes']);
+                } catch (e) {
+                    logutils.logger.error("In parseDomainSummary(), JSON Parse error:" + e);
+                }
+                try {
+                    resultJSON['inPkts'] = parseInt(resultJSON['interVNInBytes']) +
+                        parseInt(vnData[j]['interVNInBytes']);
+                } catch (e) {
+                    logutils.logger.error("In parseDomainSummary(), JSON Parse error:" + e);
+                }
+                try {
+                    resultJSON['outBytes'] = parseInt(resultJSON['outBytes']) +
+                        parseInt(vnData[j]['outBytes']);
+                } catch (e) {
+                    logutils.logger.error("In parseDomainSummary(), JSON Parse error:" + e);
+                }
+                try {
+                    resultJSON['outPkts'] = parseInt(resultJSON['outPkts']) +
+                        parseInt(vnData[j]['outPkts']);
+                } catch (e) {
+                    logutils.logger.error("In parseDomainSummary(), JSON Parse error:" + e);
+                }
+            }
+        }
+    } catch (e) {
+        logutils.logger.error("In parseDomainSummary(), JSON parse error" + e);
+    }
+    return resultJSON;
+}
+
+function getNetworkDomainSummary(req, res, appData) {
+    var configObjArr = [];
+    var domain = req.param('fq-name');
+    var results = {};
+    var urlLists = [];
+    var j = 0;
+    var resultJSON = {};
+
+    var url = '/projects?domain=' + domain;
+    /* First get the project details in this domain */
+    configApiServer.apiGet(url, appData, function (error, jsonData) {
+        if (error) {
+            commonUtils.handleJSONResponse(error, res, null);
+            return;
+        }
+        try {
+            var projects = jsonData['projects'];
+            var projectsCount = projects.length;
+            for (var i = 0; i < projectsCount; i++) {
+                if ((projects[i]['fq_name'][1] == 'service') ||
+                    (projects[i]['fq_name'][1] == 'default-project') ||
+                    (projects[i]['fq_name'][1] == 'invisible_to_admin')) {
+                    continue;
+                }
+                url = "/virtual-networks?parent_type=project&parent_fq_name_str=" + projects[i]['fq_name'].join(':');
+                configObjArr[j] = {};
+                configObjArr[j]['url'] = url;
+                configObjArr[j]['appData'] = appData;
+                j++;
+            }
+            async.map(configObjArr, getProjectData, function (err, results) {
+                resultJSON = parseDomainSummary(resultJSON, results);
+                commonUtils.handleJSONResponse(null, res, resultJSON);
+            });
+        } catch (e) {
+            logutils.logger.error("getNetworkDomainSummary JSON parse error: " + e.stack);
+            commonUtils.handleJSONResponse(null, res, results);
+        }
+    });
+}
+
+function parseVNUveData(resultJSON, vnUve) {
+    try {
+        resultJSON['intfList'] =
+            vnUve['UveVirtualNetworkAgent']['interface_list']['list']['element'];
+    } catch (e) {
+    }
+    try {
+        resultJSON['aclRuleCnt'] =
+            vnUve['UveVirtualNetworkAgent']['total_acl_rules'][0][0]['#text'];
+    } catch (e) {
+        resultJSON['aclRuleCnt'] = 0;
+    }
+    try {
+        resultJSON['intfCnt'] = resultJSON['intfList'].length;
+    } catch (e) {
+        resultJSON['intfCnt'] = 0;
+    }
+    try {
+        resultJSON['vmCnt'] =
+            vnUve['UveVirtualNetworkAgent']['virtualmachine_list']['list']['@size'];
+    } catch (e) {
+        resultJSON['vmCnt'] = 0;
+    }
+    try {
+        resultJSON['partiallyConnectedNws'] =
+            vnUve['UveVirtualNetworkConfig']['partially_connected_networks']['list']['element'];
+    } catch (e) {
+    }
+}
+
+function parseNetworkDetails(resultJSON, appData, jsonData, callback) {
+    var vmRefs = [], vmRefsCount = 0,
+        urlLists = [], dataObjArr = [];
+
+    if (null == jsonData) {
+        return;
+    }
+
+    resultJSON['vmCnt'] = 0;
+    resultJSON['intfCnt'] = 0;
+    resultJSON['aclRuleCnt'] = 0;
+    resultJSON['policyList'] = [];
+    resultJSON['intfList'] = {};
+    resultJSON['partiallyConnectedNws'] = {};
+
+    try {
+        resultJSON['fq-name'] = jsonData['fq_name'].join(':');
+        var nwPolicyRefs = jsonData['network_policy_refs'],
+            policyCount = nwPolicyRefs.length;
+        for (i = 0; i < policyCount; i++) {
+            resultJSON['policyList'][i] = {};
+            resultJSON['policyList'][i]['name'] = nwPolicyRefs[i]['to'].join(':');
+            resultJSON['policyList'][i]['uuid'] = nwPolicyRefs[i]['uuid'];
+        }
+        /* Now get the rest of the data from UVE */
+        var url = '/analytics/virtual-network/' + resultJSON['fq-name'];
+        opServer.api.get(url, function (err, vnUve) {
+            parseVNUveData(resultJSON, vnUve);
+            callback(resultJSON);
+        });
+    } catch (e) {
+        logutils.logger.debug("In parseNetworkDetails(): VM JSON Parse error:" + e);
+        callback(resultJSON);
+    }
+}
+
+function getNetworkDetails(req, res, appData) {
+    var resultJSON = {},
+        uuid = req.param('uuid'),
+        url = '/virtual-network/' + uuid;
+
+    configApiServer.apiGet(url, appData, function (error, jsonData) {
+        if (error) {
+            commonUtils.handleJSONResponse(error, res, null);
+            return;
+        }
+        parseNetworkDetails(resultJSON, appData, jsonData['virtual-network'],
+            function (results) {
+                commonUtils.handleJSONResponse(null, res, results);
+            });
+    });
+}
+
+
 /* List all public functions */
 exports.getTopNetworkDetailsByDomain = getTopNetworkDetailsByDomain;
 exports.getTopNetworkDetailsByProject = getTopNetworkDetailsByProject;
 exports.getFlowSeriesByVN = getFlowSeriesByVN;
 exports.getFlowSeriesByInstance = getFlowSeriesByInstance;
 exports.getProjectSummary = getProjectSummary;
-exports.getNetworStats = getNetworStats;
-exports.getVMFloatingIPList = getVMFloatingIPList;
+exports.getNetworkStats = getNetworkStats;
 exports.getVNStatsSummary = getVNStatsSummary;
 exports.getTopNwDetailsByVM = getTopNwDetailsByVM;
 exports.getFlowSeriesByVM = getFlowSeriesByVM;
 exports.getVMStatsSummary = getVMStatsSummary;
 exports.getConnectedNWsStatsSummary = getConnectedNWsStatsSummary;
 exports.getConnectedNWsStatsByType = getConnectedNWsStatsByType;
-exports.getFlowEntriesByFlowTuple = getFlowEntriesByFlowTuple;
-exports.getNetworkTopStatsDetails = getNetworkTopStatsDetails;
 exports.getNetworkStatsSummary = getNetworkStatsSummary;
-exports.getAllConnNetStatDetails = getAllConnNetStatDetails;
-exports.getPortLevelFlowSeries = getPortLevelFlowSeries;
 exports.getFlowSeriesByCPU = getFlowSeriesByCPU;
 exports.getVirtualNetworksSummary = getVirtualNetworksSummary;
 exports.getVirtualMachine = getVirtualMachine;
@@ -1942,7 +1979,10 @@ exports.isAllowedVN = isAllowedVN;
 exports.getVNListByProject = getVNListByProject;
 exports.getOpServerPagedResponseByLastKey = getOpServerPagedResponseByLastKey;
 exports.getStats = getStats;
-exports.getvnStatsPerVrouter = getvnStatsPerVrouter;
-exports.getAllVirtualMachines = getAllVirtualMachines;
 exports.getVirtualMachinesFromConfig = getVirtualMachinesFromConfig;
 exports.getVirtualNetworksList = getVirtualNetworksList;
+
+exports.getProjects = getProjects;
+exports.getVNetworks = getVNetworks;
+exports.getNetworkDomainSummary = getNetworkDomainSummary;
+exports.getNetworkDetails = getNetworkDetails;

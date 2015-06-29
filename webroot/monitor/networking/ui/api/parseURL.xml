@@ -10,6 +10,12 @@
         <define>netGraphApi</define>
         <path>./networking.graph.api.js</path>
     </require>
+    <require>
+        <define>nwMonApi</define>
+        <path>./network.mon.api</path>
+    </require>
+
+    <!-- Start Networking Graph APIs -->
     <item>
         <url>/api/tenant/monitoring/project-connected-graph</url>
         <method>get</method>
@@ -47,98 +53,37 @@
         <callback>netGraphApi.getInstanceConfigGraph</callback>
     </item>
 
-    <!-- -->
-    <require>
-        <define>parseURLReq</define>
-        <path>process.mainModule.exports["corePath"] + '/src/serverroot/common/parseURLRequire'</path>
-    </require>
-    <require>
-        <define>tenantapi</define>
-        <path>./tenant.api</path>
-    </require>
-    <require>
-        <define>nwMonApi</define>
-        <path>./network.mon.api</path>
-    </require>
-    <item>
-        <url>/api/tenants/projects/tree</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>tenantapi.getProjectsTree</callback>
-    </item>
+    <!-- End Networking Graph APIs -->
+
+    <!-- Start Config Server APIs -->
     <item>
         <url>/api/tenants/projects/:domain</url>
         <method>get</method>
         <feature>monitoring</feature>
-        <callback>tenantapi.getProjects</callback>
-    </item>
-    <item>
-        <url>/api/tenants/project/:project</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>tenantapi.getProject</callback>
-    </item>
-    <item>
-        <url>/api/tenants/project-details/:project</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>tenantapi.getProjectDetails</callback>
+        <callback>nwMonApi.getProjects</callback>
     </item>
     <item>
         <url>/api/tenants/networks/:fqname</url>
         <method>get</method>
         <feature>monitoring</feature>
-        <callback>tenantapi.getVNetworks</callback>
+        <callback>nwMonApi.getVNetworks</callback>
     </item>
-    <item>
-        <url>/api/tenants/network/:vn</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>tenantapi.getVNetwork</callback>
-    </item>
-    <item>
-        <url>/api/tenants/vn-traffic/:vnvm</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>tenantapi.getVNVM</callback>
-    </item>
-    <item>
-        <url>/api/tenants/virtual-network/:vn</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>tenantapi.getVNState</callback>
-    </item>
-    <item>
-        <url>/api/tenants/virtual-network-details/:vn</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>tenantapi.getVNDetails</callback>
-    </item>
-    <item>
-        <url>/api/tenants/virtual-machine/:vm</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>tenantapi.getVMState</callback>
-    </item>
-    <item>
-        <url>/api/tenants/flow-stat/:st/:et/:svn/:dvn/:direct/:ts</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>tenantapi.getFlowStat</callback>
-    </item>
-    <!-- Monitoring Overview Details -->
     <item>
         <url>/api/tenant/networking/domain/summary</url>
         <method>get</method>
         <feature>monitoring</feature>
-        <callback>tenantapi.getNetworkDomainSummary</callback>
+        <callback>nwMonApi.getNetworkDomainSummary</callback>
     </item>
     <item>
         <url>/api/tenant/networking/network/details</url>
         <method>get</method>
         <feature>monitoring</feature>
-        <callback>tenantapi.getNetworkDetails</callback>
+        <callback>nwMonApi.getNetworkDetails</callback>
     </item>
+
+    <!-- End Config Server APIs -->
+
+    <!-- Start Monitor Networking APIs -->
     <item>
         <url>/api/tenant/networking/project/summary</url>
         <method>get</method>
@@ -153,13 +98,6 @@
         <callback>nwMonApi.getTopNetworkDetailsByDomain</callback>
     </item>
     <item>
-        <url>/api/tenant/networking/project/stats/top</url>
-        <method>get</method>
-        <timeout>300</timeout>
-        <feature>monitoring</feature>
-        <callback>nwMonApi.getTopNetworkDetailsByProject</callback>
-    </item>
-    <item>
         <url>/api/tenant/networking/flow-series/vn</url>
         <method>get</method>
         <timeout>300</timeout>
@@ -167,24 +105,11 @@
         <callback>nwMonApi.getFlowSeriesByVN</callback>
     </item>
     <item>
-        <url>/api/tenant/networking/network/traffic-stat</url>
-        <method>get</method>
-        <timeout>300</timeout>
-        <feature>monitoring</feature>
-        <callback>nwMonApi.getTrafficStatBtnVns</callback>
-    </item>
-    <item>
         <url>/api/tenant/networking/network/stats/top</url>
         <method>get</method>
         <timeout>300</timeout>
         <feature>monitoring</feature>
-        <callback>nwMonApi.getNetworStats</callback>
-    </item>
-    <item>
-        <url>/api/tenant/networking/vm/ip-list</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>nwMonApi.getVMFloatingIPList</callback>
+        <callback>nwMonApi.getNetworkStats</callback>
     </item>
     <item>
         <url>/api/tenant/networking/vn/summary</url>
@@ -252,40 +177,6 @@
         <callback>nwMonApi.getConnectedNWsStatsByType</callback>
     </item>
     <item>
-        <url>/api/tenant/networking/stats/top/details</url>
-        <method>get</method>
-        <timeout>300</timeout>
-        <feature>monitoring</feature>
-        <callback>nwMonApi.getNetworkTopStatsDetails</callback>
-    </item>
-    <item>
-        <url>/api/tenant/networking/network/connected/stats/details</url>
-        <method>get</method>
-        <timeout>300</timeout>
-        <feature>monitoring</feature>
-        <callback>nwMonApi.getAllConnNetStatDetails</callback>
-    </item>
-    <item>
-        <url>/api/tenant/networking/network/flow-series/port</url>
-        <method>get</method>
-        <timeout>300</timeout>
-        <feature>monitoring</feature>
-        <callback>nwMonApi.getPortLevelFlowSeries</callback>
-    </item>
-    <item>
-        <url>/api/tenant/networking/network/flows</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>nwMonApi.getFlowEntriesByFlowTuple</callback>
-    </item>
-    <item>
-        <url>/api/tenant/networking/flow-series/cpu</url>
-        <method>get</method>
-        <timeout>300</timeout>
-        <feature>monitoring</feature>
-        <callback>nwMonApi.getFlowSeriesByCPU</callback>
-    </item>
-    <item>
         <url>/api/tenant/networking/virtual-networks/details</url>
         <method>post</method>
         <feature>monitoring</feature>
@@ -304,22 +195,30 @@
         <callback>nwMonApi.getInstanceDetails</callback>
     </item>
     <item>
-        <url>/api/tenant/networking/vrouter/stats</url>
-        <method>get</method>
-        <feature>monitoring</feature>
-        <callback>nwMonApi.getvnStatsPerVrouter</callback>
-    </item>
-    <item>
         <url>/api/tenant/networking/stats</url>
         <method>post</method>
         <feature>monitoring</feature>
         <callback>nwMonApi.getStats</callback>
     </item>
+    <!-- End Monitor Networking APIs -->
+
+    <!-- Note: This api is used only on Monitor Infrastructure page. It can be moved there. -->
     <item>
-        <url>/api/tenant/networking/all-virtual-machines</url>
+        <url>/api/tenant/networking/flow-series/cpu</url>
         <method>get</method>
+        <timeout>300</timeout>
         <feature>monitoring</feature>
-        <callback>nwMonApi.getAllVirtualMachines</callback>
+        <callback>nwMonApi.getFlowSeriesByCPU</callback>
+    </item>
+    <!-- End Note -->
+
+    <!-- Note: APIs not in use -->
+    <item>
+        <url>/api/tenant/networking/project/stats/top</url>
+        <method>get</method>
+        <timeout>300</timeout>
+        <feature>monitoring</feature>
+        <callback>nwMonApi.getTopNetworkDetailsByProject</callback>
     </item>
     <item>
         <url>/api/tenant/networking/config/virtual-machines-details</url>
@@ -327,5 +226,6 @@
         <feature>monitoring</feature>
         <callback>nwMonApi.getVirtualMachinesFromConfig</callback>
     </item>
+    <!-- End Note -->
 </urlLists>
 

@@ -2,10 +2,7 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 
-/**
- *  nwMon.utils.js:
- *      This file contains utility functions for network monitoring pages
- */
+//This file contains utility functions for network monitoring pages.
 
 var commonUtils = require(process.mainModule.exports["corePath"] +
                           '/src/serverroot/utils/common.utils'),
@@ -89,10 +86,10 @@ function getStatDataByQueryJSON (srcQueryJSON, destQueryJSON, callback)
                                 global.HTTP_REQUEST_POST,
                                 commonUtils.cloneObj(destQueryJSON));
     }
-    logutils.logger.debug("Query1 executing:" + JSON.stringify((dataObjArr[0] != null) ? dataObjArr[0]['data'] : ""));
-    logutils.logger.debug("Query2 executing:" + JSON.stringify((dataObjArr[1] != null) ? dataObjArr[1]['data'] : ""));
-    async.map(dataObjArr, commonUtils.getServerRespByRestApi(opServer, true),
-              function(err, data) {
+    //logutils.logger.debug("Query1 executing:" + JSON.stringify((dataObjArr[0] != null) ? dataObjArr[0]['data'] : ""));
+    //logutils.logger.debug("Query2 executing:" + JSON.stringify((dataObjArr[1] != null) ? dataObjArr[1]['data'] : ""));
+
+    async.map(dataObjArr, commonUtils.getServerRespByRestApi(opServer, true), function(err, data) {
         callback(err, data);
     });
 }
