@@ -209,7 +209,7 @@ define([
                     urlConfig['time'] = '10m';
                 }
                 if(urlConfig['time'] != null) {
-                    var startEndUTC = tenantNetworkMonitorUtils.getFromToUTC(urlConfig['time']);
+                    var startEndUTC = getFromToUTC(urlConfig['time']);
                     delete urlConfig['time'];
                     urlConfig['fromUTC'] = startEndUTC[0];
                     urlConfig['toUTC'] = startEndUTC[1];
@@ -360,5 +360,22 @@ define([
         //Alarm constants
         this.URL_ALARM_DETAILS_IN_CHUNKS = '/api/tenant/monitoring/alarms?count={0}&startAt={1}';
     };
+
+    //str will be [0-9]+(m|h|s|d)
+    //Returns an array of current time and end time such that the difference beween them will be given str
+    function getFromToUTC(str) {
+        var startDt = new XDate(true),
+            endDt = new XDate(true),
+            fnMap = {d: 'addDays', m: 'addMinutes', s: 'addSeconds', h: 'addHours'},
+            unit = str.charAt(str.length - 1), value = parseInt(str);
+
+        //If unit is not specified,take it as secs
+        if ($.inArray(unit, ['d', 'm', 's', 'h']) == -1)
+            unit = 's';
+
+        endDt[fnMap[unit]](value);
+        return [startDt.getTime(), endDt.getTime()];
+    };
+
     return CTConstants;
 });
