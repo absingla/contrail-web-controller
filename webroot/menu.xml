@@ -98,10 +98,6 @@ and need to add the iconClass tag wherever we need to show some icons
                   <js>monitor_infra_vrouter_flows.js</js>
                   <js>monitor_infra_vrouter_routes.js</js>
                 </resource>
-                <resource>
-                  <rootDir>/monitor/tenant-network/common/ui</rootDir>
-                  <js>tenant_monitor_utils.js</js>
-                </resource>
               </resources>
             </item>
             <item>
@@ -197,12 +193,6 @@ and need to add the iconClass tag wherever we need to show some icons
               <resource>
                   <rootDir>/common/ui</rootDir>
                   <js>controller.app.js</js>
-                  <class>mnPageLoader</class>
-              </resource>
-              <resource>
-                  <rootDir>/monitor/tenant-network/common/ui</rootDir>
-                  <js>tenant_monitor_topology.js</js>
-                  <js>tenant_monitor_utils.js</js>
                   <class>mnPageLoader</class>
               </resource>
               <resource>

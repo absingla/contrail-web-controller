@@ -6,13 +6,11 @@ var rest = require(process.mainModule.exports["corePath"] + '/src/serverroot/com
   async = require('async'),
   tenantapi = module.exports,
   logutils = require(process.mainModule.exports["corePath"] + '/src/serverroot/utils/log.utils'),
-  commonUtils = require(process.mainModule.exports["corePath"] +
-                        '/src/serverroot/utils/common.utils'),
+  commonUtils = require(process.mainModule.exports["corePath"] + '/src/serverroot/utils/common.utils'),
   config = process.mainModule.exports["config"],
   messages = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/messages'),
   global = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/global'),
-  appErrors = require(process.mainModule.exports["corePath"] +
-                      '/src/serverroot/errors/app.errors'),
+  appErrors = require(process.mainModule.exports["corePath"] + '/src/serverroot/errors/app.errors'),
   util = require('util'),
   jsonPath = require('JSONPath').eval,
   configApiServer = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/configServer.api'),
@@ -26,7 +24,7 @@ if (!module.parent) {
 	process.exit(1);
 }
 
-function getVNCounterList(vnJSON) 
+function getVNCounterList(vnJSON)
 {
 	var str_list = {},
 		agt_data = vnJSON.UveVirtualNetworkAgent;
@@ -37,7 +35,7 @@ function getVNCounterList(vnJSON)
 	return (str_list);
 }
 
-function getVNInStats(vnJSON) 
+function getVNInStats(vnJSON)
 {
 	var in_stats = {},
 		agt_data = vnJSON.UveVirtualNetworkAgent.in_stats.list.UveInterVnStats,
@@ -53,7 +51,7 @@ function getVNInStats(vnJSON)
 	return in_stats;
 }
 
-function getVNOutStats(vnJSON) 
+function getVNOutStats(vnJSON)
 {
 	var out_stats = {},
 		agt_data = vnJSON.UveVirtualNetworkAgent.out_stats.list.UveInterVnStats,
@@ -69,7 +67,7 @@ function getVNOutStats(vnJSON)
 	return out_stats;
 }
 
-function getVNState (req, res) 
+function getVNState (req, res)
 {
 	var vn_name = req.param('vn'),
 		url = '/analytics/virtual-network/' + vn_name;
@@ -100,11 +98,11 @@ function getVNState (req, res)
 /*
  * parse the VN JSON from /analytics/virutal-network/<vnName>  
  */
-function parseVNDetails(data,vnName) 
+function parseVNDetails(data,vnName)
 {
 	var interVNInStats = [];
 	var interVNOutStats = [];
-    if(data['UveVirtualNetworkAgent'] != null) { 
+    if(data['UveVirtualNetworkAgent'] != null) {
         if(data['UveVirtualNetworkAgent']['in_stats'] != null)
             interVNInStats = data['UveVirtualNetworkAgent']['in_stats']['list']['UveInterVnStats'];
         if(data['UveVirtualNetworkAgent']['out_stats'] != null)
@@ -116,7 +114,7 @@ function parseVNDetails(data,vnName)
 		var currInterVN = interVNInStats[i]['other_vn']['#text'];
         //connected VN can be from a different project
 		//currInterVN = currInterVN.split(':').reverse()[0];
-		interVNData[currInterVN] = {'inBytes':parseInt(interVNInStats[i]['bytes']['#text']), 
+		interVNData[currInterVN] = {'inBytes':parseInt(interVNInStats[i]['bytes']['#text']),
                                     'outBytes':0,
                                     'inPkts':parseInt(interVNInStats[i]['tpkts']['#text']),
                                     'outPkts':0}
@@ -140,8 +138,8 @@ function parseVNDetails(data,vnName)
         //Populate the complete fq_name as name if VN is from a different project/domain 
         if(vnName.substr(0,vnName.lastIndexOf(':')) == currVN.substr(0,currVN.lastIndexOf(':')))
             currVNName = currVNName.split(':').reverse()[0];
-		interVNDataSource.push({'fq_name':currVN.split(':'),'name':currVNName, 
-                                'inBytes':currVNData['inBytes'], 
+		interVNDataSource.push({'fq_name':currVN.split(':'),'name':currVNName,
+                                'inBytes':currVNData['inBytes'],
                                 'outBytes':currVNData['outBytes'],
                                 'inPkts': currVNData['inPkts'],
                                 'outPkts':currVNData['outPkts']
@@ -162,7 +160,7 @@ function parseVNDetails(data,vnName)
 	//logutils.logger.debug({'interVNTrafficIn':interVNInBytes,'interVNTrafficOut':interVNOutBytes,'interVNData':interVNDataSource});
 }
 
-function getVNDetails (req, res) 
+function getVNDetails (req, res)
 {
 	var vn_name = req.param('vn'),
 		url = '/analytics/virtual-network/' + vn_name;
@@ -184,7 +182,7 @@ function getVNDetails (req, res)
 	});
 };
 
-function getFlowStat (req, res) 
+function getFlowStat (req, res)
 {
   var st = req.param('st');
   var et = req.param('et');
@@ -201,7 +199,7 @@ function getFlowStat (req, res)
                                            1, 0, -1, true);
 }
 
-function mergeSrcDstData(srcData,dstData) 
+function mergeSrcDstData(srcData,dstData)
 {
     var mergedData = {};
     //Entity can be present only in source data but not destination data
@@ -214,14 +212,14 @@ function mergeSrcDstData(srcData,dstData)
         if(mergedData[currKey] != null) {
             mergedData[currKey]['bytes'] += currPortData[0];
             mergedData[currKey]['pkts'] += currPortData[1];
-        } else 
+        } else
             mergedData[currKey] = {'bytes' : currPortData[0],
                                     'pkts':currPortData[1]};
     }
     return mergedData;
 }
 
-function parseFlowData(data) 
+function parseFlowData(data)
 {
 	var retObj = {};
 	var tsData = data['VN to VN Flow Timeseries'] || {};
@@ -236,7 +234,7 @@ function parseFlowData(data)
 	return {'appData':appData,'peerData':peerData, 'tsData':tsData};
 }
 
-function getVMState (req, res) 
+function getVMState (req, res)
 {
 	var vm_name = req.param('vm');
 	var url = '/analytics/virtual-machine/' + vm_name;
@@ -247,7 +245,7 @@ function getVMState (req, res)
 	});
 }
 
-function populateVNVMData (resultJSON, vmInsJSON, vnvm) 
+function populateVNVMData (resultJSON, vmInsJSON, vnvm)
 {
 	var count = 0;
 	var vmInsJSONStr = JSON.stringify(vmInsJSON);
@@ -344,7 +342,7 @@ function populateVNVMData (resultJSON, vmInsJSON, vnvm)
     }
 }
 
-function getVNVM (req, res) 
+function getVNVM (req, res)
 {
 	var url, vnm = req.param('vnvm');
 	url = '/analytics/virtual-machine/' + vnm;
@@ -360,7 +358,7 @@ function getVNVM (req, res)
 }
 
 // Handle request to get a JSON of projects for a given domain.
-function getProjects (req, res, appData) 
+function getProjects (req, res, appData)
 {
 	var url, domain = req.param('domain');
     //Re-check to add domain filtering
@@ -371,7 +369,7 @@ function getProjects (req, res, appData)
 }
 
 // Handle request to get a JSON of project details for a given project name.
-function getProject (req, res, appData) 
+function getProject (req, res, appData)
 {
 	var url, project = req.param('project');
 	url = "/project/" + project;
@@ -381,7 +379,7 @@ function getProject (req, res, appData)
 }
 
 // Handle request to get a JSON of virtual networks under a given project name.
-function getVNetworks (req, res, appData) 
+function getVNetworks (req, res, appData)
 {
 	var url, fqName = req.param('fqname');
 	url = "/virtual-networks?parent_type=project&parent_fq_name_str=" + fqName;
@@ -391,7 +389,7 @@ function getVNetworks (req, res, appData)
 }
 
 // Handle request to get a JSON of virtual network for a given id.
-function getVNetwork (req, res, appData) 
+function getVNetwork (req, res, appData)
 {
 	var url, vn = req.param('vn');
 	url = "/virtual-network/" + vn;
@@ -401,7 +399,7 @@ function getVNetwork (req, res, appData)
 }
 
 function populateName(arr) {
-    
+
 	for (var j = 0; j < arr.length; j++) {
 		var currData = arr[j];
 		currData['name'] = currData['fq_name'][currData['fq_name'].length - 1];
@@ -417,46 +415,7 @@ function sortProjectsByName(a, b) {
 		return 0;
 }
 
-/**
- * Create a JSON of virtual networks along with their instances for a project.
- * @param {String} Url to get virtual networks in a project
- * @param {Function} Callback function
- */
-function getProjectVNs(url, callback) {
-	configServer.api.get(url, function (error, jsonData) {
-		if (!error) {
-			var vnsJSON = jsonData,
-				instanceUrls = [],
-				vnCount = vnsJSON['virtual-networks'].length,
-				j, fq_name, url;
-			if(vnCount != 0) {
-				for (j = 0; j < vnCount; j += 1) {
-					fq_name = vnsJSON['virtual-networks'][j].fq_name;
-					url = '/analytics/virtual-machine/' + fq_name.join(':');
-					instanceUrls[j] = url;
-				}
-				async.map(instanceUrls, commonUtils.getJsonViaInternalApi(opServer.api, true), function (err, results) {
-					var k, vnDetailJSON;
-					if (!err) {
-						for (k = 0; k < vnCount; k += 1) {
-							vnDetailJSON = results[k];
-							vnsJSON['virtual-networks'][k]["items"] = getInstancesAndLinksforVN(vnDetailJSON);
-						}
-						callback(null, vnsJSON);
-					} else {
-						callback(err);
-					}
-				});
-			} else {
-				callback(null, vnsJSON);
-			}
-		} else {
-			callback(error);
-		}
-	});
-}
-
-function getProjectsTree (req, res) 
+function getProjectsTree (req, res)
 {
   var url, domain = req.param('domain');
   url = "/projects?domain=" + domain;
@@ -465,19 +424,17 @@ function getProjectsTree (req, res)
   var isIncludeDomain = true;
 
   if (null == includeDomain) {
-    isIncludeDomain = false;   
+    isIncludeDomain = false;
   }
   var appData = {
      includeDomain: isIncludeDomain
   }
-  cacheApi.queueDataFromCacheOrSendRequest(req, res, global.STR_JOB_TYPE_CACHE,
-                                           global.STR_GET_PROJECTS_TREE, reqUrl,
-                                           /* Update the tree cache every 1 min
-                                            * */
+  cacheApi.queueDataFromCacheOrSendRequest(req, res, global.STR_JOB_TYPE_CACHE, global.STR_GET_PROJECTS_TREE, reqUrl,
+                                           /* Update the tree cache every 1 min * */
                                            0, 0, 0, 1 * 60 * 1000, false, appData);
 }
 
-function getInstLinks(linksData) 
+function getInstLinks(linksData)
 {
 	var links = [];
 	try {
@@ -498,7 +455,7 @@ function getInstLinks(linksData)
  * Populate JSON containing all connected network and instances of a virtual network.
  * @param {Object} JSON to contain connected network and instances
  */
-function getInstancesAndLinksforVN(vnDetailJSON) 
+function getInstancesAndLinksforVN(vnDetailJSON)
 {
 	var instances = [],
 		links = [],
@@ -524,11 +481,7 @@ function getInstancesAndLinksforVN(vnDetailJSON)
 	return [{name:'Connected Networks', items:links}, {name:'Instances', items:instances}];
 }
 
-function populateSumInOutTraffic(vnJSON) 
-{
-}
-
-function populateInOutTraffic (vnJSON, trafficJSON, counter) 
+function populateInOutTraffic (vnJSON, trafficJSON, counter)
 {
 	var trafficDetails = {};
 	try {
@@ -590,7 +543,7 @@ function populateInOutTraffic (vnJSON, trafficJSON, counter)
 	}
 }
 
-function getProjectData (configObj, callback) 
+function getProjectData (configObj, callback)
 {
     var url = configObj.url;
     var appData = configObj.appData;
@@ -612,7 +565,7 @@ function getProjectData (configObj, callback)
                         logutils.logger.debug('getProjectDetails URL:', url);
                         uveUrls[i] = [url];
                     }
-                    async.map(uveUrls, commonUtils.getJsonViaInternalApi(opServer.api, true), 
+                    async.map(uveUrls, commonUtils.getJsonViaInternalApi(opServer.api, true),
                               function (err, results) {
                         var i, trafficJSON;
                         if(!err) {
@@ -636,7 +589,7 @@ function getProjectData (configObj, callback)
 }
 
 // Handle request to get JSON of project details for a given project name.
-function getProjectDetails (req, res, appData) 
+function getProjectDetails (req, res, appData)
 {
     var urlLists = [];
 	var project = req.param('project');
@@ -654,7 +607,7 @@ function getProjectDetails (req, res, appData)
     });
 }
 
-function parseDomainSummary (resultJSON, results) 
+function parseDomainSummary (resultJSON, results)
 {
     resultJSON = {};
     resultJSON['interVNInBytes'] = 0;
@@ -733,7 +686,7 @@ function parseDomainSummary (resultJSON, results)
     return resultJSON;
 }
 
-function getNetworkDomainSummary (req, res, appData) 
+function getNetworkDomainSummary (req, res, appData)
 {
     var configObjArr = [];
     var domain = req.param('fq-name');
@@ -741,7 +694,7 @@ function getNetworkDomainSummary (req, res, appData)
     var urlLists = [];
     var j = 0;
     var resultJSON = {};
-    
+
     var url = '/projects?domain=' + domain;
     /* First get the project details in this domain */
     configApiServer.apiGet(url, appData, function (error, jsonData) {
@@ -751,9 +704,9 @@ function getNetworkDomainSummary (req, res, appData)
         }
         try {
             var projects = jsonData['projects'];
-            var projectsCount = projects.length;  
+            var projectsCount = projects.length;
             for (var i = 0; i <  projectsCount; i++) {
-                if ((projects[i]['fq_name'][1] == 'service') || 
+                if ((projects[i]['fq_name'][1] == 'service') ||
                     (projects[i]['fq_name'][1] == 'default-project') ||
                     (projects[i]['fq_name'][1] == 'invisible_to_admin')) {
                     continue;
@@ -769,21 +722,21 @@ function getNetworkDomainSummary (req, res, appData)
                 commonUtils.handleJSONResponse(null, res, resultJSON);
             });
         } catch(e) {
-            console.log("tenantapi.getNetworkDomainSummary(): Got json " + 
+            console.log("tenantapi.getNetworkDomainSummary(): Got json " +
                         "parse error:" + e);
             commonUtils.handleJSONResponse(null, res, results);
         }
     });
 }
 
-function parseAclRuleData (resultJSON, results) 
+function parseAclRuleData (resultJSON, results)
 {
     var aclRuleLists = [];
     var aclRuleCnt = 0;
     try {
         aclRuleCount = results.length;
         for (var i = 0; i < aclRuleCount; i++) {
-            aclRuleLists = 
+            aclRuleLists =
                 results[i]['access-control-list']['access_control_list_entries']['acl_rule'];
             aclRuleCnt = parseInt(aclRuleCnt) + aclRuleLists.length;
         }
@@ -818,33 +771,32 @@ function parseVNUveData (resultJSON, vnUve)
         resultJSON['vmCnt'] = 0;
     }
     try {
-        resultJSON['partiallyConnectedNws'] = 
+        resultJSON['partiallyConnectedNws'] =
             vnUve['UveVirtualNetworkConfig']['partially_connected_networks']['list']['element'];
     } catch(e) {
     }
 }
 
-function parseNetworkDetails (resultJSON, appData, jsonData, callback) 
+function parseNetworkDetails (resultJSON, appData, jsonData, callback)
 {
-    var vmRefs = [];
-    var vmRefsCount = 0;
-    var urlLists = [];
-    var dataObjArr = [];
-    
+    var vmRefs = [], vmRefsCount = 0,
+		urlLists = [], dataObjArr = [];
+
     if (null == jsonData) {
         return;
     }
+
     resultJSON['vmCnt'] = 0;
     resultJSON['intfCnt'] = 0;
     resultJSON['aclRuleCnt'] = 0;
     resultJSON['policyList'] = [];
     resultJSON['intfList'] = {};
     resultJSON['partiallyConnectedNws'] = {};
-    
+
     try {
         resultJSON['fq-name'] = jsonData['fq_name'].join(':');
-        nwPolicyRefs = jsonData['network_policy_refs'];
-        policyCount = nwPolicyRefs.length;
+        var nwPolicyRefs = jsonData['network_policy_refs'],
+			policyCount = nwPolicyRefs.length;
         for (i = 0; i < policyCount; i++) {
             resultJSON['policyList'][i] = {};
             resultJSON['policyList'][i]['name'] = nwPolicyRefs[i]['to'].join(':');
@@ -857,27 +809,27 @@ function parseNetworkDetails (resultJSON, appData, jsonData, callback)
             callback(resultJSON);
         });
     } catch(e) {
-        console.log("In parseNetworkDetails(): VM JSON Parse error:" + e);
+		logutils.logger.debug("In parseNetworkDetails(): VM JSON Parse error:" + e);
         callback(resultJSON);
     }
 }
 
-function getNetworkDetails (req, res, appData) 
+function getNetworkDetails (req, res, appData)
 {
-    var resultJSON = {};
-    var uuid = req.param('uuid');
-    var url = '/virtual-network/' + uuid;
-    
+    var resultJSON = {},
+		uuid = req.param('uuid'),
+		url = '/virtual-network/' + uuid;
+
     configApiServer.apiGet(url, appData, function (error, jsonData) {
         if (error) {
             commonUtils.handleJSONResponse(error, res, null);
             return;
         }
-        parseNetworkDetails(resultJSON, appData, jsonData['virtual-network'], 
+        parseNetworkDetails(resultJSON, appData, jsonData['virtual-network'],
             function(results) {
             commonUtils.handleJSONResponse(null, res, results);
         });
-    });    
+    });
 }
 
 /**
@@ -885,21 +837,19 @@ function getNetworkDetails (req, res, appData)
  * private function
  * 1. This function is used to parse the ping response from Sandesh
  */
-function parsePingResponses (pingResps) 
+function parsePingResponses (pingResps)
 {
-    var results = [];
-    var lastIndex = 0;
-    try {
+    var results = [],
+		lastIndex = 0;
+
+	try {
         var pingRespsCount = pingResps.length;
 
         for (var i = 0; i < pingRespsCount; i++) {
-            lastIndex = commonUtils.createJSONBySandeshResponseArr(results, 
-                                                                   pingResps[i],
-                                                                   lastIndex);
+            lastIndex = commonUtils.createJSONBySandeshResponseArr(results, pingResps[i], lastIndex);
         }
     } catch(e) {
-        logutils.logger.debug("In parsePingResponses(): JSON Parse error: ", +
-                              e);
+        logutils.logger.debug("In parsePingResponses(): JSON Parse error: ", + e);
     }
     return results;
 }

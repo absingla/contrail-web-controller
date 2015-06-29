@@ -126,7 +126,7 @@ define([
                 field: 'vn',
                 name: 'Networks',
                 formatter: function (r, c, v, cd, dc) {
-                    return getMultiValueStr(dc['vn']);
+                    return formatValues4TableColumn(dc['vn']);
                 },
                 minWidth: 230,
                 searchable: true
@@ -152,7 +152,7 @@ define([
                 field: 'ip',
                 name: 'IP Address',
                 formatter: function (r, c, v, cd, dc) {
-                    return formatIPArr(dc['ip']);
+                    return formatIPArray(dc['ip']);
                 },
                 minWidth: 150
             },
@@ -502,7 +502,7 @@ define([
                                     if (dataItem['vn'].length != 0) {
                                         dataItem['vnFQN'] = dataItem['vn'][0];
                                     }
-                                    dataItem['vn'] = tenantNetworkMonitorUtils.formatVN(dataItem['vn']);
+                                    dataItem['vn'] = ctwu.formatVNName(dataItem['vn']);
                                 }
 
                                 for (var k = 0; k < interfaceDetailsList.length; k++) {
@@ -729,6 +729,59 @@ define([
                 ctwgrc.setInstanceURLHashParams(null, fqName, uuid, vmName, true);
             }
         }
+    };
+
+    function formatValues4TableColumn(valueArray) {
+        var formattedStr = '',
+            entriesToShow = 2;
+
+        if (valueArray == null) {
+            return formattedStr;
+        }
+
+        $.each(valueArray, function (idx, value) {
+            if (idx == 0) {
+                formattedStr += value;
+            } else if (idx < entriesToShow) {
+                formattedStr += '<br/>' + value;
+            } else {
+                return;
+            }
+        });
+
+        if (valueArray.length > 2) {
+            formattedStr += '<br/>' + contrail.format('({0} more)', valueArray.length - entriesToShow);
+        }
+
+        return formattedStr;
+    };
+
+    // This function accepts array of ips, checks the type(IPv4/IPv6) and
+    // returns the label value html content of the first two elements of the array and more tag.
+    function formatIPArray(ipArray) {
+        var formattedStr = '', entriesToShow = 2;
+
+        if (ipArray == null) {
+            return formattedStr;
+        }
+
+        $.each(ipArray, function (idx, value) {
+            var lbl = 'IPv4', isIpv6 = false;
+            isIpv6 = isIPv6(value);
+            if (idx == 0) {
+                formattedStr += getLabelValueForIP(value);
+            } else if (idx < entriesToShow) {
+                formattedStr += "<br/>" + getLabelValueForIP(value);
+            }
+            else
+                return;
+        });
+
+        if (ipArray.length > 2) {
+            formattedStr += '<br/>' + contrail.format('({0} more)', ipArray.length - entriesToShow);
+        }
+
+        return contrail.format(formattedStr);
     };
 
     return CTGridConfig;

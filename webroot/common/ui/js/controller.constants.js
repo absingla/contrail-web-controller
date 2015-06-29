@@ -120,11 +120,43 @@ define([
         this.GRAPH_ELEMENT_CONNECTED_NETWORK = 'connected-network';
         this.GRAPH_ELEMENT_NETWORK_POLICY = 'network-policy';
 
+        this.getProjectsURL = function(domain) {
+            //If the role is admin then we will display all the projects else the projects which has access
+            var url = '/api/tenants/projects/' + domain,
+                role = globalObj['webServerInfo']['role'],
+                activeOrchModel = globalObj['webServerInfo']['loggedInOrchestrationMode'];
+
+            if(activeOrchModel == 'vcenter' || role.indexOf(roles['TENANT']) > -1){
+                url = '/api/tenants/config/projects';
+            }
+            return url;
+        };
+
+        this.STATS_SELECT_FIELDS = {
+            'virtual-network': {
+                'inBytes':'SUM(vn_stats.in_bytes)',
+                'outBytes':'SUM(vn_stats.out_bytes)',
+                'inPkts':'SUM(vn_stats.in_pkts)',
+                'outPkts':'SUM(vn_stats.out_pkts)'
+            },
+            'virtual-machine': {
+                'inBytes':'SUM(if_stats.in_bytes)',
+                'outBytes':'SUM(if_stats.out_bytes)',
+                'inPkts':'SUM(if_stats.in_pkts)',
+                'outPkts':'SUM(if_stats.out_pkts)'
+            },
+            'fip' : {
+                'inBytes':'SUM(fip_stats.in_bytes)',
+                'outBytes':'SUM(fip_stats.out_bytes)',
+                'inPkts':'SUM(fip_stats.in_pkts)',
+                'outPkts':'SUM(fip_stats.out_pkts)'
+            },
+        };
+
         this.CONFIGURE_NETWORK_LINK_CONFIG = {
             text: 'Go to configure network page',
             href: '/#p=config_net_vn'
-        }
-
+        };
 
         //Alarm constants
         this.URL_ALARM_DETAILS_IN_CHUNKS = '/api/tenant/monitoring/alarms?count={0}&startAt={1}';
