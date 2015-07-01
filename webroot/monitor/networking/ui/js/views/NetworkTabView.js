@@ -82,7 +82,7 @@ define([
                                                             url: ctwc.get(ctwc.URL_NETWORK_TRAFFIC_STATS, 120, networkFQN, 120),
                                                             type: 'GET'
                                                         },
-                                                        dataParser: ctwp.networkScatterChartParser
+                                                        dataParser: ctwp.vnTrafficStatsParser
                                                     },
                                                     cacheConfig: {
                                                         ucid: ctwc.get(ctwc.UCID_NETWORK_TRAFFIC_STATS_LIST, networkFQN)
