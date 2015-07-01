@@ -226,7 +226,7 @@ define([
                     });
 
                     if(contrail.checkIfExist(interface['if_stats'])) {
-                        interface['if_stats']['throughput'] = interface['if_stats']['in_bw_usage'] + interface['if_stats']['out_bw_usage'];
+                        interface['throughput'] = interface['in_bw_usage'] + interface['out_bw_usage'];
                     }
 
                     interfaceMap[interface['name']] = interface;
