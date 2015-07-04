@@ -21,7 +21,11 @@ define([
                     return d['name'];
                 },
                 searchable: true,
-                cssClass: 'cell-hyperlink-blue'
+                cssClass: 'cell-hyperlink-blue',
+                exportConfig: {
+                    allow: true,
+                    stdFormatter: false
+                }
             },
             {
                 field: 'instCnt',
@@ -120,7 +124,11 @@ define([
                 events: {
                     onClick: onClickGrid
                 },
-                cssClass: 'cell-hyperlink-blue'
+                cssClass: 'cell-hyperlink-blue',
+                exportConfig: {
+                    allow: true,
+                    stdFormatter: false
+                }
             },
             {
                 field: 'vn',
@@ -146,7 +154,11 @@ define([
                 events: {
                     onClick: onClickGridLink
                 },
-                cssClass: 'cell-hyperlink-blue'
+                cssClass: 'cell-hyperlink-blue',
+                exportConfig: {
+                    allow: true,
+                    stdFormatter: false
+                }
             },
             {
                 field: 'ip',
@@ -154,7 +166,11 @@ define([
                 formatter: function (r, c, v, cd, dc) {
                     return formatIPArray(dc['ip']);
                 },
-                minWidth: 150
+                minWidth: 150,
+                exportConfig: {
+                    allow: true,
+                    stdFormatter: false
+                }
             },
             {
                 field: '',
@@ -178,7 +194,11 @@ define([
                 events: {
                     onClick: onClickGrid
                 },
-                cssClass: 'cell-hyperlink-blue'
+                cssClass: 'cell-hyperlink-blue',
+                exportConfig: {
+                    allow: true,
+                    stdFormatter: false
+                }
             },
             {
                 field: 'vnCnt',
