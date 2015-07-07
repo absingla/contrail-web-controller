@@ -39,7 +39,7 @@ monitorInfraDbDetailsClass = (function() {
                         console.log(error.stack);
                     }
                     try {
-                        drawSparkLine('dbnode-sparklines', 'analytics_db_size_sparkline', 'blue-sparkline', slineDataAnalDbSize);
+                        drawSparkLine('dbnode-sparklines', 'analytics_db_size_sparkline', 'green-sparkline', slineDataAnalDbSize);
                     } catch (error) {
                         console.log(error.stack);
                     }
@@ -86,9 +86,9 @@ monitorInfraDbDetailsClass = (function() {
                 ]);
                 databaseNodeDashboardInfo = databaseNodeDashboardInfo.concat(
                         [{lbl:'Database Usage', value:" "},
-                          {lbl:INDENT_RIGHT+'Available Space', value:parsedData['formattedAvailableSpace']},
-                          {lbl:INDENT_RIGHT+'Used Space', value:parsedData['formattedUsedSpace'] + ' (' + parsedData['usedPercentage'].toFixed(2) + ' %)' },
-                          {lbl:INDENT_RIGHT+'Analytics DB Size', value:parsedData['formattedAnalyticsDbSize']}
+                          {lbl:INDENT_RIGHT+'Available Space', value:(parsedData['formattedAvailableSpace'] != '-')? parsedData['formattedAvailableSpace'] : noDataStr},
+                          {lbl:INDENT_RIGHT+'Used Space', value:(parsedData['formattedUsedSpace'] != '-')?  parsedData['formattedUsedSpace']  + ' (' + parsedData['formattedUsedPercentage'] + ')' : noDataStr},
+                          {lbl:INDENT_RIGHT+'Analytics DB Size', value:(parsedData['formattedAnalyticsDbSize'] != '-')? parsedData['formattedAnalyticsDbSize'] : noDataStr}
 //                          {lbl:INDENT_RIGHT+'Usage', value:parsedData['usedPercentage'].toFixed(2) + ' %'}
                 ]);
                 /*Selenium Testing*/
