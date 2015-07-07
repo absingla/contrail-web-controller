@@ -77,10 +77,11 @@ define([
         this.UCID_PREFIX_BREADCRUMB = "breadcrumb";
         this.UCID_PREFIX_GRAPHS = "graphs";
         this.UCID_PREFIX_CHARTS = "charts";
+        this.UCID_PREFIX_UVES = "uves";
         this.UCID_PREFIX_LISTS = "lists";
         this.UCID_PREFIX_MN_LISTS = this.UCID_PREFIX_MN + ":" + this.UCID_PREFIX_LISTS + ":";
         this.UCID_PREFIX_MN_GRAPHS = this.UCID_PREFIX_MN + ":" + this.UCID_PREFIX_GRAPHS + ":";
-        this.UCID_PREFIX_MN_CHARTS = this.UCID_PREFIX_MN + ":" + this.UCID_PREFIX_CHARTS + ":";
+        this.UCID_PREFIX_MN_UVES = this.UCID_PREFIX_MN + ":" + this.UCID_PREFIX_UVES + ":";
 
         this.UCID_ALL_VN_LIST = this.UCID_PREFIX_MN_LISTS + "all-virtual-networks";
         this.UCID_ALL_VM_LIST = this.UCID_PREFIX_MN_LISTS + "all-virtual-machines";

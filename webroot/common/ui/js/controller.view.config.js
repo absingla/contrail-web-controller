@@ -134,6 +134,9 @@ define([
                         return {name: instanceUUID, value: response};
                     }
                 },
+                cacheConfig: {
+                    ucid: ctwc.UCID_PREFIX_MN_UVES + instanceUUID
+                },
                 vlRemoteConfig: {
                     vlRemoteList: ctwgc.getVMInterfacesLazyRemoteConfig()
                 }
