@@ -312,7 +312,7 @@ define([
                                 {label: 'UUID', value: viewElement.attributes.nodeDetails['fqName']},
                                 {label: 'Network', value: srcVNDetails.name},
                                 {label: 'CPU Utilization', value: contrail.checkIfExist(cpuInfo) ? ((Math.round(cpuInfo.cpu_one_min_avg * 100) / 100) + " %") : '-'},
-                                {label: 'Memory Usage', value: contrail.checkIfExist(cpuInfo) ? formatBytes(cpuInfo.rss, false) : '-'},
+                                {label: 'Memory Usage', value: contrail.checkIfExist(cpuInfo) ? cowu.addUnits2Bytes(cpuInfo.rss, false) : '-'},
                                 {label: 'Interfaces', value: uveVirtualMachineAgent.interface_list.length}
                             ];
                         } else {
@@ -395,13 +395,13 @@ define([
                                     });
                                     data.push({
                                         label: "Traffic In",
-                                        value: cowu.addUnits2Packets(in_stats[i].pkts, false, null, 1) + " | " + formatBytes(in_stats[i].bytes)
+                                        value: cowu.addUnits2Packets(in_stats[i].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(in_stats[i].bytes)
                                     });
                                     for (var j = 0; j < out_stats.length; j++) {
                                         if (src == out_stats[j].src && dst == out_stats[j].dst) {
                                             data.push({
                                                 label: "Traffic Out",
-                                                value: cowu.addUnits2Packets(out_stats[j].pkts, false, null, 1) + " | " + formatBytes(out_stats[i].bytes)
+                                                value: cowu.addUnits2Packets(out_stats[j].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(out_stats[i].bytes)
                                             });
                                         }
                                     }
@@ -413,13 +413,13 @@ define([
                                     });
                                     data.push({
                                         label: "Traffic In",
-                                        value: cowu.addUnits2Packets(in_stats[i].pkts, false, null, 1) + " | " + formatBytes(in_stats[i].bytes)
+                                        value: cowu.addUnits2Packets(in_stats[i].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(in_stats[i].bytes)
                                     });
                                     for (var j = 0; j < out_stats.length; j++) {
                                         if (src == out_stats[j].dst && dst == out_stats[j].src) {
                                             data.push({
                                                 label: "Traffic Out",
-                                                value: cowu.addUnits2Packets(out_stats[j].pkts, false, null, 1) + " | " + formatBytes(out_stats[i].bytes)
+                                                value: cowu.addUnits2Packets(out_stats[j].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(out_stats[i].bytes)
                                             });
                                         }
                                     }
@@ -492,7 +492,7 @@ define([
                         iconClass: false,
                         info: [
                             {label: 'Flows', value: data['flowCnt']},
-                            {label: 'Bandwidth', value: formatBytes(ifNull(data['origY'], data['y']))}
+                            {label: 'Bandwidth', value: cowu.addUnits2Bytes(ifNull(data['origY'], data['y']))}
                         ],
                         actions: [
                             {

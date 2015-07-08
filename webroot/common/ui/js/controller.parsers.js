@@ -222,7 +222,7 @@ define([
 
                     interface['floatingIP'] = [];
                     $.each(floatingIPs, function (idx, fipObj) {
-                        interface['floatingIP'].push(contrail.format('{0} ({1} / {2})', fipObj['ip_address'], formatBytes(ifNull(fipObj['in_bytes'], '-')), formatBytes(ifNull(fipObj['out_bytes'], '-'))));
+                        interface['floatingIP'].push(contrail.format('{0} ({1} / {2})', fipObj['ip_address'], cowu.addUnits2Bytes(ifNull(fipObj['in_bytes'], '-')), cowu.addUnits2Bytes(ifNull(fipObj['out_bytes'], '-'))));
                     });
 
                     if(contrail.checkIfExist(interface['if_stats'])) {
