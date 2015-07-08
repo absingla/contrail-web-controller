@@ -154,7 +154,10 @@ define([
                                                     },
                                                     {
                                                         key: 'pkts',
-                                                        templateGenerator: 'TextGenerator'
+                                                        templateGenerator: 'TextGenerator',
+                                                        templateGeneratorConfig: {
+                                                            formatter: 'packet'
+                                                        }
                                                     },
                                                     {
                                                         key: 'bytes',
@@ -208,7 +211,10 @@ define([
                                                     },
                                                     {
                                                         key: 'pkts',
-                                                        templateGenerator: 'TextGenerator'
+                                                        templateGenerator: 'TextGenerator',
+                                                        templateGeneratorConfig: {
+                                                            formatter: 'packet'
+                                                        }
                                                     },
                                                     {
                                                         key: 'bytes',

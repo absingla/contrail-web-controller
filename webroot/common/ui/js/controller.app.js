@@ -7,6 +7,7 @@ var ctwc, cowch, ctwgc, ctwgrc, ctwl, ctwm, ctwp, ctwvc;
 require.config({
     baseUrl: '/',
     paths: {
+        'controller-basedir'                : "./",
         'controller-constants': 'common/ui/js/controller.constants',
         'controller-grid-config': 'common/ui/js/controller.grid.config',
         'controller-graph-config': 'common/ui/js/controller.graph.config',

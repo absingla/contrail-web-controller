@@ -42,7 +42,7 @@ define([
                 name: 'Traffic In/Out (Last 1 Hr)',
                 minWidth: 200,
                 formatter: function (r, c, v, cd, dc) {
-                    return contrail.format("{0} / {1}", formatBytes(dc['inBytes60'], true), formatBytes(dc['outBytes60'], true));
+                    return contrail.format("{0} / {1}", cowu.addUnits2Bytes(dc['inBytes60'], true), cowu.addUnits2Bytes(dc['outBytes60'], true));
                 }
             },
             {
@@ -81,7 +81,7 @@ define([
                 name: 'Traffic In/Out (Last 1 Hr)',
                 minWidth: 150,
                 formatter: function (r, c, v, cd, dc) {
-                    return contrail.format("{0} / {1}", formatBytes(dc['inBytes60'], true), formatBytes(dc['outBytes60'], true));
+                    return contrail.format("{0} / {1}", cowu.addUnits2Bytes(dc['inBytes60'], true), cowu.addUnits2Bytes(dc['outBytes60'], true));
                 }
             },
             {
@@ -176,7 +176,7 @@ define([
                 field: '',
                 name: 'Aggr. Traffic In/Out (Last 1 Hr)',
                 formatter: function (r, c, v, cd, dc) {
-                    return formatBytes(dc['inBytes60'], true) + ' / ' + formatBytes(dc['outBytes60'], true);
+                    return cowu.addUnits2Bytes(dc['inBytes60'], true) + ' / ' + cowu.addUnits2Bytes(dc['outBytes60'], true);
                 },
                 minWidth: 200
             }
@@ -215,7 +215,7 @@ define([
                 name: 'Traffic In/Out (Last 1 hr)',
                 minWidth: 200,
                 formatter: function (r, c, v, cd, dc) {
-                    return contrail.format("{0} / {1}", formatBytes(dc['inBytes60'], true), formatBytes(dc['outBytes60'], true));
+                    return contrail.format("{0} / {1}", cowu.addUnits2Bytes(dc['inBytes60'], true), cowu.addUnits2Bytes(dc['outBytes60'], true));
                 }
             },
             {
@@ -683,19 +683,25 @@ define([
             },
             {
                 field: 'sum_bytes',
-                name: 'Sum(Bytes)',
+                name: 'Sum (Bytes)',
                 minWidth: 80,
                 searchFn: function (d) {
                     return d['sum_bytes'];
+                },
+                formatter: function (r, c, v, cd, dc) {
+                    return cowu.addUnits2Bytes(dc['sum_bytes']);
                 },
                 searchable: true
             },
             {
                 field: 'sum_packets',
-                name: 'Sum(Packets)',
+                name: 'Sum (Packets)',
                 minWidth: 90,
                 searchFn: function (d) {
                     return d['sum_packets'];
+                },
+                formatter: function (r, c, v, cd, dc) {
+                    return cowu.addUnits2Packets(dc['sum_packets']);
                 },
                 searchable: true
             },

@@ -5,7 +5,7 @@
 define([
     'underscore',
     'backbone',
-    'js/views/LineWithFocusChartView',
+    'core-basedir/js/views/LineWithFocusChartView',
     'contrail-list-model',
 ], function (_, Backbone, LineWithFocusChartView, ContrailListModel) {
     var InstanceTrafficStatsView = Backbone.View.extend({
