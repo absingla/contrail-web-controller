@@ -50,13 +50,10 @@ define([
                 generateElementsFn: getElements4ConnectedGraphFn(graphConfig, selectorId),
                 remote: {
                     successCallback: function (response, contrailGraphModel) {
-                        //TODO - #cleanup Add relevant code from View successCallback
-                    },
-                    failureCallback: function (xhr, contrailGraphModel) {
-                        var notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_ERROR_PAGE, {errorMessage: xhr.responseText});
-
-                        $(selectorId).html(notFoundTemplate(notFoundConfig));
-                        return;
+                        if (!contrail.checkIfExist(contrailGraphModel.elementsDataObj) || (contrailGraphModel.attributes.focusedElement.type == 'project' && contrailGraphModel.elementsDataObj.elements.length == 0) || (contrailGraphModel.attributes.focusedElement.type == 'virtual-network' && contrailGraphModel.elementsDataObj.zoomedElements.length == 0)) {
+                            contrailGraphModel.empty = true;
+                            return false;
+                        }
                     }
                 }
             });
@@ -72,20 +69,24 @@ define([
                     'blank:pointerdblclick': getCgBlankDblClick(connectedSelectorId, graphConfig)
                 },
                 controlPanel: getControlPanelConfig(graphConfig, selectorId, connectedSelectorId, configSelectorId),
-                successCallback: function (jointObject, directedGraphSize) {
-                    if(!contrail.checkIfExist(jointObject) || !contrail.checkIfExist(jointObject.graph.elementsDataObj)) {
-                        return;
-                    } else if (jointObject.graph.attributes.focusedElement.type == 'project' && jointObject.graph.elementsDataObj.elements.length == 0) {
+                emptyCallback: function (contrailGraphModel) {
+                    if(!contrail.checkIfExist(contrailGraphModel.elementsDataObj)) {
+                        notFoundConfig.title = ctwm.NO_DATA_FOUND;
+                    } else if (contrailGraphModel.attributes.focusedElement.type == 'project' && contrailGraphModel.elementsDataObj.elements.length == 0) {
                         notFoundConfig.title = ctwm.NO_NETWORK_FOUND;
-                        $(selectorId).html(notFoundTemplate(notFoundConfig));
-                        return;
-                    } else if (jointObject.graph.attributes.focusedElement.type == 'virtual-network' && jointObject.graph.elementsDataObj.zoomedElements.length == 0) {
+                    } else if (contrailGraphModel.attributes.focusedElement.type == 'virtual-network' && contrailGraphModel.elementsDataObj.zoomedElements.length == 0) {
                         notFoundConfig.title =  ctwm.NO_VM_FOUND;
-                        $(selectorId).html(notFoundTemplate(notFoundConfig));
-                        return;
                     }
-
-                    var currentHashParams = layoutHandler.getURLHashParams(),
+                    $(selectorId).html(notFoundTemplate(notFoundConfig));
+                },
+                failureCallback: function (contrailGraphModel) {
+                    var xhr = contrailGraphModel.errorList[0],
+                        notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_ERROR_PAGE, {errorMessage: xhr.responseText});
+                    $(selectorId).html(notFoundTemplate(notFoundConfig));
+                },
+                successCallback: function (jointObject) {
+                    var directedGraphSize = jointObject.graph.directedGraphSize,
+                        currentHashParams = layoutHandler.getURLHashParams(),
                         connectedGraphView = jointObject.paper,
                         focusedElement = graphConfig.focusedElement;
 
@@ -1049,16 +1050,10 @@ define([
             },
             internalRectangleWidth, internalRectangleHeight, noOfVMsToDraw;
 
-        if (noOfVMs == 0) {
-            noOfVMsToDraw = 0;
-            internalRectangleWidth = VM_GRAPH_OPTIONS.minInternalRect['width'];
-            internalRectangleHeight = VM_GRAPH_OPTIONS.minInternalRect['height'];
-        } else {
-            noOfVMsToDraw = noOfVMs;
-            noOfRows = 1;
-            internalRectangleWidth = (((vmPerRow < ctwc.MAX_VM_TO_PLOT) ? vmPerRow :  ctwc.MAX_VM_TO_PLOT) * widthNeededForVM) + vmMargin;
-            internalRectangleHeight = (noOfRows * heightNeededForVM) + vmMargin;
-        }
+        noOfVMsToDraw = noOfVMs;
+        noOfRows = 1;
+        internalRectangleWidth = (((vmPerRow < ctwc.MAX_VM_TO_PLOT) ? vmPerRow :  ctwc.MAX_VM_TO_PLOT) * widthNeededForVM) + vmMargin;
+        internalRectangleHeight = (noOfRows * heightNeededForVM) + vmMargin;
 
         returnObj['vmPerRow'] = vmPerRow;
         returnObj['noOfVMsToDraw'] = (noOfVMsToDraw > ctwc.MAX_VM_TO_PLOT) ? ctwc.MAX_VM_TO_PLOT : noOfVMsToDraw;
@@ -1097,16 +1092,10 @@ define([
             },
             internalRectangleWidth, internalRectangleHeight, noOfVMsToDraw;
 
-        if (noOfVMs == 0) {
-            noOfVMsToDraw = 0;
-            internalRectangleWidth = VM_GRAPH_OPTIONS.minInternalRect['width'];
-            internalRectangleHeight = VM_GRAPH_OPTIONS.minInternalRect['height'];
-        } else {
-            noOfVMsToDraw = noOfVMs;
-            noOfRows = Math.ceil(noOfVMsToDraw / vmPerRow);
-            internalRectangleWidth = (vmPerRow * widthNeededForVM) + vmMargin;
-            internalRectangleHeight = (((noOfRows < ctwc.MAX_VM_TO_PLOT) ? noOfRows :  ctwc.MAX_VM_TO_PLOT) * heightNeededForVM) + vmMargin;
-        }
+        noOfVMsToDraw = noOfVMs;
+        noOfRows = Math.ceil(noOfVMsToDraw / vmPerRow);
+        internalRectangleWidth = (vmPerRow * widthNeededForVM) + vmMargin;
+        internalRectangleHeight = (((noOfRows < ctwc.MAX_VM_TO_PLOT) ? noOfRows :  ctwc.MAX_VM_TO_PLOT) * heightNeededForVM) + vmMargin;
 
         returnObj['vmPerRow'] = vmPerRow;
         returnObj['noOfVMsToDraw'] = (noOfVMsToDraw > ctwc.MAX_VM_TO_PLOT) ? ctwc.MAX_VM_TO_PLOT : noOfVMsToDraw;
@@ -1222,11 +1211,11 @@ define([
         var currentZoomedElement = new joint.shapes.contrail.ZoomedCloudElement({
             size: {width: config.width * factor, height: config.height * factor},
             attrs: {
-                rect: (nodeDetails['more_attributes']['vm_count'] == 0) ? {width: config.width * factor, height: config.height * factor, 'stroke-width': 1, 'stroke': '#3182bd'} : {width: config.width * factor, height: config.height * factor},
+                rect: {width: config.width * factor, height: config.height * factor},
                 text: {
-                    text: (nodeDetails['more_attributes']['vm_count'] == 0) ? "No virtual machine available." : contrail.truncateText(nodeDetails['name'].split(":")[2], 50),
+                    text: contrail.truncateText(nodeDetails['name'].split(":")[2], 50),
                     'ref-x': .5,
-                    'ref-y': (nodeDetails['more_attributes']['vm_count'] == 0) ? 45 : -20
+                    'ref-y': -20
                 }
             }
         });
