@@ -111,6 +111,7 @@ define([
                                                     xLabel: ctwl.X_AXIS_TITLE_PORT,
                                                     yLabel: ctwl.Y_AXIS_TITLE_BW,
                                                     forceX: [0, 1000],
+                                                    forceY: [0, 1000],
                                                     tooltipConfigCB: ctwgrc.getPortDistributionTooltipConfig(onScatterChartClick),
                                                     controlPanelConfig: {
                                                         filter: {
