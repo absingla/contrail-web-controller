@@ -3,8 +3,8 @@
  */
 define([
     'monitor/networking/ui/js/views/MonitorNetworkingView',
-    'test-slickgrid-utils',
-    'test-nm-slickgrid-mockdata',
+    'co-test-utils',
+    'network-list-view-mockdata',
     'test-slickgrid'
 ], function (MonitorNetworkingView, TestUtils, TestMockdata, TestSlickGrid) {
     module('Networks Grid -  NM Tests', {
