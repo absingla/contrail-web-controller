@@ -25,7 +25,7 @@ define([
 
         this.URL_NETWORK_TRAFFIC_STATS = '/api/tenant/networking/flow-series/vn?minsSince={0}&fqName={1}&sampleCnt={2}&useServerTime=true';
 
-        this.URL_INSTANCE_CONNECTED_GRAPH = '/api/tenant/monitoring/instance-connected-graph?fqName={0}';
+        this.URL_INSTANCE_CONNECTED_GRAPH = '/api/tenant/monitoring/instance-connected-graph?fqName={0}&instanceUUID={1}';
         this.URL_INSTANCE_CONFIG_GRAPH = '/api/tenant/monitoring/instance-config-graph?fqName={0}';
         this.URL_INSTANCE_DETAIL = '/api/tenant/networking/virtual-machine?fqNameRegExp={0}?flat';
         this.URL_INSTANCES_SUMMARY = '/api/tenant/networking/virtual-machines/summary';
@@ -123,6 +123,8 @@ define([
 
         this.TOP_IN_LAST_MINS = 10;
         this.NUM_DATA_POINTS_FOR_FLOW_SERIES = 120;
+
+        this.LINK_CONNECTOR_STRING = " --- ";
 
         this.getProjectsURL = function (domain) {
             //If the role is admin then we will display all the projects else the projects which has access

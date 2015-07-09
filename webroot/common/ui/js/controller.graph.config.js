@@ -310,15 +310,13 @@ define([
                             cpuInfo = uveVirtualMachineAgent.cpu_info;
                             tooltipContent['info'] = [
                                 {label: 'UUID', value: viewElement.attributes.nodeDetails['fqName']},
-                                {label: 'Network', value: srcVNDetails.name},
                                 {label: 'CPU Utilization', value: contrail.checkIfExist(cpuInfo) ? ((Math.round(cpuInfo.cpu_one_min_avg * 100) / 100) + " %") : '-'},
                                 {label: 'Memory Usage', value: contrail.checkIfExist(cpuInfo) ? cowu.addUnits2Bytes(cpuInfo.rss, false) : '-'},
                                 {label: 'Interfaces', value: uveVirtualMachineAgent.interface_list.length}
                             ];
                         } else {
                             tooltipContent['info'] = [
-                                {label: 'UUID', value: viewElement.attributes.nodeDetails['fqName']},
-                                {label: 'Network', value: srcVNDetails.name}
+                                {label: 'UUID', value: viewElement.attributes.nodeDetails['fqName']}
                             ];
                         }
 
@@ -360,101 +358,67 @@ define([
                     title: function (element, jointObject) {
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
                             viewElementDetails = viewElement.attributes.linkDetails,
-                            sourceNetwork = viewElementDetails.src.split(':')[2],
-                            destinationNetwork = viewElementDetails.dst.split(':')[2];
+                            srcArray = viewElementDetails.src.split(':'),
+                            dstArray = viewElementDetails.dst.split(':'),
+                            sourceNetwork = (srcArray.length > 2) ? srcArray[2] : viewElementDetails.src,
+                            destinationNetwork = (dstArray.length > 2) ? dstArray[2] : viewElementDetails.dst;
 
-                        return tooltipTitleTmpl({name: sourceNetwork + ' - ' + destinationNetwork, type: ctwl.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK});
+                        return tooltipTitleTmpl({name: sourceNetwork + ctwc.LINK_CONNECTOR_STRING + destinationNetwork, type: ctwl.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK});
                     },
                     content: function (element, jointObject) {
-                        //TODO - This needs some cleanup
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
-                            viewElementDetails = viewElement.attributes.linkDetails;
+                            viewElementDetails = viewElement.attributes.linkDetails,
+                            data = [], partialMessage = "";
 
-                        var data = [],
-                            partial_msg = "";
-                        if (viewElementDetails.error == 'Other link marked as unidirectional, attach policy' || viewElementDetails.error == "Other link marked as bidirectional, attach policy")
-                            partial_msg = "Link partially connected";
-                        if (viewElementDetails.more_attributes != undefined && viewElementDetails.more_attributes.in_stats != undefined
-                            && viewElementDetails.more_attributes.out_stats != undefined && viewElementDetails.more_attributes.out_stats.length > 0
-                            && viewElementDetails.more_attributes.in_stats.length > 0) {
-                            var in_stats = viewElementDetails.more_attributes.in_stats;
-                            var out_stats = viewElementDetails.more_attributes.out_stats;
-                            var src = viewElementDetails.src;
-                            var dst = viewElementDetails.dst;
-                            var loss = viewElementDetails.loss;
-                            /*if(loss.diff && loss.loss_percent>0) commented the percentage loss code for while
-                             data.push({label:"Link",value:"Packet Loss % "+loss.loss_percent});
-                             else*/
-                            if (partial_msg != "")
-                                data.push({label: "", value: partial_msg});
-                            for (var i = 0; i < in_stats.length; i++) {
-                                if (src == in_stats[i].src && dst == in_stats[i].dst) {
-                                    data.push({
-                                        label: "Link",
-                                        value: in_stats[i].src.split(':').pop() + " - " + in_stats[i].dst.split(':').pop()
-                                    });
-                                    data.push({
-                                        label: "Traffic In",
-                                        value: cowu.addUnits2Packets(in_stats[i].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(in_stats[i].bytes)
-                                    });
-                                    for (var j = 0; j < out_stats.length; j++) {
-                                        if (src == out_stats[j].src && dst == out_stats[j].dst) {
-                                            data.push({
-                                                label: "Traffic Out",
-                                                value: cowu.addUnits2Packets(out_stats[j].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(out_stats[i].bytes)
-                                            });
+                        if (viewElementDetails.error == 'Other link marked as unidirectional, attach policy'
+                            || viewElementDetails.error == "Other link marked as bidirectional, attach policy") {
+                                partialMessage = "Link partially connected";
+                        }
+
+                        var inStats = viewElementDetails.more_attributes.in_stats,
+                            outStats = viewElementDetails.more_attributes.out_stats;
+
+                        if (contrail.checkIfExist(inStats) && contrail.checkIfExist(outStats) && outStats.length > 0 && inStats.length > 0) {
+                            var src = viewElementDetails.src,
+                                dst = viewElementDetails.dst;
+
+                            if (partialMessage != "") {
+                                data.push({label: "", value: partialMessage});
+                            }
+
+                            for (var i = 0; i < inStats.length; i++) {
+                                if (src == inStats[i].src && dst == inStats[i].dst) {
+                                    data.push({ label: "Link", value: inStats[i].src.split(':').pop() + ctwc.LINK_CONNECTOR_STRING + inStats[i].dst.split(':').pop()});
+                                    data.push({ label: "Traffic In",  value: cowu.addUnits2Packets(inStats[i].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(inStats[i].bytes) });
+
+                                    for (var j = 0; j < outStats.length; j++) {
+                                        if (src == outStats[j].src && dst == outStats[j].dst) {
+                                            data.push({ label: "Traffic Out", value: cowu.addUnits2Packets(outStats[j].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(outStats[i].bytes) });
                                         }
                                     }
-                                } else if (src == in_stats[i].dst && dst == in_stats[i].src) {
-                                    data.push({
-                                        label: "Link",
-                                        value: in_stats[i].src.split(':').pop() + " - " + in_stats[i].dst.split(':').pop(),
-                                        dividerClass: 'margin-5-0-0'
-                                    });
-                                    data.push({
-                                        label: "Traffic In",
-                                        value: cowu.addUnits2Packets(in_stats[i].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(in_stats[i].bytes)
-                                    });
-                                    for (var j = 0; j < out_stats.length; j++) {
-                                        if (src == out_stats[j].dst && dst == out_stats[j].src) {
-                                            data.push({
-                                                label: "Traffic Out",
-                                                value: cowu.addUnits2Packets(out_stats[j].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(out_stats[i].bytes)
-                                            });
+                                } else if (src == inStats[i].dst && dst == inStats[i].src) {
+                                    data.push({ label: "Link", value: inStats[i].src.split(':').pop() + ctwc.LINK_CONNECTOR_STRING + inStats[i].dst.split(':').pop(), dividerClass: 'margin-5-0-0' });
+                                    data.push({ label: "Traffic In", value: cowu.addUnits2Packets(inStats[i].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(inStats[i].bytes) });
+                                    for (var j = 0; j < outStats.length; j++) {
+                                        if (src == outStats[j].dst && dst == outStats[j].src) {
+                                            data.push({ label: "Traffic Out", value: cowu.addUnits2Packets(outStats[j].pkts, false, null, 1) + " | " + cowu.addUnits2Bytes(outStats[i].bytes) });
                                         }
                                     }
                                 }
                             }
-                        } else if (viewElementDetails.more_attributes == undefined || viewElementDetails.more_attributes.in_stats == undefined
-                            || viewElementDetails.more_attributes.out_stats == undefined) {
-                            var src = viewElementDetails.src.split(':').pop();
-                            var dst = viewElementDetails.dst.split(':').pop();
-                            if (partial_msg != "")
-                                data.push({label: "", value: partial_msg});
+                        } else {
+                            var src = viewElementDetails.src.split(':').pop(),
+                                dst = viewElementDetails.dst.split(':').pop();
 
-                            data.push({label: "Link", value: src + " - " + dst});
+                            if (partialMessage != "")
+                                data.push({label: "", value: partialMessage});
+
+                            data.push({label: "Link", value: src + ctwc.LINK_CONNECTOR_STRING + dst});
                             data.push({label: "Traffic In", value: "0 packets | 0 B"});
                             data.push({label: "Traffic Out", value: "0 packets | 0 B"});
 
                             if (viewElementDetails.dir == 'bi') {
-                                data.push({label: "Link", value: dst + " - " + src, dividerClass: 'margin-5-0-0'});
-                                data.push({label: "Traffic In", value: "0 packets | 0 B"});
-                                data.push({label: "Traffic Out", value: "0 packets | 0 B"});
-                            }
-                        } else if (viewElementDetails.more_attributes != undefined && viewElementDetails.more_attributes.in_stats != undefined
-                            && viewElementDetails.more_attributes.out_stats != undefined && viewElementDetails.more_attributes.in_stats.length == 0
-                            && viewElementDetails.more_attributes.out_stats.length == 0) {
-                            var src = viewElementDetails.src.split(':').pop();
-                            var dst = viewElementDetails.dst.split(':').pop();
-                            if (partial_msg != "")
-                                data.push({label: "", value: partial_msg});
-
-                            data.push({label: "Link", value: src + " - " + dst});
-                            data.push({label: "Traffic In", value: "0 packets | 0 B"});
-                            data.push({label: "Traffic Out", value: "0 packets | 0 B"});
-
-                            if (viewElementDetails.dir == 'bi') {
-                                data.push({label: "Link", value: dst + " - " + src, dividerClass: 'margin-5-0-0'});
+                                data.push({label: "Link", value: dst + ctwc.LINK_CONNECTOR_STRING + src, dividerClass: 'margin-5-0-0'});
                                 data.push({label: "Traffic In", value: "0 packets | 0 B"});
                                 data.push({label: "Traffic Out", value: "0 packets | 0 B"});
                             }
@@ -462,9 +426,7 @@ define([
 
                         return tooltipContentTmpl({info: data, iconClass: 'icon-resize-horizontal'});
                     },
-                    dimension: {
-                        width: 400
-                    }
+                    dimension: { width: 400 }
                 }
             };
         };
@@ -667,7 +629,7 @@ define([
                 view: "details",
                 focusedElement: {
                     fqName: networkFQN,
-                    type: ctwc.GRAPH_ELEMENT_NETWORK,
+                    type: ctwc.GRAPH_ELEMENT_INSTANCE,
                     uuid: instanceUUID,
                     vmName: vmName
                 }

@@ -32,7 +32,9 @@ define([
             self.$el.html(graphTemplate());
             setTimeout(function(){
                 var connectedGraphView = self.renderConnectedGraph(connectedGraph, selectorId, connectedSelectorId, configSelectorId);
-                self.renderConfigGraph(configGraph, configSelectorId, connectedGraphView);
+                if(contrail.checkIfExist(configGraph)) {
+                    self.renderConfigGraph(configGraph, configSelectorId, connectedGraphView);
+                }
             }, 100);
 
         },
@@ -50,7 +52,11 @@ define([
                 generateElementsFn: getElements4ConnectedGraphFn(graphConfig, selectorId),
                 remote: {
                     successCallback: function (response, contrailGraphModel) {
-                        if (!contrail.checkIfExist(contrailGraphModel.elementsDataObj) || (contrailGraphModel.attributes.focusedElement.type == 'project' && contrailGraphModel.elementsDataObj.elements.length == 0) || (contrailGraphModel.attributes.focusedElement.type == 'virtual-network' && contrailGraphModel.elementsDataObj.zoomedElements.length == 0)) {
+                        if (!contrail.checkIfExist(contrailGraphModel.elementsDataObj)
+                                || (contrailGraphModel.attributes.focusedElement.type == ctwc.GRAPH_ELEMENT_PROJECT
+                                && contrailGraphModel.elementsDataObj.elements.length == 0)
+                                || (contrailGraphModel.attributes.focusedElement.type == ctwc.GRAPH_ELEMENT_NETWORK
+                                && contrailGraphModel.elementsDataObj.zoomedElements.length == 0)) {
                             contrailGraphModel.empty = true;
                             return false;
                         }
@@ -72,9 +78,9 @@ define([
                 emptyCallback: function (contrailGraphModel) {
                     if(!contrail.checkIfExist(contrailGraphModel.elementsDataObj)) {
                         notFoundConfig.title = ctwm.NO_DATA_FOUND;
-                    } else if (contrailGraphModel.attributes.focusedElement.type == 'project' && contrailGraphModel.elementsDataObj.elements.length == 0) {
+                    } else if (contrailGraphModel.attributes.focusedElement.type == ctwc.GRAPH_ELEMENT_PROJECT && contrailGraphModel.elementsDataObj.elements.length == 0) {
                         notFoundConfig.title = ctwm.NO_NETWORK_FOUND;
-                    } else if (contrailGraphModel.attributes.focusedElement.type == 'virtual-network' && contrailGraphModel.elementsDataObj.zoomedElements.length == 0) {
+                    } else if (contrailGraphModel.attributes.focusedElement.type == ctwc.GRAPH_ELEMENT_NETWORK && contrailGraphModel.elementsDataObj.zoomedElements.length == 0) {
                         notFoundConfig.title =  ctwm.NO_VM_FOUND;
                     }
                     $(selectorId).html(notFoundTemplate(notFoundConfig));
@@ -233,9 +239,10 @@ define([
                 links = response['links'],
                 zoomedNode = null;
 
-            if (focusedElementType == ctwc.GRAPH_ELEMENT_PROJECT) {
+            if (focusedElementType == ctwc.GRAPH_ELEMENT_PROJECT || focusedElementType == ctwc.GRAPH_ELEMENT_INSTANCE) {
                 createNodeElements(nodes, elements4ConnectedGraph, elementMap);
                 createLinkElements(links, elements4ConnectedGraph, elementMap);
+
                 var linkedElements = elementMap['linkedElements'],
                     nodeSeparation = 90, groupedElements = [],
                     groupedElementsCount, maxRowCount,
@@ -284,7 +291,7 @@ define([
                     };
                 }
 
-            } else {
+            } else if (focusedElementType == ctwc.GRAPH_ELEMENT_NETWORK) {
                 var zoomedNodeKey = null,
                     options = null;
 
@@ -447,7 +454,7 @@ define([
         $(connectedSelectorId).redraw();
     };
 
-    function createVirtualMachineNode(position, size, node, srcVNDetails, uve) {
+    function createVirtualMachineNode(position, size, vmName, srcVNDetails, uve) {
         var nodeType = ctwc.GRAPH_ELEMENT_INSTANCE,
             element, options;
 
@@ -458,8 +465,7 @@ define([
                 iconClass: 'icon-contrail-virtual-machine'
             },
             nodeDetails: {
-                fqName: node,
-                node_type: nodeType,
+                fqName: vmName,
                 srcVNDetails: srcVNDetails,
                 uve: uve
             },
@@ -741,7 +747,7 @@ define([
                             fqName: srcVN,
                             uuid: dblClickedElement.nodeDetails['fqName'],
                             vmName: vmName,
-                            type: ctwc.GRAPH_ELEMENT_NETWORK
+                            type: ctwc.GRAPH_ELEMENT_INSTANCE
                         }
                     }
                 });
@@ -1178,18 +1184,21 @@ define([
     }
 
     function createNodeElement(node, config) {
-        var nodeName = node['name'],
+        var nodeFQN = node['name'],
             nodeType = node['node_type'],
             width = (config != null && config.width != null) ? config.width : 35,
             height = (config != null && config.height != null) ? config.height : 35,
-            imageLink, element, options, imageName;
+            imageLink, element, options, imageName,
+            nodeNameList, nodeName;
 
         imageName = getImageName(node);
         imageLink = '/img/icons/' + imageName;
+        nodeNameList = nodeFQN.split(":");
+        nodeName = (nodeNameList.length > 2) ? nodeNameList[2] : nodeFQN;
         options = {
             attrs: {
                 text: {
-                    text: contrail.truncateText(nodeName.split(":")[2], 20)
+                    text: contrail.truncateText(nodeName, 20)
                 }
             },
             size: {

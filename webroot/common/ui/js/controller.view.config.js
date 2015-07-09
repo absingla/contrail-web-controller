@@ -146,23 +146,25 @@ define([
         };
 
         self.getMNConnnectedGraphConfig = function (url, elementNameObject, keySuffix, type) {
-            var graphConfig = {
-                remote: {
-                    ajaxConfig: {
-                        url: url,
-                        type: 'GET'
+            var instanceSuffix = (contrail.checkIfExist(elementNameObject['instanceUUID']) ? (':' + elementNameObject['instanceUUID']) : ''),
+                ucid = ctwc.UCID_PREFIX_MN_GRAPHS + elementNameObject.fqName + instanceSuffix +  keySuffix,
+                graphConfig = {
+                    remote: {
+                        ajaxConfig: {
+                            url: url,
+                            type: 'GET'
+                        }
+                    },
+                    cacheConfig: {
+                        ucid: ucid
+                    },
+                    focusedElement: {
+                        type: type,
+                        name: elementNameObject
                     }
-                },
-                cacheConfig: {
-                    ucid: ctwc.UCID_PREFIX_MN_GRAPHS + elementNameObject.fqName + keySuffix
-                },
-                focusedElement: {
-                    type: type,
-                    name: elementNameObject
-                }
-            };
+                };
 
-            if(type ==  ctwc.GRAPH_ELEMENT_NETWORK || type ==  ctwc.GRAPH_ELEMENT_INSTANCE) {
+            if(type ==  ctwc.GRAPH_ELEMENT_NETWORK) {
                 graphConfig['vlRemoteConfig'] = {
                     vlRemoteList: ctwgc.getNetworkVMDetailsLazyRemoteConfig()
                 };
