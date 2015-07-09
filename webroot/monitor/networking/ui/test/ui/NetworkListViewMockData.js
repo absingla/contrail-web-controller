@@ -4,25 +4,25 @@
 
 define(['underscore'], function (_) {
     this.networksMockData = {
-        "data"   : {
+        "data": {
             "value": [
                 {
-                    "name" : "default-domain:admin:backend",
+                    "name": "default-domain:admin:backend",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 4,
-                            "in_bandwidth_usage" : 20957,
-                            "egress_flow_count"  : 12,
-                            "acl"                : "default-domain:admin:backend:backend",
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 4,
+                            "in_bandwidth_usage": 20957,
+                            "egress_flow_count": 12,
+                            "acl": "default-domain:admin:backend:backend",
                             "virtualmachine_list": [
                                 "77e6a8a7-333c-451c-a953-158fd7141763",
                                 "aa833f1b-ac3e-4e44-925d-3f847e7779d4"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:ad21a897-657a-4812-ad18-a0773b095309",
                                 "default-domain:admin:default-domain__admin__si-firewall__1__right__3"
                             ],
-                            "ingress_flow_count" : 12,
+                            "ingress_flow_count": 12,
                             "out_bandwidth_usage": 28345
                         },
                         "UveVirtualNetworkConfig": {
@@ -33,22 +33,22 @@ define(['underscore'], function (_) {
                     }
                 },
                 {
-                    "name" : "default-domain:admin:frontend",
+                    "name": "default-domain:admin:frontend",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 10,
-                            "in_bandwidth_usage" : 28345,
-                            "egress_flow_count"  : 12,
-                            "acl"                : "default-domain:admin:frontend:frontend",
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 10,
+                            "in_bandwidth_usage": 28345,
+                            "egress_flow_count": 12,
+                            "acl": "default-domain:admin:frontend:frontend",
                             "virtualmachine_list": [
                                 "77aca039-2e54-494e-9230-8c17cd96ecd8",
                                 "77e6a8a7-333c-451c-a953-158fd7141763"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:3b73ec6a-2ca7-4ed9-ab84-4e166c02bc2e",
                                 "default-domain:admin:default-domain__admin__si-firewall__1__left__2"
                             ],
-                            "ingress_flow_count" : 12,
+                            "ingress_flow_count": 12,
                             "out_bandwidth_usage": 20957
                         },
                         "UveVirtualNetworkConfig": {
@@ -62,20 +62,20 @@ define(['underscore'], function (_) {
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn1",
+                    "name": "default-domain:admin:st_vn1",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 6,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : "default-domain:admin:st_vn1:st_vn1",
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 6,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": "default-domain:admin:st_vn1:st_vn1",
                             "virtualmachine_list": [
                                 "769aa74a-aa36-4e79-ab23-86476a23b585"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port1"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {
@@ -87,53 +87,53 @@ define(['underscore'], function (_) {
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn10",
+                    "name": "default-domain:admin:st_vn10",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "ce7281ac-66b2-4cb4-8aac-78843d66281f"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port10"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn100",
+                    "name": "default-domain:admin:st_vn100",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "8ee4d414-71be-41a2-8bf2-57df02ae9a8f"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port100"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn101",
+                    "name": "default-domain:admin:st_vn101",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 4,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : "default-domain:admin:st_vn101:st_vn101",
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 4,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": "default-domain:admin:st_vn101:st_vn101",
                             "virtualmachine_list": [
                                 "06370047-4dac-4a51-aebf-e61cdae85b9b",
                                 "0a94797e-f70d-4adc-99d5-9e394d6d6b2f",
@@ -185,7 +185,7 @@ define(['underscore'], function (_) {
                                 "f8641b77-d360-489b-992c-67e762414d05",
                                 "fe738e05-e0f3-49e6-ba00-86a883e69b2e"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st101_port39",
                                 "default-domain:admin:st101_port9",
                                 "default-domain:admin:st101_port19",
@@ -236,7 +236,7 @@ define(['underscore'], function (_) {
                                 "default-domain:admin:st101_port27",
                                 "default-domain:admin:st101_port41"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {
@@ -247,13 +247,13 @@ define(['underscore'], function (_) {
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn102",
+                    "name": "default-domain:admin:st_vn102",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 4,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : "default-domain:admin:st_vn102:st_vn102",
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 4,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": "default-domain:admin:st_vn102:st_vn102",
                             "virtualmachine_list": [
                                 "05fbdfd9-494d-461e-a684-bb0e5e59c3fd",
                                 "06a762c2-7d3b-4900-a4ac-867377afe35c",
@@ -305,7 +305,7 @@ define(['underscore'], function (_) {
                                 "f763452d-ee3a-43d5-ab4a-f65b8f04e7e9",
                                 "fe6a8852-2fa4-4918-8a30-9b7b5ebff7cc"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st102_port58",
                                 "default-domain:admin:st102_port66",
                                 "default-domain:admin:st102_port62",
@@ -356,7 +356,7 @@ define(['underscore'], function (_) {
                                 "default-domain:admin:st102_port53",
                                 "default-domain:admin:st102_port94"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {
@@ -367,200 +367,200 @@ define(['underscore'], function (_) {
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn11",
+                    "name": "default-domain:admin:st_vn11",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "e2d1a978-da31-44e8-b83a-87fba37b1d3a"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port11"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn12",
+                    "name": "default-domain:admin:st_vn12",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "0631004a-5544-4bb1-b94c-7340767efc5b"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port12"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn13",
+                    "name": "default-domain:admin:st_vn13",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "eb42f001-33c5-4489-bc51-069e1d67ecc2"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port13"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn14",
+                    "name": "default-domain:admin:st_vn14",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "cf30f73e-015b-4c25-ae1e-95d10626fc47"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port14"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn15",
+                    "name": "default-domain:admin:st_vn15",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "377a76b6-359e-4e38-8132-deff4abef460"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port15"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn16",
+                    "name": "default-domain:admin:st_vn16",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "26fdfe9c-bfad-4886-9ea4-aa6a382dc68f"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port16"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn17",
+                    "name": "default-domain:admin:st_vn17",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "b6fb2da1-3286-48c2-bfe5-4df72e045a57"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port17"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn18",
+                    "name": "default-domain:admin:st_vn18",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "5538a2b8-19e0-4151-b175-d1316206f227"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port18"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn19",
+                    "name": "default-domain:admin:st_vn19",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "1cb93181-b7ac-4849-a0bb-cf4878c4b73a"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port19"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn2",
+                    "name": "default-domain:admin:st_vn2",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 10,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : "default-domain:admin:st_vn2:st_vn2",
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 10,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": "default-domain:admin:st_vn2:st_vn2",
                             "virtualmachine_list": [
                                 "a47d3974-74c5-46b8-95f7-928d0c7c67cd"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port2"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {
@@ -574,160 +574,160 @@ define(['underscore'], function (_) {
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn20",
+                    "name": "default-domain:admin:st_vn20",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "3b913003-18d6-446c-bb1b-f99b284e6341"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port20"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn21",
+                    "name": "default-domain:admin:st_vn21",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "c19243a3-d79c-41dd-afba-5db277beb130"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port21"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn22",
+                    "name": "default-domain:admin:st_vn22",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "3ca3cc54-217b-4cc9-80b3-4cd0ed799d80"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port22"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn23",
+                    "name": "default-domain:admin:st_vn23",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "f08b50d1-1713-488f-9eec-bdce632e1d45"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port23"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn24",
+                    "name": "default-domain:admin:st_vn24",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "3220888b-a28e-4e64-9c39-c3785056c3a5"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port24"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn25",
+                    "name": "default-domain:admin:st_vn25",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "945a485d-8751-472b-a8f4-dc12292b4c86"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port25"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn26",
+                    "name": "default-domain:admin:st_vn26",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "08442050-bfc0-4f22-a6f9-40b489d3e991"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port26"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
                     }
                 },
                 {
-                    "name" : "default-domain:admin:st_vn27",
+                    "name": "default-domain:admin:st_vn27",
                     "value": {
-                        "UveVirtualNetworkAgent" : {
-                            "total_acl_rules"    : 0,
-                            "in_bandwidth_usage" : 0,
-                            "egress_flow_count"  : 0,
-                            "acl"                : null,
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
                             "virtualmachine_list": [
                                 "e44ae363-32de-4d4b-b781-9aeed4469dcc"
                             ],
-                            "interface_list"     : [
+                            "interface_list": [
                                 "default-domain:admin:st_port27"
                             ],
-                            "ingress_flow_count" : 0,
+                            "ingress_flow_count": 0,
                             "out_bandwidth_usage": 0
                         },
                         "UveVirtualNetworkConfig": {}
@@ -736,183 +736,183 @@ define(['underscore'], function (_) {
             ]
         },
         "lastKey": "default-domain:admin:st_vn27",
-        "more"   : true
+        "more": true
     };
     this.networksMockStatData = [
         {
             "value": [
                 {
-                    "name"                   : "default-domain:admin:backend",
-                    "SUM(vn_stats.in_bytes)" : 9623250,
-                    "SUM(vn_stats.in_tpkts)" : 33413,
+                    "name": "default-domain:admin:backend",
+                    "SUM(vn_stats.in_bytes)": 9623250,
+                    "SUM(vn_stats.in_tpkts)": 33413,
                     "SUM(vn_stats.out_bytes)": 12849942,
                     "SUM(vn_stats.out_tpkts)": 33487
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn22",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn22",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn25",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn25",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn23",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn23",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn21",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn21",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn24",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn24",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn20",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn20",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn26",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn26",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn27",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn27",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn15",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn15",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn12",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn12",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn14",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn14",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn11",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn11",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn13",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn13",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn10",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn10",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn19",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn19",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn16",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn16",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn18",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn18",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn17",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn17",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn2",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn2",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn1",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn1",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:frontend",
-                    "SUM(vn_stats.in_bytes)" : 12849942,
-                    "SUM(vn_stats.in_tpkts)" : 33487,
+                    "name": "default-domain:admin:frontend",
+                    "SUM(vn_stats.in_bytes)": 12849942,
+                    "SUM(vn_stats.in_tpkts)": 33487,
                     "SUM(vn_stats.out_bytes)": 9623250,
                     "SUM(vn_stats.out_tpkts)": 33413
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn101",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn101",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn102",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn102",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 },
                 {
-                    "name"                   : "default-domain:admin:st_vn100",
-                    "SUM(vn_stats.in_bytes)" : 0,
-                    "SUM(vn_stats.in_tpkts)" : 0,
+                    "name": "default-domain:admin:st_vn100",
+                    "SUM(vn_stats.in_bytes)": 0,
+                    "SUM(vn_stats.in_tpkts)": 0,
                     "SUM(vn_stats.out_bytes)": 0,
                     "SUM(vn_stats.out_tpkts)": 0
                 }
@@ -920,7 +920,7 @@ define(['underscore'], function (_) {
         }
     ];
     return {
-        networksMockData    : networksMockData,
+        networksMockData: networksMockData,
         networksMockStatData: networksMockStatData
     };
 });

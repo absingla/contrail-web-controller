@@ -26,10 +26,10 @@ define([
         expect(0);
         var fakeServer = this.server,
             testConfigObj = {
-                'prefixId'  : 'project-network-grid',
-                'cols'      : ctwgc.projectNetworksColumns,
-                'addnCols'  : ['detail'],
-                'gridElId'  : '#' + ctwl.PROJECT_NETWORK_GRID_ID
+                'prefixId': 'project-network-grid',
+                'cols': ctwgc.projectNetworksColumns,
+                'addnCols': ['detail'],
+                'gridElId': '#' + ctwl.PROJECT_NETWORK_GRID_ID
             };
         fakeServer.respondWith(
             "POST", TestUtils.getRegExForUrl(ctwc.URL_ALL_NETWORKS_DETAILS),
@@ -39,8 +39,8 @@ define([
             [200, {"Content-Type": "application/json"}, JSON.stringify(TestMockdata.networksMockStatData)]);
 
         mnPageLoader.renderView('renderNetworks', {
-            "view"  : "list",
-            "type"  : "network",
+            "view": "list",
+            "type": "network",
             "source": "uve"
         }, monitorNetworkingView);
         fakeServer.respond();
