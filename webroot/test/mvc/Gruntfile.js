@@ -37,7 +37,7 @@ module.exports = function (grunt) {
         nm  : {
             options: {
                 files: [
-                    {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/*.js', included: false}
+                    {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/NetworkListViewTest.js', included: false}
                 ]
             }
         }

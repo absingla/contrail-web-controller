@@ -40,11 +40,11 @@ require(["/base/contrail-web-core/webroot/js/core-app-config.js"], function() {
         controllerTestAppPathObj ["controller-view-config"]      = "common/ui/js/controller.view.config";
         controllerTestAppPathObj ["controller-init"]             = "common/ui/js/controller.init";
 
-        controllerTestAppPathObj ["test-slickgrid-utils"]        = "/base/contrail-web-core/webroot/test/mvc/common/utils.test.slickgrid";
-        controllerTestAppPathObj["mockdata-core-slickgrid"]      = "/base/contrail-web-core/webroot/test/mvc/common/mockdata.test.slickgrid";
-        controllerTestAppPathObj ["test-slickgrid"]              = "/base/contrail-web-core/webroot/test/mvc/slickgrid/test.slickgrid";
-        controllerTestAppPathObj ["test-nm-slickgrid-mockdata"]  = "test/mvc/common/nm.test.mockdata";
-        controllerTestAppPathObj ["test-slickgrid-messages"]     = "test/mvc/common/nm.test.messages";
+        controllerTestAppPathObj ["test-slickgrid-utils"]        = "/base/contrail-web-core/webroot/test/mvc/common/co.test.utils";
+        controllerTestAppPathObj ["mockdata-core-slickgrid"]     = "/base/contrail-web-core/webroot/test/mvc/common/co.test.mockdata";
+        controllerTestAppPathObj ["test-slickgrid"]              = "/base/contrail-web-core/webroot/test/mvc/slickgrid/slickgrid.test.common";
+        controllerTestAppPathObj ["test-nm-slickgrid-mockdata"]  = "monitor/networking/ui/test/ui/NetworkListViewMockData";
+        controllerTestAppPathObj ["test-slickgrid-messages"]     = "test/mvc/common/ct.test.messages";
 
         /* Controller Test Utils Init*/
         controllerTestAppPathObj["ct-test-init"]                 = "test/mvc/common/ct.test.init";

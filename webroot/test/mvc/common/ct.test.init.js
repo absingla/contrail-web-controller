@@ -7,7 +7,7 @@ var cowu, cowc, ctwc, cowch, ctwgc, ctwgrc, ctwl, ctwm, ctwp;
 var allTestFiles = [], nmTestKarma = window.__karma__;
 
 for (var file in nmTestKarma.files) {
-    if (/contrail-test\.js$/.test(file)) {
+    if (/Test\.js$/.test(file)) {
         allTestFiles.push(file);
     }
 }
