@@ -57,9 +57,6 @@ define([
             //'VirtualMachineStats:if_stats'
         ];
 
-        this.TYPE_VIRTUAL_NETWORK = "virtual-network";
-        this.TYPE_VIRTUAL_MACHINE = "virtual-machine";
-
         this.URL_NETWORK = '/#p=mon_networking_networks&q[type]=network&q[view]=details&q[focusedElement][fqName]={{key}}&q[focusedElement][type]=virtual-network';
         this.URL_INSTANCE = '/#p=mon_networking_instances&q[type]=instance&q[view]=details&q[focusedElement][fqName]={{params.vn}}&q[focusedElement][uuid]={{key}}&q[focusedElement][type]=virtual-network';
         this.URL_VROUTER = '/#p=mon_infra_vrouter&q[node]={{key}}';
@@ -68,6 +65,15 @@ define([
             var args = arguments;
             return cowc.getValueFromTemplate(args);
         };
+
+        this.TYPE_PROJECT = "project";
+        this.TYPE_NETWORK = "network";
+        this.TYPE_VN = 'vn'
+        this.TYPE_VIRTUAL_NETWORK = "virtual-network";
+        this.TYPE_VIRTUAL_MACHINE = "virtual-machine";
+
+        this.ALL_PROJECT_DROPDOWN_OPTION = [{name: 'all projects', value: 'all', fq_name: 'all'}];
+        this.ALL_NETWORK_DROPDOWN_OPTION = [{name: 'all networks', value: 'all', fq_name: 'all'}];
 
         this.TMPL_VN_PORT_HEAT_CHART = "network-port-heat-chart-template";
         this.TMPL_TRAFFIC_STATS_TAB = "traffic-stats-tab-template";

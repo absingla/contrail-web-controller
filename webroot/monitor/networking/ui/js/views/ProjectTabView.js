@@ -62,7 +62,7 @@ define([
                                             app: cowc.APP_CONTRAIL_CONTROLLER,
                                             viewConfig: {
                                                 parentUUID: projectUUID,
-                                                parentType: 'project'
+                                                parentType: ctwc.TYPE_PROJECT
                                             }
                                         },
                                         {

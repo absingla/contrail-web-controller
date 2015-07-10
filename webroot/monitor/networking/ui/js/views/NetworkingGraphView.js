@@ -88,7 +88,10 @@ define([
                 failureCallback: function (contrailGraphModel) {
                     var xhr = contrailGraphModel.errorList[0],
                         notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_ERROR_PAGE, {errorMessage: xhr.responseText});
-                    $(selectorId).html(notFoundTemplate(notFoundConfig));
+
+                    if(!(xhr.status === 0 && xhr.statusText === 'abort')) {
+                        $(selectorId).html(notFoundTemplate(notFoundConfig));
+                    }
                 },
                 successCallback: function (jointObject) {
                     var directedGraphSize = jointObject.graph.directedGraphSize,

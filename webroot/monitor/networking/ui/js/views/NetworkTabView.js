@@ -68,7 +68,7 @@ define([
                                             app: cowc.APP_CONTRAIL_CONTROLLER,
                                             viewConfig: {
                                                 parentUUID: networkUUID,
-                                                parentType: 'vn'
+                                                parentType: ctwc.TYPE_VN
                                             }
                                         },
                                         {

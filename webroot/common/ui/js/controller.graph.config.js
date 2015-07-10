@@ -605,6 +605,19 @@ define([
 
         };
 
+        this.setProject4NetworkListURLHashParams = function(projectFQN) {
+            var hashObj = {
+                type: "network",
+                view: "list"
+            };
+
+            if (projectFQN != null) {
+                hashObj.project = projectFQN;
+            }
+
+            layoutHandler.setURLHashParams(hashObj, {p: "mon_networking_networks", merge: false, triggerHashChange: false});
+        };
+
         this.setNetworkURLHashParams = function(hashParams, networkFQN, triggerHashChange) {
             var hashObj = {
                 type: "network",
@@ -621,6 +634,15 @@ define([
 
             layoutHandler.setURLHashParams(hashObj, {p: "mon_networking_networks", merge: false, triggerHashChange: triggerHashChange});
 
+        };
+
+        this.setNetwork4InstanceListURLHashParams = function(extendedHashObj) {
+            var hashObj = $.extend(true, {
+                    type: "instance",
+                    view: "list"
+                }, extendedHashObj);;
+
+            layoutHandler.setURLHashParams(hashObj, {p: "mon_networking_instances", merge: false, triggerHashChange: false});
         };
 
         this.setInstanceURLHashParams = function(hashParams, networkFQN, instanceUUID, vmName, triggerHashChange) {
