@@ -373,7 +373,7 @@ define([
                     break;
             }
         };
-    }
+    };
 
     return CTUtils;
 });

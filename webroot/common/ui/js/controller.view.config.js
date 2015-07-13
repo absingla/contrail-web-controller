@@ -55,7 +55,16 @@ define([
                     viewConfig: {
                         modelKey: ctwc.get(ctwc.UMID_INSTANCE_UVE, instanceUUID),
                         instanceUUID: instanceUUID,
-                        parseFn: ctwp.parseLineChartData
+                        parseFn: ctwp.parseTrafficLineChartData
+                    }
+                },
+                {
+                    elementId: ctwl.INSTANCE_CPU_MEM_STATS_ID,
+                    title: ctwl.TITLE_CPU_MEMORY,
+                    view: "LineBarWithFocusChartView",
+                    viewConfig: {
+                        modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
+                        parseFn: ctwp.parseCPUMemLineChartData
                     }
                 },
                 {
@@ -103,6 +112,8 @@ define([
                                                 $('#' + ctwl.INSTANCE_TRAFFIC_STATS_ID).find('svg').trigger('refresh');
                                             } else if (selTab == ctwl.TITLE_INTERFACES) {
                                                 $('#' + ctwl.INSTANCE_INTERFACE_GRID_ID).data('contrailGrid').refreshView();
+                                            } else if (selTab == ctwl.TITLE_CPU_MEMORY) {
+                                                $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID).find('svg').trigger('refresh');
                                             }
                                         },
                                         tabs: tabObjs
@@ -172,6 +183,35 @@ define([
 
             return graphConfig;
         };
+    };
+
+    function getInstanceCPUMemModelConfig(networkFQN, instanceUUID) {
+        var postData = {
+            async: false,
+            fromTimeUTC: "now-120m",
+            toTimeUTC: "now",
+            select: "Source, T, cpu_stats.cpu_one_min_avg, cpu_stats.rss, name",
+            table: "StatTable.VirtualMachineStats.cpu_stats",
+            where: "(name = " + instanceUUID + ")"
+        };
+
+        var modelConfig = {
+            remote: {
+                ajaxConfig: {
+                    url: ctwc.URL_QUERY,
+                    type: 'POST',
+                    data: JSON.stringify(postData)
+                },
+                dataParser: function (response) {
+                    return response['data']
+                }
+            },
+            cacheConfig: {
+                ucid: ctwc.get(ctwc.UCID_INSTANCE_CPU_MEMORY_LIST, networkFQN, instanceUUID)
+            }
+        };
+
+        return modelConfig;
     };
 
     return CTViewConfig;

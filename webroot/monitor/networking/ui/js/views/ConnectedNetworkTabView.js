@@ -59,7 +59,7 @@ define([
                                             view: "ConnectedNetworkTrafficStatsView",
                                             viewConfig: {
                                                 linkDetails: linkDetails,
-                                                parseFn: ctwp.parseLineChartData
+                                                parseFn: ctwp.parseTrafficLineChartData
                                             }
                                         }
                                     ]

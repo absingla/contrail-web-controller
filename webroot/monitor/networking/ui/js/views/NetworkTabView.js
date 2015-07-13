@@ -88,7 +88,7 @@ define([
                                                         ucid: ctwc.get(ctwc.UCID_NETWORK_TRAFFIC_STATS_LIST, networkFQN)
                                                     }
                                                 },
-                                                parseFn: ctwp.parseLineChartData
+                                                parseFn: ctwp.parseTrafficLineChartData
                                             }
                                         },
                                         {

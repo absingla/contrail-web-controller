@@ -315,17 +315,14 @@ define([
             return result;
         };
 
-        this.parseLineChartData = function(responseArray) {
+        this.parseTrafficLineChartData = function (responseArray) {
             if (responseArray.length == 0) {
                 return [];
             }
             var response = responseArray[0],
                 rawdata = response['flow-series'],
-                inBytes = {key: "In Traffic", values: [], color: d3_category5[0]}, outBytes = {
-                    key: "Out Traffic",
-                    values: [],
-                    color: d3_category5[1]
-                },
+                inBytes = {key: "In Traffic", values: [], color: d3_category5[0]},
+                outBytes = {key: "Out Traffic", values: [], color: d3_category5[1]},
                 inPackets = {key: "In Packets", values: []}, outPackets = {key: "Out Packets", values: []},
                 chartData = [inBytes, outBytes];
 
@@ -335,6 +332,19 @@ define([
                 outBytes.values.push({x: ts, y: rawdata[i].outBytes});
                 inPackets.values.push({x: ts, y: rawdata[i].inPkts});
                 outPackets.values.push({x: ts, y: rawdata[i].outPkts});
+            }
+            return chartData;
+        };
+
+        this.parseCPUMemLineChartData = function(responseArray) {
+            var cpuUtilization = {key: "CPU Utilization (%)", values: [], bar: true, color: d3_category5[1]},
+                memoryUsage = {key: "Memory Usage", values: [], color: d3_category5[3]},
+                chartData = [memoryUsage, cpuUtilization];
+
+            for (var i = 0; i < responseArray.length; i++) {
+                var ts = Math.floor(responseArray[i]['T'] / 1000);
+                cpuUtilization.values.push({x: ts, y: responseArray[i]['cpu_stats.cpu_one_min_avg']});
+                memoryUsage.values.push({x: ts, y: responseArray[i]['cpu_stats.rss']});
             }
             return chartData;
         };

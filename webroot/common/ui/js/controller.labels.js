@@ -158,6 +158,7 @@ define([
         this.INSTANCE_TABS_ID = "instance-tabs";
         this.INSTANCE_DETAILS_ID = "instance-details";
         this.INSTANCE_TRAFFIC_STATS_ID = "instance-traffic-stats";
+        this.INSTANCE_CPU_MEM_STATS_ID = "instance-cpu-mem-stats";
         this.INSTANCE_TRAFFIC_STATS_DROPDOWN_ID = "instance-traffic-stats-dropdown";
         this.INSTANCE_TRAFFIC_STATS_CHART_ID = "instance-traffic-stats-chart";
         this.INSTANCE_PORT_HEAT_CHART_ID = "instance-port-heat-chart";
@@ -202,6 +203,7 @@ define([
         this.TITLE_DETAILS = "Details";
         this.TITLE_VRF_STATS = "VRF Stats";
         this.TITLE_CPU_MEMORY_INFO = "CPU/Memory Information";
+        this.TITLE_CPU_MEMORY = "CPU/Memory";
         this.TITLE_TRAFFIC_DETAILS = "Traffic Details";
         this.TITLE_FLOATING_IPS = "Floating IPs";
         this.TITLE_TRAFFIC_STATISTICS = "Traffic Statistics";
