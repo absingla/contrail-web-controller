@@ -103,30 +103,7 @@ define([
                                                             type: 'GET'
                                                         },
                                                         dataParser: function (response) {
-                                                            var srcPortdata  = response ? ctwp.parsePortDistribution(ifNull(response['sport'], []), {
-                                                                    startTime: response['startTime'],
-                                                                    endTime: response['endTime'],
-                                                                    bandwidthField: 'outBytes',
-                                                                    flowCntField: 'outFlowCount',
-                                                                    portField: 'sport',
-                                                                    portYype: "src",
-                                                                    fqName: networkFQN
-                                                                }) : [],
-                                                                dstPortData = response ? ctwp.parsePortDistribution(ifNull(response['dport'], []), {
-                                                                    startTime: response['startTime'],
-                                                                    endTime: response['endTime'],
-                                                                    bandwidthField: 'inBytes',
-                                                                    flowCntField: 'inFlowCount',
-                                                                    portField: 'dport',
-                                                                    portYype: "src",
-                                                                    fqName: networkFQN
-                                                                }) : [],
-                                                                chartData = [];
-
-                                                            chartData = chartData.concat(srcPortdata);
-                                                            chartData = chartData.concat(dstPortData);
-
-                                                            return chartData;
+                                                            return ctwp.parseNetwork4PortDistribution(response, networkFQN);
                                                         }
                                                     },
                                                     cacheConfig: {

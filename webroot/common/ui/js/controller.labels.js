@@ -96,7 +96,11 @@ define([
             outBytes: "Total Out Bytes",
             outTpkts: "Total Out Packets",
             inTpkts: "Total In Packets",
-            throughput: "Total Throughput"
+            throughput: "Total Throughput",
+
+            /* PortDistribution */
+            sport: 'Source Port',
+            dport: 'Destination Port'
         };
 
         this.TOP_CONTENT_CONTAINER = "top-content-container";

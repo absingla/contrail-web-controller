@@ -254,10 +254,6 @@ define([
             return projectList;
         };
 
-        this.projectVNPortStatsParser = function (response) {
-            return [response];
-        };
-
         this.vnTrafficStatsParser = function (response) {
             return [response];
         };
@@ -268,6 +264,60 @@ define([
 
         this.flowsDataParser = function (response) {
             return response['data'];
+        };
+
+        this.parseProject4PortDistribution = function(response, projectFQN) {
+            var srcPortdata  = response ? ctwp.parsePortDistribution(ifNull(response['sport'], []), {
+                    startTime: response['startTime'],
+                    endTime: response['endTime'],
+                    bandwidthField: 'outBytes',
+                    flowCntField: 'outFlowCount',
+                    portField: 'sport',
+                    portYype: "src",
+                    fqName: projectFQN
+                }) : [],
+                dstPortData = response ? ctwp.parsePortDistribution(ifNull(response['dport'], []), {
+                    startTime: response['startTime'],
+                    endTime: response['endTime'],
+                    bandwidthField: 'inBytes',
+                    flowCntField: 'inFlowCount',
+                    portField: 'dport',
+                    portYype: "src",
+                    fqName: projectFQN
+                }) : [],
+                chartData = [];
+
+            chartData = chartData.concat(srcPortdata);
+            chartData = chartData.concat(dstPortData);
+
+            return chartData;
+        };
+
+        this.parseNetwork4PortDistribution = function(response, networkFQN) {
+            var srcPortdata  = response ? ctwp.parsePortDistribution(ifNull(response['sport'], []), {
+                    startTime: response['startTime'],
+                    endTime: response['endTime'],
+                    bandwidthField: 'outBytes',
+                    flowCntField: 'outFlowCount',
+                    portField: 'sport',
+                    portYype: "src",
+                    fqName: networkFQN
+                }) : [],
+                dstPortData = response ? ctwp.parsePortDistribution(ifNull(response['dport'], []), {
+                    startTime: response['startTime'],
+                    endTime: response['endTime'],
+                    bandwidthField: 'inBytes',
+                    flowCntField: 'inFlowCount',
+                    portField: 'dport',
+                    portYype: "src",
+                    fqName: networkFQN
+                }) : [],
+                chartData = [];
+
+            chartData = chartData.concat(srcPortdata);
+            chartData = chartData.concat(dstPortData);
+
+            return chartData;
         };
 
         this.parseNetworks4PortMap = function (data) {

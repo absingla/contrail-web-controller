@@ -375,5 +375,36 @@ define([
         };
     };
 
+    function getUUIDByName(fqName) {
+        var retUUID, fqNameLength = fqName.split(':').length;
+
+        if (fqNameLength == 2) {
+            $.ajax({
+                url: cowc.getProjectsURL('default-domain'),
+                async: false
+            }).done(function (response) {
+                $.each(response['projects'], function (idx, projObj) {
+                    if (projObj['fq_name'].join(':') === fqName) {
+                        retUUID = projObj['uuid'];
+                        return false;
+                    }
+                });
+            });
+        } else {
+            $.ajax({
+                url:'/api/tenants/config/virtual-networks',
+                async:false
+            }).done(function(response) {
+                $.each(response['virtual-networks'],function(idx, vnObj) {
+                    if(vnObj['fq_name'].join(':') === fqName) {
+                        retUUID = vnObj['uuid'];
+                        return false;
+                    }
+                });
+            });
+        }
+        return retUUID;
+    };
+
     return CTUtils;
 });

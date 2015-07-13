@@ -433,13 +433,8 @@ define([
 
         this.getPortDistributionTooltipConfig = function(onScatterChartClick) {
             return function(data) {
-                var type, name = data['name'];
-
-                if(data['type'] == 'sport') {
-                    type = 'Source Port';
-                } else if(data['type'] == 'dport') {
-                    type = 'Destination Port';
-                }
+                var type = ctwl.get(data['type']),
+                    name = data['name'];
 
                 if(data['name'].toString().indexOf('-') > -1) {
                     type += ' Range';
