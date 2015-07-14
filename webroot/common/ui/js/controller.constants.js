@@ -68,9 +68,11 @@ define([
             return cowc.getValueFromTemplate(args);
         };
 
+        this.TYPE_DOMAIN = "domain";
         this.TYPE_PROJECT = "project";
         this.TYPE_NETWORK = "network";
-        this.TYPE_VN = 'vn'
+        this.TYPE_INSTANCE = "instance";
+        this.TYPE_VN = 'vn';
         this.TYPE_VIRTUAL_NETWORK = "virtual-network";
         this.TYPE_VIRTUAL_MACHINE = "virtual-machine";
 

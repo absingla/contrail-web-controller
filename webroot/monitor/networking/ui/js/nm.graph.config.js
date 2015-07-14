@@ -176,7 +176,8 @@ define([
                     },
                     content: function (element, jointObject) {
                         var viewElement = jointObject.graph.getCell(element.attr('model-id')),
-                            virtualNetworkName = viewElement.attributes.nodeDetails['name'].split(':'),
+                            networkFQN = viewElement.attributes.nodeDetails['name'],
+                            virtualNetworkName = networkFQN.split(':'),
                             actions = [];
 
                         actions.push({
@@ -184,7 +185,7 @@ define([
                             iconClass: 'icon-cog'
                         });
 
-                        if (!$(element).hasClassSVG('ZoomedElement')) {
+                        if (!$(element).hasClassSVG('ZoomedElement') && !ctwu.isServiceVN(networkFQN)) {
                             actions.push({
                                 text: 'View',
                                 iconClass: 'icon-external-link'

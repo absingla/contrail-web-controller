@@ -169,6 +169,12 @@ define([
         this.INSTANCE_INTERFACE_GRID_ID = "instance-interface-grid";
         this.INSTANCE_INTERFACE_ID = "instance-interface";
 
+        this.NETWORKING_GRAPH_ID = "networking-graph";
+        this.GRAPH_CONNECTED_ELEMENTS_ID = "graph-connected-elements";
+        this.GRAPH_CONFIG_ELEMENTS_ID = "graph-config-elements";
+        this.GRAPH_LOADING_ID = "graph-loading";
+        this.GRAPH_CONTROL_PANEL_ID = "graph-control-panel";
+
         this.MONITOR_CONNECTED_NETWORK_ID = "monitor-connected-network";
         this.MONITOR_CONNECTED_NETWORK_VIEW_ID = "monitor-connected-network-view";
         this.CONNECTED_NETWORK_TABS_ID = "connected-networks-tabs";

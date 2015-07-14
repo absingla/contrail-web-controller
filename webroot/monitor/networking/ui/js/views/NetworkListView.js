@@ -93,7 +93,7 @@ define([
                                 title: ctwl.TITLE_NETWORKS,
                                 view: "NetworkGridView",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {projectFQN: null, parentType: 'project', pagerOptions: { options: { pageSize: 10, pageSizeSelect: [10, 50, 100] } }}
+                                viewConfig: {projectFQN: null, parentType: 'project', pagerOptions: { options: { pageSize: 8, pageSizeSelect: [8, 50, 100] } }}
                             }
                         ]
                     }
