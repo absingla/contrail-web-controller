@@ -25,7 +25,7 @@ define([
                         contrailListModel = new ContrailListModel(getNetworkListModelConfig(projectFQN));
 
                     cowu.renderView4Config(self.$el, contrailListModel, getNetworkListViewConfig());
-                    ctwgrc.setProject4NetworkListURLHashParams(projectFQN);
+                    nmwgrc.setProject4NetworkListURLHashParams(projectFQN);
                 }, null, { addAllDropdownOption: true });
             });
         }
@@ -47,7 +47,7 @@ define([
                 dataParser: ctwp.networkDataParser
             },
             vlRemoteConfig: {
-                vlRemoteList: ctwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
+                vlRemoteList: nmwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
             },
             cacheConfig: {
                 ucid: projectFQN != null ? (ctwc.UCID_PREFIX_MN_LISTS + projectFQN + ":virtual-networks") : ctwc.UCID_ALL_VN_LIST
@@ -104,7 +104,7 @@ define([
 
     var onScatterChartClick = function(chartConfig) {
         var networkFQN = chartConfig['name'];
-        ctwgrc.setNetworkURLHashParams(null, networkFQN, true);
+        nmwgrc.setNetworkURLHashParams(null, networkFQN, true);
     };
 
     var getNetworkTooltipConfig = function(data) {

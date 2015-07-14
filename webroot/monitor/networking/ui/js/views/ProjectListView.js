@@ -31,7 +31,7 @@ define([
                     url: ctwc.getProjectsURL(ctwc.DEFAULT_DOMAIN),
                         type: 'GET'
                 },
-                hlRemoteConfig: ctwgc.getProjectDetailsHLazyRemoteConfig(),
+                hlRemoteConfig: nmwgc.getProjectDetailsHLazyRemoteConfig(),
                     dataParser: ctwp.projectDataParser
             },
             cacheConfig: {
@@ -89,7 +89,7 @@ define([
 
     var onScatterChartClick = function(chartConfig) {
         var projectFQN = chartConfig.name;
-        ctwgrc.setProjectURLHashParams(null, projectFQN, true);
+        nmwgrc.setProjectURLHashParams(null, projectFQN, true);
     };
 
     var getProjectTooltipConfig = function(data) {

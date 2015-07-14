@@ -27,7 +27,7 @@ define([
         var fakeServer = this.server,
             testConfigObj = {
                 'prefixId': 'project-network-grid',
-                'cols': ctwgc.projectNetworksColumns,
+                'cols': nmwgc.projectNetworksColumns,
                 'addnCols': ['detail'],
                 'gridElId': '#' + ctwl.PROJECT_NETWORK_GRID_ID
             };

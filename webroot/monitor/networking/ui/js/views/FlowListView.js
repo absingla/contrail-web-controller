@@ -88,7 +88,7 @@ define([
                                             chartData = chartData.concat(portData);
                                             return chartData;
                                         },
-                                        tooltipConfigCB: ctwgrc.getPortDistributionTooltipConfig(onScatterChartClick),
+                                        tooltipConfigCB: nmwgrc.getPortDistributionTooltipConfig(onScatterChartClick),
                                         clickCB: onScatterChartClick,
                                         sizeFieldName: 'flowCnt',
                                         xLabelFormat: d3.format(','),

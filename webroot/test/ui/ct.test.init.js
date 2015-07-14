@@ -29,11 +29,14 @@ var depArray = [
 
     'controller-constants',
     'controller-grid-config',
+    'nm-grid-config',
     'controller-graph-config',
+    'nm-graph-config',
     'controller-labels',
     'controller-messages',
     'controller-parsers',
     'controller-view-config',
+    'nm-view-config',
 
     'handlebars-utils', 'slickgrid-utils', 'contrail-elements',
     'topology_api', 'chart-utils', 'qe-utils', 'nvd3-plugin', 'd3-utils', 'analyzer-utils', 'dashboard-utils',
@@ -42,9 +45,8 @@ var depArray = [
 
 require(['jquery', 'knockout'], function ($, Knockout) {
     window.ko = Knockout;
-    require(depArray, function ($, _, validation, CoreConstants, CoreUtils, CoreFormatters, Knockout, Cache, cc,
-                                ccView, nmView, wu,
-                                Constants, GridConfig, GraphConfig, Labels, Messages, Parsers, ViewConfig) {
+    require(depArray, function ($, _, validation, CoreConstants, CoreUtils, CoreFormatters, Knockout, Cache, cc, ccView, nmView, wu,
+                                Constants, GridConfig, NMGridConfig, GraphConfig, NMGraphConfig, Labels, Messages, Parsers, ViewConfig, NMViewConfig) {
         cowc = new CoreConstants();
         cowu = new CoreUtils();
         cowf = new CoreFormatters();
@@ -58,9 +60,12 @@ require(['jquery', 'knockout'], function ($, Knockout) {
         ctwl = new Labels();
         ctwm = new Messages();
         ctwgc = new GridConfig();
+        nmwgc = new NMGridConfig();
         ctwgrc = new GraphConfig();
+        nmwgrc = new NMGraphConfig();
         ctwp = new Parsers();
         ctwvc = new ViewConfig();
+        nmwvc = new NMViewConfig();
 
         $('body').append('<div id="content-container"></div>');
         $("body").append(ccView);

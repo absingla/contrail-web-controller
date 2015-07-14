@@ -71,7 +71,7 @@ define([
                 dataSource: {
                     remote: {
                         ajaxConfig: projectsRemoteConfig,
-                        hlRemoteConfig: ctwgc.getProjectDetailsHLazyRemoteConfig(),
+                        hlRemoteConfig: nmwgc.getProjectDetailsHLazyRemoteConfig(),
                         dataParser: ctwp.projectDataParser
                     },
                     cacheConfig: {
@@ -80,7 +80,7 @@ define([
                 }
             },
             columnHeader: {
-                columns: ctwgc.projectsColumns
+                columns: nmwgc.projectsColumns
             },
             footer: {
                 pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 5, pageSizeSelect: [5, 10, 50, 100] } })

@@ -68,7 +68,7 @@ define([
                 el: $(connectedSelectorId),
                 linkView: joint.shapes.contrail.LinkView,
                 graphModelConfig: cGraphModelConfig,
-                tooltipConfig: ctwgrc.getConnectedGraphTooltipConfig(),
+                tooltipConfig: nmwgrc.getConnectedGraphTooltipConfig(),
                 clickEvents: {
                     'cell:pointerclick': cgPointerClick,
                     'cell:pointerdblclick': cgPointerDblClick,
@@ -137,7 +137,7 @@ define([
                 el: $(configSelectorId),
                 width: 150,
                 graphModelConfig: confGraphModelConfig,
-                tooltipConfig: ctwgrc.getConfigGraphTooltipConfig(),
+                tooltipConfig: nmwgrc.getConfigGraphTooltipConfig(),
                 clickEvents: {
                     'cell:pointerclick': getConfgPointerClickFn(connectedGraphView)
                 }
@@ -782,7 +782,7 @@ define([
                             uuid: projectUUID
                         });
 
-                        ctwgrc.setProjectURLHashParams(null, projectFQN, false);
+                        nmwgrc.setProjectURLHashParams(null, projectFQN, false);
                     }
 
                     break;
@@ -799,11 +799,11 @@ define([
                         });
 
                         highlightNetwork4ZoomedElement(connectedSelectorId, graphConfig);
-                        ctwgrc.setNetworkURLHashParams(null, networkFQN, false);
+                        nmwgrc.setNetworkURLHashParams(null, networkFQN, false);
 
                     } else {
                         var projectFQN = networkFQN.split(':').splice(0,2).join(':');
-                        ctwgrc.setProjectURLHashParams(null, projectFQN, true);
+                        nmwgrc.setProjectURLHashParams(null, projectFQN, true);
                     }
 
                     break;
@@ -820,9 +820,9 @@ define([
                         });
 
                         highlightInstance4ZoomedElement(connectedSelectorId, graphConfig);
-                        ctwgrc.setInstanceURLHashParams(null, networkFQN, instanceUUID, false);
+                        nmwgrc.setInstanceURLHashParams(null, networkFQN, instanceUUID, false);
                     } else {
-                        ctwgrc.setNetworkURLHashParams(null, networkFQN, true);
+                        nmwgrc.setNetworkURLHashParams(null, networkFQN, true);
                     }
 
                     break;

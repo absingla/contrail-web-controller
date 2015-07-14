@@ -40,7 +40,7 @@ define([
 
                             cowu.renderView4Config(self.$el, contrailListModel, getInstanceListViewConfig());
                             extendedHashOb[parentHashtype] = parentFQN;
-                            ctwgrc.setNetwork4InstanceListURLHashParams(extendedHashOb);
+                            nmwgrc.setNetwork4InstanceListURLHashParams(extendedHashOb);
 
                         }, null, { addAllDropdownOption: true });
 
@@ -48,7 +48,7 @@ define([
                         contrailListModel = new ContrailListModel(getInstanceListModelConfig(null, null));
 
                         cowu.renderView4Config(self.$el, contrailListModel, getInstanceListViewConfig());
-                        ctwgrc.setNetwork4InstanceListURLHashParams({});
+                        nmwgrc.setNetwork4InstanceListURLHashParams({});
                     }
 
 
@@ -73,7 +73,7 @@ define([
                 dataParser: ctwp.instanceDataParser
             },
             vlRemoteConfig: {
-                vlRemoteList: ctwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
+                vlRemoteList: nmwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
             },
             cacheConfig : {
                 ucid: (parentUUID != null) ? (ctwc.UCID_PREFIX_MN_LISTS + parentUUID + ":" + 'virtual-machines') : ctwc.UCID_ALL_VM_LIST
@@ -140,7 +140,7 @@ define([
             vmName = chartConfig['vmName'];
 
         if (contrail.checkIfExist(networkFQN) && !ctwp.isServiceVN(networkFQN)) {
-            ctwgrc.setInstanceURLHashParams(null, networkFQN, instanceUUID, vmName, true);
+            nmwgrc.setInstanceURLHashParams(null, networkFQN, instanceUUID, vmName, true);
         }
     };
 

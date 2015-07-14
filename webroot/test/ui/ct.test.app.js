@@ -32,12 +32,15 @@ require(["/base/contrail-web-core/webroot/js/core-app-config.js"], function() {
 
         controllerTestAppPathObj ["controller-constants"]        = "common/ui/js/controller.constants";
         controllerTestAppPathObj ["controller-grid-config"]      = "common/ui/js/controller.grid.config";
+        controllerTestAppPathObj ["nm-grid-config"]              = "monitor/networking/ui/js/nm.grid.config";
         controllerTestAppPathObj ["controller-graph-config"]     = "common/ui/js/controller.graph.config";
+        controllerTestAppPathObj ["nm-graph-config"]             = "monitor/networking/ui/js/nm.graph.config";
         controllerTestAppPathObj ["controller-labels"]           = "common/ui/js/controller.labels";
         controllerTestAppPathObj ["controller-utils"]            = "common/ui/js/controller.utils";
         controllerTestAppPathObj ["controller-messages"]         = "common/ui/js/controller.messages";
         controllerTestAppPathObj ["controller-parsers"]          = "common/ui/js/controller.parsers";
         controllerTestAppPathObj ["controller-view-config"]      = "common/ui/js/controller.view.config";
+        controllerTestAppPathObj ["nm-view-config"]              = "monitor/networking/ui/js/nm.view.config";
         controllerTestAppPathObj ["controller-init"]             = "common/ui/js/controller.init";
 
         controllerTestAppPathObj ["co-test-utils"]               = "/base/contrail-web-core/webroot/test/ui/co.test.utils";

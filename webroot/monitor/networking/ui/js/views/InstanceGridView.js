@@ -81,7 +81,7 @@ define([
                         dataParser: ctwp.instanceDataParser
                     },
                     vlRemoteConfig: {
-                        vlRemoteList: ctwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
+                        vlRemoteList: nmwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
                     },
                     cacheConfig : {
                         ucid: ucid
@@ -89,7 +89,7 @@ define([
                 }
             },
             columnHeader: {
-                columns: ctwgc.projectInstancesColumns
+                columns: nmwgc.projectInstancesColumns
             },
             footer: {
                 pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 5, pageSizeSelect: [5, 10, 50, 100] } })

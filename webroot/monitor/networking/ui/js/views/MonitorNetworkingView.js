@@ -28,7 +28,7 @@ define([
                 }, function (selectedValueData, projectBreadcrumbChanged) {
                     var projectFQN = domainFQN + ':' + selectedValueData.name;
 
-                    ctwgrc.setProjectURLHashParams(hashParams, projectFQN, false);
+                    nmwgrc.setProjectURLHashParams(hashParams, projectFQN, false);
                     self.renderProjectCB(hashParams, selectedValueData, projectBreadcrumbChanged);
                 });
             });
@@ -64,7 +64,7 @@ define([
                 }, function (projectSelectedValueData, projectBreadcrumbChanged) {
                     var projectFQN = domainFQN + ':' + projectSelectedValueData.name;
 
-                    ctwgrc.setProjectURLHashParams(hashParams, projectFQN, false);
+                    nmwgrc.setProjectURLHashParams(hashParams, projectFQN, false);
                     self.renderProjectCB(hashParams, projectSelectedValueData, projectBreadcrumbChanged);
                 });
             });
@@ -82,7 +82,7 @@ define([
                 delete hashParams.clickedElement;
             }
 
-            ctwgrc.setNetworkURLHashParams(hashParams, networkFQN, false);
+            nmwgrc.setNetworkURLHashParams(hashParams, networkFQN, false);
             cowu.renderView4Config(self.$el, null, getNetworkConfig(networkFQN, networkUUID));
         },
 
@@ -117,7 +117,7 @@ define([
                     removeActiveBreadcrumb();
                     var projectFQN = domainFQN + ':' + projectSelectedValueData.name;
 
-                    ctwgrc.setProjectURLHashParams(hashParams, projectFQN, false);
+                    nmwgrc.setProjectURLHashParams(hashParams, projectFQN, false);
                     self.renderProjectCB(hashParams, projectSelectedValueData, projectBreadcrumbChanged);
                 });
             });
@@ -131,7 +131,7 @@ define([
                 networkUUID = networkObj.value,
                 vmName = hashParams['focusedElement']['vmName'];
 
-            ctwgrc.setInstanceURLHashParams(hashParams, networkFQN, instanceUUID, vmName, false);
+            nmwgrc.setInstanceURLHashParams(hashParams, networkFQN, instanceUUID, vmName, false);
 
             cowu.renderView4Config(this.$el, null, getInstanceConfig(networkFQN, networkUUID, instanceUUID));
         },

@@ -155,34 +155,6 @@ define([
 
             return new ContrailViewModel(viewModelConfig);
         };
-
-        self.getMNConnnectedGraphConfig = function (url, elementNameObject, keySuffix, type) {
-            var instanceSuffix = (contrail.checkIfExist(elementNameObject['instanceUUID']) ? (':' + elementNameObject['instanceUUID']) : ''),
-                ucid = ctwc.UCID_PREFIX_MN_GRAPHS + elementNameObject.fqName + instanceSuffix +  keySuffix,
-                graphConfig = {
-                    remote: {
-                        ajaxConfig: {
-                            url: url,
-                            type: 'GET'
-                        }
-                    },
-                    cacheConfig: {
-                        ucid: ucid
-                    },
-                    focusedElement: {
-                        type: type,
-                        name: elementNameObject
-                    }
-                };
-
-            if(type ==  ctwc.GRAPH_ELEMENT_NETWORK) {
-                graphConfig['vlRemoteConfig'] = {
-                    vlRemoteList: ctwgc.getNetworkVMDetailsLazyRemoteConfig()
-                };
-            }
-
-            return graphConfig;
-        };
     };
 
     function getInstanceCPUMemModelConfig(networkFQN, instanceUUID) {

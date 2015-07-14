@@ -26,7 +26,7 @@ define([
         renderInstanceGraph: function(networkFQN, instanceUUID) {
 
             var topContainerElement = $('#' + ctwl.TOP_CONTENT_CONTAINER),
-                connectedGraph = ctwvc.getMNConnnectedGraphConfig(ctwc.get(ctwc.URL_INSTANCE_CONNECTED_GRAPH, networkFQN, instanceUUID), {fqName: networkFQN, instanceUUID: instanceUUID}, ':connected', ctwc.GRAPH_ELEMENT_INSTANCE),
+                connectedGraph = nmwvc.getMNConnnectedGraphConfig(ctwc.get(ctwc.URL_INSTANCE_CONNECTED_GRAPH, networkFQN, instanceUUID), {fqName: networkFQN, instanceUUID: instanceUUID}, ':connected', ctwc.GRAPH_ELEMENT_INSTANCE),
                 configGraph = ctwu.getMNConfigGraphConfig(ctwc.get(ctwc.URL_INSTANCE_CONFIG_GRAPH, networkFQN), {fqName: networkFQN, instanceUUID: instanceUUID}, ':config', ctwc.GRAPH_ELEMENT_INSTANCE);
 
             cowu.renderView4Config(topContainerElement, null, getInstanceGraphViewConfig(connectedGraph, configGraph, networkFQN, instanceUUID), null, null, null);

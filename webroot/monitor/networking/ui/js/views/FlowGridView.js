@@ -95,7 +95,7 @@ define([
                 }
             },
             columnHeader: {
-                columns: ctwgc.projectFlowsColumns
+                columns: nmwgc.projectFlowsColumns
             },
             footer: {
                 pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 5, pageSizeSelect: [5, 10, 50, 100] } })
