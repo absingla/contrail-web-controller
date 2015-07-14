@@ -32,7 +32,7 @@ define([
                         type: 'GET'
                 },
                 hlRemoteConfig: nmwgc.getProjectDetailsHLazyRemoteConfig(),
-                    dataParser: ctwp.projectDataParser
+                    dataParser: nmwp.projectDataParser
             },
             cacheConfig: {
                 ucid: ctwc.UCID_DEFAULT_DOMAIN_PROJECT_LIST //TODO: Handle multi-tenancy

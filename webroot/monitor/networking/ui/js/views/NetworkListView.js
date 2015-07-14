@@ -44,7 +44,7 @@ define([
                         }]
                     })
                 },
-                dataParser: ctwp.networkDataParser
+                dataParser: nmwp.networkDataParser
             },
             vlRemoteConfig: {
                 vlRemoteList: nmwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)

@@ -77,7 +77,7 @@ define([
                                                             type: 'GET'
                                                         },
                                                         dataParser: function (response) {
-                                                            return ctwp.parseProject4PortDistribution(response, projectFQN);
+                                                            return nmwp.parseProject4PortDistribution(response, projectFQN);
                                                         }
                                                     },
                                                     cacheConfig: {

@@ -70,7 +70,7 @@ define([
         return {
             remote: {
                 ajaxConfig: ajaxConfig,
-                dataParser: ctwp.instanceDataParser
+                dataParser: nmwp.instanceDataParser
             },
             vlRemoteConfig: {
                 vlRemoteList: nmwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
@@ -139,7 +139,7 @@ define([
             networkFQN = chartConfig['vnFQN'],
             vmName = chartConfig['vmName'];
 
-        if (contrail.checkIfExist(networkFQN) && !ctwp.isServiceVN(networkFQN)) {
+        if (contrail.checkIfExist(networkFQN) && !ctwu.isServiceVN(networkFQN)) {
             nmwgrc.setInstanceURLHashParams(null, networkFQN, instanceUUID, vmName, true);
         }
     };
@@ -167,7 +167,7 @@ define([
                     width: 400
                 }
             };
-        if (contrail.checkIfExist(vnFQN) && !ctwp.isServiceVN(vnFQN)) {
+        if (contrail.checkIfExist(vnFQN) && !ctwu.isServiceVN(vnFQN)) {
             tooltipConfig['content']['actions'] = [
                 {
                     type: 'link',

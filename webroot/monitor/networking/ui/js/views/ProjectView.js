@@ -25,7 +25,7 @@ define([
         renderProjectGraph: function(projectFQN, projectUUID) {
             var topContainerElement = $('#' + ctwl.TOP_CONTENT_CONTAINER),
                 connectedGraph = nmwvc.getMNConnnectedGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONNECTED_GRAPH, projectFQN), {fqName: projectFQN}, ':connected', ctwc.GRAPH_ELEMENT_PROJECT),
-                configGraph = ctwu.getMNConfigGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONFIG_GRAPH, projectFQN), {fqName: projectFQN}, ':config', ctwc.GRAPH_ELEMENT_PROJECT);
+                configGraph = nmwu.getMNConfigGraphConfig(ctwc.get(ctwc.URL_PROJECT_CONFIG_GRAPH, projectFQN), {fqName: projectFQN}, ':config', ctwc.GRAPH_ELEMENT_PROJECT);
 
             cowu.renderView4Config(topContainerElement, null, getProjectGraphViewConfig(connectedGraph, configGraph, projectFQN, projectUUID), null, null, null);
         },

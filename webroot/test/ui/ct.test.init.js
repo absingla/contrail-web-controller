@@ -2,7 +2,8 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 
-var cowu, cowc, ctwc, cowch, ctwgc, ctwgrc, ctwl, ctwm, ctwp;
+var ctwu, ctwc, cowch, ctwgc, ctwgrc, ctwl, ctwm, ctwp, ctwvc,
+    nmwu, nmwgc, nmwgrc, nmwp, nmwvc;
 
 var allTestFiles = [], nmTestKarma = window.__karma__;
 
@@ -28,15 +29,12 @@ var depArray = [
     'web-utils',
 
     'controller-constants',
-    'controller-grid-config',
-    'nm-grid-config',
-    'controller-graph-config',
-    'nm-graph-config',
+    'controller-grid-config', 'nm-grid-config',
+    'controller-graph-config', 'nm-graph-config',
     'controller-labels',
     'controller-messages',
-    'controller-parsers',
-    'controller-view-config',
-    'nm-view-config',
+    'controller-parsers', 'nm-parsers',
+    'controller-view-config', 'nm-view-config',
 
     'handlebars-utils', 'slickgrid-utils', 'contrail-elements',
     'topology_api', 'chart-utils', 'qe-utils', 'nvd3-plugin', 'd3-utils', 'analyzer-utils', 'dashboard-utils',
@@ -46,7 +44,7 @@ var depArray = [
 require(['jquery', 'knockout'], function ($, Knockout) {
     window.ko = Knockout;
     require(depArray, function ($, _, validation, CoreConstants, CoreUtils, CoreFormatters, Knockout, Cache, cc, ccView, nmView, wu,
-                                Constants, GridConfig, NMGridConfig, GraphConfig, NMGraphConfig, Labels, Messages, Parsers, ViewConfig, NMViewConfig) {
+                                Constants, GridConfig, NMGridConfig, GraphConfig, NMGraphConfig, Labels, Messages, Parsers, NMParsers, ViewConfig, NMViewConfig) {
         cowc = new CoreConstants();
         cowu = new CoreUtils();
         cowf = new CoreFormatters();
@@ -59,11 +57,16 @@ require(['jquery', 'knockout'], function ($, Knockout) {
         ctwc = new Constants();
         ctwl = new Labels();
         ctwm = new Messages();
+
         ctwgc = new GridConfig();
         nmwgc = new NMGridConfig();
+
         ctwgrc = new GraphConfig();
         nmwgrc = new NMGraphConfig();
+
         ctwp = new Parsers();
+        nmwp = new NMParsers();
+
         ctwvc = new ViewConfig();
         nmwvc = new NMViewConfig();
 
@@ -99,8 +102,10 @@ require(['jquery', 'knockout'], function ($, Knockout) {
                     JSON.stringify(CoreSlickGridMockData.webServerInfoMockData)]);
         });
 
-        requirejs(['controller-utils', 'contrail-layout', '/base/contrail-web-controller/webroot/monitor/networking/ui/js/networking.main.js'], function (NMControllerUtils) {
-            ctwu = new NMControllerUtils();
+        requirejs(['controller-utils', 'nm-utils', 'contrail-layout', '/base/contrail-web-controller/webroot/monitor/networking/ui/js/networking.main.js'], function (ControllerUtils, NMControllerUtils) {
+            ctwu = new ControllerUtils();
+            nmwu = new NMControllerUtils();
+
             ctInitComplete = true;
             require(allTestFiles, function () {
                 requirejs.config({

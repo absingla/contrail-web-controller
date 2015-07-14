@@ -82,7 +82,7 @@ define([
                                                             url: ctwc.get(ctwc.URL_NETWORK_TRAFFIC_STATS, 120, networkFQN, 120),
                                                             type: 'GET'
                                                         },
-                                                        dataParser: ctwp.vnTrafficStatsParser
+                                                        dataParser: nmwp.vnTrafficStatsParser
                                                     },
                                                     cacheConfig: {
                                                         ucid: ctwc.get(ctwc.UCID_NETWORK_TRAFFIC_STATS_LIST, networkFQN)
@@ -103,7 +103,7 @@ define([
                                                             type: 'GET'
                                                         },
                                                         dataParser: function (response) {
-                                                            return ctwp.parseNetwork4PortDistribution(response, networkFQN);
+                                                            return nmwp.parseNetwork4PortDistribution(response, networkFQN);
                                                         }
                                                     },
                                                     cacheConfig: {

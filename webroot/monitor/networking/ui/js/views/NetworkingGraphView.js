@@ -640,7 +640,7 @@ define([
         switch (elementNodeType) {
             case ctwc.GRAPH_ELEMENT_NETWORK:
                 var networkFQN = clickedElement.nodeDetails.name,
-                    networkUUID = ctwu.getUUIDByName(networkFQN);
+                    networkUUID = nmwu.getUUIDByName(networkFQN);
 
                 clickedElement = {
                     fqName: networkFQN,
@@ -775,7 +775,7 @@ define([
 
                     if (contrail.checkIfExist(currentHashParams.clickedElement)) {
                         var projectFQN = graphConfig.focusedElement.name.fqName,
-                            projectUUID = ctwu.getUUIDByName(projectFQN);
+                            projectUUID = nmwu.getUUIDByName(projectFQN);
 
                         tabConfig = ctwgrc.getTabsViewConfig(focusedElementType, {
                             fqName: projectFQN,
@@ -791,7 +791,7 @@ define([
                     var networkFQN = graphConfig.focusedElement.name.fqName;
 
                     if (contrail.checkIfExist(currentHashParams.clickedElement)) {
-                        var networkUUID = ctwu.getUUIDByName(networkFQN);
+                        var networkUUID = nmwu.getUUIDByName(networkFQN);
 
                         tabConfig = ctwgrc.getTabsViewConfig(focusedElementType, {
                             fqName: networkFQN,

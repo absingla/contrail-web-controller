@@ -74,7 +74,7 @@ define([
                                 url: ctwc.get(ctwc.URL_CONNECTED_NETWORK_TRAFFIC_STATS, 120, selectedSourceVirtualNetwork, selectedDestinationVirtualNetwork, 120),
                                 type: 'GET'
                             },
-                            dataParser: ctwp.vmTrafficStatsParser
+                            dataParser: nmwp.vmTrafficStatsParser
                         },
                         cacheConfig: {
                             ucid: ctwc.get(ctwc.UCID_CONNECTED_NETWORK_TRAFFIC_STATS_LIST, selectedSourceVirtualNetwork, selectedDestinationVirtualNetwork)

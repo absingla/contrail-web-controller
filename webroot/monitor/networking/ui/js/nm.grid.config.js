@@ -113,7 +113,7 @@ define([
                 formatter: function (r, c, v, cd, dc) {
                     if(!contrail.checkIfExist(dc['vmName'])) {
                         return '-';
-                    } else if(!contrail.checkIfExist(dc['vnFQN']) || ctwp.isServiceVN(dc['vnFQN'])){
+                    } else if(!contrail.checkIfExist(dc['vnFQN']) || ctwu.isServiceVN(dc['vnFQN'])){
                         return '<div class="cell-no-link">' + cellTemplateLinks({cellText: 'vmName', tooltip: true, name: 'instance', rowData: dc}) + '</div>';
                     } else {
                         return cellTemplateLinks({cellText: 'vmName', tooltip: true, name: 'instance', rowData: dc});
@@ -326,7 +326,7 @@ define([
                         return lazyAjaxConfig;
                     },
                     successCallback: function (response, contrailListModel, parentModelList) {
-                        var statDataList = ctwp.statsOracleParseFn(response[0], type),
+                        var statDataList = nmwp.statsOracleParseFn(response[0], type),
                             dataItems = contrailListModel.getItems(),
                             statData;
 
@@ -343,7 +343,7 @@ define([
                         }
                         contrailListModel.updateData(dataItems);
                         if (contrail.checkIfExist(parentModelList)) {
-                            ctwp.projectNetworksDataParser(parentModelList, contrailListModel);
+                            nmwp.projectNetworksDataParser(parentModelList, contrailListModel);
                         }
                     }
                 }
@@ -375,7 +375,7 @@ define([
                         return lazyAjaxConfig;
                     },
                     successCallback: function (response, contrailListModel) {
-                        var statDataList = ctwp.parseInstanceStats(response[0], type),
+                        var statDataList = nmwp.parseInstanceStats(response[0], type),
                             dataItems = contrailListModel.getItems(),
                             updatedDataItems = [],
                             statData;
@@ -507,7 +507,7 @@ define([
                         return lazyAjaxConfig;
                     },
                     successCallback: function (response, contrailListModel) {
-                        var statDataList = ctwp.parseInstanceInterfaceStats(response[0]),
+                        var statDataList = nmwp.parseInstanceInterfaceStats(response[0]),
                             dataItems = contrailListModel.getItems(),
                             statData;
 
@@ -541,7 +541,7 @@ define([
                             }]
                         })
                     },
-                    dataParser: ctwp.networkDataParser
+                    dataParser: nmwp.networkDataParser
                 },
                 vlRemoteConfig: {
                     completeCallback: function (contrailListModel, parentModelList) {
@@ -665,7 +665,7 @@ define([
             fqName = selRowDataItem['vnFQN'];
             uuid = selRowDataItem['name'];
             vmName = selRowDataItem['vmName'];
-            if(contrail.checkIfExist(fqName) && !ctwp.isServiceVN(fqName)) {
+            if(contrail.checkIfExist(fqName) && !ctwu.isServiceVN(fqName)) {
                 nmwgrc.setInstanceURLHashParams(null, fqName, uuid, vmName, true);
             }
         }

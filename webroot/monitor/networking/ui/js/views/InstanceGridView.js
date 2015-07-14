@@ -78,7 +78,7 @@ define([
                 dataSource: {
                     remote: {
                         ajaxConfig: instanceRemoteConfig,
-                        dataParser: ctwp.instanceDataParser
+                        dataParser: nmwp.instanceDataParser
                     },
                     vlRemoteConfig: {
                         vlRemoteList: nmwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)

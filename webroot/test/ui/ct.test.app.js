@@ -31,18 +31,27 @@ require(["/base/contrail-web-core/webroot/js/core-app-config.js"], function() {
         controllerTestAppPathObj ["controller-basedir"]          = "/base/contrail-web-controller/webroot";
 
         controllerTestAppPathObj ["controller-constants"]        = "common/ui/js/controller.constants";
+
         controllerTestAppPathObj ["controller-grid-config"]      = "common/ui/js/controller.grid.config";
         controllerTestAppPathObj ["nm-grid-config"]              = "monitor/networking/ui/js/nm.grid.config";
+
         controllerTestAppPathObj ["controller-graph-config"]     = "common/ui/js/controller.graph.config";
         controllerTestAppPathObj ["nm-graph-config"]             = "monitor/networking/ui/js/nm.graph.config";
+
         controllerTestAppPathObj ["controller-labels"]           = "common/ui/js/controller.labels";
+
         controllerTestAppPathObj ["controller-utils"]            = "common/ui/js/controller.utils";
+        controllerTestAppPathObj ["nm-utils"]                    = "monitor/networking/ui/js/nm.utils";
+
         controllerTestAppPathObj ["controller-messages"]         = "common/ui/js/controller.messages";
+
         controllerTestAppPathObj ["controller-parsers"]          = "common/ui/js/controller.parsers";
+        controllerTestAppPathObj ["nm-parsers"]                  = "monitor/networking/ui/js/nm.parsers";
+
         controllerTestAppPathObj ["controller-view-config"]      = "common/ui/js/controller.view.config";
         controllerTestAppPathObj ["nm-view-config"]              = "monitor/networking/ui/js/nm.view.config";
-        controllerTestAppPathObj ["controller-init"]             = "common/ui/js/controller.init";
 
+        controllerTestAppPathObj ["controller-init"]             = "common/ui/js/controller.init";
         controllerTestAppPathObj ["co-test-utils"]               = "/base/contrail-web-core/webroot/test/ui/co.test.utils";
         controllerTestAppPathObj ["mockdata-core-slickgrid"]     = "/base/contrail-web-core/webroot/test/ui/co.test.mockdata";
         controllerTestAppPathObj ["test-slickgrid"]              = "/base/contrail-web-core/webroot/test/ui/slickgrid.test.common";

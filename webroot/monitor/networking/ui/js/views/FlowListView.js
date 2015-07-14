@@ -21,7 +21,7 @@ define([
                         url: ctwc.constructReqURL($.extend({}, getURLConfigForGrid(hashParams), {protocol: ['tcp', 'icmp', 'udp']})),
                         type: 'GET'
                     },
-                    dataParser: ctwp.flowsDataParser
+                    dataParser: nmwp.flowsDataParser
                 }
             };
 
@@ -75,7 +75,7 @@ define([
                                                 }
                                             });
 
-                                            portData = ctwp.parsePortDistribution(portData, $.extend({
+                                            portData = nmwp.parsePortDistribution(portData, $.extend({
                                                 startTime: portDistributionParams['startTime'],
                                                 endTime: portDistributionParams['endTime'],
                                                 bandwidthField: 'bytes',

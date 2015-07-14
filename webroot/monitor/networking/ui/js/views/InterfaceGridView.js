@@ -97,7 +97,7 @@ define([
                 dataSource: {
                     remote: {
                         ajaxConfig: interfacesAjaxConfig,
-                        dataParser: ctwp.interfaceDataParser
+                        dataParser: nmwp.interfaceDataParser
                     },
                     vlRemoteConfig: {
                         vlRemoteList: nmwgc.getInterfaceStatsLazyRemoteConfig()
