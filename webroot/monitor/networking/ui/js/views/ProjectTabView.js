@@ -73,7 +73,7 @@ define([
                                                 modelConfig: {
                                                     remote: {
                                                         ajaxConfig: {
-                                                            url: ctwc.get(ctwc.URL_PORT_DISTRIBUTION, projectFQN),
+                                                            url: ctwc.get(ctwc.URL_NETWORK_PORT_DISTRIBUTION, projectFQN),
                                                             type: 'GET'
                                                         },
                                                         dataParser: function (response) {
@@ -84,32 +84,7 @@ define([
                                                         ucid: ctwc.get(ctwc.UCID_PROJECT_VN_PORT_STATS_LIST, projectFQN)
                                                     }
                                                 },
-                                                chartOptions: {
-                                                    xLabel: ctwl.X_AXIS_TITLE_PORT,
-                                                    yLabel: ctwl.Y_AXIS_TITLE_BW,
-                                                    forceX: [0, 1000],
-                                                    forceY: [0, 1000],
-                                                    tooltipConfigCB: nmwgrc.getPortDistributionTooltipConfig(onScatterChartClick),
-                                                    controlPanelConfig: {
-                                                        filter: {
-                                                            enable: true,
-                                                            viewConfig: getControlPanelFilterConfig()
-                                                        },
-                                                        legend: {
-                                                            enable: true,
-                                                            viewConfig: getControlPanelLegendConfig()
-                                                        }
-                                                    },
-                                                    clickCB: onScatterChartClick,
-                                                    sizeFieldName: 'flowCnt',
-                                                    xLabelFormat: d3.format(','),
-                                                    yLabelFormat: function(yValue) {
-                                                        var formattedValue = formatBytes(yValue, false, null, 1);
-                                                        return formattedValue;
-                                                    },
-                                                    margin: {left: 70},
-                                                    noDataMessage: cowc.CHART_NO_DATA_MESSAGE
-                                                }
+                                                chartOptions: nmwvc.getPortDistChartOptions()
                                             }
                                         }
                                     ]
@@ -121,91 +96,6 @@ define([
             }
         }
     };
-
-    function getControlPanelFilterConfig() {
-        return {
-            groups: [
-                {
-                    id: 'by-node-color',
-                    title: false,
-                    type: 'checkbox-circle',
-                    items: [
-                        {
-                            text: 'Source Port',
-                            labelCssClass: 'default',
-                            filterFn: function(d) { return d.type === 'sport'; }
-                        },
-                        {
-                            text: 'Destination Port',
-                            labelCssClass: 'medium',
-                            filterFn: function(d) { return d.type === 'dport'; }
-                        }
-                    ]
-                }
-            ]
-        };
-    };
-
-    function getControlPanelLegendConfig() {
-        return {
-            groups: [
-                {
-                    id: 'by-node-color',
-                    title: 'Port Type',
-                    items: [
-                        {
-                            text: 'Source Port',
-                            labelCssClass: 'icon-circle default',
-                            events: {
-                                click: function (event) {}
-                            }
-                        },
-                        {
-                            text: 'Destination Port',
-                            labelCssClass: 'icon-circle medium',
-                            events: {
-                                click: function (event) {}
-                            }
-                        }
-                    ]
-                },
-                {
-                    id: 'by-node-size',
-                    title: 'Port Size',
-                    items: [
-                        {
-                            text: 'Flow Count',
-                            labelCssClass: 'icon-circle',
-                            events: {
-                                click: function (event) {}
-                            }
-                        }
-                    ]
-                }
-            ]
-        };
-    };
-
-    var onScatterChartClick = function(chartConfig) {
-        var obj= {
-            type: 'flow',
-            view: 'list',
-            fqName:chartConfig['fqName'],
-            port:chartConfig['range']
-        };
-        if(chartConfig['startTime'] != null && chartConfig['endTime'] != null) {
-            obj['startTime'] = chartConfig['startTime'];
-            obj['endTime'] = chartConfig['endTime'];
-        }
-
-        if(chartConfig['type'] == 'sport')
-            obj['portType']='src';
-        else if(chartConfig['type'] == 'dport')
-            obj['portType']='dst';
-
-        layoutHandler.setURLHashParams(obj, {p:"mon_networking_projects", merge:false});
-    };
-
 
     return ProjectTabView;
 });

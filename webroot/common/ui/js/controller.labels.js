@@ -162,9 +162,12 @@ define([
         this.INSTANCE_TABS_ID = "instance-tabs";
         this.INSTANCE_DETAILS_ID = "instance-details";
         this.INSTANCE_TRAFFIC_STATS_ID = "instance-traffic-stats";
+        this.INSTANCE_PORT_DIST_ID = "instance-port-dist";
         this.INSTANCE_CPU_MEM_STATS_ID = "instance-cpu-mem-stats";
         this.INSTANCE_TRAFFIC_STATS_DROPDOWN_ID = "instance-traffic-stats-dropdown";
+        this.INSTANCE_PORT_DIST_DROPDOWN_ID = "instance-port-dist-dropdown";
         this.INSTANCE_TRAFFIC_STATS_CHART_ID = "instance-traffic-stats-chart";
+        this.INSTANCE_PORT_DIST_CHART_ID = "instance-port-dist-chart";
         this.INSTANCE_PORT_HEAT_CHART_ID = "instance-port-heat-chart";
         this.INSTANCE_INTERFACE_GRID_ID = "instance-interface-grid";
         this.INSTANCE_INTERFACE_ID = "instance-interface";

@@ -59,12 +59,13 @@ define([
                     }
                 },
                 {
-                    elementId: ctwl.INSTANCE_CPU_MEM_STATS_ID,
-                    title: ctwl.TITLE_CPU_MEMORY,
-                    view: "LineBarWithFocusChartView",
+                    elementId: ctwl.INSTANCE_PORT_DIST_ID,
+                    title: ctwl.TITLE_PORT_DISTRIBUTION,
+                    app: cowc.APP_CONTRAIL_CONTROLLER,
+                    view: "InstancePortDistributionView",
                     viewConfig: {
-                        modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
-                        parseFn: ctwp.parseCPUMemLineChartData
+                        modelKey: ctwc.get(ctwc.UMID_INSTANCE_UVE, instanceUUID),
+                        instanceUUID: instanceUUID
                     }
                 },
                 {
@@ -76,7 +77,16 @@ define([
                             url: ctwc.get(ctwc.URL_INSTANCE_DETAIL, instanceUUID),
                             type: 'GET'
                         },
-                        chartOptions: {getClickFn: self.getHeatChartClickFn}
+                        chartOptions: {getClickFn: function(){}}
+                    }
+                },
+                {
+                    elementId: ctwl.INSTANCE_CPU_MEM_STATS_ID,
+                    title: ctwl.TITLE_CPU_MEMORY,
+                    view: "LineBarWithFocusChartView",
+                    viewConfig: {
+                        modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
+                        parseFn: ctwp.parseCPUMemLineChartData
                     }
                 }
             ];
@@ -114,6 +124,8 @@ define([
                                                 $('#' + ctwl.INSTANCE_INTERFACE_GRID_ID).data('contrailGrid').refreshView();
                                             } else if (selTab == ctwl.TITLE_CPU_MEMORY) {
                                                 $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID).find('svg').trigger('refresh');
+                                            } else if (selTab == ctwl.TITLE_PORT_DISTRIBUTION) {
+                                                $('#' + ctwl.INSTANCE_PORT_DIST_CHART_ID).trigger('refresh');
                                             }
                                         },
                                         tabs: tabObjs
@@ -125,11 +137,6 @@ define([
                 }
             }
 
-        };
-
-        self.getHeatChartClickFn = function(selector, response) {
-            // TODO: Implement click out function for instance port map
-            return function(clickData) {}
         };
 
         self.getInstanceTabViewModelConfig = function (instanceUUID) {
@@ -154,6 +161,26 @@ define([
             };
 
             return new ContrailViewModel(viewModelConfig);
+        };
+
+        self.getHeatChartClickFn = function(selector, response) {
+            return function(clickData) {
+                var currHashObj = layoutHandler.getURLHashObj(),
+                    startRange = ((64 * clickData.y) + clickData.x) * 256,
+                    endRange = startRange + 255,
+                    hashParams = {}, protocolMap = {'icmp': 1, 'tcp': 6, 'udp': 17};
+
+                hashParams['fqName'] = currHashObj['q']['fqName'];
+                hashParams['port'] = startRange + "-" + endRange;
+                hashParams['startTime'] = new XDate().addMinutes(-10).getTime();
+                hashParams['endTime'] = new XDate().getTime();
+                hashParams['portType'] = response['type'];
+                hashParams['protocol'] = protocolMap[response['pType']];
+                hashParams['type'] = "flow";
+                hashParams['view'] = "list";
+
+                layoutHandler.setURLHashParams(hashParams, {p: 'mon_networking_networks'});
+            }
         };
     };
 

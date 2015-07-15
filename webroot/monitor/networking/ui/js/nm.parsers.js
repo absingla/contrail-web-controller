@@ -268,7 +268,7 @@ define([
             return chartData;
         };
 
-        this.parseNetwork4PortDistribution = function(response, networkFQN) {
+        this.parseNetwork4PortDistribution = function(response, networkFQN, interfaceIP) {
             var srcPortdata  = response ? nmwp.parsePortDistribution(ifNull(response['sport'], []), {
                     startTime: response['startTime'],
                     endTime: response['endTime'],
@@ -276,7 +276,8 @@ define([
                     flowCntField: 'outFlowCount',
                     portField: 'sport',
                     portYype: "src",
-                    fqName: networkFQN
+                    fqName: networkFQN,
+                    ipAddress: interfaceIP
                 }) : [],
                 dstPortData = response ? nmwp.parsePortDistribution(ifNull(response['dport'], []), {
                     startTime: response['startTime'],
@@ -285,7 +286,8 @@ define([
                     flowCntField: 'inFlowCount',
                     portField: 'dport',
                     portYype: "src",
-                    fqName: networkFQN
+                    fqName: networkFQN,
+                    ipAddress: interfaceIP
                 }) : [],
                 chartData = [];
 
@@ -359,7 +361,8 @@ define([
                         flowCnt: flowCnt,
                         size: flowCnt,
                         color: color,
-                        fqName: fqName
+                        fqName: fqName,
+                        ipAddress: parserConfig['ipAddress']
                         //type:portField
                     });
             }

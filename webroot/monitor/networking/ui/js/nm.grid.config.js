@@ -647,6 +647,21 @@ define([
                 searchable: true
             }
         ];
+
+        this.getURLConfigForFlowGrid = function(hashParams) {
+            var urlConfigObj = {
+                'container': "#content-container",
+                'context'  : "network",
+                'type'     : "portRangeDetail",
+                'startTime': hashParams['startTime'],
+                'endTime'  : hashParams['endTime'],
+                'fqName'   : hashParams['fqName'],
+                'port'     : hashParams['port'],
+                'portType' : hashParams['portType'],
+                'ip'       : hashParams['ip']
+            };
+            return urlConfigObj;
+        };
     };
 
     function onClickGrid(e, selRowDataItem) {

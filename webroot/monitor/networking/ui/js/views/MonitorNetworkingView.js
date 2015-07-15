@@ -214,7 +214,7 @@ define([
 
     function getFlowConfig(config) {
         var hashParams = config['hashParams'],
-            url = ctwc.constructReqURL($.extend({}, getURLConfigForGrid(hashParams), {protocol:['tcp','icmp','udp']}));
+            url = ctwc.constructReqURL($.extend({}, nmwgc.getURLConfigForFlowGrid(hashParams), {protocol:['tcp','icmp','udp']}));
 
         return {
             elementId: cowu.formatElementId([ctwl.MONITOR_FLOW_LIST_ID]),
@@ -235,20 +235,6 @@ define([
                 ]
             }
         }
-    };
-
-    function getURLConfigForGrid(viewConfig) {
-        var urlConfigObj = {
-            'container': "#content-container",
-            'context'  : "network",
-            'type'     : "portRangeDetail",
-            'startTime': viewConfig['startTime'],
-            'endTime'  : viewConfig['endTime'],
-            'fqName'   : viewConfig['fqName'],
-            'port'     : viewConfig['port'],
-            'portType' : viewConfig['portType']
-        };
-        return urlConfigObj;
     };
 
     return MonitorNetworkingView;

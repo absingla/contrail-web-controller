@@ -24,11 +24,12 @@ define([
     'monitor/networking/ui/js/views/ConnectedNetworkTrafficStatsView',
     'monitor/alarms/ui/js/views/AlarmListView',
     'monitor/alarms/ui/js/views/AlarmGridView',
-    'monitor/networking/ui/js/views/InterfaceGridView'
+    'monitor/networking/ui/js/views/InterfaceGridView',
+    'monitor/networking/ui/js/views/InstancePortDistributionView'
 ], function (_, NetworkingGraphView, ProjectTabView, NetworkTabView, NetworkGridView, InstanceTabView, InstanceGridView,
              ProjectGridView, FlowGridView, NetworkListView, ProjectListView, InstanceListView, FlowListView, InstanceView,
              InstanceTrafficStatsView, ProjectView, NetworkView, ConnectedNetworkTabView, ConnectedNetworkTrafficStatsView,
-             AlarmListView, AlarmGridView, InterfaceGridView) {
+             AlarmListView, AlarmGridView, InterfaceGridView, InstancePortDistributionView) {
 
     var CTUtils = function () {
         var self = this;
@@ -283,6 +284,12 @@ define([
 
                 case "InterfaceGridView":
                     elementView = new InterfaceGridView({ el: parentElement, model: model, attributes: viewAttributes });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    break;
+
+                case "InstancePortDistributionView":
+                    elementView = new InstancePortDistributionView({ el: parentElement, model: model, attributes: viewAttributes });
                     elementView.modelMap = modelMap;
                     elementView.render();
                     break;
