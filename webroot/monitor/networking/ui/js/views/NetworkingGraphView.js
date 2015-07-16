@@ -41,7 +41,8 @@ define([
                     configGraphView = self.renderConfigGraph(configGraph, configSelectorId, connectedGraphView);
                     configGraphModel = configGraphView.model;
 
-                    if (!configGraphModel.isRequestInProgress() && !connectedGraphModel.isRequestInProgress()) {
+                    if ((!configGraphModel.isRequestInProgress() && !connectedGraphModel.isRequestInProgress())
+                            || (configGraphModel.loadedFromCache && connectedGraphModel.loadedFromCache)) {
                         $(graphLoadingSelectorId).hide();
                     } else {
                         if (configGraphModel.isRequestInProgress()) {
@@ -60,12 +61,12 @@ define([
                         }
                     }
                 } else {
-                    if (connectedGraphModel.isRequestInProgress()) {
+                    if (!connectedGraphModel.isRequestInProgress() || connectedGraphModel.loadedFromCache) {
+                        $(graphLoadingSelectorId).hide();
+                    } else {
                         connectedGraphModel.onAllRequestsComplete.subscribe(function () {
                             $(graphLoadingSelectorId).hide();
                         });
-                    } else {
-                        $(graphLoadingSelectorId).hide();
                     }
                 }
             }, 10);
