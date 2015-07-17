@@ -3,6 +3,34 @@
  */
 
 define(['underscore'], function (_) {
+    this.domainsMockData = {
+        "domains": [
+            {
+                "href"   : "http://10.84.30.249:8082/domain/f8a71b82-ec17-4869-8e34-5e967e6fce50",
+                "fq_name": [
+                    "default-domain"],
+                "uuid"   : "f8a71b82-ec17-4869-8e34-5e967e6fce50"
+            }
+        ]
+    };
+    this.projectMockData = {
+        "projects": [
+            {
+                "fq_name": [
+                    "default-domain",
+                    "admin"
+                ],
+                "uuid": "1c899f5a-6494-4355-b2ac-7e282566724a"
+            },
+            {
+                "fq_name": [
+                    "default-domain",
+                    "default-project"
+                ],
+                "uuid": "390a0374-239f-40c3-ac87-d0918d2abf8b"
+            }
+        ]
+    };
     this.networksMockData = {
         "data": {
             "value": [
@@ -736,7 +764,7 @@ define(['underscore'], function (_) {
             ]
         },
         "lastKey": "default-domain:admin:st_vn27",
-        "more": true
+        "more": false
     };
     this.networksMockStatData = [
         {
@@ -920,6 +948,8 @@ define(['underscore'], function (_) {
         }
     ];
     return {
+        domainsMockData: domainsMockData,
+        projectMockData: projectMockData,
         networksMockData: networksMockData,
         networksMockStatData: networksMockStatData
     };

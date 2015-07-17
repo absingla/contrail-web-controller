@@ -5,9 +5,10 @@ define([
     'monitor/networking/ui/js/views/MonitorNetworkingView',
     'co-test-utils',
     'network-list-view-mockdata',
-    'test-slickgrid'
-], function (MonitorNetworkingView, TestUtils, TestMockdata, TestSlickGrid) {
-    module('Networks Grid -  NM Tests', {
+    'test-slickgrid',
+    'test-messages'
+], function (MonitorNetworkingView, TestUtils, TestMockdata, TestSlickGrid, TestMessages) {
+    module(TestMessages.NETWORKS_GRID_MODULE, {
         setup: function () {
             this.server = sinon.fakeServer.create();
             $.ajaxSetup({
@@ -22,7 +23,7 @@ define([
 
     var monitorNetworkingView = new MonitorNetworkingView();
 
-    asyncTest("Test Load Networks Grid", function (assert) {
+    asyncTest(TestMessages.TEST_LOAD_NETWORKS_GRID, function (assert) {
         expect(0);
         var fakeServer = this.server,
             testConfigObj = {
@@ -31,6 +32,15 @@ define([
                 'addnCols': ['detail'],
                 'gridElId': '#' + ctwl.PROJECT_NETWORK_GRID_ID
             };
+
+        fakeServer.autoRespond = true;
+
+        fakeServer.respondWith(
+            "GET", TestUtils.getRegExForUrl(ctwc.URL_ALL_DOMAINS),
+            [200, {"Content-Type": "application/json"}, JSON.stringify(TestMockdata.domainsMockData)]);
+        fakeServer.respondWith(
+            "GET", /\/api\/tenants\/projects\/default-domain.*$/,
+            [200, {"Content-Type": "application/json"}, JSON.stringify(TestMockdata.projectMockData)]);
         fakeServer.respondWith(
             "POST", TestUtils.getRegExForUrl(ctwc.URL_ALL_NETWORKS_DETAILS),
             [200, {"Content-Type": "application/json"}, JSON.stringify(TestMockdata.networksMockData)]);
@@ -40,12 +50,12 @@ define([
 
         mnPageLoader.renderView('renderNetworks', {
             "view": "list",
-            "type": "network",
-            "source": "uve"
+            "type": "network"
         }, monitorNetworkingView);
-        fakeServer.respond();
-        TestUtils.startQunitWithTimeout(3000);
 
-        TestSlickGrid.executeSlickGridTests(ctwl.PROJECT_NETWORK_GRID_ID, TestMockdata.networksMockData, testConfigObj);
+        window.setTimeout(function () {
+            TestSlickGrid.executeSlickGridTests(testConfigObj['gridElId'], TestMockdata.networksMockData, testConfigObj);
+            QUnit.start();
+        }, 3000);
     });
 });
