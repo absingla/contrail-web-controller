@@ -13,6 +13,7 @@ module.exports = function (grunt) {
 
     var commonFiles = [
         {pattern: 'contrail-web-core/webroot/assets/**/*.js', included: false},
+        {pattern: 'contrail-web-core/webroot/assets/**/*.css', included: false},
         {pattern: 'contrail-web-core/webroot/css/**/*.css', included: false},
         {pattern: 'contrail-web-core/webroot/views/**/*.view', included: false},
         {pattern: 'contrail-web-core/webroot/js/**/*.js', included: false},
