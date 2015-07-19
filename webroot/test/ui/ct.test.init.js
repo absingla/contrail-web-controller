@@ -39,6 +39,7 @@ require(['jquery', 'knockout'], function ($, Knockout) {
         initCustomKOBindings(Knockout);
         initDomEvents();
 
+        $("body").addClass('navbar-fixed');
         $("body").append(CoreTestUtils.getPageHeaderHTML());
         $("body").append(CoreTestUtils.getSidebarHTML());
         $("body").append(coreCommonTmpls);
