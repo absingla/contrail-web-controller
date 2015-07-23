@@ -9,15 +9,6 @@ define([
     'graph-view'
 ], function (_, Backbone, ContrailGraphModel, GraphView) {
 
-    var VM_GRAPH_OPTIONS = {
-        regularVMSize: {width: 20, height: 20, margin: 20},
-        minVMSize: {width: 10, height: 10},
-        externalRectRatio: {width: 16, height: 4},
-        internalRectRatio: {width: 16, height: 4},
-        minInternalRect: {width: 200, height: 100},
-        marginRatio: {width: 1, height: 1}
-    };
-
     var NetworkingGraphView = Backbone.View.extend({
         render: function () {
             var self = this,
@@ -103,10 +94,10 @@ define([
         }
     });
 
-    function getConnectedGraphModelConfig(graphConfig, selectorId) {
+    function getConnectedGraphModelConfig(graphConfig) {
         return $.extend(true, {}, graphConfig, {
             forceFit: true,
-            generateElementsFn: getElements4ConnectedGraphFn(graphConfig, selectorId),
+            generateElementsFn: getElements4ConnectedGraphFn(graphConfig),
             remote: {
                 successCallback: function (response, contrailGraphModel) {
                     if (!contrail.checkIfExist(contrailGraphModel.elementsDataObj)
@@ -126,7 +117,7 @@ define([
         return {
             el: $(connectedSelectorId),
             linkView: joint.shapes.contrail.LinkView,
-            graphModelConfig: getConnectedGraphModelConfig(graphConfig, selectorId),
+            graphModelConfig: getConnectedGraphModelConfig(graphConfig),
             tooltipConfig: nmwgrc.getConnectedGraphTooltipConfig(),
             clickEvents: {
                 'cell:pointerclick': getCgPointerClick(connectedSelectorId),
@@ -163,7 +154,8 @@ define([
             successCallback: function (jointObject) {
                 var directedGraphSize = jointObject.graph.directedGraphSize,
                     currentHashParams = layoutHandler.getURLHashParams(),
-                    focusedElement = graphConfig.focusedElement;
+                    focusedElement = graphConfig.focusedElement,
+                    connectedGraphView = jointObject.paper;
 
                 $(connectedSelectorId).data('graph-size', directedGraphSize);
                 $(connectedSelectorId).data('joint-object', jointObject);
@@ -174,7 +166,7 @@ define([
                 highlightElement4ZoomedElement(connectedSelectorId, graphConfig);
 
                 if (contrail.checkIfExist(currentHashParams.clickedElement)) {
-                    highlightConnectedClickedElement(currentHashParams.clickedElement, connectedGraphView)
+                    highlightConnectedClickedElement(currentHashParams.clickedElement, connectedGraphView);
                 } else if (focusedElement.type == ctwc.GRAPH_ELEMENT_PROJECT){
                     removeFaint4AllElements();
                     removeHighlight4AllElements();
@@ -283,17 +275,15 @@ define([
         });
     }
 
-    function getElements4ConnectedGraphFn(graphconfig, selectorId) {
+    function getElements4ConnectedGraphFn(graphconfig) {
         var focusedElementType = graphconfig.focusedElement.type,
             fqName = graphconfig.focusedElement.name.fqName;
 
         return function (response, elementMap, rankDir) {
             var elements4ConnectedGraph = [],
-                zoomedElements = [],
                 nodes = response['nodes'],
-                zoomedNodeElement = null,
-                links = response['links'],
-                zoomedNode = null;
+                zoomedNodeElement = null,zoomedElements = [], zoomedNodeKey = null,
+                links = response['links'];
 
             if (focusedElementType == ctwc.GRAPH_ELEMENT_PROJECT || focusedElementType == ctwc.GRAPH_ELEMENT_INSTANCE) {
                 createNodeElements(nodes, elements4ConnectedGraph, elementMap);
@@ -348,37 +338,13 @@ define([
                 }
 
             } else if (focusedElementType == ctwc.GRAPH_ELEMENT_NETWORK) {
-                var zoomedNodeKey = null,
-                    options = null;
-
                 $.each(nodes, function (nodeKey, nodeValue) {
-                    if (nodeValue.name == fqName) {
-                        zoomedNode = nodeValue;
+                    if (nodeValue.name === fqName) {
                         zoomedNodeKey = nodeKey;
+                        zoomedNodeElement = createCloudZoomedNodeElement(nodeValue, getZoomedVNSize(rankDir, nodeValue));
+                        zoomedElements = generateVMGraph(rankDir, zoomedNodeElement, nodeValue, elementMap, elements4ConnectedGraph);
 
-                        if (rankDir == ctwc.GRAPH_DIR_TB) {
-                            options = getVerticalZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
-                        } else if (rankDir == ctwc.GRAPH_DIR_LR) {
-                            options = getHorizontalZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
-                        } else {
-                            options = getZoomedVMSize($(selectorId).height(), $(selectorId).width(), nodeValue);
-                        }
-
-                        zoomedNodeElement = createCloudZoomedNodeElement(zoomedNode, {
-                            width: options['widthZoomedElement'],
-                            height: options['heightZoomedElement']
-                        });
-
-                        elements4ConnectedGraph.push(zoomedNodeElement);
-                        elementMap.node[fqName] = zoomedNodeElement.id;
-
-                        if (rankDir == ctwc.GRAPH_DIR_TB) {
-                            generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap);
-                        } else if (rankDir == ctwc.GRAPH_DIR_LR) {
-                            generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap);
-                        } else {
-                            generateVMGraph(zoomedElements, zoomedNodeElement, options, elementMap);
-                        }
+                        return;
                     }
                 });
 
@@ -510,15 +476,16 @@ define([
         $(connectedSelectorId).redraw();
     };
 
-    function createVirtualMachineNode(position, size, vmName, srcVNDetails, uve) {
+    function createVMNode(position, size, vmName, srcVNDetails, uve, elementOrientation) {
         var nodeType = ctwc.GRAPH_ELEMENT_INSTANCE,
-            element, options;
+            element, options,
+            iconClass = 'icon-contrail-virtual-machine' + (contrail.checkIfExist(elementOrientation) ? '-' + elementOrientation : '');
 
         options = {
             position: position,
             size: size,
             font: {
-                iconClass: 'icon-contrail-virtual-machine-top'
+                iconClass: iconClass
             },
             nodeDetails: {
                 fqName: vmName,
@@ -531,7 +498,7 @@ define([
         return element;
     };
 
-    function createVirtualMachineLink(position, size){
+    function createVMCenterLink(position, size) {
         var rect = new joint.shapes.basic.Rect({
             type: 'VirtualMachineLink no-drag-element',
             position: position, size: size,
@@ -540,37 +507,77 @@ define([
         return rect;
     };
 
-    function generateVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
-        var vmMargin = options['VMMargin'],
-            vmWidth = options['VMWidth'],
-            vmHeight = options['VMHeight'],
-            xSeparation = vmWidth + vmMargin,
-            ySeparation = vmHeight + vmMargin,
-            vmPerRow = options['vmPerRow'],
-            vmLength = options['noOfVMsToDraw'],
-            vmNode, vmList = options['vmList'],
-            vmDetailsMap = options['vmDetailsMap'],
-            vmUVE = null ;
+    function getZoomedVNSize(rankDir, zoomedVNDetails) {
+        var vmCount = zoomedVNDetails.more_attributes.vm_count,
+            vmWidth = ctwc.VM_GRAPH_SIZE.width + ctwc.VM_GRAPH_MARGIN.left + ctwc.VM_GRAPH_MARGIN.right,
+            vmHeight = ctwc.VM_GRAPH_SIZE.height + ctwc.VM_GRAPH_MARGIN.top + ctwc.VM_GRAPH_MARGIN.bottom,
+            zoomedVNWidth, zoomedVNHeight;
 
-        var xOrigin = vmMargin / 2,
-            yOrigin = vmMargin / 2,
-            position = {},
-            size = {width: vmWidth, height: vmHeight};
+        if (rankDir == ctwc.GRAPH_DIR_TB) {
+            zoomedVNWidth = vmHeight * 2;
+            zoomedVNHeight = ((vmCount < ctwc.MAX_VM_TO_PLOT) ? vmCount :  ctwc.MAX_VM_TO_PLOT) * vmWidth;
+        } else if (rankDir == ctwc.GRAPH_DIR_LR) {
+            zoomedVNWidth = ((vmCount < ctwc.MAX_VM_TO_PLOT) ? vmCount :  ctwc.MAX_VM_TO_PLOT) * vmWidth;
+            zoomedVNHeight = vmHeight * 2;
+        }
 
-        var centerLineHeight = 0.1,
-            xFactor = 0, yFactor = -1;
+        return {
+            width: zoomedVNWidth + ctwc.ZOOMED_VN_MARGIN.left + ctwc.ZOOMED_VN_MARGIN.right,
+            height: zoomedVNHeight + ctwc.ZOOMED_VN_MARGIN.top + ctwc.ZOOMED_VN_MARGIN.bottom
+        };
+    }
 
-        for (var i = 0; i < vmLength; i++) {
-            if (i % vmPerRow == 0) {
-                xFactor = 0;
-                yFactor++;
+    function generateVMGraph(rankDir, zoomedNodeElement, nodeValue, elementMap, elements4ConnectedGraph) {
+        var zoomedElements = [];
+        elements4ConnectedGraph.push(zoomedNodeElement);
+        elementMap.node[nodeValue.name] = zoomedNodeElement.id;
+
+        if (rankDir == ctwc.GRAPH_DIR_TB) {
+            zoomedElements = generateVerticalVMGraph(zoomedNodeElement, nodeValue, elementMap);
+        } else if (rankDir == ctwc.GRAPH_DIR_LR) {
+            zoomedElements = generateHorizontalVMGraph(zoomedNodeElement, nodeValue, elementMap);
+        }
+
+        return zoomedElements;
+    }
+
+    function generateHorizontalVMGraph(zoomedNodeElement, zoomedVNDetails, elementMap) {
+        var zoomedElements = [],
+            vmCount = zoomedVNDetails.more_attributes.vm_count,
+            vmList = zoomedVNDetails.more_attributes.virtualmachine_list,
+            vmDetailsMap = zoomedVNDetails.more_attributes.virtualmachine_details,
+            vmWidth = ctwc.VM_GRAPH_SIZE.width + ctwc.VM_GRAPH_MARGIN.left + ctwc.VM_GRAPH_MARGIN.right,
+            vmHeight = ctwc.VM_GRAPH_SIZE.height + ctwc.VM_GRAPH_MARGIN.top + ctwc.VM_GRAPH_MARGIN.bottom,
+            vmToPlot = (vmCount > ctwc.MAX_VM_TO_PLOT) ? ctwc.MAX_VM_TO_PLOT : vmCount,
+            vmCenterLinkThickness = ctwc.VM_CENTER_LINK_THICKNESS,
+            zoomedVNPositionX = ctwc.ZOOMED_VN_MARGIN.left,
+            zoomedVNPositionY = ctwc.ZOOMED_VN_MARGIN.top + ctwc.VM_GRAPH_MARGIN.top,
+            vmCenterLinkPosition = {
+                x: zoomedVNPositionX,
+                y: zoomedVNPositionY + ctwc.VM_GRAPH_SIZE.height
+            },
+            vmCenterLinkSize = {width: vmToPlot * vmWidth, height: vmCenterLinkThickness},
+            vmCenterLinkNode = createVMCenterLink(vmCenterLinkPosition, vmCenterLinkSize),
+            vmNode, vmUVE, vmPosition = {};
+
+        zoomedElements.push(vmCenterLinkNode);
+        zoomedNodeElement.embed(vmCenterLinkNode);
+
+        for (var i = 0; i < vmToPlot; i++) {
+            vmUVE = contrail.checkIfExist(vmDetailsMap) ? vmDetailsMap[vmList[i]] : null;
+            vmPosition = {
+                x: zoomedVNPositionX + ctwc.VM_GRAPH_MARGIN.left + (vmWidth * i),
+                y: zoomedVNPositionY
+            };
+
+            if( i % 2 == 0) {
+                vmNode = createVMNode(vmPosition, ctwc.VM_GRAPH_SIZE, vmList[i], zoomedVNDetails, vmUVE, 'top');
+            } else {
+                vmPosition.y += ctwc.VM_GRAPH_SIZE.height;
+                vmNode = createVMNode(vmPosition, ctwc.VM_GRAPH_SIZE, vmList[i], zoomedVNDetails, vmUVE, 'bottom');
             }
 
-            position = {x: xOrigin + (xSeparation * xFactor), y: yOrigin + ((ySeparation + centerLineHeight) * yFactor)};
-            vmUVE = contrail.checkIfExist(vmDetailsMap) ? vmDetailsMap[vmList[i]] : null;
-            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails'], vmUVE);
             elementMap.node[vmList[i]] = vmNode.id;
-            xFactor++;
             zoomedElements.push(vmNode);
             zoomedNodeElement.embed(vmNode);
         }
@@ -578,102 +585,45 @@ define([
         return zoomedElements;
     };
 
-    function generateHorizontalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
-        var vmMargin = options['VMMargin'],
-            vmWidth = options['VMWidth'],
-            vmHeight = options['VMHeight'],
-            xSeparation = vmWidth + vmMargin,
-            ySeparation = vmHeight + vmMargin,
-            vmPerRow = options['vmPerRow'],
-            vmLength = options['noOfVMsToDraw'],
-            vmNode, vmList = options['vmList'],
-            vmDetailsMap = options['vmDetailsMap'],
-            vmUVE;
+    function generateVerticalVMGraph(zoomedNodeElement, zoomedVNDetails, elementMap) {
+        var zoomedElements = [],
+            vmCount = zoomedVNDetails.more_attributes.vm_count,
+            vmList = zoomedVNDetails.more_attributes.virtualmachine_list,
+            vmDetailsMap = zoomedVNDetails.more_attributes.virtualmachine_details,
+            vmWidth = ctwc.VM_GRAPH_SIZE.width + ctwc.VM_GRAPH_MARGIN.left + ctwc.VM_GRAPH_MARGIN.right,
+            vmHeight = ctwc.VM_GRAPH_SIZE.height + ctwc.VM_GRAPH_MARGIN.top + ctwc.VM_GRAPH_MARGIN.bottom,
+            vmToPlot = (vmCount > ctwc.MAX_VM_TO_PLOT) ? ctwc.MAX_VM_TO_PLOT : vmCount,
+            vmCenterLinkThickness = ctwc.VM_CENTER_LINK_THICKNESS,
+            zoomedVNPositionX = ctwc.ZOOMED_VN_MARGIN.left + ctwc.VM_GRAPH_MARGIN.top + ctwc.ZOOMED_VN_OFFSET_X,
+            zoomedVNPositionY = ctwc.ZOOMED_VN_MARGIN.top,
+            vmCenterLinkPosition = {
+                x: zoomedVNPositionX + ctwc.VM_GRAPH_SIZE.height,
+                y: zoomedVNPositionY
+            },
+            vmCenterLinkSize = {width: vmCenterLinkThickness, height: vmToPlot * vmWidth},
+            vmCenterLinkNode = createVMCenterLink(vmCenterLinkPosition, vmCenterLinkSize),
+            vmNode, vmUVE, vmPosition = {};
 
-        var xOrigin = vmMargin / 2,
-            yOrigin = vmMargin / 2,
-            position = {},
-            size = {width: vmWidth, height: vmHeight},
-            virtualMachineCommonLinkPosition = {}, virtualMachineCommonLinkSize = {}, virtualMachineCommonLinkNode,
-            virtualMachineLinkPosition = {}, virtualMachineLinkSize = {}, virtualMachineLinkNode;
+        zoomedElements.push(vmCenterLinkNode);
+        zoomedNodeElement.embed(vmCenterLinkNode);
 
-        var xFactor = 0, yFactor = 0, linkThickness = 2, rectThickness = 2, horizontalAdjustFactor = 6;
-        if(vmLength !== 0){
-            virtualMachineCommonLinkPosition = {x: xOrigin - vmWidth/2, y: yOrigin + ySeparation - horizontalAdjustFactor};
-            virtualMachineCommonLinkSize = {width: vmLength * xSeparation + vmWidth/2, height: rectThickness};
-            virtualMachineCommonLinkNode = createVirtualMachineLink(virtualMachineCommonLinkPosition, virtualMachineCommonLinkSize);
-            zoomedElements.push(virtualMachineCommonLinkNode);
-            zoomedNodeElement.embed(virtualMachineCommonLinkNode);
-        }
-
-        for (var i = 0; i < vmLength; i++) {
-            position = {x: xOrigin + (xSeparation * xFactor), y: yOrigin + ((ySeparation) * yFactor)};
+        for (var i = 0; i < vmToPlot; i++) {
             vmUVE = contrail.checkIfExist(vmDetailsMap) ? vmDetailsMap[vmList[i]] : null;
-            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails'], vmUVE);
-            elementMap.node[vmList[i]] = vmNode.id;
-            zoomedElements.push(vmNode);
-            zoomedNodeElement.embed(vmNode);
+            vmPosition = {
+                x: zoomedVNPositionX,
+                y: zoomedVNPositionY + ctwc.VM_GRAPH_MARGIN.left + (vmWidth * i)
+            };
 
-            virtualMachineLinkPosition = {x: xOrigin + (xSeparation * xFactor)+ vmWidth/2 +1, y: yOrigin + ((ySeparation) * yFactor) + vmHeight};
-            virtualMachineLinkSize = {width: linkThickness, height: (ySeparation/2) - 6};
-            virtualMachineLinkNode = createVirtualMachineLink(virtualMachineLinkPosition, virtualMachineLinkSize);
-            zoomedElements.push(virtualMachineLinkNode);
-            zoomedNodeElement.embed(virtualMachineLinkNode);
-
-            xFactor++;
-        }
-
-        return zoomedElements;
-    };
-
-    function generateVerticalVMGraph(zoomedElements, zoomedNodeElement, options, elementMap) {
-        var vmMargin = options['VMMargin'],
-            vmWidth = options['VMWidth'],
-            vmHeight = options['VMHeight'],
-            xSeparation = vmWidth + vmMargin,
-            ySeparation = vmHeight + vmMargin,
-            vmPerRow = options['vmPerRow'],
-            vmLength = options['noOfVMsToDraw'],
-            vmNode, vmList = options['vmList'],
-            vmDetailsMap = options['vmDetailsMap'],
-            vmUVE;
-
-        var xOrigin = vmMargin / 2,
-            yOrigin = vmMargin / 2,
-            position = {},
-            size = {width: vmWidth, height: vmHeight},
-            virtualMachineCommonLinkPosition = {}, virtualMachineCommonLinkSize = {}, virtualMachineCommonLinkNode,
-            virtualMachineLinkPosition = {}, virtualMachineLinkSize = {}, virtualMachineLinkNode;
-
-        var centerLineHeight = 0.1,
-            xFactor = 0, yFactor = -1,
-            linkThickness = 2, rectThickness = 2;
-
-        if(vmLength !== 0){
-            virtualMachineCommonLinkPosition = {x: xOrigin + vmWidth + xSeparation/2, y: yOrigin - vmMargin/2};
-            virtualMachineCommonLinkSize = {width: rectThickness, height: vmLength * ySeparation};
-            virtualMachineCommonLinkNode = createVirtualMachineLink(virtualMachineCommonLinkPosition, virtualMachineCommonLinkSize)
-            zoomedElements.push(virtualMachineCommonLinkNode);
-            zoomedNodeElement.embed(virtualMachineCommonLinkNode);
-        }
-
-        for (var i = 0; i < vmLength; i++) {
-            if (i % vmPerRow == 0) {
-                xFactor = 0;
-                yFactor++;
+            if (i % 2 === 0) {
+                vmNode = createVMNode(vmPosition, ctwc.VM_GRAPH_SIZE, vmList[i], zoomedVNDetails, vmUVE, 'left');
+            } else {
+                vmPosition.x += ctwc.VM_GRAPH_SIZE.height;
+                vmNode = createVMNode(vmPosition, ctwc.VM_GRAPH_SIZE, vmList[i], zoomedVNDetails, vmUVE, 'right');
             }
-            position = {x: xOrigin + (xSeparation * xFactor), y: yOrigin + ((ySeparation) * yFactor)};
-            vmUVE = contrail.checkIfExist(vmDetailsMap) ? vmDetailsMap[vmList[i]] : null;
-            vmNode = createVirtualMachineNode(position, size, vmList[i], options['srcVNDetails'], vmUVE);
+
             elementMap.node[vmList[i]] = vmNode.id;
             zoomedElements.push(vmNode);
             zoomedNodeElement.embed(vmNode);
-
-            virtualMachineLinkPosition = {x: xOrigin + vmWidth + 2, y: yOrigin + ((ySeparation) * yFactor) + vmHeight/2};
-            virtualMachineLinkSize = {width: xSeparation/2 - 2, height: linkThickness};
-            virtualMachineLinkNode = createVirtualMachineLink(virtualMachineLinkPosition, virtualMachineLinkSize)
-            zoomedElements.push(virtualMachineLinkNode);
-            zoomedNodeElement.embed(virtualMachineLinkNode);
         }
 
         return zoomedElements;
@@ -1083,89 +1033,6 @@ define([
         $('g.element').removeClassSVG('highlighted');
         $('g.link').removeClassSVG('highlighted');
     };
-
-    function getHorizontalZoomedVMSize(availableHeight, availableWidth, srcVNDetails) {
-        var maxExternalRectWidth = .7 * availableWidth,
-            maxExternalRectHeight = maxExternalRectWidth * (VM_GRAPH_OPTIONS.externalRectRatio['height'] / VM_GRAPH_OPTIONS.externalRectRatio['width']);
-
-        var vmMargin = VM_GRAPH_OPTIONS.regularVMSize['margin'],
-            maxInternalRectWidth = Math.floor(((VM_GRAPH_OPTIONS.internalRectRatio['width'] / VM_GRAPH_OPTIONS.externalRectRatio['width']) * maxExternalRectWidth)) - vmMargin,
-            maxInternalRectHeight = Math.floor(((VM_GRAPH_OPTIONS.internalRectRatio['height'] / VM_GRAPH_OPTIONS.externalRectRatio['height']) * maxExternalRectHeight)) - vmMargin,
-            maxInternalRectArea = maxInternalRectHeight * maxInternalRectWidth;
-
-        var noOfVMs = srcVNDetails.more_attributes.vm_count,
-            VMHeight = VM_GRAPH_OPTIONS.regularVMSize['height'],
-            VMWidth = VM_GRAPH_OPTIONS.regularVMSize['width'],
-            widthNeededForVM = VM_GRAPH_OPTIONS.regularVMSize.width + vmMargin,
-            heightNeededForVM = VM_GRAPH_OPTIONS.regularVMSize.height + vmMargin,
-            areaPerVM = widthNeededForVM * heightNeededForVM,
-            actualAreaNeededForVMs = areaPerVM * noOfVMs,
-            vmPerRow = noOfVMs, noOfRows;
-
-        var returnObj = {
-                'VMHeight': VMHeight,
-                'VMWidth': VMWidth,
-                'VMMargin': vmMargin
-            },
-            internalRectangleWidth, internalRectangleHeight, noOfVMsToDraw;
-
-        noOfVMsToDraw = noOfVMs;
-        noOfRows = 1;
-        internalRectangleWidth = (((vmPerRow < ctwc.MAX_VM_TO_PLOT) ? vmPerRow :  ctwc.MAX_VM_TO_PLOT) * widthNeededForVM) + vmMargin;
-        internalRectangleHeight = (noOfRows * heightNeededForVM) + vmMargin;
-
-        returnObj['vmPerRow'] = vmPerRow;
-        returnObj['noOfVMsToDraw'] = (noOfVMsToDraw > ctwc.MAX_VM_TO_PLOT) ? ctwc.MAX_VM_TO_PLOT : noOfVMsToDraw;
-        returnObj['widthZoomedElement'] = internalRectangleWidth * (VM_GRAPH_OPTIONS.externalRectRatio['width'] / VM_GRAPH_OPTIONS.internalRectRatio['width']);
-        returnObj['heightZoomedElement'] = internalRectangleHeight * (VM_GRAPH_OPTIONS.externalRectRatio['height'] / VM_GRAPH_OPTIONS.internalRectRatio['height']);
-        returnObj['vmList'] = srcVNDetails.more_attributes.virtualmachine_list;
-        returnObj['vmDetailsMap'] = srcVNDetails.more_attributes.virtualmachine_details;
-        returnObj['srcVNDetails'] = srcVNDetails;
-
-        return returnObj;
-
-    }
-
-    function getVerticalZoomedVMSize(availableHeight, availableWidth, srcVNDetails) {
-        var maxExternalRectWidth = .7 * availableWidth,
-            maxExternalRectHeight = maxExternalRectWidth * (VM_GRAPH_OPTIONS.externalRectRatio['height'] / VM_GRAPH_OPTIONS.externalRectRatio['width']);
-
-        var vmMargin = VM_GRAPH_OPTIONS.regularVMSize['margin'],
-            maxInternalRectWidth = Math.floor(((VM_GRAPH_OPTIONS.internalRectRatio['width'] / VM_GRAPH_OPTIONS.externalRectRatio['width']) * maxExternalRectWidth)) - vmMargin,
-            maxInternalRectHeight = Math.floor(((VM_GRAPH_OPTIONS.internalRectRatio['height'] / VM_GRAPH_OPTIONS.externalRectRatio['height']) * maxExternalRectHeight)) - vmMargin,
-            maxInternalRectArea = maxInternalRectHeight * maxInternalRectWidth;
-
-        var noOfVMs = srcVNDetails.more_attributes.vm_count,
-            VMHeight = VM_GRAPH_OPTIONS.regularVMSize['height'],
-            VMWidth = VM_GRAPH_OPTIONS.regularVMSize['width'],
-            widthNeededForVM = VM_GRAPH_OPTIONS.regularVMSize.width + vmMargin,
-            heightNeededForVM = VM_GRAPH_OPTIONS.regularVMSize.height + vmMargin,
-            areaPerVM = widthNeededForVM * heightNeededForVM,
-            actualAreaNeededForVMs = areaPerVM * noOfVMs,
-            vmPerRow = 1, noOfRows;
-
-        var returnObj = {
-                'VMHeight': VMHeight,
-                'VMWidth': VMWidth,
-                'VMMargin': vmMargin
-            },
-            internalRectangleWidth, internalRectangleHeight, noOfVMsToDraw;
-
-        noOfVMsToDraw = noOfVMs;
-        noOfRows = Math.ceil(noOfVMsToDraw / vmPerRow);
-        internalRectangleWidth = (vmPerRow * widthNeededForVM) + vmMargin;
-        internalRectangleHeight = (((noOfRows < ctwc.MAX_VM_TO_PLOT) ? noOfRows :  ctwc.MAX_VM_TO_PLOT) * heightNeededForVM) + vmMargin;
-
-        returnObj['vmPerRow'] = vmPerRow;
-        returnObj['noOfVMsToDraw'] = (noOfVMsToDraw > ctwc.MAX_VM_TO_PLOT) ? ctwc.MAX_VM_TO_PLOT : noOfVMsToDraw;
-        returnObj['widthZoomedElement'] = internalRectangleWidth * (VM_GRAPH_OPTIONS.externalRectRatio['width'] / VM_GRAPH_OPTIONS.internalRectRatio['width']);
-        returnObj['heightZoomedElement'] = internalRectangleHeight * (VM_GRAPH_OPTIONS.externalRectRatio['height'] / VM_GRAPH_OPTIONS.internalRectRatio['height']);
-        returnObj['vmList'] = srcVNDetails.more_attributes.virtualmachine_list;
-        returnObj['vmDetailsMap'] = srcVNDetails.more_attributes.virtualmachine_details;
-        returnObj['srcVNDetails'] = srcVNDetails;
-
-        return returnObj;
-    }
 
     function createNodes4ConfigData(configData, collections) {
         var networkPolicys = configData['network-policys'],
