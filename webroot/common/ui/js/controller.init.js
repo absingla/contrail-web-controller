@@ -34,4 +34,6 @@ define([
     nmwvc = new NMViewConfig();
 
     ctInitComplete = true;
+
+    menuHandler.initFeatureAppDefObjMap[FEATURE_PCK_WEB_CONTROLLER].resolve();
 });

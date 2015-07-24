@@ -15,9 +15,6 @@ and need to add the iconClass tag wherever we need to show some icons
             <name>monitor</name>
             <resources>
                 <resource>
-                    <rootDir>/common/ui</rootDir>
-                    <js>controller.app.js</js>
-                    <view>controller_common.view</view>
                 </resource>
             </resources>
             <iconClass>icon-bar-chart</iconClass>
@@ -192,7 +189,6 @@ and need to add the iconClass tag wherever we need to show some icons
                     <resources>
                         <resource>
                             <rootDir>/common/ui</rootDir>
-                            <js>controller.app.js</js>
                             <class>mnPageLoader</class>
                         </resource>
                         <resource>
@@ -327,7 +323,6 @@ and need to add the iconClass tag wherever we need to show some icons
                     <resources>
                         <resource>
                             <rootDir>/common/ui</rootDir>
-                            <js>controller.app.js</js>
                             <class>mnAlarmsPageLoader</class>
                         </resource>
                         <resource>
