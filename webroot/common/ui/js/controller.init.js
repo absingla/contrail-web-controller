@@ -35,5 +35,9 @@ define([
 
     ctInitComplete = true;
 
-    menuHandler.initFeatureAppDefObjMap[FEATURE_PCK_WEB_CONTROLLER].resolve();
+    var deferredObj = contentHandler.initFeatureAppDefObjMap[FEATURE_PCK_WEB_CONTROLLER];
+
+    if(contrail.checkIfExist(deferredObj)) {
+        deferredObj.resolve()
+    }
 });

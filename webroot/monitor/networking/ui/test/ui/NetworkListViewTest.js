@@ -10,15 +10,6 @@ define([
     var self = this;
     module(TestMessages.NETWORKS_GRID_MODULE, {
         setup: function () {
-            var hashParams = {
-                p: 'mon_networking_networks',
-                q: {
-                    view: 'list',
-                    type: 'network'
-                }
-            };
-            loadFeature(hashParams);
-
             self.server = sinon.fakeServer.create();
             self.server.autoRespond = true;
 
@@ -34,7 +25,15 @@ define([
 
     asyncTest(TestMessages.TEST_LOAD_NETWORKS_GRID, function (assert) {
         expect(0);
-        menuHandler.deferredObj.done(function () {
+        var hashParams = {
+            p: 'mon_networking_networks',
+            q: {
+                view: 'list',
+                type: 'network'
+            }
+        };
+        loadFeature(hashParams);
+        contentHandler.featureAppDefObj.done(function () {
             var fakeServer = self.server;
 
             fakeServer.respondWith( "GET", TestUtils.getRegExForUrl(ctwc.URL_ALL_DOMAINS), [200, {"Content-Type": "application/json"}, JSON.stringify(TestMockdata.domainsMockData)]);
@@ -51,7 +50,7 @@ define([
                 };
                 TestSlickGrid.executeSlickGridTests(testConfigObj['gridElId'], TestMockdata.networksMockData, testConfigObj);
                 QUnit.start();
-            }, 3000)
+            }, 1000)
         });
     });
 });

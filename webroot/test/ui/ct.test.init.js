@@ -17,8 +17,8 @@ var depArray = [
     'jquery', 'underscore', 'validation', 'core-constants', 'core-utils',
     'core-formatters', 'knockout', 'core-cache', 'contrail-common',
 
-    'text!/base/contrail-web-core/webroot/views/contrail-common.view',
-    'co-test-utils', 'menu-handler',
+    'text!/base/contrail-web-core/webroot/templates/core.common.tmpl',
+    'co-test-utils', 'layout-handler',
 
     'web-utils', 'handlebars-utils', 'slickgrid-utils', 'contrail-elements',
     'topology_api', 'chart-utils', 'qe-utils', 'nvd3-plugin', 'd3-utils', 'analyzer-utils',
@@ -30,7 +30,7 @@ require(['jquery', 'knockout'], function ($, Knockout) {
     loadCommonTemplates();
 
     require(depArray, function ($, _, validation, CoreConstants, CoreUtils, CoreFormatters, Knockout, Cache,
-                                contrailCommon, coreCommonTmpls, CoreTestUtils, MenuHandler) {
+                                contrailCommon, CoreCommonTmpl, CoreTestUtils, LayoutHandler) {
         cowc = new CoreConstants();
         cowu = new CoreUtils();
         cowf = new CoreFormatters();
@@ -39,12 +39,12 @@ require(['jquery', 'knockout'], function ($, Knockout) {
         initBackboneValidation(_);
         initCustomKOBindings(Knockout);
         initDomEvents();
-        menuHandler = new MenuHandler();
+        layoutHandler = new LayoutHandler();
 
         $("body").addClass('navbar-fixed');
         $("body").append(CoreTestUtils.getPageHeaderHTML());
         $("body").append(CoreTestUtils.getSidebarHTML());
-        $("body").append(coreCommonTmpls);
+        $("body").append(CoreCommonTmpl);
 
         var cssList = CoreTestUtils.getCSSList();
 
@@ -66,14 +66,12 @@ require(['jquery', 'knockout'], function ($, Knockout) {
 
                 requirejs(['contrail-layout'], function () {
                     //TODO: Timeout is currently required to ensure menu is loaed i.e feature app is initialized
-                    setTimeout(function() {
-                        require(allTestFiles, function () {
-                            requirejs.config({
-                                deps: allTestFiles,
-                                callback: window.__karma__.start
-                            });
+                    require(allTestFiles, function () {
+                        requirejs.config({
+                            deps: allTestFiles,
+                            callback: window.__karma__.start
                         });
-                    }, 1000);
+                    });
                 });
             });
         });
