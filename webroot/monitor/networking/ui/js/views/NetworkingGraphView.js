@@ -563,13 +563,15 @@ define([
     };
 
     function panConnectedGraph2Element(elementObj, connectedSelectorId) {
-        var availableGraphWidth = $(connectedSelectorId).parents('.col1').width(),
-            availableGraphHeight = $(connectedSelectorId).parents('.col1').height(),
-            panX = (availableGraphWidth / 2) - (elementObj.attributes.position.x + (elementObj.attributes.size.width / 2)),
-            panY = (availableGraphHeight / 2) - (elementObj.attributes.position.y + (elementObj.attributes.size.height / 2));
+        if (contrail.checkIfExist(elementObj)) {
+            var availableGraphWidth = $(connectedSelectorId).parents('.col1').width(),
+                availableGraphHeight = $(connectedSelectorId).parents('.col1').height(),
+                panX = (availableGraphWidth / 2) - (elementObj.attributes.position.x + (elementObj.attributes.size.width / 2)),
+                panY = (availableGraphHeight / 2) - (elementObj.attributes.position.y + (elementObj.attributes.size.height / 2));
 
-        $(connectedSelectorId).panzoom("resetPan");
-        $(connectedSelectorId).panzoom("pan", panX, panY, { relative: true });
+            $(connectedSelectorId).panzoom("resetPan");
+            $(connectedSelectorId).panzoom("pan", panX, panY, { relative: true });
+        }
     }
 
     function createZoomedVNNode(nodeDetails, size) {
@@ -582,7 +584,8 @@ define([
                     'ref-x': .5,
                     'ref-y': -20
                 }
-            }
+            },
+            elementType: ctwc.GRAPH_ELEMENT_NETWORK
         });
         zoomedVNNode['attributes']['nodeDetails'] = nodeDetails;
         return zoomedVNNode;
@@ -601,6 +604,7 @@ define([
         iconClass += (contrail.checkIfExist(elementOrientation) ? '-' + elementOrientation : '');
 
         options = {
+            type: 'contrail.VirtualMachine.no-drag-element',
             position: position,
             size: size,
             font: {
@@ -773,6 +777,11 @@ define([
                     });
 
                     highlightCurrentNodeElement(elementNodeId);
+
+                    if ($('g[model-id="' + elementNodeId + '"]').hasClassSVG('ZoomedElement')) {
+                        highlightNetwork4ZoomedElement(connectedSelectorId)
+                    }
+
                     tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, clickedElement);
                     cowu.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
                 }
@@ -930,7 +939,7 @@ define([
                             uuid: networkUUID
                         });
 
-                        highlightNetwork4ZoomedElement(connectedSelectorId, graphConfig);
+                        highlightNetwork4ZoomedElement(connectedSelectorId);
                         nmwgrc.setNetworkURLHashParams(null, networkFQN, false);
 
                     } else {
@@ -969,11 +978,11 @@ define([
         var focusedElementType = graphConfig.focusedElement.type;
 
         if (focusedElementType == ctwc.GRAPH_ELEMENT_NETWORK) {
-            highlightNetwork4ZoomedElement(connectedSelectorId, graphConfig);
+            highlightNetwork4ZoomedElement(connectedSelectorId);
         }
     };
 
-    function highlightNetwork4ZoomedElement(connectedSelectorId, graphConfig) {
+    function highlightNetwork4ZoomedElement(connectedSelectorId) {
         faintElements([$(connectedSelectorId).find('div.font-element')]);
         faintSVGElements([$(connectedSelectorId).find('g.element'), $(connectedSelectorId).find('g.link')]);
         highlightElements([$('div.VirtualMachine')]);
