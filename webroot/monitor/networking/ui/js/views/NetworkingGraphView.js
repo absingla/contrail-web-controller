@@ -128,7 +128,7 @@ define([
                 'cell:pointerdblclick': cgPointerDblClick,
                 'blank:pointerdblclick': getCgBlankDblClick(self, connectedSelectorId, graphConfig)
             },
-            controlPanel: getControlPanelConfig(graphConfig, selectorId, connectedSelectorId, configSelectorId),
+            controlPanel: getControlPanelConfig(self, graphConfig, selectorId, connectedSelectorId, configSelectorId),
             emptyCallback: function (contrailGraphModel) {
                 var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
                     notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {
@@ -174,7 +174,7 @@ define([
                 if (contrail.checkIfExist(currentHashParams.clickedElement)) {
                     elementObj = connectedGraphModel.getCell(elementMap.node[currentHashParams.clickedElement.fqName]);
                     panConnectedGraph2Element(elementObj, connectedSelectorId);
-                    showClickedElement(elementObj, connectedSelectorId);
+                    showClickedElement(self, elementObj, connectedSelectorId);
                 } else if (focusedElement.type == ctwc.GRAPH_ELEMENT_PROJECT) {
                     removeFaint4AllElements();
                     removeHighlight4AllElements();
@@ -189,7 +189,7 @@ define([
         }
     }
 
-    function getControlPanelConfig(graphConfig, selectorId, connectedSelectorId, configSelectorId) {
+    function getControlPanelConfig(connectedGraphSelf, graphConfig, selectorId, connectedSelectorId, configSelectorId) {
         return {
             default: {
                 zoom: {
@@ -256,7 +256,7 @@ define([
 
                                         $(connectedSelectorId).panzoom("reset");
                                         panConnectedGraph2Element(elementObj, connectedSelectorId);
-                                        showClickedElement(elementObj, connectedSelectorId);
+                                        showClickedElement(connectedGraphSelf, elementObj, connectedSelectorId);
                                     }
                                 })
 
