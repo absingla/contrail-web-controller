@@ -42,7 +42,7 @@ module.exports = function (grunt) {
     ];
     var karmaConfig = {
         options: {
-            configFile: 'karma.conf.js'
+            configFile: 'karma.config.js'
         },
         nm: {
             options: {
@@ -56,26 +56,11 @@ module.exports = function (grunt) {
         }
     };
 
-    /* Start - Create all target that will run unit test cases from all features */
-    var allConfig = {
-        'options': {
-            files: commonFiles,
-            preprocessors: {}
-        }
-    };
     for (var feature in karmaConfig) {
         if (feature != 'options') {
-            allConfig['options']['files'] = allConfig['options']['files'].concat(karmaConfig[feature]['options']['files']);
-
-            for (var path in karmaConfig[feature]['options']['preprocessors']) {
-                allConfig['options']['preprocessors'][path] = karmaConfig[feature]['options']['preprocessors'][path];
-            }
-
             karmaConfig[feature]['options']['files'] = commonFiles.concat(karmaConfig[feature]['options']['files']);
         }
     }
-    karmaConfig['all'] = allConfig;
-    /* End - Create all target that will run unit test cases from all features */
 
     grunt.initConfig({
         pkg: grunt.file.readJSON(__dirname + "/../../../../contrail-web-core/package.json"),
