@@ -86,7 +86,10 @@ define([
                     view: "LineBarWithFocusChartView",
                     viewConfig: {
                         modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
-                        parseFn: ctwp.parseCPUMemLineChartData
+                        parseFn: ctwp.parseCPUMemLineChartData,
+                        chartOptions: {
+                            forceY1: [0, 1]
+                        }
                     }
                 }
             ];
