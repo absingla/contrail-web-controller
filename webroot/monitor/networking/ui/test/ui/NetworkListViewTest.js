@@ -4,13 +4,12 @@
 define([
     'co-test-utils',
     'network-list-view-mockdata',
-    'test-slickgrid',
-    'test-messages'
-], function (TestUtils, TestMockdata, TestSlickGrid, TestMessages) {
+    'test-messages',
+], function (TestUtils, TestMockdata, TestMessages) {
     var self = this;
     module(TestMessages.NETWORKS_GRID_MODULE, {
         setup: function () {
-            self.server = TestUtils.getFakeServer();
+            self.server = TestUtils.getFakeServer({autoRespondAfter: 400});
 
             $.ajaxSetup({
                 cache: true
@@ -21,6 +20,36 @@ define([
             delete self.server;
         }
     });
+
+    self.commonTestDataConfig = [
+        {
+            id: 'project-network-grid',
+            type: cotc.TYPE_GRID_VIEW_TEST,
+            tests: [
+                {
+                    testSuite: cotc.GRID_VIEW_DATAVIEW_TEST,
+                    dataParsers: {
+                        gridDataParseFn: deleteSizeField,
+                        mockDataParseFn: deleteSizeField
+                    },
+                    testCases: 'all'
+                },
+                {
+                    testSuite: cotc.GRID_VIEW_GRID_TEST,
+                    testCases: 'all'
+                }
+            ]
+        }
+    ];
+
+    function deleteSizeField(dataArr) {
+        _.each(dataArr, function(data) {
+            if (contrail.checkIfExist(data.size)) {
+                delete data.size;
+            }
+        });
+        return dataArr;
+    }
 
     asyncTest(TestMessages.TEST_LOAD_NETWORKS_GRID, function (assert) {
         expect(0);
@@ -41,15 +70,17 @@ define([
             fakeServer.respondWith( "POST", TestUtils.getRegExForUrl(ctwc.URL_VM_VN_STATS), [200, {"Content-Type": "application/json"}, JSON.stringify(TestMockdata.networksMockStatData)]);
 
             setTimeout(function() {
-                var testConfigObj = {
-                    'prefixId': 'project-network-grid',
-                    'cols': nmwgc.projectNetworksColumns,
-                    'addnCols': ['detail'],
-                    'gridElId': '#' + ctwl.PROJECT_NETWORK_GRID_ID
-                };
-                TestSlickGrid.executeSlickGridTests(testConfigObj['gridElId'], TestMockdata.networksMockData, testConfigObj);
-                QUnit.start();
-            }, 1000)
+                var mockDataDefObj = $.Deferred();
+                var rootViewObj = mnPageLoader.mnView;
+
+                //create and update mock data in test config
+                TestUtils.createMockData(rootViewObj, self.commonTestDataConfig, mockDataDefObj);
+
+                $.when(mockDataDefObj).done(function() {
+                    TestUtils.executeCommonTests(self.commonTestDataConfig);
+                    QUnit.start();
+                });
+            }, 2000);
         });
     });
 });
