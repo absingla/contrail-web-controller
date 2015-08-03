@@ -4,7 +4,8 @@
 
 var coreBaseDir = "/base/contrail-web-core/webroot",
     ctBaseDir = "/base/contrail-web-controller/webroot",
-    pkgBaseDir = ctBaseDir;
+    pkgBaseDir = ctBaseDir,
+    featurePkg = 'webController';
 
 var ctwu, ctwc, ctwgc, ctwgrc, ctwl, ctwm, ctwp, ctwvc,
     nmwu, nmwgc, nmwgrc, nmwp, nmwvc;
@@ -22,7 +23,9 @@ require([
         waitSeconds: 0
     });
 
-    require(['co-test-init'], function () {});
+    require(['co-test-init'], function () {
+        setFeaturePkgAndInit(featurePkg);
+    });
 
     function getControllerTestAppPaths(coreBaseDir) {
         var controllerTestAppPathObj = {};
