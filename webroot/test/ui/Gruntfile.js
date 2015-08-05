@@ -35,6 +35,7 @@ module.exports = function (grunt) {
         {pattern: 'contrail-web-controller/webroot/common/ui/templates/*.tmpl', included: false},
         {pattern: 'contrail-web-controller/webroot/common/**/*.js', included: false},
         {pattern: 'contrail-web-controller/webroot/monitor/**/*.js', included: false},
+        {pattern: 'contrail-web-controller/webroot/config/linklocalservices/**/*.js', included: false},
         {pattern: 'contrail-web-controller/webroot/*.xml', included: false},
 
         {pattern: 'contrail-web-core/webroot/js/**/*.js', included: false},

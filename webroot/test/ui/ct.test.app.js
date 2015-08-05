@@ -14,6 +14,7 @@ require([
     coreBaseDir + '/js/core-app-utils.js',
     coreBaseDir + '/test/ui/js/co.test.app.utils.js'
 ], function () {
+    globalObj = {'env': "test"};
 
     requirejs.config({
         baseUrl: ctBaseDir,
