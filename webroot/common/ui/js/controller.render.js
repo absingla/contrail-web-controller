@@ -38,248 +38,304 @@ define([
              AlarmListView, AlarmGridView, InterfaceGridView,
              InstancePortDistributionView, LinkLocalServicesListView,
              LinkLocalServicesGridView, LinkLocalServicesEditView) {
-    var ctRenderUtils = function () {
+    var CTRenderUtils = function () {
         var self = this;
 
-        self.renderView = function (viewName, parentElement, model,
-                                    viewAttributes, modelMap, rootView) {
-            var elementView;
+        self.renderView = function (renderConfig, renderCallback) {
+            var parentElement = renderConfig['parentElement'],
+                viewName = renderConfig['viewName'],
+                model = renderConfig['model'],
+                viewAttributes = renderConfig['viewAttributes'],
+                modelMap = renderConfig['modelMap'],
+                rootView = renderConfig['rootView'],
+                elementView;
 
             switch (viewName) {
-            case "NetworkingGraphView":
-                elementView =
-                    new NetworkingGraphView({ el: parentElement, model: model,
-                                            attributes: viewAttributes,
-                                            rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "NetworkingGraphView":
+                    elementView =
+                        new NetworkingGraphView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "ProjectListView":
-                elementView =
-                    new ProjectListView({ el: parentElement, model: model,
-                                        attributes: viewAttributes,
-                                        rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "ProjectListView":
+                    elementView =
+                        new ProjectListView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "ProjectGridView":
-                elementView =
-                    new ProjectGridView({ el: parentElement, model: model,
-                                        attributes: viewAttributes,
-                                        rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "ProjectGridView":
+                    elementView =
+                        new ProjectGridView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "ProjectTabView":
-                elementView =
-                    new ProjectTabView({ el: parentElement, model: model,
-                                       attributes: viewAttributes,
-                                       rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;;
+                case "ProjectTabView":
+                    elementView =
+                        new ProjectTabView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
+                    ;
 
-            case "NetworkListView":
-                elementView =
-                    new NetworkListView({ el: parentElement, model: model,
-                                        attributes: viewAttributes,
-                                        rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "NetworkListView":
+                    elementView =
+                        new NetworkListView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "NetworkTabView":
-                elementView =
-                    new NetworkTabView({ el: parentElement, model: model,
-                                       attributes: viewAttributes,
-                                       rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "NetworkTabView":
+                    elementView =
+                        new NetworkTabView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "NetworkGridView":
-                elementView =
-                    new NetworkGridView({ el: parentElement, model: model,
-                                        attributes: viewAttributes,
-                                        rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "NetworkGridView":
+                    elementView =
+                        new NetworkGridView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "InstanceListView":
-                elementView =
-                    new InstanceListView({ el: parentElement, model: model,
-                                         attributes: viewAttributes,
-                                         rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "InstanceListView":
+                    elementView =
+                        new InstanceListView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "InstanceTabView":
-                elementView =
-                    new InstanceTabView({ el: parentElement, model: model,
-                                        attributes: viewAttributes,
-                                        rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "InstanceTabView":
+                    elementView =
+                        new InstanceTabView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "InstanceGridView":
-                elementView =
-                    new InstanceGridView({ el: parentElement, model: model,
-                                         attributes: viewAttributes,
-                                         rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "InstanceGridView":
+                    elementView =
+                        new InstanceGridView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "FlowListView":
-                elementView =
-                    new FlowListView({ el: parentElement, model: model,
-                                     attributes: viewAttributes,
-                                     rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "FlowListView":
+                    elementView =
+                        new FlowListView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "FlowGridView":
-                elementView =
-                    new FlowGridView({ el: parentElement, model: model,
-                                     attributes: viewAttributes,
-                                     rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "FlowGridView":
+                    elementView =
+                        new FlowGridView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "InstanceView":
-                elementView =
-                    new InstanceView({ el: parentElement, model: model,
-                                     attributes: viewAttributes,
-                                     rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "InstanceView":
+                    elementView =
+                        new InstanceView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "InstanceTrafficStatsView":
-                elementView =
-                    new InstanceTrafficStatsView({ el: parentElement,
-                                                 model: model,
-                                                 attributes: viewAttributes,
-                                                 rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "InstanceTrafficStatsView":
+                    elementView =
+                        new InstanceTrafficStatsView({
+                            el: parentElement,
+                            model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "ProjectView":
-                elementView =
-                    new ProjectView({ el: parentElement, model: model,
-                                    attributes: viewAttributes,
-                                    rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "ProjectView":
+                    elementView =
+                        new ProjectView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "NetworkView":
-                elementView =
-                    new NetworkView({ el: parentElement, model: model,
-                                    attributes: viewAttributes,
-                                    rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "NetworkView":
+                    elementView =
+                        new NetworkView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "ConnectedNetworkTabView":
-                elementView =
-                    new ConnectedNetworkTabView({ el: parentElement,
-                                                model: model,
-                                                attributes: viewAttributes,
-                                                rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "ConnectedNetworkTabView":
+                    elementView =
+                        new ConnectedNetworkTabView({
+                            el: parentElement,
+                            model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "ConnectedNetworkTrafficStatsView":
-                elementView =
-                    new ConnectedNetworkTrafficStatsView({ el: parentElement,
-                                                         model: model,
-                                                         attributes: viewAttributes,
-                                                         rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "ConnectedNetworkTrafficStatsView":
+                    elementView =
+                        new ConnectedNetworkTrafficStatsView({
+                            el: parentElement,
+                            model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "AlarmListView":
-                elementView =
-                    new AlarmListView({ el: parentElement, model: model,
-                                      attributes: viewAttributes,
-                                      rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "AlarmListView":
+                    elementView =
+                        new AlarmListView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "AlarmGridView":
-                elementView =
-                    new AlarmGridView({ el: parentElement, model: model,
-                                      attributes: viewAttributes,
-                                      rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "AlarmGridView":
+                    elementView =
+                        new AlarmGridView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "InterfaceGridView":
-                elementView =
-                    new InterfaceGridView({ el: parentElement, model: model,
-                                          attributes: viewAttributes,
-                                          rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "InterfaceGridView":
+                    elementView =
+                        new InterfaceGridView({
+                            el: parentElement, model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "InstancePortDistributionView":
-                elementView =
-                    new InstancePortDistributionView({ el: parentElement,
-                                                     model: model,
-                                                     attributes: viewAttributes,
-                                                     rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "InstancePortDistributionView":
+                    elementView =
+                        new InstancePortDistributionView({
+                            el: parentElement,
+                            model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "LinkLocalServicesListView":
-                elementView =
-                    new LinkLocalServicesListView({ el: parentElement,
-                                                  model: model,
-                                                  attributes: viewAttributes,
-                                                  rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "LinkLocalServicesListView":
+                    elementView =
+                        new LinkLocalServicesListView({
+                            el: parentElement,
+                            model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "LinkLocalServicesGridView":
-                elementView =
-                    new LinkLocalServicesGridView({ el: parentElement,
-                                                  model: model,
-                                                  attributes: viewAttributes,
-                                                  rootView: rootView });
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "LinkLocalServicesGridView":
+                    elementView =
+                        new LinkLocalServicesGridView({
+                            el: parentElement,
+                            model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
 
-            case "LinkLocalServicesEditView":
-                elementView =
-                    new LinkLocalServicesEditView({ el: parentElement,
-                                                  model: model,
-                                                  attributes: viewAttributes,
-                                                  rootView: rootView});
-                elementView.modelMap = modelMap;
-                elementView.render();
-                return elementView;
+                case "LinkLocalServicesEditView":
+                    elementView =
+                        new LinkLocalServicesEditView({
+                            el: parentElement,
+                            model: model,
+                            attributes: viewAttributes,
+                            rootView: rootView
+                        });
+                    elementView.modelMap = modelMap;
+                    elementView.render();
+                    return elementView;
             }
         };
     };
-    return ctRenderUtils;
+    return CTRenderUtils;
 });
 
