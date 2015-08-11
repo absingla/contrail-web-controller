@@ -20,7 +20,7 @@ require([
         baseUrl: ctBaseDir,
         paths: getControllerTestAppPaths(coreBaseDir),
         map: coreAppMap,
-        shim: coreAppShim,
+        shim: getControllerTestAppShim(),
         waitSeconds: 0
     });
 
@@ -48,10 +48,30 @@ require([
             }
         }
 
+        controllerTestAppPathObj["ct-test-utils"] = ctBaseDir + "/test/ui/ct.test.utils";
+        controllerTestAppPathObj["ct-test-messages"] = ctBaseDir + "/test/ui/ct.test.messages";
         controllerTestAppPathObj["network-list-view-mockdata"] = ctBaseDir + "/monitor/networking/ui/test/ui/NetworkListViewMockData";
-        controllerTestAppPathObj["test-messages"] = ctBaseDir + "/test/ui/ct.test.messages";
 
         return controllerTestAppPathObj;
     };
 
+    function getControllerTestAppShim() {
+        var controllerTestAppShim = {};
+
+        for (var key in coreAppShim) {
+            if (coreAppShim.hasOwnProperty(key)) {
+                var value = coreAppShim[key];
+                controllerTestAppShim[key] = value;
+            }
+        }
+
+        for (var key in coreTestAppShim) {
+            if (coreTestAppShim.hasOwnProperty(key)) {
+                var value = coreTestAppShim[key];
+                controllerTestAppShim[key] = value;
+            }
+        }
+
+        return controllerTestAppShim;
+    }
 });
