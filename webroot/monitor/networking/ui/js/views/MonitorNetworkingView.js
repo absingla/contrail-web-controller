@@ -361,8 +361,6 @@ define([
                 projectFQN = domain + ':' + projectSelectedValueData.name,
                 projectUUID = projectSelectedValueData.value;
 
-            console.log(hashParams)
-
             delete hashParams.clickedElement;
             nmwgrc.setProjectURLHashParams(hashParams, projectFQN, false);
         }
