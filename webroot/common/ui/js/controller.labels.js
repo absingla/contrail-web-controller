@@ -49,7 +49,7 @@ define([
         this.getFirstCharUpperCase = function (key) {
             var label = this.get(key);
 
-            label = label.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+            label = label.toLowerCase().replace(/\b[a-z]/g, function (letter) {
                 return letter.toUpperCase();
             });
             return label;
@@ -136,34 +136,34 @@ define([
             tsn1: "TSN1",
             tsn2: "TSN2",
             physical_router: "Physical Router",
-            pRouterName : "Name",
-            snmpLocalPort : "Local Port",
-            snmpRetries : "Retries",
-            snmpTimeout : "Timeout(secs)",
-            snmpV2Community : "Community",
-            snmpVersion : "SNMP Version",
-            expDetSnmpVersion : "SNMP Version",
-            snmpV3SecurityName : "Security Name",
-            snmpV3SecurityLevel : "Security Level",
-            snmpv3AuthProtocol : "Authentication Protocol",
-            snmpv3AuthPasswd : "Password",
-            snmpv3PrivProtocol : "Privacy Protocol",
-            snmpv3PrivPasswd : "Password",
-            snmpV3SecurityEngineId : "Security Engine Id",
-            snmpv3Context : "Context",
-            snmpv3ContextEngineId : "Context Engine Id",
-            snmpv3EngineId : "Engine Id",
-            snmpv3EngineBoots : "Engine Boots",
-            snmpv3EngineTime : "Engine Time",
-            displayVirtualRouters : "Associated Virtual Router(s)",
-            totalInterfacesCount : "Interfaces",
-            isJunosPortEnabled : "Junos Service Ports",
-            netConfUserName : "Netconf Username",
-            netConfPasswd : "Password",
-            bgpGateWay : "BGP Gateway",
-            vns : "Virtual Networks",
-            virtualRouterType : 'Type',
-            netconfManaged : 'Netconf Managed'
+            pRouterName: "Name",
+            snmpLocalPort: "Local Port",
+            snmpRetries: "Retries",
+            snmpTimeout: "Timeout(secs)",
+            snmpV2Community: "Community",
+            snmpVersion: "SNMP Version",
+            expDetSnmpVersion: "SNMP Version",
+            snmpV3SecurityName: "Security Name",
+            snmpV3SecurityLevel: "Security Level",
+            snmpv3AuthProtocol: "Authentication Protocol",
+            snmpv3AuthPasswd: "Password",
+            snmpv3PrivProtocol: "Privacy Protocol",
+            snmpv3PrivPasswd: "Password",
+            snmpV3SecurityEngineId: "Security Engine Id",
+            snmpv3Context: "Context",
+            snmpv3ContextEngineId: "Context Engine Id",
+            snmpv3EngineId: "Engine Id",
+            snmpv3EngineBoots: "Engine Boots",
+            snmpv3EngineTime: "Engine Time",
+            displayVirtualRouters: "Associated Virtual Router(s)",
+            totalInterfacesCount: "Interfaces",
+            isJunosPortEnabled: "Junos Service Ports",
+            netConfUserName: "Netconf Username",
+            netConfPasswd: "Password",
+            bgpGateWay: "BGP Gateway",
+            vns: "Virtual Networks",
+            virtualRouterType: 'Type',
+            netconfManaged: 'Netconf Managed'
         };
 
         this.TOP_CONTENT_CONTAINER = "top-content-container";
@@ -250,6 +250,8 @@ define([
         this.CONNECTED_NETWORK_TRAFFIC_STATS_DROPDOWN_ID = "connected-network-traffic-stats-dropdown";
         this.CONNECTED_NETWORK_TRAFFIC_STATS_CHART_ID = "connected-network-traffic-stats-chart";
 
+        this.QE_FLOW_SERIES_FORM_ID = "qe-flow-series-form";
+
         this.FLOWS_SCATTER_CHART_ID = "flows-scatter-chart";
         this.FLOWS_GRID_ID = "flows-grid";
 
@@ -272,7 +274,7 @@ define([
 
         this.TITLE_CONNECTED_NETWORK_DETAILS = "Connected Network Details";
 
-        this.TITLE_FLOWS= "Flows";
+        this.TITLE_FLOWS = "Flows";
         this.TITLE_FLOWS_SUMMARY = "Flows Summary";
         this.TITLE_FILTER_PROTOCOL = "Filter Protocol";
         this.TITLE_FILTER_BY_PROTOCOL = "Filter by Protocol";
@@ -318,10 +320,8 @@ define([
         this.TMPL_CORE_GENERIC_EDIT = 'core-generic-edit-form-template';
         this.TMPL_CORE_GENERIC_DEL = 'core-generic-delete-form-template';
 
-        this.CONFIG_LINK_LOCAL_SERVICES_PAGE_ID =
-            'config-link-local-services-page';
-        this.CONFIG_LINK_LOCAL_SERVICES_LIST_VIEW_ID =
-            'config-link-local-services-list';
+        this.CONFIG_LINK_LOCAL_SERVICES_PAGE_ID = 'config-link-local-services-page';
+        this.CONFIG_LINK_LOCAL_SERVICES_LIST_VIEW_ID = 'config-link-local-services-list';
         this.CONFIG_LINK_LOCAL_SERVICES_SECTION_ID = 'lls';
         this.CONFIG_LINK_LOCAL_SERVICES_ID = 'config-link-local-services';
         this.TITLE_LINK_LOCAL_SERVICES = 'Link Layer Services';
@@ -335,18 +335,15 @@ define([
         //Physical Routers labels
         this.CONFIG_PHYSICAL_ROUTERS_PAGE_ID = "config-physical-routers-page";
         this.CONFIG_PHYSICAL_ROUTERS_LIST_ID = "config-physical-routers-list";
-        this.CONFIG_PHYSICAL_ROUTERS_SECTION_ID =
-            "config-physical-routers-section";
+        this.CONFIG_PHYSICAL_ROUTERS_SECTION_ID = "config-physical-routers-section";
         this.CONFIG_PHYSICAL_ROUTERS_ID = "config-physical-routers";
         this.TITLE_PHYSICAL_ROUTERS = "Physical Routers";
-        this.CONFIG_PHYSICAL_ROUTERS_LIST_VIEW_ID =
-            "config-physical-routers-list-view";
+        this.CONFIG_PHYSICAL_ROUTERS_LIST_VIEW_ID = "config-physical-routers-list-view";
         this.PHYSICAL_ROUTERS_GRID_ID = "physical-routers-grid";
         this.TITLE_ADD_PHYSICAL_ROUTER = "Add Physical Router";
         this.CREATE_OVSDB_MANAGED_TOR = "OVSDB Managed ToR";
         this.TITLE_OVSDB_MANAGED_TOR = "Add OVSDB Managed ToR";
-        this.CREATE_NETCONF_MANAGED_PHYSICAL_ROUTER =
-             "Netconf Managed Physical Router";
+        this.CREATE_NETCONF_MANAGED_PHYSICAL_ROUTER = "Netconf Managed Physical Router";
         this.TITLE_NETCONF_MANAGED_TOR = "Add Netconf Managed Physical Router";
         this.CREATE_CPE_ROUTER = "CPE Router";
         this.CREATE_PHYSICAL_ROUTER = "Physical Router";
@@ -369,8 +366,7 @@ define([
         this.NET_CONF_TYPE = 'netconf';
         this.CPE_ROUTER_TYPE = 'cpe';
         this.PHYSICAL_ROUTER_TYPE = 'prouter';
-        this.TITLE_EDIT_NETCONF_MANAGED_PR =
-            'Edit Netconf Managed Physical Router';
+        this.TITLE_EDIT_NETCONF_MANAGED_PR = 'Edit Netconf Managed Physical Router';
         this.TITLE_CPE_ROUTER = "Add VCPE";
         this.TITLE_EDIT_VCPE_ROUTER = "Edit VCPE";
         this.CREATE_ACTION = "create";
@@ -383,6 +379,8 @@ define([
         this.NETCONF_SETTINGS_TITLE = 'Netconf Settings';
         this.TOR_AGENT = "TOR Agent";
         this.TITLE_EDIT_PHYSICAL_ROUTER = "Edit Physical Router";
+
+        this.TITLE_QUERY_FLOWS_SERIES= "Query Flow Series";
     };
     return CTLabels;
 });

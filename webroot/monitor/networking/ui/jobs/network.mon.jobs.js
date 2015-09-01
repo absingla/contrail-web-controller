@@ -16,7 +16,7 @@ var rest = require(process.mainModule.exports["corePath"] + '/src/serverroot/com
     flowCache = require('../../../../common/api/flowCache.api'),
     nwMonUtils = require('../../../../common/api/nwMon.utils'),
     configApiServer = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/configServer.api'),
-    qeAPI = require('../../../../reports/api/qe.api.js'),
+    qeAPI = require('../../../../reports/qe/ui/api/qe.api.js'),
     assert = require('assert'),
     opServer;
 

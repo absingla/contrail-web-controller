@@ -1,0 +1,24 @@
+<!-- Copyright (c) 2014 Juniper Networks, Inc. All rights reserved. -->
+
+<script type="text/x-handlebars-template" id="query-select-popup-template">
+    <form id="{{queryPrefix}}-select-popup-form" onsubmit="return false;">
+        <div class="row-fluid">
+            <a class="pull-right selectAllLink " data-bind="text: select_data_object().defaultSelectAllText, click: select_data_object().onSelectAll"></a>
+        </div>
+        {{#each fields}}
+            {{#IfCompare @index 0 operator="=="}}
+                <div class="row-fluid">
+            {{else}}
+                {{#IfCompare @index 0 operator="%3"}}
+                    </div>
+                    <div class="row-fluid">
+                {{/IfCompare}}
+            {{/IfCompare}}
+            <div class="span4">
+                <input type="checkbox" name="{{this.name}}" value="{{this.name}}" data-bind="checked: select_data_object().checkedFields, click: select_data_object().onSelect, enable: select_data_object().isEnableMap['{{this.name}}']" class="ace-input"/> <span class="ace-lbl"> {{this.name}}</span>
+            </div>
+        {{/each}}
+        </div>
+    </form>
+</script>
+
