@@ -21,8 +21,6 @@ define([
         ];
 
         this.DEFAULT_QUERY_PREFIX = 'query';
-        this.SELECT_MODAL_SUFFIX = '-select-modal';
-        this.TITLE_SELECT = "Select";
     }
     return QEConstants;
 });
