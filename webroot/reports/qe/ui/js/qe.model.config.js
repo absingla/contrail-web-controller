@@ -10,7 +10,7 @@ define([
         this.getQueryModel = function (tableName, queryPrefix) {
             return {
                 "table_name": tableName,
-                "query_prefix": queryPrefix,
+                "query_prefix": contrail.checkIfExist(queryPrefix) ? queryPrefix : qewc.DEFAULT_QUERY_PREFIX,
                 "time_range": 30,
                 "custom_time_visible": false,
                 "from_time": null,
@@ -24,32 +24,29 @@ define([
                 "select_data_object": getSelectDataObject(queryPrefix)
             };
         };
-
-        this.getFlowSeriesQueryModel = function () {
-            return {};
-        };
     };
 
     function getSelectDataObject(queryPrefix) {
         var selectDataObject = {}
 
         selectDataObject.fields = ko.observableArray([]);
-        selectDataObject.isEnableMap = {};
+        selectDataObject.enable_map = {};
 
-        selectDataObject.defaultSelectAllText = ko.observable("Select All");
-        selectDataObject.checkedFields = ko.observableArray([]);
+        selectDataObject.select_all_text = ko.observable("Select All");
+        selectDataObject.checked_fields = ko.observableArray([]);
 
-        selectDataObject.onSelect = function (data, event) {
+        selectDataObject.on_select = function (data, event) {
             var fieldName = $(event.currentTarget).attr('name'),
-                dataObject = data.select_data_object();
-            isEnableMap = dataObject.isEnableMap;
+                dataObject = data.select_data_object(),
+                isEnableMap = dataObject.enable_map,
+                key;
 
             if (fieldName == 'T') {
-                if (dataObject.checkedFields.indexOf('T') != -1) {
-                    dataObject.checkedFields.remove('T=');
+                if (dataObject.checked_fields.indexOf('T') != -1) {
+                    dataObject.checked_fields.remove('T=');
                     for (key in isEnableMap) {
                         if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
-                            dataObject.checkedFields.remove(key);
+                            dataObject.checked_fields.remove(key);
                             isEnableMap[key](false);
                         }
                     }
@@ -61,8 +58,8 @@ define([
                     }
                 }
             } else if (fieldName == 'T=') {
-                if (dataObject.checkedFields.indexOf('T=') != -1) {
-                    dataObject.checkedFields.remove('T');
+                if (dataObject.checked_fields.indexOf('T=') != -1) {
+                    dataObject.checked_fields.remove('T');
                     for (key in isEnableMap) {
                         if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
                             isEnableMap[key](true);
@@ -71,7 +68,7 @@ define([
                 } else {
                     for (key in isEnableMap) {
                         if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
-                            dataObject.checkedFields.remove(key);
+                            dataObject.checked_fields.remove(key);
                             isEnableMap[key](false);
                         }
                     }
@@ -80,21 +77,22 @@ define([
             return true;
         };
 
-        selectDataObject.onSelectAll = function (data, event) {
+        selectDataObject.on_select_all = function (data, event) {
             var dataObject = data.select_data_object(),
-                defaultSelectAllText = dataObject.defaultSelectAllText(),
-                isEnableMap = dataObject.isEnableMap,
-                checkedFields = selectDataObject.checkedFields;
+                selectAllText = dataObject.select_all_text(),
+                isEnableMap = dataObject.enable_map,
+                checkedFields = selectDataObject.checked_fields,
+                key;
 
-            if (defaultSelectAllText == 'Select All') {
-                dataObject.defaultSelectAllText('Clear All');
+            if (selectAllText == 'Select All') {
+                dataObject.select_all_text('Clear All');
                 for (key in isEnableMap) {
                     if (key == "T=" || key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
                         if (checkedFields.indexOf(key) != -1) {
                             checkedFields.remove(key);
                         }
 
-                        if(key != "T=") {
+                        if (key != "T=") {
                             isEnableMap[key](false);
                         }
                     } else {
@@ -105,7 +103,7 @@ define([
                     }
                 }
             } else {
-                dataObject.defaultSelectAllText('Select All');
+                dataObject.select_all_text('Select All');
                 for (key in isEnableMap) {
                     isEnableMap[key](true);
                     checkedFields.remove(key);
