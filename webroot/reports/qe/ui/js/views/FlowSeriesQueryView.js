@@ -47,17 +47,17 @@ define([
                                     elementId: 'from_time', view: "FormDateTimePickerView",
                                     viewConfig: {
                                         path: 'from_time', dataBindValue: 'from_time', class: "span3",
-                                        elementConfig: getFromTimeElementConfig('from_time', 'to_time')
-                                    },
-                                    visible: "time_range() == -1"
+                                        elementConfig: getFromTimeElementConfig('from_time', 'to_time'),
+                                        visible: "time_range() == -1"
+                                    }
                                 },
                                 {
                                     elementId: 'to_time', view: "FormDateTimePickerView",
                                     viewConfig: {
                                         path: 'to_time', dataBindValue: 'to_time', class: "span3",
-                                        elementConfig: getToTimeElementConfig('from_time', 'to_time')
-                                    },
-                                    visible: "time_range() == -1"
+                                        elementConfig: getToTimeElementConfig('from_time', 'to_time'),
+                                        visible: "time_range() == -1"
+                                    }
                                 }
                             ]
                         },

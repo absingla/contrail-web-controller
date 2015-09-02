@@ -52,7 +52,7 @@ define([
             },
             customDomainDropdownOptions = {
                 childView: {
-                    init: getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
+                    init: ctwvc.getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
                 }
             };
 
@@ -81,13 +81,13 @@ define([
             customProjectDropdownOptions = {
                 changeCB: getProjectChangeCB(hashParams),
                 childView: {
-                    init: getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
+                    init: ctwvc.getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
                     change: getProjectViewConfig()
                 }
             },
             customDomainDropdownOptions = {
                 childView: {
-                    init: getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
+                    init: ctwvc.getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
                 }
             };
         
@@ -104,7 +104,7 @@ define([
             },
             customDomainDropdownOptions = {
                 childView: {
-                    init: getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
+                    init: ctwvc.getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
                 }
             };
 
@@ -121,20 +121,20 @@ define([
             customNetworkDropdownOptions = {
                 changeCB: getNetworkChangeCB(hashParams),
                 childView: {
-                    init: getInstanceBreadcrumbTextViewConfig(hashParams, customInstanceTextOptions),
+                    init: ctwvc.getInstanceBreadcrumbTextViewConfig(hashParams, customInstanceTextOptions),
                     change: getNetworkViewConfig()
                 }
             },
             customProjectDropdownOptions = {
                 changeCB: getProjectChangeCB(hashParams),
                 childView: {
-                    init: getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
+                    init: ctwvc.getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
                     change: getProjectViewConfig()
                 }
             },
             customDomainDropdownOptions = {
                 childView: {
-                    init: getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
+                    init: ctwvc.getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
                 }
             };
 
@@ -151,13 +151,13 @@ define([
             },
             customProjectDropdownOptions = {
                 childView: {
-                    init: getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
+                    init: ctwvc.getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
                 },
                 allDropdownOption: ctwc.ALL_PROJECT_DROPDOWN_OPTION
             },
             customDomainDropdownOptions = {
                 childView: {
-                    init: getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
+                    init: ctwvc.getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
                 }
             };
 
@@ -180,76 +180,6 @@ define([
                 dropdownOptions: dropdownOptions
             }
         };
-    }
-
-    function getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions) {
-        var urlValue = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.fqName') ? hashParams.focusedElement.fqName : null);
-
-        return function(domainSelectedValueData) {
-            var domain = domainSelectedValueData.name,
-                defaultDropdownOptions = {
-                    urlValue: (urlValue !== null) ? urlValue.split(':').splice(1, 1).join(':') : null,
-                    cookieKey: cowc.COOKIE_PROJECT
-                },
-                dropdownOptions = $.extend(true, {}, defaultDropdownOptions, customProjectDropdownOptions);
-
-            return {
-                elementId: ctwl.PROJECTS_BREADCRUMB_DROPDOWN,
-                view: "BreadcrumbDropdownView",
-                viewConfig: {
-                    modelConfig: ctwu.getProjectListModelConfig(domain),
-                    dropdownOptions: dropdownOptions
-                }
-            }
-        };
-    }
-
-    function getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions) {
-        var urlValue = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.fqName') ? hashParams.focusedElement.fqName : null),
-            defaultDropdownOptions = {
-                urlValue: (urlValue !== null) ? urlValue.split(':').splice(2, 1).join(':') : null,
-                cookieKey: cowc.COOKIE_VIRTUAL_NETWORK
-            },
-            dropdownOptions = $.extend(true, {}, defaultDropdownOptions, customNetworkDropdownOptions);
-
-        return function(projectSelectedValueData) {
-            var domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
-                projectFQN = domain + ':' + projectSelectedValueData.name,
-                modelConfig = (projectSelectedValueData.value === 'all') ? null : ctwu.getNetworkListModelConfig(projectFQN);
-            return {
-                elementId: ctwl.NETWORKS_BREADCRUMB_DROPDOWN,
-                view: "BreadcrumbDropdownView",
-                viewConfig: {
-                    modelConfig: modelConfig,
-                    dropdownOptions: dropdownOptions
-                }
-            };
-        }
-    }
-
-    function getInstanceBreadcrumbTextViewConfig(hashParams, customInstanceTextOptions) {
-        var instanceUUID = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.uuid')) ? hashParams.focusedElement.uuid : null,
-            vmName = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.vmName')) ? hashParams.focusedElement.vmName : null,
-            urlValue = (contrail.checkIfExist(vmName) && vmName != "") ? vmName : instanceUUID;
-
-
-        return function(networkSelectedValueData) {
-            var defaultTextOptions = {
-                    urlValue: (urlValue !== null) ? urlValue : null,
-                    parentViewParams: {
-                        networkSelectedValueData: networkSelectedValueData
-                    }
-                },
-                textOptions = $.extend(true, {}, defaultTextOptions, customInstanceTextOptions);
-
-            return {
-                elementId: ctwl.INSTANCE_BREADCRUMB_TEXT,
-                view: "BreadcrumbTextView",
-                viewConfig: {
-                    textOptions: textOptions
-                }
-            };
-        }
     }
 
     function getProjectViewConfig() {
