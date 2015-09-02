@@ -39,17 +39,25 @@ define([
                             columns: [
                                 {
                                     elementId: 'time_range', view: "FormDropdownView",
-                                    viewConfig: {path: 'time_range', dataBindValue: 'time_range', class: "span3", elementConfig: {dataTextField: "text", dataValueField: "id", data: qewc.TIMERANGE_DROPDOWN_VALUES}}
+                                    viewConfig: {
+                                        path: 'time_range', dataBindValue: 'time_range', class: "span3",
+                                        elementConfig: {dataTextField: "text", dataValueField: "id", data: qewc.TIMERANGE_DROPDOWN_VALUES}}
                                 },
                                 {
-                                    elementId: 'from_time', view: "FormInputView",
-                                    viewConfig: {path: 'from_time', dataBindValue: 'from_time', class: "span3"},
-                                    visible: "custom_time_visible"
+                                    elementId: 'from_time', view: "FormDateTimePickerView",
+                                    viewConfig: {
+                                        path: 'from_time', dataBindValue: 'from_time', class: "span3",
+                                        elementConfig: getFromTimeElementConfig('from_time', 'to_time')
+                                    },
+                                    visible: "time_range() == -1"
                                 },
                                 {
-                                    elementId: 'to_time', view: "FormInputView",
-                                    viewConfig: {path: 'to_time', dataBindValue: 'to_time', class: "span3"},
-                                    visible: "custom_time_visible"
+                                    elementId: 'to_time', view: "FormDateTimePickerView",
+                                    viewConfig: {
+                                        path: 'to_time', dataBindValue: 'to_time', class: "span3",
+                                        elementConfig: getToTimeElementConfig('from_time', 'to_time')
+                                    },
+                                    visible: "time_range() == -1"
                                 }
                             ]
                         },
@@ -77,8 +85,9 @@ define([
                                 },
                                 {
                                     elementId: 'direction', view: "FormDropdownView",
-                                    viewConfig: {path: 'direction', dataBindValue: 'direction', class: "span3",
-                                                 elementConfig: {dataTextField: "text", dataValueField: "id", data: qewc.DIRECTION_DROPDOWN_VALUES}
+                                    viewConfig: {
+                                        path: 'direction', dataBindValue: 'direction', class: "span3",
+                                        elementConfig: {dataTextField: "text", dataValueField: "id", data: qewc.DIRECTION_DROPDOWN_VALUES}
                                     }
                                 }
                             ]
@@ -98,10 +107,20 @@ define([
                         {
                             columns: [
                                 {
-                                    elementId: 'run_query', view: "FormButtonView", label: "Run Query"
+                                    elementId: 'run_query', view: "FormButtonView", label: "Run Query",
+                                    viewConfig: {
+                                        class: 'display-inline-block margin-0-10-0-0',
+                                        elementConfig: {
+                                            btnClass: 'btn-primary'
+                                        }
+                                    }
                                 },
                                 {
-                                    elementId: 'reset_query', view: "FormButtonView", label: "Reset"
+                                    elementId: 'reset_query', view: "FormButtonView", label: "Reset",
+                                    viewConfig: {
+                                        class: 'display-inline-block margin-0-10-0-0',
+                                        elementConfig: {}
+                                    }
                                 }
                             ]
                         }
@@ -110,6 +129,81 @@ define([
             };
         }
     });
+
+    function getFromTimeElementConfig(fromTimeId, toTimeId) {
+        return {
+            onShow: function(cdt) {
+                this.setOptions(getFromTimeShowOptions(toTimeId, cdt));
+            },
+            onClose: function(cdt) {
+                this.setOptions(getFromTimeShowOptions(toTimeId, cdt));
+            },
+            onSelectDate: function(cdt) {
+                this.setOptions(getFromTimeSelectOptions(toTimeId, cdt));
+            }
+        };
+    }
+
+    function getToTimeElementConfig(fromTimeId, toTimeId) {
+        return {
+            onShow: function(cdt) {
+                this.setOptions(getToTimeShowOptions(fromTimeId, cdt));
+            },
+            onClose: function(cdt) {
+                this.setOptions(getToTimeShowOptions(fromTimeId, cdt));
+            },
+            onSelectDate: function(cdt) {
+                this.setOptions(getToTimeSelectOptions(fromTimeId, cdt));
+            }
+        };
+    }
+
+    function getFromTimeShowOptions(toTimeId, cdt) {
+        var d = new Date($('#' + toTimeId + '_datetimepicker').val()),
+            dateString = moment(d).format('MMM DD, YYYY'),
+            timeString = moment(d).format('hh:mm:ss A');
+
+        return {
+            maxDate: dateString ? dateString : false,
+            maxTime: timeString ? timeString : false
+        };
+    }
+
+    function getFromTimeSelectOptions(toTimeId, cdt) {
+        var d = new Date($('#' + toTimeId + '_datetimepicker').val()),
+            toDateString = moment(d).format('MMM DD, YYYY'),
+            timeString = moment(d).format('hh:mm:ss A'),
+            fromDateString = moment(cdt).format('MMM DD, YYYY');
+
+        return {
+            maxDate: toDateString ? toDateString : false,
+            maxTime: (fromDateString == toDateString) ? timeString : false
+        };
+    }
+
+    function getToTimeShowOptions(fromTimeId, cdt) {
+        var d = new Date($('#' + fromTimeId + '_datetimepicker').val()),
+            dateString = moment(d).format('MMM DD, YYYY'),
+            timeString = moment(d).format('hh:mm:ss A');
+
+        return {
+            minDate: dateString ? dateString : false,
+            minTime: timeString ? timeString : false
+        };
+    }
+
+    function getToTimeSelectOptions(fromTimeId, cdt) {
+        var d = new Date($('#' + fromTimeId + '_datetimepicker').val()),
+            fromDateString = moment(d).format('MMM dd, yyyy'),
+            timeString = moment(d).format('hh:mm:ss A'),
+            toDateString = moment(cdt).format('MMM DD, YYYY');
+
+        return {
+            minDate: fromDateString ? fromDateString : false,
+            minTime: (toDateString == fromDateString) ? timeString : false
+        };
+    }
+
 
     return FlowSeriesQueryView;
 });
