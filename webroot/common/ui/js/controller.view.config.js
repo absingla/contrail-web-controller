@@ -189,6 +189,24 @@ define([
             }
         };
 
+        self.getDomainBreadcrumbDropdownViewConfig = function (hashParams, customDomainDropdownOptions) {
+            var urlValue = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.fqName') ? hashParams.focusedElement.fqName : null),
+                defaultDropdownoptions = {
+                    urlValue: (urlValue !== null) ? urlValue.split(':').splice(0,1).join(':') : null,
+                    cookieKey: cowc.COOKIE_DOMAIN
+                },
+                dropdownOptions = $.extend(true, {}, defaultDropdownoptions, customDomainDropdownOptions);
+
+            return {
+                elementId: ctwl.DOMAINS_BREADCRUMB_DROPDOWN,
+                view: "BreadcrumbDropdownView",
+                viewConfig: {
+                    modelConfig: ctwu.getDomainListModelConfig(),
+                    dropdownOptions: dropdownOptions
+                }
+            };
+        };
+
         self.getProjectBreadcrumbDropdownViewConfig = function(hashParams, customProjectDropdownOptions) {
             var urlValue = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.fqName') ? hashParams.focusedElement.fqName : null);
 

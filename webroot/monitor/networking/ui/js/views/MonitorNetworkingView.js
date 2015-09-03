@@ -56,7 +56,7 @@ define([
                 }
             };
 
-        return getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions);
+        return ctwvc.getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions);
     };
 
     function getProjectListConfig(viewConfig) {
@@ -67,7 +67,7 @@ define([
                 }
             };
 
-        return getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions);
+        return ctwvc.getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions);
     };
 
     function getNetworkConfig(viewConfig) {
@@ -91,7 +91,7 @@ define([
                 }
             };
         
-        return getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions);
+        return ctwvc.getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions);
     };
 
     function getNetworkListConfig(viewConfig) {
@@ -108,7 +108,7 @@ define([
                 }
             };
 
-        return getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions)
+        return ctwvc.getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions)
     };
 
     function getInstanceConfig(viewConfig) {
@@ -138,7 +138,7 @@ define([
                 }
             };
 
-        return getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions)
+        return ctwvc.getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions)
     };
 
     function getInstanceListConfig(viewConfig) {
@@ -161,25 +161,7 @@ define([
                 }
             };
 
-        return getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions)
-    }
-
-    function getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions) {
-        var urlValue = (contrail.checkIfKeyExistInObject(true, hashParams, 'focusedElement.fqName') ? hashParams.focusedElement.fqName : null),
-            defaultDropdownoptions = {
-                urlValue: (urlValue !== null) ? urlValue.split(':').splice(0,1).join(':') : null,
-                cookieKey: cowc.COOKIE_DOMAIN
-            },
-            dropdownOptions = $.extend(true, {}, defaultDropdownoptions, customDomainDropdownOptions);
-
-        return {
-            elementId: ctwl.DOMAINS_BREADCRUMB_DROPDOWN,
-            view: "BreadcrumbDropdownView",
-            viewConfig: {
-                modelConfig: ctwu.getDomainListModelConfig(),
-                dropdownOptions: dropdownOptions
-            }
-        };
+        return ctwvc.getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions)
     }
 
     function getProjectViewConfig() {
