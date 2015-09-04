@@ -163,7 +163,12 @@ define([
             bgpGateWay: "BGP Gateway",
             vns: "Virtual Networks",
             virtualRouterType: 'Type',
-            netconfManaged: 'Netconf Managed'
+            netconfManaged: 'Netconf Managed',
+
+            /*Virtual Router Config*/
+            virtual_router_type: "Type",
+            physical_router_back_refs: "Physical Routers",
+            virtual_router_ip_address: "IP Address"
         };
 
         this.TOP_CONTENT_CONTAINER = "top-content-container";
@@ -318,23 +323,19 @@ define([
         this.TITLE_ALARM_DETAILS = 'Alarm Details';
 
         //Monitor Infra common
-        this.MONITOR_INFRA_VIEW_PATH =
-            'monitor/infrastructure/common/ui/js/views/';
+        this.MONITOR_INFRA_VIEW_PATH = 'monitor/infrastructure/common/ui/js/views/';
 
         //Config node labels
-        this.CONFIGNODE_VIEWPATH_PREFIX =
-            'monitor/infrastructure/confignode/ui/js/views/';
+        this.CONFIGNODE_VIEWPATH_PREFIX = 'monitor/infrastructure/confignode/ui/js/views/';
         this.CONFIGNODE_SUMMARY_PAGE_ID = 'monitor-config-nodes';
-        this.CONFIGNODE_SUMMARY_URL =
-            '/api/admin/monitor/infrastructure/confignodes/summary';
+        this.CONFIGNODE_SUMMARY_URL = '/api/admin/monitor/infrastructure/confignodes/summary';
         this.CONFIGNODE_SUMMARY_TITLE = 'Config Nodes';
         this.CONFIGNODE_SUMMARY_GRID_ID = 'config-nodes-grid';
         this.CONFIGNODE_SUMMARY_SCATTERCHART_ID = 'config-nodes-scatterchart';
         this.CONFIGNODE_SUMMARY_GRID_SECTION_ID = "config-nodes-grid-section";
         this.CONFIGNODE_SUMMARY_CHART_ID = 'config-nodes-chart';
         this.CONFIGNODE_SUMMARY_LIST_SECTION_ID = 'config-nodes-list-section';
-        this.CONFIGNODE_SUMMARY_SCATTERCHART_SECTION_ID =
-            'config-nodes-scatterchart-section';
+        this.CONFIGNODE_SUMMARY_SCATTERCHART_SECTION_ID = 'config-nodes-scatterchart-section';
         this.CONFIGNODE_DETAILS_PAGE_ID = 'config_nodes_details_pages';
         this.CONFIGNODE_TAB_SECTION_ID = 'config_node_tab_section';
         this.CONFIGNODE_TAB_VIEW_ID = 'config_node_tab';
@@ -343,19 +344,16 @@ define([
         this.CACHE_CONFIGNODE = 'cache-config-nodes';
 
         //Control node labels
-        this.CONTROLNODE_VIEWPATH_PREFIX =
-            'monitor/infrastructure/controlnode/ui/js/views/';
+        this.CONTROLNODE_VIEWPATH_PREFIX = 'monitor/infrastructure/controlnode/ui/js/views/';
         this.CONTROLNODE_SUMMARY_PAGE_ID = 'monitor-control-nodes';
-        this.CONTROLNODE_SUMMARY_URL =
-            '/api/admin/monitor/infrastructure/controlnodes/summary';
+        this.CONTROLNODE_SUMMARY_URL = '/api/admin/monitor/infrastructure/controlnodes/summary';
         this.CONTROLNODE_SUMMARY_TITLE = 'Control Nodes';
         this.CONTROLNODE_SUMMARY_GRID_ID = 'control-nodes-grid';
         this.CONTROLNODE_SUMMARY_SCATTERCHART_ID = 'control-nodes-scatterchart';
         this.CONTROLNODE_SUMMARY_GRID_SECTION_ID = "control-nodes-grid-section";
         this.CONTROLNODE_SUMMARY_CHART_ID = 'control-nodes-chart';
         this.CONTROLNODE_SUMMARY_LIST_SECTION_ID = 'control-nodes-list-section';
-        this.CONTROLNODE_SUMMARY_SCATTERCHART_SECTION_ID =
-            'control-nodes-scatterchart-section';
+        this.CONTROLNODE_SUMMARY_SCATTERCHART_SECTION_ID = 'control-nodes-scatterchart-section';
         this.CACHE_CONTROLNODE = 'cache-control-nodes';
         this.CONTROLNODE_DETAILS_PAGE_ID = 'control_nodes_details';
         this.CONTROLNODE_DETAIL_PAGE_ID = 'control_nodes_detail_page'
@@ -369,22 +367,16 @@ define([
         this.CONTROLNODE_PEERS_TITLE = "Peers";
 
         //Database node labels
-        this.DATABASENODE_VIEWPATH_PREFIX =
-            'monitor/infrastructure/databasenode/ui/js/views/';
+        this.DATABASENODE_VIEWPATH_PREFIX = 'monitor/infrastructure/databasenode/ui/js/views/';
         this.DATABASENODE_SUMMARY_PAGE_ID = 'monitor-database-nodes';
-        this.DATABASENODE_SUMMARY_URL =
-            '/api/admin/monitor/infrastructure/dbnodes/summary';
+        this.DATABASENODE_SUMMARY_URL = '/api/admin/monitor/infrastructure/dbnodes/summary';
         this.DATABASENODE_SUMMARY_TITLE = 'Database Nodes';
         this.DATABASENODE_SUMMARY_GRID_ID = 'database-nodes-grid';
-        this.DATABASENODE_SUMMARY_SCATTERCHART_ID =
-            'database-nodes-scatterchart';
-        this.DATABASENODE_SUMMARY_GRID_SECTION_ID =
-            "database-nodes-grid-section";
+        this.DATABASENODE_SUMMARY_SCATTERCHART_ID = 'database-nodes-scatterchart';
+        this.DATABASENODE_SUMMARY_GRID_SECTION_ID = "database-nodes-grid-section";
         this.DATABASENODE_SUMMARY_CHART_ID = 'database-nodes-chart';
-        this.DATABASENODE_SUMMARY_LIST_SECTION_ID =
-            'database-nodes-list-section';
-        this.DATABASENODE_SUMMARY_SCATTERCHART_SECTION_ID =
-            'database-nodes-scatterchart-section';
+        this.DATABASENODE_SUMMARY_LIST_SECTION_ID = 'database-nodes-list-section';
+        this.DATABASENODE_SUMMARY_SCATTERCHART_SECTION_ID = 'database-nodes-scatterchart-section';
         this.DATABASENODE_DETAILS_PAGE_ID = 'database_nodes_details_pages';
         this.DATABASENODE_TAB_SECTION_ID = 'database_node_tab_section';
         this.DATABASENODE_TAB_VIEW_ID = 'database_node_tab';
@@ -393,22 +385,16 @@ define([
         this.CACHE_DATABASENODE = 'cache-database-nodes';
 
         //Analytics node labels
-        this.ANALYTICSNODE_VIEWPATH_PREFIX =
-            'monitor/infrastructure/analyticsnode/ui/js/views/';
+        this.ANALYTICSNODE_VIEWPATH_PREFIX = 'monitor/infrastructure/analyticsnode/ui/js/views/';
         this.ANALYTICSNODE_SUMMARY_PAGE_ID = 'monitor-analytics-nodes';
-        this.ANALYTICSNODE_SUMMARY_URL =
-            '/api/admin/monitor/infrastructure/analyticsnodes/summary';
+        this.ANALYTICSNODE_SUMMARY_URL = '/api/admin/monitor/infrastructure/analyticsnodes/summary';
         this.ANALYTICSNODE_SUMMARY_TITLE = 'Analytics Nodes';
         this.ANALYTICSNODE_SUMMARY_GRID_ID = 'analytics-nodes-grid';
-        this.ANALYTICSNODE_SUMMARY_SCATTERCHART_ID =
-            'analytics-nodes-scatterchart';
-        this.ANALYTICSNODE_SUMMARY_GRID_SECTION_ID =
-            "analytics-nodes-grid-section";
+        this.ANALYTICSNODE_SUMMARY_SCATTERCHART_ID = 'analytics-nodes-scatterchart';
+        this.ANALYTICSNODE_SUMMARY_GRID_SECTION_ID = "analytics-nodes-grid-section";
         this.ANALYTICSNODE_SUMMARY_CHART_ID = 'analytics-nodes-chart';
-        this.ANALYTICSNODE_SUMMARY_LIST_SECTION_ID =
-            'analytics-nodes-list-section';
-        this.ANALYTICSNODE_SUMMARY_SCATTERCHART_SECTION_ID =
-            'analytics-nodes-scatterchart-section';
+        this.ANALYTICSNODE_SUMMARY_LIST_SECTION_ID = 'analytics-nodes-list-section';
+        this.ANALYTICSNODE_SUMMARY_SCATTERCHART_SECTION_ID = 'analytics-nodes-scatterchart-section';
         this.CACHE_ANALYTICSNODE = 'cache-analytics-nodes';
         this.ANALYTICSNODE_DETAILS_PAGE_ID = 'analytics_nodes_details';
         this.ANALYTICSNODE_TAB_SECTION_ID = 'analytics_nodes_tab_section';
@@ -484,7 +470,63 @@ define([
         this.TOR_AGENT = "TOR Agent";
         this.TITLE_EDIT_PHYSICAL_ROUTER = "Edit Physical Router";
 
-        this.TITLE_QUERY_FLOWS_SERIES= "Query Flow Series";
+        // Query Engine labels
+        this.TITLE_QUERY_FLOWS_SERIES = "Query Flow Series";
+
+        // VRouter Config labels
+        this.CFG_VROUTER_PAGE_ID = 'config-vrouter-page';
+        this.CFG_VROUTER_LIST_ID = 'config-vrouter-list';
+        this.CFG_VROUTER_LIST_VIEW_ID = 'config-vrouter-list-view';
+        this.CFG_VROUTER_GRID_ID = 'config-vrouter-grid';
+        this.CFG_VROUTER_PREFIX_ID = 'config_vrouter';
+        this.CFG_VROUTER_TITLE = 'Virtual Routers';
+        this.CFG_VROUTER_TITLE_SUMMARY = 'Virtual Routers Summary';
+        this.CFG_VROUTER_TITLE_DETAILS = 'Virtual Router Details';
+        this.CFG_VROUTER_TITLE_EDIT = 'Edit Virtual Router';
+        this.CFG_VROUTER_TITLE_CREATE = 'Create Virtual Router';
+        this.CFG_VROUTER_TITLE_DELETE = 'Delete Virtual Router';
+        this.CFG_VROUTER_TITLE_MULTI_DELETE = 'Delete Virtual Router(s)';
+
+        // IPAM Config labels
+        this.CFG_IPAM_PAGE_ID = 'config-ipam-page';
+        this.CFG_IPAM_LIST_ID = 'config-ipam-list';
+        this.CFG_IPAM_LIST_VIEW_ID = 'config-ipam-list-view';
+        this.CFG_IPAM_GRID_ID = 'config-ipam-grid';
+        this.CFG_IPAM_PREFIX_ID = 'IPAM';
+        this.CFG_IPAM_TITLE = 'IP Address Management';
+        this.CFG_IPAM_TITLE_SUMMARY = 'IPAM Summary';
+        this.CFG_IPAM_TITLE_DETAILS = 'Details';
+        this.CFG_IPAM_TITLE_EDIT = 'IP Address Mgmt';
+        this.CFG_IPAM_TITLE_CREATE = 'Create IPAM';
+        this.CFG_IPAM_TITLE_DELETE = 'Delete IPAM';
+        this.CFG_IPAM_TITLE_MULTI_DELETE = 'Delete IPAM(s)';
+
+        // FIP Config labels
+        this.CFG_FIP_PAGE_ID = 'config-fip-page';
+        this.CFG_FIP_LIST_ID = 'config-fip-list';
+        this.CFG_FIP_LIST_VIEW_ID = 'config-fip-list-view';
+        this.CFG_FIP_GRID_ID = 'config-fip-grid';
+        this.CFG_FIP_PREFIX_ID = 'fip';
+        this.CFG_FIP_TITLE = 'Floating IPs';
+        this.CFG_FIP_TITLE_SUMMARY = 'Floating IP Summary';
+        this.CFG_FIP_TITLE_DETAILS = 'Details';
+        this.CFG_FIP_TITLE_ALLOCATE = 'Allocate Floating IP';
+        this.CFG_FIP_TITLE_RELEASE = 'Release Floating IP(s)';
+        this.CFG_FIP_TITLE_ASSOCIATE = 'Associate Floating IP to Port';
+        this.CFG_FIP_TITLE_DISASSOCIATE = 'Disassociate Floating IP';
+
+        // SVC TEMPLATE Config labels
+        this.CFG_SVC_TEMPLATE_PAGE_ID = 'config-svc-template-page';
+        this.CFG_SVC_TEMPLATE_LIST_ID = 'config-svc-template-list';
+        this.CFG_SVC_TEMPLATE_LIST_VIEW_ID = 'config-svc-template-list-view';
+        this.CFG_SVC_TEMPLATE_GRID_ID = 'config-svc-template-grid';
+        this.CFG_SVC_TEMPLATE_PREFIX_ID = 'service_template';
+        this.CFG_SVC_TEMPLATE_TITLE = 'Service Templates';
+        this.CFG_SVC_TEMPLATE_TITLE_SUMMARY = 'Service Templates Summary';
+        this.CFG_SVC_TEMPLATE_TITLE_DETAILS = 'Details';
+        this.CFG_SVC_TEMPLATE_TITLE_CREATE = 'Create Service Template';
+        this.CFG_SVC_TEMPLATE_TITLE_DELETE = 'Delete Service Template';
+        this.CFG_SVC_TEMPLATE_TITLE_MULTI_DELETE = 'Delete Service Template(s)';
     };
     return CTLabels;
 });
