@@ -8,8 +8,10 @@ define([
     'network-list-view-mock-data',
     'co-grid-contrail-list-model-test-suite',
     'co-grid-view-test-suite',
+    'co-chart-view-zoom-scatter-test-suite',
     'network-list-view-custom-test-suite'
-], function (CUnit, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite, CustomTestSuite) {
+], function (CUnit, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite,
+             CustomTestSuite) {
 
     var moduleId = cttm.NETWORKS_LIST_VIEW_COMMON_TEST_MODULE;
 
@@ -81,6 +83,17 @@ define([
                             severity: cotc.SEVERITY_LOW
                         },
                     ]
+                },
+                {
+                    viewId: ctwl.NETWORKS_PORTS_SCATTER_CHART_ID,
+                    suites: [
+                        {
+                            class: ZoomScatterChartTestSuite,
+                            groups: ['all'],
+                            severity: cotc.SEVERITY_LOW
+                        }
+                    ]
+
                 }
             ]
         } ;
