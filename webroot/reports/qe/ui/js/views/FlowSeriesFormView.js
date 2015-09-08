@@ -6,26 +6,45 @@ define([
     'underscore',
     'query-form-view',
     'knockback',
-    'reports/qe/ui/js/models/FlowSeriesQueryModel'
-], function (_, QueryFormView, Knockback, FlowSeriesQueryModel) {
+    'reports/qe/ui/js/models/FlowSeriesFormModel'
+], function (_, QueryFormView, Knockback, FlowSeriesFormModel) {
 
     var FlowSeriesQueryView = QueryFormView.extend({
         render: function (options) {
             var self = this, viewConfig = self.attributes.viewConfig,
-                flowSeriesQueryModel = new FlowSeriesQueryModel(),
-                widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null;
+                queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
+                flowSeriesQueryModel = new FlowSeriesFormModel(),
+                widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
+                queryFormId = "#qe-" + qewc.FS_QUERY_PREFIX + "-form";
 
             self.model = flowSeriesQueryModel;
+            self.$el.append(queryPageTmpl({queryPrefix: qewc.FS_QUERY_PREFIX }));
 
-            self.renderView4Config(self.$el, this.model, self.getViewConfig(), null, null, null, function () {
-                self.model.showErrorAttr(ctwl.QE_FLOW_SERIES_FORM_ID, false);
-                Knockback.applyBindings(self.model, document.getElementById(ctwl.QE_FLOW_SERIES_FORM_ID));
+            self.renderView4Config($(self.$el).find(queryFormId), this.model, self.getViewConfig(), null, null, null, function () {
+                self.model.showErrorAttr(ctwl.QE_FLOW_SERIES_ID, false);
+                Knockback.applyBindings(self.model, document.getElementById(ctwl.QE_FLOW_SERIES_ID));
                 kbValidation.bind(self);
+                $("#run_query").on('click', function() {
+                    self.renderQueryResult();
+                });
             });
 
             if (widgetConfig !== null) {
-                self.renderView4Config(self.$el, self.model, widgetConfig, null, null, null);
+                self.renderView4Config($(self.$el).find(queryFormId), self.model, widgetConfig, null, null, null);
             }
+        },
+
+        renderQueryResult: function() {
+            var self = this,
+                queryResultId = "#qe-" + qewc.FS_QUERY_PREFIX + "-results",
+                responseViewConfig = {
+                    view: "FlowSeriesResultView",
+                    viewPathPrefix: "reports/qe/ui/js/views/",
+                    app: cowc.APP_CONTRAIL_CONTROLLER,
+                    viewConfig: {}
+                };
+
+            self.renderView4Config($(self.$el).find(queryResultId), this.model, responseViewConfig);
         },
 
         getViewConfig: function () {
@@ -119,7 +138,9 @@ define([
                                     elementId: 'reset_query', view: "FormButtonView", label: "Reset",
                                     viewConfig: {
                                         class: 'display-inline-block margin-0-10-0-0',
-                                        elementConfig: {}
+                                        elementConfig: {
+                                            onClick: "reset"
+                                        }
                                     }
                                 }
                             ]
@@ -203,7 +224,6 @@ define([
             minTime: (toDateString == fromDateString) ? timeString : false
         };
     }
-
 
     return FlowSeriesQueryView;
 });

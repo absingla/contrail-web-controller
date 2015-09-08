@@ -15,17 +15,16 @@ define([
                 "from_time": Date.now(),
                 "to_time": Date.now() - (10 * 60 * 1000),
                 "select": null,
-                "select_fields": [],
                 "time_granularity": null,
                 "where": null,
                 "direction": 'ingress',
                 "filter": null,
-                "select_data_object": getSelectDataObject(queryPrefix)
+                "select_data_object": getSelectDataObject()
             };
         };
     };
 
-    function getSelectDataObject(queryPrefix) {
+    function getSelectDataObject() {
         var selectDataObject = {}
 
         selectDataObject.fields = ko.observableArray([]);
@@ -80,7 +79,7 @@ define([
             var dataObject = data.select_data_object(),
                 selectAllText = dataObject.select_all_text(),
                 isEnableMap = dataObject.enable_map,
-                checkedFields = selectDataObject.checked_fields,
+                checkedFields = dataObject.checked_fields,
                 key;
 
             if (selectAllText == 'Select All') {
@@ -107,6 +106,19 @@ define([
                     isEnableMap[key](true);
                     checkedFields.remove(key);
                 }
+            }
+        };
+
+        selectDataObject.reset = function(data, event) {
+            var dataObject = data.select_data_object(),
+                isEnableMap = dataObject.enable_map,
+                checkedFields = dataObject.checked_fields();
+
+            dataObject.select_all_text("Select All");
+            checkedFields.splice(0, checkedFields.length);
+
+            for(var key in isEnableMap) {
+                isEnableMap[key](true);
             }
         };
 

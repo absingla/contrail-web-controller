@@ -24,17 +24,17 @@ define([
                     {
                         columns: [
                             {
-                                elementId: ctwl.QE_FLOW_SERIES_FORM_ID,
-                                view: "FlowSeriesQueryView",
+                                elementId: ctwl.QE_FLOW_SERIES_ID,
+                                view: "FlowSeriesFormView",
                                 viewPathPrefix: "reports/qe/ui/js/views/",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {
                                     widgetConfig: {
-                                        elementId: ctwl.QE_FLOW_SERIES_FORM_ID + '-widget',
+                                        elementId: ctwl.QE_FLOW_SERIES_ID + '-widget',
                                         view: "WidgetView",
                                         viewConfig: {
                                             header: {
-                                                title: ctwl.TITLE_QUERY_FLOWS_SERIES,
+                                                title: ctwl.TITLE_FLOWS_SERIES_QUERY,
                                                 iconClass: "icon-search"
                                             },
                                             controls: {
