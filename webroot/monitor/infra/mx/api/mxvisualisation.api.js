@@ -12,7 +12,7 @@ var rest = require(process.mainModule.exports["corePath"] + '/src/serverroot/com
     async = require('async'),
     util = require('util'),
     ctrlGlobal = require('../../../../common/api/global'),
-    qeAPI = require('../../../../reports/qe/ui/api/qe.api.js'),
+    qeAPI = require('../../../../reports/api/qe.api.js'),
     jsonPath = require('JSONPath').eval,
     _ = require('underscore');
 

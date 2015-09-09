@@ -11,13 +11,13 @@ define([
             return {
                 "table_name": tableName,
                 "query_prefix": contrail.checkIfExist(queryPrefix) ? queryPrefix : qewc.DEFAULT_QUERY_PREFIX,
-                "time_range": 30,
+                "time_range": 1800,
                 "from_time": Date.now(),
                 "to_time": Date.now() - (10 * 60 * 1000),
                 "select": null,
                 "time_granularity": null,
                 "where": null,
-                "direction": 'ingress',
+                "direction": '1',
                 "filter": null,
                 "select_data_object": getSelectDataObject()
             };

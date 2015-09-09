@@ -34,7 +34,7 @@ define([
                                         view: "WidgetView",
                                         viewConfig: {
                                             header: {
-                                                title: ctwl.TITLE_FLOWS_SERIES_QUERY,
+                                                title: ctwl.TITLE_FLOW_SERIES_QUERY,
                                                 iconClass: "icon-search"
                                             },
                                             controls: {

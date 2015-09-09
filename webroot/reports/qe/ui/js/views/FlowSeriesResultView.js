@@ -10,17 +10,92 @@ define([
 
     var FlowSeriesResultView = QueryResultView.extend({
         render: function () {
-            var self = this, viewConfig = self.attributes.viewConfig;
+            var self = this, viewConfig = self.attributes.viewConfig,
+                serverCurrentTime = getCurrentTime4MemCPUCharts();
 
-            console.log(self.$el);
-            console.log(this.model);
-            console.log(self.getViewConfig());
-
-            //self.renderView4Config(self.$el, null, self.getViewConfig());
+            $.ajax({
+                url: '/api/service/networking/web-server-info'
+            }).done(function (resultJSON) {
+                serverCurrentTime = resultJSON['serverUTCTime'];
+            }).always(function() {
+                self.renderView4Config(self.$el, null, self.getViewConfig(serverCurrentTime))
+            });
         },
 
-        getViewConfig: function () {}
+        getViewConfig: function (serverCurrentTime) {
+            var self = this, viewConfig = self.attributes.viewConfig,
+                pagerOptions = viewConfig['pagerOptions'],
+                queryFormModel = this.model,
+                postDataObj = queryFormModel.getQueryRequestPostData(serverCurrentTime),
+                selectArray = queryFormModel.select().replace(/ /g, "").split(","),
+                fsGridColumns = qewgc.getColumnDisplay4Grid(qewc.FS_QUERY_PREFIX, selectArray);
+
+            var fsRemoteConfig = {
+                url: "/api/qe/query",
+                type: 'POST',
+                data: JSON.stringify(postDataObj)
+            };
+
+            return {
+                elementId: ctwl.QE_FLOW_SERIES_SECTION_ID,
+                view: "SectionView",
+                viewConfig: {
+                    rows: [
+                        {
+                            columns: [
+                                {
+                                    elementId: ctwl.QE_FLOW_SERIES_GRID_ID,
+                                    title: ctwl.TITLE_FLOW_SERIES_RESULTS,
+                                    view: "GridView",
+                                    viewConfig: {
+                                        elementConfig: getFlowSeriesGridConfig(fsRemoteConfig, fsGridColumns, pagerOptions)
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
     });
+
+    function getFlowSeriesGridConfig(fsRemoteConfig, fsGridColumns, pagerOptions) {
+        var gridElementConfig = {
+            header: {
+                title: {
+                    text: ctwl.TITLE_FLOW_SERIES_RESULTS
+                },
+                defaultControls: {
+                    collapseable: true,
+                    exportable: true,
+                    refreshable: false,
+                    searchable: false
+                }
+            },
+            body: {
+                options: {
+                    autoRefresh: false,
+                    checkboxSelectable: false,
+                    fixedRowHeight: 30
+                },
+                dataSource: {
+                    remote: {
+                        ajaxConfig: fsRemoteConfig,
+                        dataParser: function(response) {
+                            return response['data'];
+                        }
+                    }
+                }
+            },
+            columnHeader: {
+                columns: fsGridColumns
+            },
+            footer: {
+                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 5, pageSizeSelect: [5, 10, 50, 100] } })
+            }
+        };
+        return gridElementConfig;
+    };
 
     return FlowSeriesResultView;
 });

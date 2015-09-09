@@ -4,13 +4,17 @@
 
 define([
     'underscore',
-    'reports/qe/ui/js/qe.model.config',
     'reports/qe/ui/js/qe.constants',
+    'reports/qe/ui/js/qe.utils',
+    'reports/qe/ui/js/qe.model.config',
+    'reports/qe/ui/js/qe.grid.config',
     'text!reports/qe/ui/templates/qe.tmpl',
     'reports/qe/ui/js/qe.main'
-], function (_, QEModelConfig, QEConstants, QETemplates) {
-    qewmc = new QEModelConfig();
+], function (_, QEConstants, QEUtils, QEModelConfig, QEGridConfig, QETemplates) {
     qewc = new QEConstants();
+    qewu = new QEUtils();
+    qewmc = new QEModelConfig();
+    qewgc = new QEGridConfig();
 
     $("body").append(QETemplates);
 
@@ -21,7 +25,7 @@ define([
     initStatus['isInProgress'] = false;
     initStatus['isComplete'] = true;
 
-    if(contrail.checkIfExist(deferredObj)) {
+    if (contrail.checkIfExist(deferredObj)) {
         deferredObj.resolve()
     }
 });
