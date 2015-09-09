@@ -8,7 +8,7 @@
     </require>
     <require>
         <define>qeapi</define>
-        <path>./qe.api</path>
+        <path>./query.api</path>
     </require>
 
     <item>

@@ -99,7 +99,7 @@ define([
                                         class: "span3",
                                         style: 'display: none;',
                                         path: 'time_granularity',
-                                        label: 'time_granularity',
+                                        label: 'Time Granularity',
                                         visible: 'select_data_object().checked_fields.indexOf("T=") != -1 ',
                                         childView: [
                                             {

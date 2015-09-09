@@ -23,19 +23,19 @@ define([
             return s.join('');
         };
 
-        self.setUTCTimeObj = function (queryPrefix, reqObject, options, timeRange) {
+        self.setUTCTimeObj = function (queryPrefix, formModelAttrs, options, timeRange) {
             var serverCurrentTime = options ? options['serverCurrentTime'] : null;
-            timeRange = (timeRange == null) ? getTimeRange(queryPrefix, reqObject, serverCurrentTime) : timeRange;
+            timeRange = (timeRange == null) ? getTimeRange(formModelAttrs, serverCurrentTime) : timeRange;
 
             if (options != null) {
                 options.fromTime = timeRange.fromTimeUTC;
                 options.toTime = timeRange.toTimeUTC;
             }
 
-            reqObject['fromTimeUTC'] = timeRange.fromTime;
-            reqObject['toTimeUTC'] = timeRange.toTime;
-            reqObject['reRunTimeRange'] = timeRange.reRunTimeRange;
-            return reqObject;
+            formModelAttrs['from_time_utc'] = timeRange.fromTime;
+            formModelAttrs['to_time_utc'] = timeRange.toTime;
+            formModelAttrs['rerun_time_range'] = timeRange.reRunTimeRange;
+            return formModelAttrs;
         };
 
         self.getLabelStepUnit = function (tg, tgUnit) {
@@ -79,10 +79,11 @@ define([
         };
     };
 
-    function getTimeRange(queryPrefix, reqObject, serverCurrentTime) {
-        var timeRange = reqObject['timeRange'],
-            tgUnits = reqObject['tgUnits'],
-            tgValue = reqObject['tgValue'],
+    function getTimeRange(formModelAttrs, serverCurrentTime) {
+        var queryPrefix = formModelAttrs['query_prefix'],
+            timeRange = formModelAttrs['time_range'],
+            tgUnits = formModelAttrs['tgUnits'],
+            tgValue = formModelAttrs['tgValue'],
             fromDate, toDate, fromTimeUTC, toTimeUTC,
             fromTime, toTime, now, tgMicroSecs = 0;
 
@@ -107,10 +108,10 @@ define([
             }
         } else {
             // used for custom time range
-            fromDate = reqObject['fromTime'];
+            fromDate = formModelAttrs['from_time'];
             fromTimeUTC = new Date(fromDate).getTime();
             fromTime = fromTimeUTC;
-            toDate = reqObject['toTime'];
+            toDate = formModelAttrs['to_time'];
             toTimeUTC = new Date(toDate).getTime();
             toTime = toTimeUTC;
         }
