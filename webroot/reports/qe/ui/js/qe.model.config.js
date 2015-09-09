@@ -12,10 +12,11 @@ define([
                 "table_name": tableName,
                 "query_prefix": contrail.checkIfExist(queryPrefix) ? queryPrefix : qewc.DEFAULT_QUERY_PREFIX,
                 "time_range": 1800,
-                "from_time": Date.now(),
-                "to_time": Date.now() - (10 * 60 * 1000),
+                "from_time": Date.now() - (10 * 60 * 1000),
+                "to_time": Date.now(),
                 "select": null,
-                "time_granularity": null,
+                "time_granularity": 1,
+                time_granularity_unit: 'secs',
                 "where": null,
                 "direction": '1',
                 "filter": null,
@@ -25,7 +26,7 @@ define([
     };
 
     function getSelectDataObject() {
-        var selectDataObject = {}
+        var selectDataObject = {};
 
         selectDataObject.fields = ko.observableArray([]);
         selectDataObject.enable_map = {};

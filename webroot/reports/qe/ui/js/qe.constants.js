@@ -26,6 +26,6 @@ define([
 
         this.DEFAULT_QUERY_PREFIX = 'query';
         this.FLOW_SERIES_TABLE = "FlowSeriesTable";
-    }
+    };
     return QEConstants;
 });

@@ -65,6 +65,7 @@ define([
                                 {
                                     elementId: 'from_time', view: "FormDateTimePickerView",
                                     viewConfig: {
+                                        style: 'display: none;',
                                         path: 'from_time', dataBindValue: 'from_time', class: "span3",
                                         elementConfig: getFromTimeElementConfig('from_time', 'to_time'),
                                         visible: "time_range() == -1"
@@ -73,6 +74,7 @@ define([
                                 {
                                     elementId: 'to_time', view: "FormDateTimePickerView",
                                     viewConfig: {
+                                        style: 'display: none;',
                                         path: 'to_time', dataBindValue: 'to_time', class: "span3",
                                         elementConfig: getToTimeElementConfig('from_time', 'to_time'),
                                         visible: "time_range() == -1"
@@ -89,6 +91,41 @@ define([
                                             self.renderSelect();
                                         }
                                     }}
+                                },
+                                {
+                                    elementId: 'time-granularity-section',
+                                    view: "FormCompositeView",
+                                    viewConfig: {
+                                        class: "span3",
+                                        style: 'display: none;',
+                                        path: 'time_granularity',
+                                        label: 'time_granularity',
+                                        visible: 'select_data_object().checked_fields.indexOf("T=") != -1 ',
+                                        childView: [
+                                            {
+                                                elementId: 'time_granularity', view: "FormNumericTextboxView",
+                                                viewConfig: {
+                                                    label: false,
+                                                    path: 'time_granularity',
+                                                    dataBindValue: 'time_granularity',
+                                                    class: "span4",
+                                                    elementConfig: {}
+                                                }
+                                            },
+                                            {
+                                                elementId: 'time_granularity_unit', view: "FormDropdownView",
+                                                viewConfig: {
+                                                    label: false,
+                                                    path: 'time_granularity_unit',
+                                                    dataBindValue: 'time_granularity_unit',
+                                                    dataBindOptionList: 'getTimeGranularityUnits()',
+                                                    class: "span4",
+                                                    elementConfig: {}
+                                                }
+                                            }
+                                        ]
+
+                                    }
                                 }
                             ]
                         },
