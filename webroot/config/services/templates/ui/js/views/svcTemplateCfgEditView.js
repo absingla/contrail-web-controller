@@ -200,20 +200,18 @@ define([
                                                         {
                                                           elementId: 'service_interface_type',
                                                           name: 'Interface (s)',
-                                                          view: "GridDropdownView",
+                                                          view: "FormDropdownView",
                                                           class: "", width: 250,
                                                           viewConfig:
                                                             {
+                                                             templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
                                                              path: "service_interface_type",
-                                                             dataBindValue:
-                                                                 'service_interface_type()',
-                                                                 elementConfig : {
-                                                                    data : "['management',\
+                                                             dataBindValue: 'service_interface_type()',
+                                                             dataBindOptionList: "['management',\
                                                                     'left',\
                                                                     'right',\
-                                                                    'other']"
-
-                                                                }
+                                                                    'other']",
+                                                             elementConfig : {}
                                                             }
                                                         },
                                                         {
