@@ -8,7 +8,7 @@ define([
     var QEDefaultConfig = function () {
 
         this.getQueryModel = function (tableName, queryPrefix) {
-            return {
+            var queryModelConfig = {
                 "table_name": tableName,
                 "query_prefix": contrail.checkIfExist(queryPrefix) ? queryPrefix : qewc.DEFAULT_QUERY_PREFIX,
                 "time_range": 1800,
@@ -22,6 +22,8 @@ define([
                 "filter": null,
                 "select_data_object": getSelectDataObject()
             };
+
+            return $.extend(true, {}, queryModelConfig);
         };
     };
 
@@ -123,12 +125,12 @@ define([
         selectDataObject.reset = function(data, event) {
             var dataObject = data.select_data_object(),
                 isEnableMap = dataObject.enable_map,
-                checkedFields = dataObject.checked_fields();
+                checkedFields = dataObject.checked_fields;
 
             dataObject.select_all_text("Select All");
-            checkedFields.splice(0, checkedFields.length);
 
             for(var key in isEnableMap) {
+                checkedFields.remove(key);
                 isEnableMap[key](true);
             }
         };

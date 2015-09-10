@@ -40,7 +40,7 @@ define([
                 elementId: ctwl.QE_FLOW_SERIES_TAB_ID,
                 view: "TabsView",
                 viewConfig: {
-                    theme: 'classic',
+                    theme: cowc.TAB_THEME_OVERCAST,
                     activate: function (e, ui) {
                         var selTab = $(ui.newTab.context).text();
                         if (selTab == ctwl.TITLE_FLOW_SERIES_RESULTS) {
