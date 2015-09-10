@@ -37,21 +37,23 @@ define([
             };
 
             return {
-                elementId: ctwl.QE_FLOW_SERIES_SECTION_ID,
-                view: "SectionView",
+                elementId: ctwl.QE_FLOW_SERIES_TAB_ID,
+                view: "TabsView",
                 viewConfig: {
-                    rows: [
+                    theme: cowc.TAB_THEME_OVERCAST,
+                    activate: function (e, ui) {
+                        var selTab = $(ui.newTab.context).text();
+                        if (selTab == ctwl.TITLE_FLOW_SERIES_RESULTS) {
+                        }
+                    },
+                    tabs: [
                         {
-                            columns: [
-                                {
-                                    elementId: ctwl.QE_FLOW_SERIES_GRID_ID,
-                                    title: ctwl.TITLE_FLOW_SERIES_RESULTS,
-                                    view: "GridView",
-                                    viewConfig: {
-                                        elementConfig: getFlowSeriesGridConfig(fsRemoteConfig, fsGridColumns, pagerOptions)
-                                    }
-                                }
-                            ]
+                            elementId: ctwl.QE_FLOW_SERIES_GRID_ID,
+                            title: ctwl.TITLE_RESULTS,
+                            view: "GridView",
+                            viewConfig: {
+                                elementConfig: getFlowSeriesGridConfig(fsRemoteConfig, fsGridColumns, pagerOptions)
+                            }
                         }
                     ]
                 }
@@ -63,7 +65,8 @@ define([
         var gridElementConfig = {
             header: {
                 title: {
-                    text: ctwl.TITLE_FLOW_SERIES_RESULTS
+                    text: ctwl.TITLE_FLOW_SERIES,
+                    icon : 'icon-table'
                 },
                 defaultControls: {
                     collapseable: true,

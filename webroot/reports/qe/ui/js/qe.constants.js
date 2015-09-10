@@ -23,6 +23,7 @@ define([
         this.FS_QUERY_PREFIX = "fs";
         this.FC_QUERY_PREFIX = "fc";
         this.FR_QUERY_PREFIX = "fr";
+        this.STAT_QUERY_PREFIX = "stat";
 
         this.DEFAULT_QUERY_PREFIX = 'query';
         this.FLOW_SERIES_TABLE = "FlowSeriesTable";

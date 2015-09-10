@@ -25,7 +25,7 @@ define([
 
         self.setUTCTimeObj = function (queryPrefix, formModelAttrs, options, timeRange) {
             var serverCurrentTime = options ? options['serverCurrentTime'] : null;
-            timeRange = (timeRange == null) ? getTimeRange(formModelAttrs, serverCurrentTime) : timeRange;
+            timeRange = (timeRange == null) ? getTimeRangeObj(formModelAttrs, serverCurrentTime) : timeRange;
 
             if (options != null) {
                 options.fromTime = timeRange.fromTimeUTC;
@@ -79,15 +79,15 @@ define([
         };
     };
 
-    function getTimeRange(formModelAttrs, serverCurrentTime) {
+    function getTimeRangeObj(formModelAttrs, serverCurrentTime) {
         var queryPrefix = formModelAttrs['query_prefix'],
             timeRange = formModelAttrs['time_range'],
-            tgUnits = formModelAttrs['tgUnits'],
-            tgValue = formModelAttrs['tgValue'],
+            tgUnit = formModelAttrs['tg_unit'],
+            tgValue = formModelAttrs['tg_value'],
             fromDate, toDate, fromTimeUTC, toTimeUTC,
             fromTime, toTime, now, tgMicroSecs = 0;
 
-        tgMicroSecs = getTGMicroSecs(tgValue, tgUnits);
+        tgMicroSecs = getTGMicroSecs(tgValue, tgUnit);
 
         if (timeRange > 0) {
             if (serverCurrentTime) {
@@ -116,8 +116,8 @@ define([
             toTime = toTimeUTC;
         }
 
-        if (queryPrefix == 'stat' && typeof fromTimeUTC !== 'undefined' && typeof tgMicroSecs !== 'undefined') {
-            fromTimeUTC = updateFromTime(fromTimeUTC, tgMicroSecs);
+        if (typeof fromTimeUTC !== 'undefined' && typeof tgMicroSecs !== 'undefined') {
+            fromTimeUTC = ceilFromTime(fromTimeUTC, tgMicroSecs);
         }
         return {fromTime: fromTime, toTime: toTime, fromTimeUTC: fromTimeUTC, toTimeUTC: toTimeUTC, reRunTimeRange: timeRange};
     };
@@ -132,6 +132,11 @@ define([
         } else if (tgUnit == 'days') {
             return tg * 86400 * 1000;
         }
+    };
+
+    function ceilFromTime(fromTimeUTC, TGSecs){
+        fromTimeUTC = TGSecs * Math.ceil(fromTimeUTC/TGSecs);
+        return fromTimeUTC;
     };
 
     return QEUtils;

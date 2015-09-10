@@ -8,9 +8,17 @@ define([
     'query-form-model'
 ], function (_, Knockout, QueryFormModel) {
     var FormSeriesQueryModel = QueryFormModel.extend({
-        defaultConfig: qewmc.getQueryModel(qewc.FLOW_SERIES_TABLE, qewc.FS_QUERY_PREFIX),
 
         defaultSelectFields: ['flow_class_id', 'direction_ing'],
+
+        constructor: function (modelData) {
+            var defaultConfig = qewmc.getQueryModel(qewc.FLOW_SERIES_TABLE, qewc.FS_QUERY_PREFIX);
+
+            modelData = $.extend(true, {}, defaultConfig, modelData);
+            QueryFormModel.prototype.constructor.call(this, modelData);
+
+            return this;
+        },
 
         getTimeGranularityUnits: function() {
             var self = this;

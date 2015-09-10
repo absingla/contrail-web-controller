@@ -8,20 +8,22 @@ define([
     var QEDefaultConfig = function () {
 
         this.getQueryModel = function (tableName, queryPrefix) {
-            return {
+            var queryModelConfig = {
                 "table_name": tableName,
                 "query_prefix": contrail.checkIfExist(queryPrefix) ? queryPrefix : qewc.DEFAULT_QUERY_PREFIX,
                 "time_range": 1800,
                 "from_time": Date.now() - (10 * 60 * 1000),
                 "to_time": Date.now(),
                 "select": null,
-                "time_granularity": 1,
-                time_granularity_unit: 'secs',
+                "time_granularity": 60,
+                "time_granularity_unit": 'secs',
                 "where": null,
                 "direction": '1',
                 "filter": null,
                 "select_data_object": getSelectDataObject()
             };
+
+            return $.extend(true, {}, queryModelConfig);
         };
     };
 
@@ -38,7 +40,7 @@ define([
             var fieldName = $(event.currentTarget).attr('name'),
                 dataObject = data.select_data_object(),
                 isEnableMap = dataObject.enable_map,
-                key;
+                key, nonAggKey;
 
             if (fieldName == 'T') {
                 if (dataObject.checked_fields.indexOf('T') != -1) {
@@ -47,6 +49,9 @@ define([
                         if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
                             dataObject.checked_fields.remove(key);
                             isEnableMap[key](false);
+                            nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
+                            isEnableMap[nonAggKey](true);
+                            dataObject.checked_fields.push(nonAggKey);
                         }
                     }
                 } else {
@@ -62,13 +67,18 @@ define([
                     for (key in isEnableMap) {
                         if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
                             isEnableMap[key](true);
+                            dataObject.checked_fields.push(key);
+                            nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
+                            dataObject.checked_fields.remove(nonAggKey);
+                            isEnableMap[nonAggKey](false);
                         }
                     }
                 } else {
                     for (key in isEnableMap) {
                         if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
                             dataObject.checked_fields.remove(key);
-                            isEnableMap[key](false);
+                            nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
+                            isEnableMap[nonAggKey](true);
                         }
                     }
                 }
@@ -81,24 +91,26 @@ define([
                 selectAllText = dataObject.select_all_text(),
                 isEnableMap = dataObject.enable_map,
                 checkedFields = dataObject.checked_fields,
-                key;
+                key, nonAggKey;
 
             if (selectAllText == 'Select All') {
                 dataObject.select_all_text('Clear All');
-                for (key in isEnableMap) {
-                    if (key == "T=" || key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
-                        if (checkedFields.indexOf(key) != -1) {
-                            checkedFields.remove(key);
-                        }
 
-                        if (key != "T=") {
-                            isEnableMap[key](false);
+                for (key in isEnableMap) {
+                    isEnableMap[key](true);
+                    checkedFields.remove(key);
+                }
+
+                for (key in isEnableMap) {
+                    if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
+                        checkedFields.push(key);
+                        nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
+                        if(checkedFields.indexOf(nonAggKey) != -1) {
+                            checkedFields.remove(nonAggKey);
                         }
-                    } else {
-                        isEnableMap[key](true);
-                        if (checkedFields.indexOf(key) == -1) {
-                            checkedFields.push(key);
-                        }
+                        isEnableMap[nonAggKey](false);
+                    } else if (key != "T" && isEnableMap[key]) {
+                        checkedFields.push(key);
                     }
                 }
             } else {
@@ -113,12 +125,12 @@ define([
         selectDataObject.reset = function(data, event) {
             var dataObject = data.select_data_object(),
                 isEnableMap = dataObject.enable_map,
-                checkedFields = dataObject.checked_fields();
+                checkedFields = dataObject.checked_fields;
 
             dataObject.select_all_text("Select All");
-            checkedFields.splice(0, checkedFields.length);
 
             for(var key in isEnableMap) {
+                checkedFields.remove(key);
                 isEnableMap[key](true);
             }
         };
