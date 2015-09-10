@@ -36,7 +36,7 @@ define([
             {select:"sourceip", display:{id:"sourceip", field:"sourceip", width:120, name:"Source IP", groupable:false, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.sourceip);}}},
             {select:"destip", display:{id:"destip", field:"destip", width:120, name:"Destination IP", groupable:false, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.destip);}}},
             {select:"sport", display:{id:"sport", field:"sport", width:120, name:"Source Port", groupable:false, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.sport);}}},
-            {select:"dport", display:{id:"dport", field:"dport", width:140, name:"Destination Port", groupable:false, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.dport);}}},
+            {select:"dport", display:{id:"dport", field:"dport", width:130, name:"Destination Port", groupable:false, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.dport);}}},
             {select:"direction_ing", display:{id:"direction_ing", field:"direction_ing", width:120, name:"Direction", groupable:true, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(getDirName(dc.direction_ing));}}},
             {select:"protocol", display:{id:"protocol", field:"protocol", width:100, name:"Protocol", groupable:true, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(getProtocolName(dc.protocol));}}},
             {select:"bytes", display:{id:"bytes", field:"bytes", width:120, name:"Bytes", format:"{0:n0}", groupable:false}},
