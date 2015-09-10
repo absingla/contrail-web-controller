@@ -109,7 +109,7 @@ define([
                                                     path: 'time_granularity',
                                                     dataBindValue: 'time_granularity',
                                                     class: "span4",
-                                                    elementConfig: {}
+                                                    elementConfig: {min: 1}
                                                 }
                                             },
                                             {
