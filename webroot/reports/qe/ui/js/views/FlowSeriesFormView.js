@@ -174,6 +174,7 @@ define([
                                 {
                                     elementId: 'reset_query', view: "FormButtonView", label: "Reset",
                                     viewConfig: {
+                                        label: "Reset",
                                         class: 'display-inline-block margin-0-10-0-0',
                                         elementConfig: {
                                             onClick: "reset"
