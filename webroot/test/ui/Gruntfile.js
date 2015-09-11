@@ -44,7 +44,9 @@ module.exports = function (grunt) {
         {pattern: 'contrail-web-core/webroot/js/**/*.js', included: false},
         {pattern: 'contrail-web-core/webroot/templates/*.tmpl', included: false},
 
-        {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/*.mock.data.js', included: false}
+        {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/InstanceListView.mock.data.js', included: false},
+        {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/ProjectListView.mock.data.js', included: false},
+        {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/NetworkListView.mock.data.js', included: false}
     ];
     var karmaConfig = {
         options: {
