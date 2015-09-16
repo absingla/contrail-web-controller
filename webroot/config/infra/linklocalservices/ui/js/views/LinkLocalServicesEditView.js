@@ -21,7 +21,7 @@ define([
 
             var gridData = options['gridData'];
             var configData = options['configData'];
-            cowu.createModal({'modalId': modalId, 'className': 'modal-980',
+            cowu.createModal({'modalId': modalId, 'className': 'modal-560',
                              'title': options['title'], 'body': editLayout,
                              'onSave': function () {
                 self.model.configureLinkLocalServices(-1, configData, gridData, {
@@ -46,7 +46,9 @@ define([
                 $("#" + modalId).modal('hide');
             }});
 
-            self.renderView4Config($("#" + modalId).find(formId), this.model, getAddLinkLocalServicesViewConfig(false), "llsConfigValidations", null, null, function() {
+            self.renderView4Config($("#" + modalId).find(formId), this.model,
+                                   getAddLinkLocalServicesViewConfig(false),
+                                   "llsConfigValidations", null, null, function() {
                 self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
                 Knockback.applyBindings(self.model, document.getElementById(modalId));
                 kbValidation.bind(self);
@@ -60,7 +62,7 @@ define([
             var rowIndex = options['rowIndex'];
             var gridData = options['gridData'];
             var configData = options['configData'];
-            cowu.createModal({'modalId': modalId, 'className': 'modal-980',
+            cowu.createModal({'modalId': modalId, 'className': 'modal-700',
                              'title': options['title'], 'body': editLayout,
                              'onSave': function () {
                 self.model.configureLinkLocalServices(rowIndex, configData,
@@ -87,7 +89,9 @@ define([
                 $("#" + modalId).modal('hide');
             }});
 
-            self.renderView4Config($("#" + modalId).find(formId), this.model, getAddLinkLocalServicesViewConfig(true), "llsConfigValidations", null, null, function() {
+            self.renderView4Config($("#" + modalId).find(formId), this.model,
+                                   getAddLinkLocalServicesViewConfig(true),
+                                   "llsConfigValidations", null, null, function() {
                 self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
                 Knockback.applyBindings(self.model, document.getElementById(modalId));
                 kbValidation.bind(self);
@@ -111,7 +115,7 @@ define([
                                         item: ctwl.TITLE_LINK_LOCAL_SERVICES,
                                         itemId: items}),
                 configData = options['configData'];
-            cowu.createModal({'modalId': modalId, 'className': 'modal-700',
+            cowu.createModal({'modalId': modalId, 'className': 'modal-600',
                              'title': options['title'], 'btnName': 'Confirm',
                              'body': delLayout, 'onSave': function () {
                 that.model.deleteLinkLocalServices(configData, gridData,
@@ -156,36 +160,36 @@ define([
                         columns: [
                             {
                                 elementId: 'linklocal_service_name',
-                                view: 'FormInputView',
+                                view: 'FormComboboxView',
                                 viewConfig: {
-                                    visible: 'def_visible',
                                     disabled: isDisable,
                                     path: 'linklocal_service_name',
-                                    class: 'span2',
-                                    dataBindValue: 'linklocal_service_name'
-                                }
-                                /*
-                                view: "FormDropdownView",
-                                viewConfig: {
-                                    path : 'linklocal_service_name',
-                                    class: 'span2',
-                                    dataBindValue : 'linklocal_service_name',
-                                    elementConfig : {
+                                    class: 'span12',
+                                    dataBindValue: 'linklocal_service_name',
+                                    elementConfig: {
+                                        placeholder: 'Service Name',
                                         dataTextField : "text",
-                                        dataValueField : "id",
-                                        data : [{id: 'metadata',
-                                                text:'metadata'}]
+                                        dataValueField : "value",
+                                        dataSource: {
+                                            type: 'local',
+                                            data : [
+                                                {'value': 'metadata',
+                                                 'text': 'metadata'}
+                                            ]
+                                        }
                                     }
                                 }
-                                */
-                            },
+                            }
+                        ]
+                    },
+                    {
+                        columns: [
                             {
                                 elementId: 'linklocal_service_ip',
                                 view: 'FormInputView',
                                 viewConfig: {
-                                    visible: 'def_visible',
                                     path: 'linklocal_service_ip',
-                                    class: 'span2',
+                                    class: 'span6',
                                     dataBindValue: 'linklocal_service_ip'
                                 }
                             },
@@ -193,19 +197,21 @@ define([
                                 elementId: 'linklocal_service_port',
                                 view: 'FormInputView',
                                 viewConfig: {
-                                    visible: 'def_visible',
                                     path: 'linklocal_service_port',
-                                    class: 'span2',
+                                    class: 'span6',
                                     dataBindValue: 'linklocal_service_port'
                                 }
-                            },
+                            }
+                        ]
+                    },
+                    {
+                        columns: [
                             {
                                 elementId: 'lls_fab_address_ip',
                                 view: "FormDropdownView",
                                 viewConfig: {
-                                    visible: 'def_visible',
                                     path : 'lls_fab_address_ip',
-                                    class: 'span2',
+                                    class: 'span3',
                                     dataBindValue : 'lls_fab_address_ip',
                                     elementConfig : {
                                         allowClear: true,
@@ -217,22 +223,41 @@ define([
                                 }
                             },
                             {
-                                elementId: 'ip_fabric_service_ip',
-                                view: 'FormInputView',
+                                elementId: 'ipFabAddresses',
+                                view: "FormEditableGridView",
                                 viewConfig: {
-                                    visible: "showIp",
-                                    path: 'ip_fabric_service_ip',
-                                    class: 'span2',
-                                    dataBindValue: 'ip_fabric_service_ip'
+                                    visible: 'showIP',
+                                    path: 'ipFabAddresses',
+                                    collection: 'ipFabAddresses',
+                                    validation: "fabAddressValidation",
+                                    class: "span5",
+                                    columns: [{
+                                        elementId: 'ip_fabric_service_ip',
+                                        name: 'Fabric IP',
+                                        view: "FormInputView",
+                                        width: 150,
+                                        viewConfig: {
+                                            templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                            path: 'ip_fabric_service_ip',
+                                            dataBindValue: 'ip_fabric_service_ip()'
+                                        }
+                                    }],
+                                    rowActions: [
+                                        {onClick: "function() { $root.deleteAddress($data, this); }",
+                                         iconClass: 'icon-minus'}
+                                    ],
+                                    gridActions: [
+                                        {onClick: "function() { addAddress(); }", buttonTitle: "Add"}
+                                    ]
                                 }
                             },
                             {
                                 elementId: 'ip_fabric_DNS_service_name',
                                 view: 'FormInputView',
                                 viewConfig: {
-                                    visible: "showDns",
+                                    visible: 'showDNS',
                                     path: 'ip_fabric_DNS_service_name',
-                                    class: 'span2',
+                                    class: "span5",
                                     dataBindValue: 'ip_fabric_DNS_service_name'
                                 }
                             },
@@ -240,9 +265,8 @@ define([
                                 elementId: 'ip_fabric_service_port',
                                 view: 'FormInputView',
                                 viewConfig: {
-                                    visible: 'def_visible',
                                     path: 'ip_fabric_service_port',
-                                    class: 'span2',
+                                    class: 'span4',
                                     dataBindValue: 'ip_fabric_service_port'
                                 }
                             }
