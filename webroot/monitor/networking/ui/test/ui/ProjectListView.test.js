@@ -10,7 +10,6 @@ define([
     'co-grid-view-test-suite'
 ], function (CUnit, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite) {
 
-    console.log('in the PROJECT lsit view test !!!!!');
     var moduleId = cttm.PROJECTS_LIST_VIEW_COMMON_TEST_MODULE;
 
     var fakeServerConfig = CUnit.getDefaultFakeServerConfig();
