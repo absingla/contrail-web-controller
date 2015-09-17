@@ -500,9 +500,11 @@ define([
         this.QE_FLOW_SERIES_SECTION_ID = "qe-flow-series-section";
         this.QE_FLOW_SERIES_TAB_ID = "qe-flow-series-tab";
         this.QE_FLOW_SERIES_GRID_ID = "qe-flow-series-grid";
+        this.QE_FLOW_SERIES_CHART_ID = "qe-flow-series-chart";
 
         this.TITLE_QUERY = "Query";
         this.TITLE_RESULTS = "Results";
+        this.TITLE_CHART = "Chart";
         this.TITLE_FLOW_SERIES = "Flow Series";
         this.TITLE_FLOW_SERIES_RESULTS = "Flow Series Results";
 

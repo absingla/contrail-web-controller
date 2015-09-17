@@ -39,6 +39,7 @@ if (!module.parent) {
 function executeQuery(res, options) {
     var queryJSON = options.queryJSON,
         async = options.async, asyncHeader = {"Expect": "202-accepted"};
+
     opServer.authorize(function () {
         logutils.logger.debug("Query sent to Opserver at " + new Date() + ' ' + JSON.stringify(queryJSON));
         options['startTime'] = new Date().getTime();
@@ -103,7 +104,7 @@ function parseOpsQueryIdFromUrl(url) {
 };
 
 function fetchQueryResults(res, jsonData, options) {
-    var queryId = options['queryId'], pageSize = options['pageSize'],
+    var queryId = options['queryId'], chunkSize = options['chunkSize'],
         queryJSON = options['queryJSON'], progress;
 
     opServer.authorize(function () {
@@ -175,8 +176,8 @@ function getReRunQueryString(reRunQuery, reRunTimeRange) {
     delete reRunQuery['queryId'];
     delete reRunQuery['skip'];
     delete reRunQuery['take'];
-    delete reRunQuery['page'];
-    delete reRunQuery['pageSize'];
+    delete reRunQuery['chunk'];
+    delete reRunQuery['chunkSize'];
     if (reRunTimeRange != null && reRunTimeRange != '0') {
         delete reRunQuery['fromTime'];
         delete reRunQuery['fromTimeUTC'];
@@ -196,7 +197,7 @@ function parseQueryTime(queryId) {
 
 function processQueryResults(res, queryResults, options) {
     var startDate = new Date(), startTime = startDate.getTime(),
-        queryId = options.queryId, pageSize = options.pageSize,
+        queryId = options.queryId, chunkSize = options.chunkSize,
         queryJSON = options.queryJSON, endDate = new Date(), table = queryJSON.table,
         endTime, total, responseJSON, resultJSON;
     endTime = endDate.getTime();
@@ -204,17 +205,18 @@ function processQueryResults(res, queryResults, options) {
     logutils.logger.debug("Query results (" + resultJSON.length + " records) received from opserver at " + endDate + ' in ' + ((endTime - startTime) / 1000) + 'secs. ' + JSON.stringify(queryJSON));
     total = resultJSON.length;
     if (options.status == 'run') {
-        if (queryId == null || total <= pageSize) {
+        if (queryId == null || total <= chunkSize) {
             responseJSON = resultJSON;
+            chunkSize = total;
         } else {
-            responseJSON = resultJSON.slice(0, pageSize);
+            responseJSON = resultJSON.slice(0, chunkSize);
         }
-        commonUtils.handleJSONResponse(null, res, {data: responseJSON, total: total, queryJSON: queryJSON});
+        commonUtils.handleJSONResponse(null, res, {data: responseJSON, total: total, queryJSON: queryJSON, chunk: 1, chunkSize: chunkSize});
     }
     if ((null != options['saveQuery']) && ((false == options['saveQuery']) || ('false' == options['saveQuery']))) {
         return;
     }
-    saveQueryResult2Redis(resultJSON, total, queryId, pageSize, getSortStatus4Query(queryJSON), queryJSON);
+    saveQueryResult2Redis(resultJSON, total, queryId, chunkSize, getSortStatus4Query(queryJSON), queryJSON);
     if (table == 'FlowSeriesTable') {
         saveData4Chart2Redis(queryId, resultJSON, queryJSON['select_fields']);
     } else if (table.indexOf('StatTable.') != -1) {
@@ -222,23 +224,23 @@ function processQueryResults(res, queryResults, options) {
     }
 };
 
-function saveQueryResult2Redis(resultData, total, queryId, pageSize, sort, queryJSON) {
+function saveQueryResult2Redis(resultData, total, queryId, chunkSize, sort, queryJSON) {
     var endRow;
     if (sort != null) {
         redisClient.set(queryId + ":sortStatus", JSON.stringify(sort));
     }
-    // TODO: Should we need to save every page?
+    // TODO: Should we need to save every chunk?
     redisClient.set(queryId, JSON.stringify({data: resultData, total: total, queryJSON: queryJSON}));
     if (total == 0) {
-        redisClient.set(queryId + ':page1', JSON.stringify({data: [], total: 0, queryJSON: queryJSON}));
+        redisClient.set(queryId + ':chunk1', JSON.stringify({data: [], total: 0, queryJSON: queryJSON}));
     } else {
         for (var j = 0, k = 1; j < total; k++) {
-            endRow = k * pageSize;
+            endRow = k * chunkSize;
             if (endRow > resultData.length) {
                 endRow = resultData.length;
             }
             var spliceData = resultData.slice(j, endRow);
-            redisClient.set(queryId + ':page' + k, JSON.stringify({data: spliceData, total: total, queryJSON: queryJSON}));
+            redisClient.set(queryId + ':chunk' + k, JSON.stringify({data: spliceData, total: total, queryJSON: queryJSON, chunk: k, chunkSize: chunkSize}));
             j = endRow;
         }
     }
@@ -1009,15 +1011,15 @@ function runPOSTQuery(req, res) {
 
 function runQuery(req, res, queryReqObj) {
     var queryId = queryReqObj['queryId'],
-        page = queryReqObj['page'], sort = queryReqObj['sort'],
-        pageSize = parseInt(queryReqObj['pageSize']), options;
+        chunk = queryReqObj['chunk'], sort = queryReqObj['sort'],
+        chunkSize = parseInt(queryReqObj['chunkSize']), options;
 
-    options = {"queryId": queryId, "page": page, "sort": sort, "pageSize": pageSize, "toSort": true};
+    options = {"queryId": queryId, "chunk": chunk, "sort": sort, "chunkSize": chunkSize, "toSort": true};
 
     logutils.logger.debug('Query Request: ' + JSON.stringify(queryReqObj));
 
     if (queryId != null) {
-        redisClient.exists(queryId + ':page1', function (err, exists) {
+        redisClient.exists(queryId + ':chunk1', function (err, exists) {
             if (err) {
                 logutils.logger.error(err.stack);
                 commonUtils.handleJSONResponse(err, res, null);
@@ -1081,9 +1083,9 @@ function returnCachedQueryResult(res, options, callback) {
 
 function handleQueryResponse(res, options) {
     var toSort = options.toSort, queryId = options.queryId,
-        page = options.page, pageSize = options.pageSize,
+        chunk = options.chunk, chunkSize = options.chunkSize,
         sort = options.sort;
-    if (page == null || toSort) {
+    if (chunk == null || toSort) {
         redisClient.exists(queryId, function (err, exists) {
             if (exists) {
                 var stream = redisReadStream(redisClient, queryId),
@@ -1102,11 +1104,11 @@ function handleQueryResponse(res, options) {
                         sortJSON(resultJSON['data'], sort, function () {
                             var startIndex, endIndex, total, responseJSON
                             total = resultJSON['total'];
-                            startIndex = (page - 1) * pageSize;
-                            endIndex = (total < (startIndex + pageSize)) ? total : (startIndex + pageSize);
+                            startIndex = (chunk - 1) * chunkSize;
+                            endIndex = (total < (startIndex + chunkSize)) ? total : (startIndex + chunkSize);
                             responseJSON = resultJSON['data'].slice(startIndex, endIndex);
                             commonUtils.handleJSONResponse(null, res, {data: responseJSON, total: total, queryJSON: resultJSON['queryJSON']});
-                            saveQueryResult2Redis(resultJSON['data'], total, queryId, pageSize, sort, resultJSON['queryJSON']);
+                            saveQueryResult2Redis(resultJSON['data'], total, queryId, chunkSize, sort, resultJSON['queryJSON']);
                         });
                     } else {
                         commonUtils.handleJSONResponse(null, res, resultJSON);
@@ -1117,7 +1119,7 @@ function handleQueryResponse(res, options) {
             }
         });
     } else {
-        redisClient.get(queryId + ":page" + page, function (error, result) {
+        redisClient.get(queryId + ":chunk" + chunk, function (error, result) {
             var resultJSON = result ? JSON.parse(result) : {data: [], total: 0};
             if (error) {
                 logutils.logger.error(error.stack);
@@ -1126,11 +1128,11 @@ function handleQueryResponse(res, options) {
                 sortJSON(resultJSON['data'], sort, function () {
                     var startIndex, endIndex, total, responseJSON
                     total = resultJSON['total'];
-                    startIndex = (page - 1) * pageSize;
-                    endIndex = (total < (startIndex + pageSize)) ? total : (startIndex + pageSize);
+                    startIndex = (chunk - 1) * chunkSize;
+                    endIndex = (total < (startIndex + chunkSize)) ? total : (startIndex + chunkSize);
                     responseJSON = resultJSON['data'].slice(startIndex, endIndex);
                     commonUtils.handleJSONResponse(null, res, {data: responseJSON, total: total, queryJSON: resultJSON['queryJSON']});
-                    saveQueryResult2Redis(resultJSON['data'], total, queryId, pageSize, sort, resultJSON['queryJSON']);
+                    saveQueryResult2Redis(resultJSON['data'], total, queryId, chunkSize, sort, resultJSON['queryJSON']);
                 });
             } else {
                 commonUtils.handleJSONResponse(null, res, resultJSON);
@@ -1197,14 +1199,13 @@ function sortJSON(resultArray, sortParams, callback) {
 function runNewQuery(req, res, queryId, queryReqObj) {
     var formModelAttrs = queryReqObj['formModelAttrs'],
         tableName = formModelAttrs['table_name'], tableType = queryReqObj['tableType'],
-        queryId = queryReqObj['queryId'], pageSize = parseInt(queryReqObj['pageSize']),
+        queryId = queryReqObj['queryId'], chunkSize = parseInt(queryReqObj['chunkSize']),
         async = (queryReqObj['async'] != null && queryReqObj['async'] == "true") ? true : false,
         reRunTimeRange = queryReqObj['reRunTimeRange'], reRunQuery = queryReqObj, engQueryStr = queryReqObj['engQueryStr'],
         saveQuery = queryReqObj['saveQuery'],
         options = {
-            queryId: queryId, pageSize: pageSize, counter: 0, status: "run",
-            async: async, count: 0, progress: 0, errorMessage: "", reRunTimeRange: reRunTimeRange, reRunQuery: reRunQuery, opsQueryId: "",
-            engQueryStr: engQueryStr, saveQuery: saveQuery
+            queryId: queryId, chunkSize: chunkSize, counter: 0, status: "run", async: async, count: 0, progress: 0, errorMessage: "",
+            reRunTimeRange: reRunTimeRange, reRunQuery: reRunQuery, opsQueryId: "", engQueryStr: engQueryStr, saveQuery: saveQuery
         },
         queryJSON;
 
