@@ -505,6 +505,15 @@ define([
         this.QE_FLOW_SERIES_LINE_CHART_ID = "qe-flow-series-line-chart"
         this.QE_FLOW_SERIES_CHART_GRID_ID = "qe-flow-series-chart-grid";
 
+        this.QE_STAT_QUERY_ID = "qe-stat-query";
+        this.QE_STAT_QUERY_SECTION_ID = "qe-stat-query-section";
+        this.QE_STAT_QUERY_TAB_ID = "qe-stat-query-tab";
+        this.QE_STAT_QUERY_GRID_ID = "qe-stat-query-grid";
+        this.QE_STAT_QUERY_CHART_ID = "qe-stat-query-chart";
+        this.QE_STAT_QUERY_CHART_PAGE_ID = 'qe-stat-query-chart-page';
+        this.QE_STAT_QUERY_LINE_CHART_ID = "qe-stat-query-line-chart"
+        this.QE_STAT_QUERY_CHART_GRID_ID = "qe-stat-query-chart-grid";
+
         this.TITLE_QUERY = "Query";
         this.TITLE_RESULTS = "Results";
         this.TITLE_CHART = "Chart";

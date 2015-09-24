@@ -56,7 +56,12 @@ define([
                                                 url: chartUrl,
                                                 type: 'GET'
                                             },
-                                            dataParser: qewp.fsQueryDataParser
+                                            dataParser: function(response) {
+                                                var chartData = qewp.fsQueryDataParser(response);
+                                                //TODO: Add Missing Points
+                                                //qewu.addFlowMissingPoints
+                                                return chartData;
+                                            }
                                         }
                                     }
                                 }
@@ -106,7 +111,9 @@ define([
             },
             body: {
                 options: {
-                    checkboxSelectable: false
+                    autoRefresh: false,
+                    checkboxSelectable: false,
+                    fixedRowHeight: 30
                 },
                 dataSource:{
                     remote: {

@@ -6,23 +6,23 @@ define([
     'underscore',
     'query-form-view',
     'knockback',
-    'reports/qe/ui/js/models/FlowSeriesFormModel'
-], function (_, QueryFormView, Knockback, FlowSeriesFormModel) {
+    'reports/qe/ui/js/models/StatQueryFormModel'
+], function (_, QueryFormView, Knockback, StatQueryFormModel) {
 
-    var FlowSeriesQueryView = QueryFormView.extend({
-        render: function (options) {
+    var StatQueryFormView = QueryFormView.extend({
+        render: function () {
             var self = this, viewConfig = self.attributes.viewConfig,
                 queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
-                flowSeriesQueryModel = new FlowSeriesFormModel(),
+                statQueryFormModel = new StatQueryFormModel(),
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
-                queryFormId = "#qe-" + qewc.FS_QUERY_PREFIX + "-form";
+                queryFormId = "#qe-" + qewc.STAT_QUERY_PREFIX + "-form";
 
-            self.model = flowSeriesQueryModel;
-            self.$el.append(queryPageTmpl({queryPrefix: qewc.FS_QUERY_PREFIX }));
+            self.model = statQueryFormModel;
+            self.$el.append(queryPageTmpl({queryPrefix: qewc.STAT_QUERY_PREFIX }));
 
             self.renderView4Config($(self.$el).find(queryFormId), this.model, self.getViewConfig(), null, null, null, function () {
-                self.model.showErrorAttr(ctwl.QE_FLOW_SERIES_ID, false);
-                Knockback.applyBindings(self.model, document.getElementById(ctwl.QE_FLOW_SERIES_ID));
+                self.model.showErrorAttr(ctwl.QE_STAT_QUERY_ID, false);
+                Knockback.applyBindings(self.model, document.getElementById(ctwl.QE_STAT_QUERY_ID));
                 kbValidation.bind(self);
                 $("#run_query").on('click', function() {
                     self.renderQueryResult();
@@ -36,7 +36,7 @@ define([
 
         renderQueryResult: function() {
             var self = this,
-                queryResultId = "#qe-" + qewc.FS_QUERY_PREFIX + "-results",
+                queryResultId = "#qe-" + qewc.STAT_QUERY_PREFIX + "-results",
                 responseViewConfig = {
                     view: "FlowSeriesResultView",
                     viewPathPrefix: "reports/qe/ui/js/views/",
@@ -189,5 +189,5 @@ define([
         }
     });
 
-    return FlowSeriesQueryView;
+    return StatQueryFormView;
 });
