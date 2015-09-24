@@ -58,6 +58,7 @@ define([
                             $('#' + ctwl.QE_FLOW_SERIES_GRID_ID).data('contrailGrid').refreshView();
                         } else if (selTab == ctwl.TITLE_CHART) {
                             $('#' + ctwl.QE_FLOW_SERIES_CHART_ID).find('svg').trigger('refresh');
+                            $('#' + ctwl.QE_FLOW_SERIES_CHART_GRID_ID).data('contrailGrid').refreshView();
                         }
                     },
                     tabs: [
@@ -77,9 +78,12 @@ define([
                 resultsViewConfig['viewConfig']['tabs'].push({
                     elementId: ctwl.QE_FLOW_SERIES_CHART_ID,
                     title: ctwl.TITLE_CHART,
-                    view: "QueryLineChartView",
+                    view: "FlowSeriesLineChartView",
+                    viewPathPrefix: "reports/qe/ui/js/views/",
+                    app: cowc.APP_CONTRAIL_CONTROLLER,
                     viewConfig: {
-                        queryId: postDataObj.queryId
+                        queryId: postDataObj.queryId,
+                        selectArray: selectArray
                     }
                 });
             }

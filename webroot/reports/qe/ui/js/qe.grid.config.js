@@ -24,6 +24,8 @@ define([
         switch(queryPrefix) {
             case qewc.FS_QUERY_PREFIX:
                 return columnDisplayMap[qewc.FLOW_SERIES_TABLE];
+            case qewc.FC_QUERY_PREFIX:
+                return columnDisplayMap[qewc.FLOW_CLASS];
         }
     };
 
@@ -47,13 +49,13 @@ define([
             {select:"avg(packets)", display:{id:"avg(packets)", field:"avg(packets)", width:100, name:"AVG (Packets)", format:"{0:n0}", groupable:false}}
         ],
         "FlowClass":[
-            {select:"sourcevn", display:{id:"sourcevn", field:"sourcevn", name:"Source VN", width:275, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.sourcevn);}}},
-            {select:"destvn", display:{id:"destvn", field:"destvn", name:"Destination VN", width:275, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.destvn);}}},
-            {select:"sourceip", display:{id:"sourceip", field:"sourceip", name:"Source IP", width:120, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.sourceip);}}},
-            {select:"destip", display:{id:"destip", field:"destip", name:"Destination IP", width:120, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.destip);}}},
-            {select:"sport", display:{id:"sport", field:"sport", name:"Source Port", width:120, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.sport);}}},
-            {select:"dport", display:{id:"dport", field:"dport", name:"Destination Port", width:120, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.dport);}}},
-            {select:"protocol", display:{id:"protocol", field:"protocol", name:"Protocol", width:80, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(getProtocolName(dc.protocol));}}}
+            {select:"sourcevn", display:{id:"sourcevn", field:"sourcevn", name:"Source VN", width:250, minWidth: 250, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.sourcevn);}}},
+            {select:"destvn", display:{id:"destvn", field:"destvn", name:"Destination VN", width:250, minWidth: 250, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.destvn);}}},
+            {select:"sourceip", display:{id:"sourceip", field:"sourceip", name:"Source IP", width:120, minWidth: 120, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.sourceip);}}},
+            {select:"destip", display:{id:"destip", field:"destip", name:"Destination IP", width:120, minWidth: 120, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.destip);}}},
+            {select:"sport", display:{id:"sport", field:"sport", name:"Source Port", width:80, minWidth: 80, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.sport);}}},
+            {select:"dport", display:{id:"dport", field:"dport", name:"Destination Port", width:80, minWidth: 80, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.dport);}}},
+            {select:"protocol", display:{id:"protocol", field:"protocol", name:"Protocol", width:80, minWidth: 80, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(getProtocolName(dc.protocol));}}}
         ],
         "StatTable.AnalyticsCpuState.cpu_info" : [
             {select:"COUNT(cpu_info)", display:{id:'COUNT(cpu_info)', field:'COUNT(cpu_info)', width:120, name:"Count (CPU Info)", format:"{0:n0}", groupable:false}},
