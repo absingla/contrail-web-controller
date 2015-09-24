@@ -107,52 +107,6 @@ define([
             };
         };
 
-        self.getFromTimeShowOptions = function(toTimeId, cdt) {
-            var d = new Date($('#' + toTimeId + '_datetimepicker').val()),
-                dateString = moment(d).format('MMM DD, YYYY'),
-                timeString = moment(d).format('hh:mm:ss A');
-
-            return {
-                maxDate: dateString ? dateString : false,
-                maxTime: timeString ? timeString : false
-            };
-        };
-
-        self.getFromTimeSelectOptions= function(toTimeId, cdt) {
-            var d = new Date($('#' + toTimeId + '_datetimepicker').val()),
-                toDateString = moment(d).format('MMM DD, YYYY'),
-                timeString = moment(d).format('hh:mm:ss A'),
-                fromDateString = moment(cdt).format('MMM DD, YYYY');
-
-            return {
-                maxDate: toDateString ? toDateString : false,
-                maxTime: (fromDateString == toDateString) ? timeString : false
-            };
-        };
-
-        self.getToTimeShowOptions = function(fromTimeId, cdt) {
-            var d = new Date($('#' + fromTimeId + '_datetimepicker').val()),
-                dateString = moment(d).format('MMM DD, YYYY'),
-                timeString = moment(d).format('hh:mm:ss A');
-
-            return {
-                minDate: dateString ? dateString : false,
-                minTime: timeString ? timeString : false
-            };
-        };
-
-        self.getToTimeSelectOptions = function(fromTimeId, cdt) {
-            var d = new Date($('#' + fromTimeId + '_datetimepicker').val()),
-                fromDateString = moment(d).format('MMM dd, yyyy'),
-                timeString = moment(d).format('hh:mm:ss A'),
-                toDateString = moment(cdt).format('MMM DD, YYYY');
-
-            return {
-                minDate: fromDateString ? fromDateString : false,
-                minTime: (toDateString == fromDateString) ? timeString : false
-            };
-        };
-
         self.addFlowMissingPoints = function(tsData, options, plotFields, color, counter) {
             var fromTime = options.fromTime,
                 toTime = options.toTime,
@@ -251,6 +205,52 @@ define([
     function ceilFromTime(fromTimeUTC, TGSecs){
         fromTimeUTC = TGSecs * Math.ceil(fromTimeUTC/TGSecs);
         return fromTimeUTC;
+    };
+
+    function getFromTimeShowOptions(toTimeId, cdt) {
+        var d = new Date($('#' + toTimeId + '_datetimepicker').val()),
+            dateString = moment(d).format('MMM DD, YYYY'),
+            timeString = moment(d).format('hh:mm:ss A');
+
+        return {
+            maxDate: dateString ? dateString : false,
+            maxTime: timeString ? timeString : false
+        };
+    };
+
+    function getFromTimeSelectOptions(toTimeId, cdt) {
+        var d = new Date($('#' + toTimeId + '_datetimepicker').val()),
+            toDateString = moment(d).format('MMM DD, YYYY'),
+            timeString = moment(d).format('hh:mm:ss A'),
+            fromDateString = moment(cdt).format('MMM DD, YYYY');
+
+        return {
+            maxDate: toDateString ? toDateString : false,
+            maxTime: (fromDateString == toDateString) ? timeString : false
+        };
+    };
+
+    function getToTimeShowOptions(fromTimeId, cdt) {
+        var d = new Date($('#' + fromTimeId + '_datetimepicker').val()),
+            dateString = moment(d).format('MMM DD, YYYY'),
+            timeString = moment(d).format('hh:mm:ss A');
+
+        return {
+            minDate: dateString ? dateString : false,
+            minTime: timeString ? timeString : false
+        };
+    };
+
+    function getToTimeSelectOptions(fromTimeId, cdt) {
+        var d = new Date($('#' + fromTimeId + '_datetimepicker').val()),
+            fromDateString = moment(d).format('MMM dd, yyyy'),
+            timeString = moment(d).format('hh:mm:ss A'),
+            toDateString = moment(cdt).format('MMM DD, YYYY');
+
+        return {
+            minDate: fromDateString ? fromDateString : false,
+            minTime: (toDateString == fromDateString) ? timeString : false
+        };
     };
 
     return QEUtils;
