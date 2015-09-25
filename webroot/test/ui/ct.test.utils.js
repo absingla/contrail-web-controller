@@ -12,7 +12,8 @@ define([
             '/api/tenants/config/projects': /\/api\/tenants\/config\/projects.*$/,
             '/api/tenant/networking/virtual-networks/details': /\/api\/tenant\/networking\/virtual-networks\/details\?.*$/,
             '/api/tenant/networking/stats': /\/api\/tenant\/networking\/stats.*$/,
-            '/api/tenant/networking/virtual-machine-interfaces/summary' : /\/api\/tenant\/networking\/virtual-machine-interfaces\/summary.*$/
+            '/api/tenant/networking/virtual-machine-interfaces/summary' : /\/api\/tenant\/networking\/virtual-machine-interfaces\/summary.*$/,
+            '/api/admin/reports/query' : /\/api\/admin\/reports\/query.*$/
         };
 
         return regexUrlMap [url];

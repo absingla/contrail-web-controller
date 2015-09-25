@@ -16,9 +16,10 @@ module.exports = function (grunt) {
 
         {pattern: 'contrail-web-core/webroot/assets/**/*.css', included: false},
         {pattern: 'contrail-web-core/webroot/css/**/*.css', included: false},
+        {pattern: 'contrail-web-core/webroot/css/**/*.ttf', included: false},
+        {pattern: 'contrail-web-core/webroot/css/**/*.woff', included: false},
         {pattern: 'contrail-web-core/webroot/test/ui/**/*.css', included: false},
 
-        {pattern: 'contrail-web-core/webroot/font/**/*.woff', included: false},
         {pattern: 'contrail-web-core/webroot/assets/**/*.woff', included: false},
         {pattern: 'contrail-web-core/webroot/assets/**/*.ttf', included: false},
 
@@ -44,9 +45,7 @@ module.exports = function (grunt) {
         {pattern: 'contrail-web-core/webroot/js/**/*.js', included: false},
         {pattern: 'contrail-web-core/webroot/templates/*.tmpl', included: false},
 
-        {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/InstanceListView.mock.data.js', included: false},
-        {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/ProjectListView.mock.data.js', included: false},
-        {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/NetworkListView.mock.data.js', included: false}
+        {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/*.mock.data.js', included: false}
     ];
     var karmaConfig = {
         options: {
@@ -115,6 +114,27 @@ module.exports = function (grunt) {
                     dir : __dirname + '/reports/coverage/instances/'
                 }
             }
+        },
+        instance: {
+            options: {
+                files: [
+                    {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/InstanceView.test.js', included: false}
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputFile: __dirname + '/reports/test-results.xml',
+                    suite: 'instances',
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/instance-test-results.html'
+                },
+                coverageReporter: {
+                    type : 'html',
+                    dir : __dirname + '/reports/coverage/instance/'
+                }
+            }
         }
     };
 
@@ -136,7 +156,8 @@ module.exports = function (grunt) {
         nm : {
             networks: 'networks',
             projects: 'projects',
-            instances: 'instances'
+            instances: 'instances',
+            instance: 'instance'
         }
     });
 
@@ -147,6 +168,8 @@ module.exports = function (grunt) {
             grunt.task.run('karma:projects');
         } else if (this.target == 'instances') {
             grunt.task.run('karma:instances');
+        } else if (this.target == 'instance') {
+            grunt.task.run('karma:instance');
         }
     });
 };
