@@ -9,7 +9,7 @@ define([
 ], function (_, Knockout, QueryFormModel) {
     var StatQueryFormModel = QueryFormModel.extend({
 
-        defaultSelectFields: ['flow_class_id', 'direction_ing'],
+        defaultSelectFields: [],
 
         constructor: function (modelData) {
             var defaultConfig = qewmc.getQueryModel(null, qewc.STAT_QUERY_PREFIX);

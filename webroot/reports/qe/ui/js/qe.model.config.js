@@ -41,23 +41,27 @@ define([
             var fieldName = $(event.currentTarget).attr('name'),
                 dataObject = data.select_data_object(),
                 isEnableMap = dataObject.enable_map,
-                key, nonAggKey;
+                key, keyLower, nonAggKey;
 
             if (fieldName == 'T') {
                 if (dataObject.checked_fields.indexOf('T') != -1) {
                     dataObject.checked_fields.remove('T=');
                     for (key in isEnableMap) {
-                        if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
+                        keyLower = key.toLowerCase();
+                        if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
                             dataObject.checked_fields.remove(key);
                             isEnableMap[key](false);
                             nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
-                            isEnableMap[nonAggKey](true);
+                            if(contrail.checkIfFunction(isEnableMap[nonAggKey])) {
+                                isEnableMap[nonAggKey](true);
+                            }
                             dataObject.checked_fields.push(nonAggKey);
                         }
                     }
                 } else {
                     for (key in isEnableMap) {
-                        if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
+                        keyLower = key.toLowerCase();
+                        if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
                             isEnableMap[key](true);
                         }
                     }
@@ -66,20 +70,26 @@ define([
                 if (dataObject.checked_fields.indexOf('T=') != -1) {
                     dataObject.checked_fields.remove('T');
                     for (key in isEnableMap) {
-                        if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
+                        keyLower = key.toLowerCase();
+                        if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
                             isEnableMap[key](true);
                             dataObject.checked_fields.push(key);
                             nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
-                            dataObject.checked_fields.remove(nonAggKey);
-                            isEnableMap[nonAggKey](false);
+                            if(contrail.checkIfFunction(isEnableMap[nonAggKey])) {
+                                dataObject.checked_fields.remove(nonAggKey);
+                                isEnableMap[nonAggKey](false);
+                            }
                         }
                     }
                 } else {
                     for (key in isEnableMap) {
-                        if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
+                        keyLower = key.toLowerCase();
+                        if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
                             dataObject.checked_fields.remove(key);
                             nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
-                            isEnableMap[nonAggKey](true);
+                            if(contrail.checkIfFunction(isEnableMap[nonAggKey])) {
+                                isEnableMap[nonAggKey](true);
+                            }
                         }
                     }
                 }

@@ -62,9 +62,7 @@ define([
                                         path: 'table_name', dataBindValue: 'table_name', class: "span3",
                                         elementConfig: {
                                             defaultValueId: 3, allowClear: false, placeholder: ctwl.QE_SELECT_STAT_TABLE,
-                                            dataTextField: "name", dataValueField: "name", change: function(e) {
-                                                console.log(e.val);
-                                            },
+                                            dataTextField: "name", dataValueField: "name",
                                             dataSource: {
                                                 type: 'remote', url: qewc.URL_TABLES, parse: function (response) {
                                                     var parsedOptionList = [];
@@ -165,13 +163,6 @@ define([
                                             self.renderWhere();
                                         }
                                     }}
-                                },
-                                {
-                                    elementId: 'direction', view: "FormDropdownView",
-                                    viewConfig: {
-                                        path: 'direction', dataBindValue: 'direction', class: "span3",
-                                        elementConfig: {dataTextField: "text", dataValueField: "id", data: qewc.DIRECTION_DROPDOWN_VALUES}
-                                    }
                                 }
                             ]
                         },
