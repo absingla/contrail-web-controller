@@ -40,22 +40,26 @@ define([
         selectDataObject.on_select = function (data, event) {
             var fieldName = $(event.currentTarget).attr('name'),
                 dataObject = data.select_data_object(),
+                checkedFields = dataObject.checked_fields,
                 isEnableMap = dataObject.enable_map,
                 key, keyLower, nonAggKey;
 
             if (fieldName == 'T') {
-                if (dataObject.checked_fields.indexOf('T') != -1) {
-                    dataObject.checked_fields.remove('T=');
+                if (checkedFields.indexOf('T') != -1) {
+                    checkedFields.remove('T=');
                     for (key in isEnableMap) {
                         keyLower = key.toLowerCase();
                         if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
-                            dataObject.checked_fields.remove(key);
+                            checkedFields.remove(key);
                             isEnableMap[key](false);
+
                             nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
                             if(contrail.checkIfFunction(isEnableMap[nonAggKey])) {
                                 isEnableMap[nonAggKey](true);
+                                if(checkedFields.indexOf(nonAggKey) == -1) {
+                                    checkedFields.push(nonAggKey);
+                                }
                             }
-                            dataObject.checked_fields.push(nonAggKey);
                         }
                     }
                 } else {
@@ -67,16 +71,17 @@ define([
                     }
                 }
             } else if (fieldName == 'T=') {
-                if (dataObject.checked_fields.indexOf('T=') != -1) {
-                    dataObject.checked_fields.remove('T');
+                if (checkedFields.indexOf('T=') != -1) {
+                    checkedFields.remove('T');
                     for (key in isEnableMap) {
                         keyLower = key.toLowerCase();
                         if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
                             isEnableMap[key](true);
-                            dataObject.checked_fields.push(key);
+                            checkedFields.push(key);
+
                             nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
                             if(contrail.checkIfFunction(isEnableMap[nonAggKey])) {
-                                dataObject.checked_fields.remove(nonAggKey);
+                                checkedFields.remove(nonAggKey);
                                 isEnableMap[nonAggKey](false);
                             }
                         }
@@ -85,7 +90,8 @@ define([
                     for (key in isEnableMap) {
                         keyLower = key.toLowerCase();
                         if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
-                            dataObject.checked_fields.remove(key);
+                            checkedFields.remove(key);
+
                             nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
                             if(contrail.checkIfFunction(isEnableMap[nonAggKey])) {
                                 isEnableMap[nonAggKey](true);
@@ -115,11 +121,14 @@ define([
                 for (key in isEnableMap) {
                     if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
                         checkedFields.push(key);
+
                         nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
-                        if(checkedFields.indexOf(nonAggKey) != -1) {
-                            checkedFields.remove(nonAggKey);
+                        if(contrail.checkIfFunction(isEnableMap[nonAggKey])) {
+                            isEnableMap[nonAggKey](false);
+                            if(checkedFields.indexOf(nonAggKey) != -1) {
+                                checkedFields.remove(nonAggKey);
+                            }
                         }
-                        isEnableMap[nonAggKey](false);
                     } else if (key != "T" && isEnableMap[key]) {
                         checkedFields.push(key);
                     }
