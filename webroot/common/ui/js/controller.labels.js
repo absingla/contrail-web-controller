@@ -509,6 +509,7 @@ define([
         this.QE_FLOW_SERIES_CHART_PAGE_ID = 'qe-flow-series-chart-page';
         this.QE_FLOW_SERIES_LINE_CHART_ID = "qe-flow-series-line-chart"
         this.QE_FLOW_SERIES_CHART_GRID_ID = "qe-flow-series-chart-grid";
+        this.QE_SELECT_STAT_TABLE = "Select Statistic Table";
 
         this.QE_STAT_QUERY_ID = "qe-stat-query";
         this.QE_STAT_QUERY_SECTION_ID = "qe-stat-query-section";

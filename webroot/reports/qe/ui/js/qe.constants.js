@@ -20,6 +20,9 @@ define([
             {'id': '0', 'text': 'EGRESS'}
         ];
 
+        this.URL_TABLES = "/api/qe/tables";
+        this.URL_PREFIX_TABLE_SCHEMA = "/api/qe/table/schema/";
+
         this.FS_QUERY_PREFIX = "fs";
         this.FC_QUERY_PREFIX = "fc";
         this.FR_QUERY_PREFIX = "fr";

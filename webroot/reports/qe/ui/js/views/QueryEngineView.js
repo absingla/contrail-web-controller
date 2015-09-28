@@ -14,7 +14,6 @@ define([
         },
 
         renderStatQuery: function (viewConfig) {
-            console.log("I am in render stat query");
             this.renderView4Config(this.$el, null, getStatQueryViewConfig(viewConfig));
         }
     });

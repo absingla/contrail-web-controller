@@ -21,7 +21,7 @@ and need to add the iconClass tag wherever we need to show some icons
             </resources>
             <iconClass>icon-bar-chart</iconClass>
             <items>
-                  <item>
+                <item>
                     <label>Infrastructure</label>
                     <resources>
                         <resource>
@@ -202,10 +202,10 @@ and need to add the iconClass tag wherever we need to show some icons
                             <role>superAdmin</role>
                         </roles>
                         <orchModels>
-                           <model>test</model>
-                           <!-- <model>openstack</model> -->
-                           <!--  <model>cloudstack</model> -->
-                           <!--  <model>vcenter</model>  -->
+                            <model>test</model>
+                            <!-- <model>openstack</model> -->
+                            <!--  <model>cloudstack</model> -->
+                            <!--  <model>vcenter</model>  -->
                         </orchModels>
                         <accessFn>hideInFederatedvCenter</accessFn>
                     </access>
@@ -214,17 +214,17 @@ and need to add the iconClass tag wherever we need to show some icons
                             <hash>mon_infra_dashboardmvc</hash>
                             <label>Dashboard</label>
                             <searchStrings>Infrastructure Dashboard</searchStrings>
-                              <resources>
-                                  <resource>
-                                      <rootDir>/monitor/infrastructure/dashboard/ui</rootDir>
-                                      <template>monInfraDashboard.tmpl</template>
-                                      <js>monInfraDashboard.main.js</js>
-                                      <class>monInfraDashboardLoader</class>
-                                  </resource>
-                              </resources>
-                              <queryParams>
-                                  <tab>vRouters</tab>
-                              </queryParams>
+                            <resources>
+                                <resource>
+                                    <rootDir>/monitor/infrastructure/dashboard/ui</rootDir>
+                                    <template>monInfraDashboard.tmpl</template>
+                                    <js>monInfraDashboard.main.js</js>
+                                    <class>monInfraDashboardLoader</class>
+                                </resource>
+                            </resources>
+                            <queryParams>
+                                <tab>vRouters</tab>
+                            </queryParams>
                         </item>
                         <item>
                             <hash>mon_infra_mxmvc</hash>
@@ -734,7 +734,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                 </resource>
                             </resources>
                             <searchStrings>IP Address Management, IPAM</searchStrings>
-                            </item>
+                        </item>
                         <item>
                             <label>Floating IPs</label>
                             <hash>config_networking_fip</hash>
@@ -782,7 +782,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                 </resource>
                             </resources>
                             <searchStrings>Service Template, Templates, Service, Configure Service Templates</searchStrings>
-                            </item>
+                        </item>
                         <item>
                             <label>Service Instances</label>
                             <hash>config_sc_svcInstances</hash>
@@ -947,6 +947,38 @@ and need to add the iconClass tag wherever we need to show some icons
                 <item>
                     <label>Flows</label>
                     <iconClass>icon-exchange</iconClass>
+                    <init>/reports/qe/ui/js/qe.init.js</init>
+                    <items>
+                        <item>
+                            <hash>query_flow_series1</hash>
+                            <label>Flow Series</label>
+                            <loader>
+                                <class>qeLoader</class>
+                                <function>renderFlowSeries</function>
+                            </loader>
+                            <searchStrings>Query Flow Series</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                <item>
+                    <label>Statistics</label>
+                    <iconClass>icon-contrail-system-stats</iconClass>
+                    <init>/reports/qe/ui/js/qe.init.js</init>
+                    <items>
+                        <item>
+                            <hash>query_stat_query1</hash>
+                            <label>Query</label>
+                            <loader>
+                                <class>qeLoader</class>
+                                <function>renderStatQuery</function>
+                            </loader>
+                            <searchStrings>Query Statistics</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                <item>
+                    <label>Flows Old</label>
+                    <iconClass>icon-exchange</iconClass>
                     <items>
                         <item>
                             <hash>query_flow_series</hash>
@@ -993,7 +1025,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     </items>
                 </item>
                 <item>
-                    <label>Logs</label>
+                    <label>Logs Old</label>
                     <iconClass>icon-contrail-system-logs</iconClass>
                     <items>
                         <item>
@@ -1041,7 +1073,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     </items>
                 </item>
                 <item>
-                    <label>Statistics</label>
+                    <label>Statistics Old</label>
                     <iconClass>icon-contrail-system-stats</iconClass>
                     <items>
                         <item>

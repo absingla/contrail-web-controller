@@ -57,6 +57,33 @@ define([
                         {
                             columns: [
                                 {
+                                    elementId: 'table_name', view: "FormDropdownView",
+                                    viewConfig: {
+                                        path: 'table_name', dataBindValue: 'table_name', class: "span3",
+                                        elementConfig: {
+                                            defaultValueId: 3, allowClear: false, placeholder: ctwl.QE_SELECT_STAT_TABLE,
+                                            dataTextField: "name", dataValueField: "name", change: function(e) {
+                                                console.log(e.val);
+                                            },
+                                            dataSource: {
+                                                type: 'remote', url: qewc.URL_TABLES, parse: function (response) {
+                                                    var parsedOptionList = [];
+                                                    for(var i = 0; i < response.length; i++) {
+                                                        if(response[i].type == 'STAT') {
+                                                            parsedOptionList.push(response[i]);
+                                                        }
+                                                    }
+                                                    return parsedOptionList;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            columns: [
+                                {
                                     elementId: 'time_range', view: "FormDropdownView",
                                     viewConfig: {
                                         path: 'time_range', dataBindValue: 'time_range', class: "span3",
