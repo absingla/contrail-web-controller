@@ -525,6 +525,7 @@ define([
         this.TITLE_CHART = "Chart";
         this.TITLE_FLOW_SERIES = "Flow Series";
         this.TITLE_FLOW_SERIES_RESULTS = "Flow Series Results";
+        this.TITLE_STATS_QUERY = "Statistics Query";
 
         // VRouter Config labels
         this.CFG_VROUTER_PAGE_ID = 'config-vrouter-page';

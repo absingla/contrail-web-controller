@@ -24,8 +24,14 @@ define([
         switch(queryPrefix) {
             case qewc.FS_QUERY_PREFIX:
                 return columnDisplayMap[qewc.FLOW_SERIES_TABLE];
+
             case qewc.FC_QUERY_PREFIX:
                 return columnDisplayMap[qewc.FLOW_CLASS];
+
+            default:
+                if(queryPrefix.indexOf("StatTable") != -1) {
+                    return columnDisplayMap["defaultStatColumns"].concat(columnDisplayMap[queryPrefix]);
+                }
         }
     };
 
@@ -1298,6 +1304,13 @@ define([
             {select:"SUM(if_stats.out_bytes)", display:{id:'SUM(if_stats.out_bytes)', field:'SUM(if_stats.out_bytes)', width:150, name:"SUM (Out Bytes)", format:"{0:n0}", groupable:false}},
             {select:"MIN(if_stats.out_bytes)", display:{id:'MIN(if_stats.out_bytes)', field:'MIN(if_stats.out_bytes)', width:150, name:"MIN (Out Bytes)", format:"{0:n0}", groupable:false}},
             {select:"MAX(if_stats.out_bytes)", display:{id:'MAX(if_stats.out_bytes)', field:'MAX(if_stats.out_bytes)', width:150, name:"MAX (Out Bytes)", format:"{0:n0}", groupable:false}},
+        ],
+        "defaultStatColumns": [
+            {select:"T", display:{id:"T", field:"T", width:210, name:"Time", formatter: function(r, c, v, cd, dc) { return formatMicroDate(dc.T); }, filterable:false, groupable:false}},
+            {select:"T=", display:{id: 'T=', field:'["T="]', width:210, name:"Time", formatter: function(r, c, v, cd, dc) { return formatMicroDate(dc['T=']); }, filterable:false, groupable:false}},
+            {select:"UUID", display:{id:"UUID", field:"UUID", name:"UUID",  width:280, groupable:true}},
+            {select:"name", display:{id:'name', field:'name', width:150, name:"Name", groupable:false}},
+            {select:"Source", display:{id:'Source', field:'Source', width:150, name:"Source", groupable:false}}
         ]
     };
 

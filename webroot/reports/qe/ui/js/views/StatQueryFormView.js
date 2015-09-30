@@ -38,7 +38,7 @@ define([
             var self = this,
                 queryResultId = "#qe-" + qewc.STAT_QUERY_PREFIX + "-results",
                 responseViewConfig = {
-                    view: "FlowSeriesResultView",
+                    view: "StatQueryResultView",
                     viewPathPrefix: "reports/qe/ui/js/views/",
                     app: cowc.APP_CONTRAIL_CONTROLLER,
                     viewConfig: {}

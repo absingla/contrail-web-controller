@@ -546,9 +546,9 @@ function parseOTWhere(otQuery, where, objectId) {
     }
 };
 
-function parseFSQuery(queryReqObj) {
+function parseQuery(queryReqObj) {
     var formModelAttrs, select, where, filters, fromTimeUTC, toTimeUTC,
-        fsQuery, table, direction, autoLimit, autoSort;
+        query, table, direction, autoLimit, autoSort;
 
     formModelAttrs = queryReqObj['formModelAttrs'];
 
@@ -558,24 +558,24 @@ function parseFSQuery(queryReqObj) {
     autoLimit = (queryReqObj['autoLimit'] != null && queryReqObj['autoLimit'] == "true") ? true : false;
     autoSort = (queryReqObj['autoSort'] != null && queryReqObj['autoSort'] == "true" && select.indexOf('T=') != -1) ? true : false;
 
-    fsQuery = getQueryJSON4Table(table, autoSort, autoLimit);
+    query = getQueryJSON4Table(table, autoSort, autoLimit);
     fromTimeUTC = formModelAttrs['from_time_utc'];
     toTimeUTC = formModelAttrs['to_time_utc'];
     where = formModelAttrs['where'];
     filters = formModelAttrs['filter'];
     direction = parseInt(formModelAttrs['direction']);
 
-    setMicroTimeRange(fsQuery, fromTimeUTC, toTimeUTC);
+    setMicroTimeRange(query, fromTimeUTC, toTimeUTC);
 
     if (direction >= 0) {
-        fsQuery['dir'] = direction;
+        query['dir'] = direction;
     }
 
-    parseSelect(fsQuery, formModelAttrs);
-    parseWhere(fsQuery, where);
-    parseFSFilter(fsQuery, filters);
+    parseSelect(query, formModelAttrs);
+    parseWhere(query, where);
+    parseFSFilter(query, filters);
 
-    return fsQuery;
+    return query;
 };
 
 function parseStatsQuery(reqQuery) {
@@ -636,9 +636,10 @@ function parseSelect(query, formModelAttrs) {
     var select = formModelAttrs['select'],
         tgValue = formModelAttrs['time_granularity'],
         tgUnit = formModelAttrs['time_granularity_unit'],
-        queryPrefix = formModelAttrs['queryPrefix'],
+        queryPrefix = formModelAttrs['query_prefix'],
         selectArray = splitString2Array(select, ','),
         classTEqualToIndex = selectArray.indexOf('T=');
+
 
     if (classTEqualToIndex != -1) {
         selectArray[classTEqualToIndex] = 'T=' + getTGSecs(tgValue, tgUnit);
@@ -856,7 +857,9 @@ function parseFSFilter(query, filters) {
 
 function parseWhereANDClause(whereANDClause) {
     var whereANDArray = whereANDClause.replace('(', '').replace(')', '').split(' AND '),
-        whereANDLength = whereANDArray.length, i, whereANDClause, whereANDClauseArray, operator = '';
+        whereANDLength = whereANDArray.length, i, whereANDClause, whereANDClauseArray, operator = '',
+        whereANDClauseWithSuffixArrray, whereANDTerm;
+
     for (i = 0; i < whereANDLength; i += 1) {
         whereANDArray[i] = whereANDArray[i].trim();
         whereANDClause = whereANDArray[i];
@@ -935,6 +938,7 @@ function getOperatorCode(operator) {
 
 function getQueryJSON4Table(tableName, autoSort, autoLimit) {
     var queryJSON;
+
     if (tableName == 'MessageTable') {
         queryJSON = {
             "table": tableName,
@@ -960,10 +964,11 @@ function getQueryJSON4Table(tableName, autoSort, autoLimit) {
     } else if (tableName == 'FlowSeriesTable') {
         queryJSON = {"table": tableName, "start_time": "", "end_time": "", "select_fields": ['flow_class_id', 'direction_ing'], "limit": 150000};
         if (autoSort) {
-            //queryJSON['select_fields'].push('T');
-            //queryJSON['sort_fields'] = ['T'];
-            //queryJSON['sort'] = 2;
+            queryJSON['select_fields'].push('T');
+            queryJSON['sort_fields'] = ['T'];
+            queryJSON['sort'] = 2;
         }
+
         if (autoLimit) {
             queryJSON['limit'] = 150000;
         }
@@ -987,7 +992,7 @@ function getQueryJSON4Table(tableName, autoSort, autoLimit) {
             "limit": 50000
         };
     } else if (tableName.indexOf('StatTable.') != -1) {
-        queryJSON = {"table": tableName, "start_time": "", "end_time": "", "select_fields": [], "filter": [], "limit": 150000};
+        queryJSON = {"table": tableName, "start_time": "", "end_time": "", "select_fields": [], "filter": [], "where":[[{"name":"name","value":"","op":7}]], "limit": 150000};
     } else {
         queryJSON = {"table": tableName, "start_time": "", "end_time": "", "select_fields": [], "limit": 150000};
     }
@@ -1216,7 +1221,7 @@ function runNewQuery(req, res, queryId, queryReqObj) {
         queryJSON = parseOTQuery(queryReqObj)
         options.queryQueue = 'lqq';
     } else if (tableName == 'FlowSeriesTable') {
-        queryJSON = parseFSQuery(queryReqObj);
+        queryJSON = parseQuery(queryReqObj);
         if (queryJSON['select_fields'].indexOf('bytes') == -1 && queryJSON['select_fields'].indexOf('packets') == -1) {
             options.tg = formModelAttrs['time_granularity'];
             options.tgUnit = formModelAttrs['time_granularity_unit'];
@@ -1236,13 +1241,16 @@ function runNewQuery(req, res, queryId, queryReqObj) {
         }
         options.queryQueue = 'fqq';
     } else if (tableName.indexOf('StatTable.') != -1) {
-        queryJSON = parseStatsQuery(queryReqObj);
+        queryJSON = parseQuery(queryReqObj);
         options.tg = formModelAttrs['time_granularity'];
         options.tgUnit = formModelAttrs['time_granularity_unit'];
         options.queryQueue = 'sqq';
+
+        /*
         options.statPlotFields = queryReqObj['plotFields'];
         options.statGroupFields = queryReqObj['groupFields'];
         options.statXaxis = queryReqObj['Xaxis'];
+        */
     }
     options.queryJSON = queryJSON;
     executeQuery(res, options);
