@@ -61,7 +61,7 @@ define([
                                     viewConfig: {
                                         path: 'table_name', dataBindValue: 'table_name', class: "span3",
                                         elementConfig: {
-                                            defaultValueId: 3, allowClear: false, placeholder: ctwl.QE_SELECT_STAT_TABLE,
+                                            defaultValueId: 0, allowClear: false, placeholder: ctwl.QE_SELECT_STAT_TABLE,
                                             dataTextField: "name", dataValueField: "name",
                                             dataSource: {
                                                 type: 'remote', url: qewc.URL_TABLES, parse: function (response) {
