@@ -992,7 +992,15 @@ function getQueryJSON4Table(tableName, autoSort, autoLimit) {
             "limit": 50000
         };
     } else if (tableName.indexOf('StatTable.') != -1) {
-        queryJSON = {"table": tableName, "start_time": "", "end_time": "", "select_fields": [], "filter": [], "where":[[{"name":"name","value":"","op":7}]], "limit": 150000};
+        queryJSON = {
+            "table": tableName,
+            "start_time": "",
+            "end_time": "",
+            "select_fields": [],
+            "filter": [],
+            "where": [[{"name": "name", "value": "", "op": 7}]],
+            "limit": 150000
+        };
     } else {
         queryJSON = {"table": tableName, "start_time": "", "end_time": "", "select_fields": [], "limit": 150000};
     }
@@ -1207,12 +1215,21 @@ function runNewQuery(req, res, queryId, queryReqObj) {
         queryId = queryReqObj['queryId'], chunkSize = parseInt(queryReqObj['chunkSize']),
         async = (queryReqObj['async'] != null && queryReqObj['async'] == "true") ? true : false,
         reRunTimeRange = queryReqObj['reRunTimeRange'], reRunQuery = queryReqObj, engQueryStr = queryReqObj['engQueryStr'],
-        saveQuery = queryReqObj['saveQuery'],
+        formModelAttrs = queryReqObj['formModelAttrs'], saveQuery = queryReqObj['saveQuery'],
+
         options = {
             queryId: queryId, chunkSize: chunkSize, counter: 0, status: "run", async: async, count: 0, progress: 0, errorMessage: "",
             reRunTimeRange: reRunTimeRange, reRunQuery: reRunQuery, opsQueryId: "", engQueryStr: engQueryStr, saveQuery: saveQuery
         },
         queryJSON;
+
+    if (formModelAttrs['select'].indexOf('T=') != -1) {
+        options.tg = formModelAttrs['time_granularity'];
+        options.tgUnit = formModelAttrs['time_granularity_unit'];
+    } else {
+        options.tg = '';
+        options.tgUnit = '';
+    }
 
     if (tableName == 'MessageTable') {
         queryJSON = parseSLQuery(queryReqObj);
@@ -1222,13 +1239,6 @@ function runNewQuery(req, res, queryId, queryReqObj) {
         options.queryQueue = 'lqq';
     } else if (tableName == 'FlowSeriesTable') {
         queryJSON = parseQuery(queryReqObj);
-        if (queryJSON['select_fields'].indexOf('bytes') == -1 && queryJSON['select_fields'].indexOf('packets') == -1) {
-            options.tg = formModelAttrs['time_granularity'];
-            options.tgUnit = formModelAttrs['time_granularity_unit'];
-        } else {
-            options.tg = '';
-            options.tgUnit = '';
-        }
         options.queryQueue = 'fqq';
     } else if (tableName == 'FlowRecordTable') {
         queryJSON = parseFRQuery(queryReqObj);
@@ -1242,15 +1252,13 @@ function runNewQuery(req, res, queryId, queryReqObj) {
         options.queryQueue = 'fqq';
     } else if (tableName.indexOf('StatTable.') != -1) {
         queryJSON = parseQuery(queryReqObj);
-        options.tg = formModelAttrs['time_granularity'];
-        options.tgUnit = formModelAttrs['time_granularity_unit'];
         options.queryQueue = 'sqq';
 
         /*
-        options.statPlotFields = queryReqObj['plotFields'];
-        options.statGroupFields = queryReqObj['groupFields'];
-        options.statXaxis = queryReqObj['Xaxis'];
-        */
+         options.statPlotFields = queryReqObj['plotFields'];
+         options.statGroupFields = queryReqObj['groupFields'];
+         options.statXaxis = queryReqObj['Xaxis'];
+         */
     }
     options.queryJSON = queryJSON;
     executeQuery(res, options);
@@ -1259,12 +1267,6 @@ function runNewQuery(req, res, queryId, queryReqObj) {
 // Handle request to get list of all tables.
 function getTables(req, res) {
     var opsUrl = global.GET_TABLES_URL;
-    sendCachedJSON4Url(opsUrl, res, 3600);
-};
-
-// Handle request to get valid values of a table column.
-function getColumnValues(req, res) {
-    var opsUrl = global.GET_TABLE_INFO_URL + '/' + req.param('tableName') + '/column-values/' + req.param('column');
     sendCachedJSON4Url(opsUrl, res, 3600);
 };
 
@@ -1290,6 +1292,27 @@ function sendCachedJSON4Url(opsUrl, res, expireTime) {
             commonUtils.handleJSONResponse(null, res, JSON.parse(cachedJSONStr));
         }
     });
+};
+
+// Handle request to get columns values.
+function getTableColumnValues(req, res, appData) {
+    var reqQueryObj = req.body,
+        tableName = reqQueryObj['table_name'],
+        selectFields = reqQueryObj['select'],
+        objectQuery, startTime, endTime, queryOptions;
+
+    startTime = reqQueryObj['fromTimeUTC'];
+    endTime = reqQueryObj['toTimeUTC'];
+
+    if(tableName == null) {
+        commonUtils.handleJSONResponse(null, res, {});
+    } else {
+        objectQuery = {"start_time": startTime, "end_time": endTime, "select_fields": selectFields, "table": tableName, "where": [[{"name": "name", "value": "", "op": 7}]]};
+        setMicroTimeRange(objectQuery, startTime, endTime)
+        queryOptions = {queryId: null, async: false, status: "run", queryJSON: objectQuery, errorMessage: ""};
+
+        executeQuery(res, queryOptions);
+    }
 };
 
 // Handle request to get object ids.
@@ -1420,7 +1443,7 @@ function isEmptyObject(obj) {
 exports.runGETQuery = runGETQuery;
 exports.runPOSTQuery = runPOSTQuery;
 exports.getTables = getTables;
-exports.getColumnValues = getColumnValues;
+exports.getTableColumnValues = getTableColumnValues;
 exports.getTableSchema = getTableSchema;
 exports.getObjectIds = getObjectIds;
 exports.getQueryQueue = getQueryQueue;
