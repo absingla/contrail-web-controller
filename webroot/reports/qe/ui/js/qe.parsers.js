@@ -9,19 +9,12 @@ define([
         var self = this;
 
         self.fsQueryDataParser = function(response) {
-            var chartData = [],
-                sumBytes = {key: "Sum(Bytes)", values: [], color: d3_category5[0]},
-                chartData = [sumBytes];
+            var chartData = [];
 
-            for (var key in response) {
-                response = response[key];
-                break;
-            }
+            $.each(response, function(fcKey, fcValue) {
+                chartData.push({flow_class_id: fcKey, values: fcValue});
 
-            for (var time in response) {
-                var ts = parseInt(time);
-                sumBytes.values.push({x: ts, y: response[time]['sum(bytes)']});
-            }
+            });
 
             return chartData;
         };

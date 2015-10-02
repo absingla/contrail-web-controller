@@ -36,6 +36,7 @@ define([
 
         renderQueryResult: function() {
             var self = this,
+                queryFormId = "#qe-" + qewc.FS_QUERY_PREFIX + "-form",
                 queryResultId = "#qe-" + qewc.FS_QUERY_PREFIX + "-results",
                 responseViewConfig = {
                     view: "FlowSeriesResultView",
@@ -44,6 +45,7 @@ define([
                     viewConfig: {}
                 };
 
+            $(queryFormId).parents('.widget-box').data('widget-action').collapse();
             self.renderView4Config($(self.$el).find(queryResultId), this.model, responseViewConfig);
         },
 

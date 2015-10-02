@@ -12,7 +12,8 @@ define([
         render: function () {
             var self = this, viewConfig = self.attributes.viewConfig,
                 serverCurrentTime = getCurrentTime4MemCPUCharts(),
-                queryFormModel = self.model;
+                queryFormModel = self.model,
+                modelMap = contrail.handleIfNull(self.modelMap, {});
 
             var postDataObj = queryFormModel.getQueryRequestPostData(serverCurrentTime),
                 fsRemoteConfig = {
@@ -31,12 +32,14 @@ define([
 
             var contrailListModel = new ContrailListModel(listModelConfig);
 
+            modelMap[qewc.UMID_FLOW_SERIES_FORM_MODEL] = queryFormModel;
+
             $.ajax({
                 url: '/api/service/networking/web-server-info'
             }).done(function (resultJSON) {
                 serverCurrentTime = resultJSON['serverUTCTime'];
             }).always(function() {
-                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, fsRemoteConfig, serverCurrentTime))
+                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, fsRemoteConfig, serverCurrentTime), null, null, modelMap)
             });
         },
 
