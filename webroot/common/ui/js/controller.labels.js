@@ -379,6 +379,7 @@ define([
 
 
         //vRouter summary page labels
+        this.VROUTER_VIEWPATH_PREFIX = 'monitor/infrastructure/vrouter/ui/js/views/';
         this.VROUTER_SUMMARY_PAGE_ID = 'monitor-vrouter-nodes';
         this.VROUTER_SUMMARY_URL =
             '/api/admin/monitor/infrastructure/vrouters/summary';
@@ -392,7 +393,13 @@ define([
         this.VROUTER_SUMMARY_SCATTERCHART_SECTION_ID =
             'vrouter-nodes-scatterchart-section';
         this.CACHE_VROUTER = 'cache-vrouter-nodes';
-
+        
+        this.VROUTER_TAB_SECTION_ID = 'vrouter_tab_section';
+        this.VROUTER_TAB_VIEW_ID = 'vrouter_tab_view';
+        this.VROUTER_DETAILS_SECTION_ID = 'vrouter_details_section';
+        this.VROUTER_DETAILS_TABS_ID = 'vrouter_details_tab';
+        this.VROUTER_DETAIL_ID = 'vrouter_detail_id;'
+ 
         //Database node labels
         this.DATABASENODE_VIEWPATH_PREFIX =
             'monitor/infrastructure/databasenode/ui/js/views/';
@@ -599,6 +606,21 @@ define([
         this.GLOBAL_CONFIG_PREFIX_ID = 'glblCfg';
         this.TITLE_EDIT_GLOBAL_CONFIG = 'Edit Global Config';
         this.TITLE_GLOBAL_CONFIG = 'Global Config';
+
+        /* Security Group */
+        this.CONFIG_SEC_GRP_PAGE_ID =
+            'config-sec—grppage';
+        this.CONFIG_SEC_GRP_LIST_VIEW_ID =
+            'config-sec—grplist';
+        this.CONFIG_SEC_GRP_SECTION_ID = 'secGrp';
+        this.CONFIG_SEC_GRP_ID = 'config-sec-grp';
+        this.TITLE_SEC_GRP = 'Security Groups';
+        this.SEC_GRP_GRID_ID = 'sec—grp-grid';
+        this.SEC_GRP_PREFIX_ID = 'security_group';
+        this.TITLE_CREATE_SEC_GRP = 'Create Security Group';
+        this.TITLE_DEL_SEC_GRP = 'Delete Security Group';
+        this.TITLE_EDIT_SEC_GRP = 'Edit Security Group';
+        this.SEC_GRP_DETAILS = 'Security Group Details';
     };
     return CTLabels;
 });
