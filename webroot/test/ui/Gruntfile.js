@@ -283,9 +283,9 @@ module.exports = function (grunt) {
         } else if (this.target == 'dashBoardView') {
             grunt.task.run('karma:dashBoardView');
         } else if (this.target == 'instanceListView') {
-            grunt.task.run('karma:instanceView');
-        } else if (this.target == 'instanceView') {
             grunt.task.run('karma:instanceListView');
+        } else if (this.target == 'instanceView') {
+            grunt.task.run('karma:instanceView');
         } else if (this.target == 'flowListView') {
             grunt.task.run('karma:flowListView');
         } else if (this.target == 'flowGridView') {

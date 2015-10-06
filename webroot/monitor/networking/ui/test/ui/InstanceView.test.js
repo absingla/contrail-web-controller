@@ -128,7 +128,10 @@ define([
                         {
                             class: DetailsViewTestSuite,
                             groups: ['all'],
-                            severity: cotc.SEVERITY_LOW
+                            severity: cotc.SEVERITY_LOW,
+                            modelConfig: {
+                                dataGenerator: cttu.commonDetailsDataGenerator
+                            }
                         }
                     ]
                 },

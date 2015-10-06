@@ -11,8 +11,8 @@ define([
     'co-details-view-test-suite',
     'co-chart-view-line-test-suite',
     'co-chart-view-zoom-scatter-test-suite',
-
-], function (CUnit, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite, DetailsViewTestSuite, LineWithFocusChartViewTestSuite, ZoomScatterChartViewTestSuite) {
+    'co-tabs-view-test-suite',
+], function (CUnit, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite, DetailsViewTestSuite, LineWithFocusChartViewTestSuite, ZoomScatterChartViewTestSuite, TabsViewTestSuite) {
 
     var moduleId = cttm.PROJECTS_VIEW_COMMON_TEST_MODULE;
 
@@ -128,12 +128,25 @@ define([
             rootView: mnPageLoader.mnView,
             tests: [
                 {
+                    viewId: ctwl.NETWORK_TABS_ID,
+                    suites: [
+                        {
+                            class: TabsViewTestSuite,
+                            groups: ['all'],
+                            severity: cotc.SEVERITY_LOW
+                        }
+                    ]
+                },
+                {
                     viewId: ctwl.NETWORK_DETAILS_ID,
                     suites: [
                         {
                             class: DetailsViewTestSuite,
                             groups: ['all'],
-                            severity: cotc.SEVERITY_LOW
+                            severity: cotc.SEVERITY_LOW,
+                            modelConfig: {
+                                dataGenerator: cttu.commonDetailsDataGenerator
+                            }
                         }
                     ]
                 },
