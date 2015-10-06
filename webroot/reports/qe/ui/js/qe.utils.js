@@ -107,6 +107,19 @@ define([
             };
         };
 
+        self.getModalClass4Table = function(tableName) {
+            switch (tableName) {
+                case "StatTable.ServerMonitoringSummary.resource_info_stats":
+                    return "modal-1120";
+
+                case "StatTable.ServerMonitoringInfo.file_system_view_stats.physical_disks":
+                    return "modal-1120";
+
+                default:
+                    return cowc.QE_DEFAULT_MODAL_CLASSNAME;
+            }
+        };
+
         self.addFlowMissingPoints = function(tsData, options, plotFields, color, counter) {
             var fromTime = options.fromTime,
                 toTime = options.toTime,
