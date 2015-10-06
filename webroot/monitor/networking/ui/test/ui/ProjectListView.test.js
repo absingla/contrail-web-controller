@@ -29,7 +29,7 @@ define([
             body: JSON.stringify(TestMockdata.domainsMockData)
         }));
         responses.push(CUnit.createFakeServerResponse( {
-            url: /\/api\/tenants\/projects\/default-domain.*$/,
+            url: cttu.getRegExForUrl(ctwc.URL_ALL_PROJECTS),
             body: JSON.stringify(TestMockdata.projectMockData)
         }));
         responses.push(CUnit.createFakeServerResponse({

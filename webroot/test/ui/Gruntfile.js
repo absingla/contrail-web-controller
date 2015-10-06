@@ -51,7 +51,7 @@ module.exports = function (grunt) {
         options: {
             configFile: 'karma.config.js'
         },
-        networks: {
+        networkListView: {
             options: {
                 files: [
                     {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/NetworkListView.test.js', included: false},
@@ -61,19 +61,40 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/test-results.xml',
-                    suite: 'networks'
+                    outputFile: __dirname + '/reports/network-list-view-test-results.xml',
+                    suite: 'networkListView'
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/networks-test-results.html'
+                    outputFile: __dirname + '/reports/network-list-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
-                    dir : __dirname + '/reports/coverage/networks/'
+                    dir : __dirname + '/reports/coverage/networkListView/'
                 }
             }
         },
-        projects: {
+        networkView: {
+            options: {
+                files: [
+                    {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/NetworkView.test.js', included: false}
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputFile: __dirname + '/reports/network-view-test-results.xml',
+                    suite: 'networkView'
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/network-view-test-results.html'
+                },
+                coverageReporter: {
+                    type : 'html',
+                    dir : __dirname + '/reports/coverage/networkView/'
+                }
+            }
+        },
+        projectListView: {
             options: {
                 files: [
                     {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/ProjectListView.test.js', included: false}
@@ -82,19 +103,61 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/test-results.xml',
-                    suite: 'projects'
+                    outputFile: __dirname + '/reports/project-list-view-test-results.xml',
+                    suite: 'projectListView'
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/projects-test-results.html'
+                    outputFile: __dirname + '/reports/project-list-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
-                    dir : __dirname + '/reports/coverage/projects/'
+                    dir : __dirname + '/reports/coverage/projectListView/'
                 }
             }
         },
-        instances: {
+        projectView: {
+            options: {
+                files: [
+                    {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/ProjectView.test.js', included: false}
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputFile: __dirname + '/reports/project-view-test-results.xml',
+                    suite: 'projectView'
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/project-view-test-results.html'
+                },
+                coverageReporter: {
+                    type : 'html',
+                    dir : __dirname + '/reports/coverage/projectView/'
+                }
+            }
+        },
+        dashBoardView: {
+            options: {
+                files: [
+                    {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/DashboardView.test.js', included: false}
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputFile: __dirname + '/reports/dashBoard-view-test-results.xml',
+                    suite: 'dashBoardView'
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/dashBoard-view-test-results.html'
+                },
+                coverageReporter: {
+                    type : 'html',
+                    dir : __dirname + '/reports/coverage/dashBoardView/'
+                }
+            }
+        },
+        instanceListView: {
             options: {
                 files: [
                     {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/InstanceListView.test.js', included: false}
@@ -103,19 +166,61 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/test-results.xml',
-                    suite: 'instances',
+                    outputFile: __dirname + '/reports/instance-list-view-test-results.xml',
+                    suite: 'instanceListView',
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/instances-test-results.html'
+                    outputFile: __dirname + '/reports/instance-list-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
-                    dir : __dirname + '/reports/coverage/instances/'
+                    dir : __dirname + '/reports/coverage/instanceListView/'
                 }
             }
         },
-        instance: {
+        flowListView: {
+            options: {
+                files: [
+                    {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/FlowListView.test.js', included: false}
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputFile: __dirname + '/reports/flow-list-view-test-results.xml',
+                    suite: 'FlowListView',
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/flow-list-view-test-results.html'
+                },
+                coverageReporter: {
+                    type : 'html',
+                    dir : __dirname + '/reports/coverage/flowListView/'
+                }
+            }
+        },
+        flowGridView: {
+            options: {
+                files: [
+                    {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/FlowGridView.test.js', included: false}
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputFile: __dirname + '/reports/flow-grid-view-test-results.xml',
+                    suite: 'FlowGridView',
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/flow-grid-view-test-results.html'
+                },
+                coverageReporter: {
+                    type : 'html',
+                    dir : __dirname + '/reports/coverage/flowGridView/'
+                }
+            }
+        },
+        instanceView: {
             options: {
                 files: [
                     {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/test/ui/InstanceView.test.js', included: false}
@@ -124,15 +229,15 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/test-results.xml',
-                    suite: 'instances',
+                    outputFile: __dirname + '/reports/instance-view-test-results.xml',
+                    suite: 'InstanceView',
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/instance-test-results.html'
+                    outputFile: __dirname + '/reports/instance-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
-                    dir : __dirname + '/reports/coverage/instance/'
+                    dir : __dirname + '/reports/coverage/InstanceView/'
                 }
             }
         }
@@ -154,22 +259,37 @@ module.exports = function (grunt) {
             files: ["Gruntfile.js"]
         },
         nm : {
-            networks: 'networks',
-            projects: 'projects',
-            instances: 'instances',
-            instance: 'instance'
+            networkListView : 'networkListView',
+            networkView     : 'networkView',
+            projectListView : 'projectListView',
+            projectView     : 'projectView',
+            dashBoardView   : 'dashBoardView',
+            instanceListView: 'instanceListView',
+            instanceView    : 'instanceView',
+            flowListView    : 'flowListView',
+            flowGridView    : 'flowGridView'
         }
     });
 
     grunt.registerMultiTask('nm', 'Network Monitoring Test Cases', function () {
-        if (this.target == 'networks') {
-            grunt.task.run('karma:networks');
-        } else if (this.target == 'projects') {
-            grunt.task.run('karma:projects');
-        } else if (this.target == 'instances') {
-            grunt.task.run('karma:instances');
-        } else if (this.target == 'instance') {
-            grunt.task.run('karma:instance');
+        if (this.target == 'networkListView') {
+            grunt.task.run('karma:networkListView');
+        } else if (this.target == 'networkView') {
+            grunt.task.run('karma:networkView');
+        } else if (this.target == 'projectListView') {
+            grunt.task.run('karma:projectListView');
+        } else if (this.target == 'projectView') {
+            grunt.task.run('karma:projectView');
+        } else if (this.target == 'dashBoardView') {
+            grunt.task.run('karma:dashBoardView');
+        } else if (this.target == 'instanceListView') {
+            grunt.task.run('karma:instanceView');
+        } else if (this.target == 'instanceView') {
+            grunt.task.run('karma:instanceListView');
+        } else if (this.target == 'flowListView') {
+            grunt.task.run('karma:flowListView');
+        } else if (this.target == 'flowGridView') {
+            grunt.task.run('karma:flowGridView');
         }
     });
 };
