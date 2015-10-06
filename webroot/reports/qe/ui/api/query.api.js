@@ -1299,6 +1299,7 @@ function getTableColumnValues(req, res, appData) {
     var reqQueryObj = req.body,
         tableName = reqQueryObj['table_name'],
         selectFields = reqQueryObj['select'],
+        where = reqQueryObj['where'],
         objectQuery, startTime, endTime, queryOptions;
 
     startTime = reqQueryObj['fromTimeUTC'];
@@ -1307,8 +1308,8 @@ function getTableColumnValues(req, res, appData) {
     if(tableName == null) {
         commonUtils.handleJSONResponse(null, res, {});
     } else {
-        objectQuery = {"start_time": startTime, "end_time": endTime, "select_fields": selectFields, "table": tableName, "where": [[{"name": "name", "value": "", "op": 7}]]};
-        setMicroTimeRange(objectQuery, startTime, endTime)
+        objectQuery = {"start_time": startTime, "end_time": endTime, "select_fields": selectFields, "table": tableName, "where": where};
+        setMicroTimeRange(objectQuery, startTime, endTime);
         queryOptions = {queryId: null, async: false, status: "run", queryJSON: objectQuery, errorMessage: ""};
 
         executeQuery(res, queryOptions);
