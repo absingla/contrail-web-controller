@@ -50,7 +50,7 @@ define([
                 pagerOptions = viewConfig['pagerOptions'],
                 queryFormModel = this.model,
                 selectArray = queryFormModel.select().replace(/ /g, "").split(","),
-                fsGridColumns = qewgc.getColumnDisplay4Grid(qewc.FS_QUERY_PREFIX, selectArray);
+                fsGridColumns = qewgc.getColumnDisplay4Grid(cowc.FLOW_SERIES_TABLE, cowc.QE_FLOW_TABLE_TYPE, selectArray);
 
             var resultsViewConfig = {
                 elementId: ctwl.QE_FLOW_SERIES_TAB_ID,

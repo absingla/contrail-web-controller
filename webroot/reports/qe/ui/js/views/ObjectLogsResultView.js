@@ -8,21 +8,21 @@ define([
     'contrail-list-model'
 ], function (_, QueryResultView, ContrailListModel) {
 
-    var StatQueryResultView = QueryResultView.extend({
+    var ObjectLogsResultView = QueryResultView.extend({
         render: function () {
             var self = this, viewConfig = self.attributes.viewConfig,
                 serverCurrentTime = getCurrentTime4MemCPUCharts(),
                 queryFormModel = self.model;
 
             var postDataObj = queryFormModel.getQueryRequestPostData(serverCurrentTime),
-                statRemoteConfig = {
+                olRemoteConfig = {
                     url: "/api/qe/query",
                     type: 'POST',
                     data: JSON.stringify(postDataObj)
                 },
                 listModelConfig = {
                     remote: {
-                        ajaxConfig: statRemoteConfig,
+                        ajaxConfig: olRemoteConfig,
                         dataParser: function(response) {
                             return response['data'];
                         }
@@ -36,38 +36,30 @@ define([
             }).done(function (resultJSON) {
                 serverCurrentTime = resultJSON['serverUTCTime'];
             }).always(function() {
-                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, statRemoteConfig, serverCurrentTime))
+                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, olRemoteConfig, serverCurrentTime))
             });
         },
 
-        getViewConfig: function (postDataObj, statRemoteConfig, serverCurrentTime) {
+        getViewConfig: function (postDataObj, olRemoteConfig, serverCurrentTime) {
             var self = this, viewConfig = self.attributes.viewConfig,
                 pagerOptions = viewConfig['pagerOptions'],
                 queryFormModel = this.model,
                 selectArray = queryFormModel.select().replace(/ /g, "").split(","),
-                statGridColumns = qewgc.getColumnDisplay4Grid(postDataObj.formModelAttrs.table_name, cowc.QE_STAT_TABLE_TYPE, selectArray);
+                olGridColumns = qewgc.getColumnDisplay4Grid(postDataObj.formModelAttrs.table_name, cowc.QE_OBJECT_TABLE_TYPE, selectArray);
 
             var resultsViewConfig = {
-                elementId: ctwl.QE_STAT_QUERY_TAB_ID,
+                elementId: ctwl.QE_OBJECT_LOGS_TAB_ID,
                 view: "TabsView",
                 viewConfig: {
                     theme: cowc.TAB_THEME_OVERCAST,
-                    activate: function (e, ui) {
-                        var selTab = $(ui.newTab.context).text();
-                        if (selTab == ctwl.TITLE_RESULTS) {
-                            $('#' + ctwl.QE_STAT_QUERY_GRID_ID).data('contrailGrid').refreshView();
-                        } else if (selTab == ctwl.TITLE_CHART) {
-                            $('#' + ctwl.QE_STAT_QUERY_CHART_ID).find('svg').trigger('refresh');
-                            $('#' + ctwl.QE_STAT_QUERY_CHART_GRID_ID).data('contrailGrid').refreshView();
-                        }
-                    },
+                    activate: function (e, ui) {},
                     tabs: [
                         {
-                            elementId: ctwl.QE_STAT_QUERY_GRID_ID,
+                            elementId: ctwl.QE_OBJECT_LOGS_GRID_ID,
                             title: ctwl.TITLE_RESULTS,
                             view: "GridView",
                             viewConfig: {
-                                elementConfig: getStatQueryGridConfig(statRemoteConfig, statGridColumns, pagerOptions)
+                                elementConfig: getObjectLogsGridConfig(olRemoteConfig, olGridColumns, pagerOptions)
                             }
                         }
                     ]
@@ -78,11 +70,11 @@ define([
         }
     });
 
-    function getStatQueryGridConfig(statRemoteConfig, statGridColumns, pagerOptions) {
+    function getObjectLogsGridConfig(olRemoteConfig, olGridColumns, pagerOptions) {
         var gridElementConfig = {
             header: {
                 title: {
-                    text: ctwl.TITLE_STATS_QUERY,
+                    text: ctwl.TITLE_OBJECT_LOGS,
                     icon : 'icon-table'
                 },
                 defaultControls: {
@@ -100,7 +92,7 @@ define([
                 },
                 dataSource: {
                     remote: {
-                        ajaxConfig: statRemoteConfig,
+                        ajaxConfig: olRemoteConfig,
                         dataParser: function(response) {
                             console.log(response);
                             return response['data'];
@@ -110,7 +102,7 @@ define([
                 }
             },
             columnHeader: {
-                columns: statGridColumns
+                columns: olGridColumns
             },
             footer: {
                 pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 100, pageSizeSelect: [100, 200, 300, 500] } })
@@ -119,5 +111,5 @@ define([
         return gridElementConfig;
     };
 
-    return StatQueryResultView;
+    return ObjectLogsResultView;
 });

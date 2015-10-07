@@ -118,7 +118,7 @@ define([
     }
 
     function getChartGridViewConfig(flowUrl, selectArray, modelMap) {
-        var columnDisplay = qewgc.getColumnDisplay4Grid(qewc.FC_QUERY_PREFIX, selectArray),
+        var columnDisplay = qewgc.getColumnDisplay4Grid(cowc.FLOW_CLASS, cowc.QE_FLOW_TABLE_TYPE, selectArray),
             lineWithFocusChartModel = modelMap[qewc.UMID_FLOW_SERIES_LINE_CHART_MODEL],
             chartListModel = modelMap[qewc.UMID_FLOW_SERIES_CHART_MODEL],
             chartColorAvailableKeys = ['id_0', null, null, null, null],

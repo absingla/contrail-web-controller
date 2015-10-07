@@ -584,6 +584,7 @@ define([
         this.TITLE_FLOW_SERIES = "Flow Series";
         this.TITLE_FLOW_SERIES_RESULTS = "Flow Series Results";
         this.TITLE_STATS_QUERY = "Statistics Query";
+        this.TITLE_OBJECT_LOGS = "Object Logs";
 
         // VRouter Config labels
         this.CFG_VROUTER_PAGE_ID = 'config-vrouter-page';

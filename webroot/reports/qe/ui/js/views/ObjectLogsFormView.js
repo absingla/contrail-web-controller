@@ -35,7 +35,16 @@ define([
         },
 
         renderQueryResult: function() {
-            //TODO
+            var self = this,
+                queryResultId = "#qe-" + qewc.OBJECT_LOGS_PREFIX + "-results",
+                responseViewConfig = {
+                    view: "ObjectLogsResultView",
+                    viewPathPrefix: "reports/qe/ui/js/views/",
+                    app: cowc.APP_CONTRAIL_CONTROLLER,
+                    viewConfig: {}
+                };
+
+            self.renderView4Config($(self.$el).find(queryResultId), this.model, responseViewConfig);
         },
 
         getViewConfig: function () {
