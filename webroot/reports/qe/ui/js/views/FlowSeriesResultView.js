@@ -26,6 +26,9 @@ define([
                         ajaxConfig: fsRemoteConfig,
                         dataParser: function(response) {
                             return response['data'];
+                        },
+                        successCallback: function(response, contrailListModel) {
+                            // TODO: Show Message if query is queued.
                         }
                     }
                 };

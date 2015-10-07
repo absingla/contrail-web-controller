@@ -15,7 +15,7 @@ define([
                 queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
                 statQueryFormModel = new StatQueryFormModel(),
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
-                queryFormId = "#qe-" + qewc.STAT_QUERY_PREFIX + "-form";
+                queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + qewc.STAT_QUERY_PREFIX + cowc.QE_FORM_SUFFIX;
 
             self.model = statQueryFormModel;
             self.$el.append(queryPageTmpl({queryPrefix: qewc.STAT_QUERY_PREFIX }));
@@ -36,7 +36,7 @@ define([
 
         renderQueryResult: function() {
             var self = this,
-                queryResultId = "#qe-" + qewc.STAT_QUERY_PREFIX + "-results",
+                queryResultId = cowc.QE_HASH_ELEMENT_PREFIX + qewc.STAT_QUERY_PREFIX + cowc.QE_RESULTS_SUFFIX,
                 responseViewConfig = {
                     view: "StatQueryResultView",
                     viewPathPrefix: "reports/qe/ui/js/views/",

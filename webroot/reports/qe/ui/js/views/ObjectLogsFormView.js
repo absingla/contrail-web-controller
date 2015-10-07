@@ -15,7 +15,7 @@ define([
                 queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
                 objectLogs = new ObjectLogsFormModel(),
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
-                queryFormId = "#qe-" + qewc.OBJECT_LOGS_PREFIX + "-form";
+                queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + qewc.OBJECT_LOGS_PREFIX + cowc.QE_FORM_SUFFIX;
 
             self.model = objectLogs;
             self.$el.append(queryPageTmpl({queryPrefix: qewc.OBJECT_LOGS_PREFIX }));
@@ -36,7 +36,7 @@ define([
 
         renderQueryResult: function() {
             var self = this,
-                queryResultId = "#qe-" + qewc.OBJECT_LOGS_PREFIX + "-results",
+                queryResultId = cowc.QE_HASH_ELEMENT_PREFIX + qewc.OBJECT_LOGS_PREFIX + cowc.QE_RESULTS_SUFFIX,
                 responseViewConfig = {
                     view: "ObjectLogsResultView",
                     viewPathPrefix: "reports/qe/ui/js/views/",

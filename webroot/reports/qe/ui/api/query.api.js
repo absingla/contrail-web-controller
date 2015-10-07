@@ -289,7 +289,7 @@ function initPollingConfig(options, fromTime, toTime) {
         timeRange = (toTime - fromTime) / 60000000;
     }
     if (timeRange <= 720) {
-        options.pollingInterval = 5000;
+        options.pollingInterval = 4000;
         options.maxCounter = 2;
         options.pollingTimeout = 3600000;
     } else if (timeRange > 720 && timeRange <= 1440) {
@@ -521,7 +521,7 @@ function fetchQueryResults(res, jsonData, options) {
                 options['count'] = queryResults.chunks[0]['count'];
                 jsonData['href'] = queryResults.chunks[0]['href'];
                 fetchQueryResults(res, jsonData, options);
-            } else if (progress == null) {
+            } else if (progress == null || progress === 'undefined') {
                 processQueryResults(res, queryResults, options);
                 if (options.status == 'queued') {
                     options['endTime'] = new Date().getTime();
@@ -532,7 +532,7 @@ function fetchQueryResults(res, jsonData, options) {
                 options['progress'] = progress;
                 options['status'] = 'queued';
                 updateQueryStatus(options);
-                commonUtils.handleJSONResponse(null, res, {status: "queued", value: []});
+                commonUtils.handleJSONResponse(null, res, {status: "queued", data: []});
             }
         });
     });
@@ -596,7 +596,7 @@ function processQueryResults(res, queryResults, options) {
         } else {
             responseJSON = resultJSON.slice(0, chunkSize);
         }
-        commonUtils.handleJSONResponse(null, res, {data: responseJSON, total: total, queryJSON: queryJSON, chunk: 1, chunkSize: chunkSize});
+        commonUtils.handleJSONResponse(null, res, {data: responseJSON, total: total, queryJSON: queryJSON, chunk: 1, chunkSize: chunkSize, serverSideChunking: true});
     }
     if ((null != options['saveQuery']) && ((false == options['saveQuery']) || ('false' == options['saveQuery']))) {
         return;
@@ -625,7 +625,7 @@ function saveQueryResult2Redis(resultData, total, queryId, chunkSize, sort, quer
                 endRow = resultData.length;
             }
             var spliceData = resultData.slice(j, endRow);
-            redisClient.set(queryId + ':chunk' + k, JSON.stringify({data: spliceData, total: total, queryJSON: queryJSON, chunk: k, chunkSize: chunkSize}));
+            redisClient.set(queryId + ':chunk' + k, JSON.stringify({data: spliceData, total: total, queryJSON: queryJSON, chunk: k, chunkSize: chunkSize, serverSideChunking: true}));
             j = endRow;
         }
     }
