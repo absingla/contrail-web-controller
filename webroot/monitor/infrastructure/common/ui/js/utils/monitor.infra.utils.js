@@ -378,6 +378,15 @@ define([
             }
         }
 
+        self.getGridPaginationControls = function() {
+            return [
+                        '<a class="widget-toolbar-icon"><i class="icon-step-forward"></i></a>',
+                        '<a class="widget-toolbar-icon"><i class="icon-forward"></i></a>',
+                        '<a class="widget-toolbar-icon"><i class="icon-backward"></i></a>',
+                        '<a class="widget-toolbar-icon"><i class="icon-step-backward"></i></a>'
+                    ];
+        }
+
         self.formatMemory = function(memory) {
             if(memory == null || memory['res'] == null)
                 return noDataStr;
@@ -1003,6 +1012,28 @@ define([
             });
             return {count:count,size:size};
         }
+        self.getAllLogLevelStats = function(d,proc,logLevelStats) {
+            var allStats = [],obj = {};
+            for(var key in d){
+                var label = key.toUpperCase();
+                if(label.indexOf(proc.toUpperCase()) != -1){
+                    obj[key] = d[key];
+                }
+            }
+            allStats =  ifNullOrEmptyObject(jsonPath(obj,"$..log_level_stats"),[]);
+            if(allStats instanceof Array){
+                for(var i = 0; i < allStats.length;i++){
+                    if(!($.isEmptyObject(allStats[i]))){
+                        if( allStats[i] instanceof Array){
+                            logLevelStats = logLevelStats.concat(allStats[i]);
+                        } else {
+                            logLevelStats.push(allStats[i]);
+                        }
+                    }
+                }
+            }
+            return logLevelStats;
+        }
 
         //Given the data and the node type get the last log time stamp for the node
         self.getLastLogTimestamp = function (d, nodeType){
@@ -1024,10 +1055,10 @@ define([
                     procsList = monitorInfraConstants.configProcsForLastTimeStamp;
                 }
                 $.each(procsList,function(idx,proc){
-                    logLevelStats = getAllLogLevelStats(d,proc,logLevelStats);
+                    logLevelStats = self.getAllLogLevelStats(d,proc,logLevelStats);
                 });
             } else {
-                logLevelStats = getAllLogLevelStats(d,"",logLevelStats);
+                logLevelStats = self.getAllLogLevelStats(d,"",logLevelStats);
             }
 
             if(logLevelStats != null){
@@ -1039,8 +1070,18 @@ define([
             return lastTimeStamp;
         }
 
+        self.getPostDataForReachableIpsCall = function(ips,port) {
+            var postData;
+            var ipPortList = [];
+            $.each(ips,function(idx,obj){
+                ipPortList.push({ip:obj,port:port});
+            });
+            postData = {data:ipPortList};
+            return postData;
+        }
+
         /**
-         * Function returns the overall node status html of monitor infra node 
+         * Function returns the overall node status html of monitor infra node
          * details page
          */
         self.getOverallNodeStatusForDetails = function (data){
@@ -1050,7 +1091,7 @@ define([
         }
 
         /**
-         * This function takes parsed nodeData from the infra parse functions 
+         * This function takes parsed nodeData from the infra parse functions
          * and returns object with all alerts displaying in dashboard tooltip,
          * and tooltip messages array
          */
@@ -1062,7 +1103,7 @@ define([
                     msgs.push(data['alerts'][i]['msg']);
                 }
             }
-            //Status is pushed to messages array only if the status is "UP" 
+            //Status is pushed to messages array only if the status is "UP"
             //and tooltip alerts(which are displaying in tooltip) are zero
             if(ifNull(data['status'],"").indexOf('Up') > -1 && tooltipAlerts.length == 0) {
                 msgs.push(data['status']);
@@ -1073,7 +1114,7 @@ define([
                 //tooltipAlerts.push({msg:data['status'],sevLevel:sevLevels['ERROR']})
             }
             result['alerts'] = tooltipAlerts;
-            result['nodeSeverity'] = data['alerts'][0] != null ? 
+            result['nodeSeverity'] = data['alerts'][0] != null ?
                     data['alerts'][0]['sevLevel'] : sevLevels['INFO'];
             result['messages'] = msgs;
              var statusTemplate = contrail.getTemplate4Id('statusTemplate');
@@ -1082,6 +1123,27 @@ define([
                     sevLevels:sevLevels});
             return result;
         }
+        /**
+        * This function takes parsed nodeData from the infra parse functions and
+        * returns the status column text/html for the summary page grid
+        */
+        self.getNodeStatusContentForSummayPages = function(data,type){
+            var obj = getNodeStatusForSummaryPages(data);
+            if(obj['alerts'].length > 0) {
+                if(type == 'html')
+                    return '<span title="'+obj['messages'].join(',&#10 ')+
+                        '" class=\"infra-nodesatus-text-ellipsis\">'+
+                        obj['messages'].join(',')+'</span>';
+                else if(type == 'text')
+                    return obj['messages'].join(',');
+            } else {
+                if(type == 'html')
+                    return "<span> "+data['status']+"</span>";
+                else if(type == 'text')
+                    return data['status'];
+            }
+        }
+
         /**
          * Util functions to create the footer links in the monitor infra details pages
          */
@@ -1098,6 +1160,25 @@ define([
                 $('#linkStatus').click(config.onStatusClick);
             }
         }*/
+
+        self.getSandeshPostData = function(ip,port,url) {
+            var postData;
+            var obj = {};
+            if(ip != null && ip != ""){
+                obj["ip"] = ip;
+            } else {
+                return null;
+            }
+            if(port != null && port != ""){
+                obj["port"] = port;
+            }
+            if(url != null && url != ""){
+                obj["url"] = url;
+            }
+            postData = {data:obj};
+            return postData;
+        }
+
         self.createMonInfraDetailsFooterLinks = function (parent, ipList, port) {
             var ipDeferredObj = $.Deferred();
             self.getReachableIp(ipList,
@@ -1179,7 +1260,7 @@ define([
         self.getReachableIp = function (ips,port,deferredObj){
             var res;
             if(ips != null && ips.length > 0){
-                var postData = getPostDataForReachableIpsCall(ips,port);
+                var postData = self.getPostDataForReachableIpsCall(ips,port);
                 $.ajax({
                     url:'/api/service/networking/get-network-reachable-ip',
                     type:'POST',
@@ -1226,7 +1307,7 @@ define([
             } catch(e){}
             return ipString;
         }
-        
+
         self.getDisplayNameForVRouterType = function (type){
             switch (type){
             case 'tor-agent':
@@ -1237,8 +1318,233 @@ define([
                 return 'Embedded';
             case 'hypervisor':
                 return 'Hypervisor';
+            }
         }
-    }
+
+        function onPrevNextClick(obj,cfg) {
+            var gridSel = $(cfg['gridSel']);
+            if(gridSel.length == 0) {
+                return;
+            }
+            var newAjaxConfig = "";
+            var cfg = ifNull(cfg,{});
+            var paginationInfo = ifNull(cfg['paginationInfo'],{});
+            //Populate last_page based on entries and first_page
+            paginationInfo['last_page'] = paginationInfo['first_page'];
+            var xStrFormat = /(begin:)\d+(,end:)\d+(,table:.*)/;
+            var entriesFormat = /.*\/(\d+)/;
+            var totalCnt;
+            if(paginationInfo['entries'] != null && paginationInfo['entries'].match(entriesFormat) instanceof Array) {
+                var patternResults = paginationInfo['entries'].match(entriesFormat);
+                //Get the total count from entries as with some filter applied,total count will not be same as table size
+                totalCnt = parseInt(patternResults[1]);
+            }
+            if(paginationInfo['last_page'] != null && paginationInfo['last_page'].match(xStrFormat) instanceof Array) {
+                if(totalCnt == null) {
+                    totalCnt = parseInt(paginationInfo['table_size']);
+                }
+                paginationInfo['last_page'] = paginationInfo['last_page'].replace(xStrFormat,'$1' + (totalCnt - (totalCnt%100)) + '$2' + ((totalCnt - (totalCnt%100)) + 99)+ '$3');
+            }
+            var getUrlFn = ifNull(cfg['getUrlFn'],$.noop);
+            var dirType = ifNull(cfg['dirType'],'');
+            var gridInst = gridSel.data('contrailGrid');
+            var urlObj = getUrlFn();
+            var urlStr = null,xKey = null;
+            if(dirType == 'next') {
+                xKey = 'next_page';
+            } else if(dirType == 'prev') {
+                xKey = 'prev_page';
+            } else if(dirType == 'first') {
+                xKey = 'first_page';
+            } else if(dirType == 'last') {
+                xKey = 'last_page';
+            }
+            if(paginationInfo[xKey] != null) {
+                urlObj['params']['x'] = paginationInfo[xKey];
+            }
+            if(typeof(urlObj) == 'object') {
+                urlStr = urlObj['url'] + '?' + $.param(urlObj['params']);
+            }
+            newAjaxConfig = {
+                        url: urlStr,
+                        type:'Get'
+                };
+            if(gridInst != null) {
+                // gridInst.showGridMessage('loading');
+                gridInst.setRemoteAjaxConfig(newAjaxConfig);
+                reloadGrid(gridInst);
+            }
+        }
+
+        self.getIntrospectPaginationInfo = function(response) {
+            var paginationInfo = {};
+            var paginationInfo = jsonPath(response,'$..Pagination');
+            if(paginationInfo instanceof Array && paginationInfo.length > 0) {
+                paginationInfo = getValueByJsonPath(paginationInfo,'0;req;PageReqData');
+            }
+            return paginationInfo;
+        }
+
+        self.updateGridTitleWithPagingInfo = function(gridSel,pagingInfo) {
+            var gridHeaderTextElem = $(gridSel).find('.grid-header-text');
+            var pageInfoTitle = '';
+            var entriesText = pagingInfo['entries'];
+            var extractedData;
+            if(typeof(entriesText) == 'string' ) {
+                extractedData = entriesText.match(/(\d+)-(\d+)\/(\d+)/);
+            }
+
+            if(extractedData instanceof Array) {
+                var startCnt = parseInt(extractedData[1]);
+                var endCnt = parseInt(extractedData[2]);
+                var totalCnt = parseInt(extractedData[3]);
+                pageInfoTitle = contrail.format(' ({0} - {1} of {2})',startCnt+1,endCnt+1,totalCnt);
+            } else {
+                if(pagingInfo['entries'] != null) {
+                    pageInfoTitle = ' (' + pagingInfo['entries'] + ')';
+                }
+            }
+            if(gridHeaderTextElem.find('span').length == 0) {
+                gridHeaderTextElem.append($('<span>',{}));
+            } else {
+                gridHeaderTextElem.find('span').text('');
+            }
+            gridHeaderTextElem.find('span').text(pageInfoTitle);
+        }
+
+        self.bindGridPrevNextListeners = function(cfg) {
+            var cfg = ifNull(cfg,{});
+            var gridSel = cfg['gridSel'];
+            var paginationInfo;
+            gridSel.find('i.icon-step-forward').parent().click(function() {
+                paginationInfo = cfg['paginationInfoFn']();
+                //Ignore if already on first page
+                if(paginationInfo['last_page'] == '') {
+                    return;
+                }
+                onPrevNextClick(cfg['obj'], {
+                    dirType: 'last',
+                    gridSel: gridSel,
+                    paginationInfo: paginationInfo,
+                    getUrlFn: cfg['getUrlFn']
+                });
+            });
+            gridSel.find('i.icon-forward').parent().click(function() {
+                paginationInfo = cfg['paginationInfoFn']();
+                //Ignore if already on first page
+                if(paginationInfo['next_page'] == '') {
+                    return;
+                }
+                onPrevNextClick(cfg['obj'], {
+                    dirType: 'next',
+                    gridSel: gridSel,
+                    paginationInfo: paginationInfo,
+                    getUrlFn: cfg['getUrlFn']
+                });
+            });
+            gridSel.find('i.icon-step-backward').parent().click(function() {
+                paginationInfo = cfg['paginationInfoFn']();
+                //Ignore if already on last page
+                if(paginationInfo['first_page'] == '') {
+                    return;
+                }
+                onPrevNextClick(cfg['obj'], {
+                    dirType: 'first',
+                    gridSel: gridSel,
+                    paginationInfo: paginationInfo,
+                    getUrlFn: cfg['getUrlFn']
+                });
+            });
+            gridSel.find('i.icon-backward').parent().click(function() {
+                paginationInfo = cfg['paginationInfoFn']();
+                //Ignore if already on last page
+                if(paginationInfo['prev_page'] == '') {
+                    return;
+                }
+                onPrevNextClick(cfg['obj'], {
+                    dirType: 'prev',
+                    gridSel: gridSel,
+                    paginationInfo: paginationInfo,
+                    getUrlFn: cfg['getUrlFn']
+                });
+            });
+            gridSel.parent().find('.btn-display').click(function() {
+                paginationInfo = cfg['paginationInfoFn']();
+                onPrevNextClick(cfg['obj'], {
+                    gridSel: gridSel,
+                    paginationInfo: paginationInfo,
+                    getUrlFn: cfg['getUrlFn']
+                });
+            });
+            gridSel.parent().find('.btn-reset').click(function() {
+                cfg['resetFn']();
+                onPrevNextClick(cfg['obj'],{
+                    gridSel: gridSel,
+                    paginationInfo: paginationInfo,
+                    getUrlFn: cfg['getUrlFn']
+                });
+            });
+        }
+        self.vRouterBubbleSizeFn = function(mergedNodes) {
+            return d3.max(mergedNodes,function(d) {
+                return d.size;
+            });
+        },
+        self.onvRouterDrillDown = function(currObj) {
+            layoutHandler.setURLHashParams({node:currObj['name'], tab:''}, {p:'mon_infra_vrouter'});
+        },
+        self.onControlNodeDrillDown = function(currObj) {
+            layoutHandler.setURLHashParams({node:currObj['name'], tab:''}, {p:'mon_infra_control'});
+        },
+        self.onAnalyticNodeDrillDown = function(currObj) {
+            layoutHandler.setURLHashParams({node:currObj['name'], tab:''}, {p:'mon_infra_analytics'});
+        },
+        self.onConfigNodeDrillDown = function(currObj) {
+            layoutHandler.setURLHashParams({node:currObj['name'], tab:''}, {p:'mon_infra_config'});
+        },
+        self.onDbNodeDrillDown = function(currObj) {
+            layoutHandler.setURLHashParams({node:currObj['name'], tab:''}, {p:'mon_infra_database'});
+        },
+        self.vRouterTooltipFn = function(currObj,formatType) {
+            if(currObj['children'] != null && currObj['children'].length == 1)
+                return getNodeTooltipContents(currObj['children'][0],formatType);
+            else
+                return getNodeTooltipContents(currObj,formatType);
+        },
+        self.vRouterBucketTooltipFn = function(currObj,formatType) {
+            return getNodeTooltipContentsForBucket(currObj,formatType);
+        },
+        self.controlNodetooltipFn = function(currObj,formatType) {
+            return getNodeTooltipContents(currObj,formatType);
+        },
+        self.analyticNodeTooltipFn = function(currObj,formatType) {
+            var tooltipContents = [];
+            if(currObj['pendingQueryCnt'] != null && currObj['pendingQueryCnt'] > 0)
+                tooltipContents.push({label:'Pending Queries', value:currObj['pendingQueryCnt']});
+            return getNodeTooltipContents(currObj,formatType).concat(tooltipContents);
+        },
+        self.configNodeTooltipFn = function(currObj,formatType) {
+            return getNodeTooltipContents(currObj,formatType);
+        },
+        self.dbNodeTooltipFn = function(currObj,formatType) {
+            return getDbNodeTooltipContents(currObj,formatType);
+        },
+
+        //Start: Handlebar register helpers
+        Handlebars.registerPartial('statusTemplate',$('#statusTemplate').html());
+
+        Handlebars.registerHelper('renderStatusTemplate', function(sevLevel, options) {
+            var selector = '#statusTemplate',
+                source = $(selector).html(),
+                html = Handlebars.compile(source)({sevLevel:sevLevel,sevLevels:sevLevels});
+            return new Handlebars.SafeString(html);
+        });
+
+        Handlebars.registerHelper('getInfraDetailsPageCPUChartTitle',function() {
+            return infraDetailsPageCPUChartTitle;
+        })
+
+        //End: Handlebar register helpers
 
     };
     return MonitorInfraUtils;
