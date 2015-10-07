@@ -1316,21 +1316,6 @@ function getTableColumnValues(req, res, appData) {
     }
 };
 
-// Handle request to get object ids.
-function getObjectIds(req, res, appData) {
-    var objectTable = req.param('objectType'),
-        objectQuery, startTime, endTime, queryOptions;
-
-    startTime = req.param('fromTimeUTC');
-    endTime = req.param('toTimeUTC');
-
-    objectQuery = {"start_time": startTime, "end_time": endTime, "select_fields": ["ObjectId"], "table": objectTable};
-    setMicroTimeRange(objectQuery, startTime, endTime)
-    queryOptions = {queryId: null, async: false, status: "run", queryJSON: objectQuery, errorMessage: ""};
-
-    executeQuery(res, queryOptions);
-};
-
 // Handle request to get query queue.
 function getQueryQueue(req, res) {
     var queryQueue = req.param('queryQueue');
@@ -1446,7 +1431,6 @@ exports.runPOSTQuery = runPOSTQuery;
 exports.getTables = getTables;
 exports.getTableColumnValues = getTableColumnValues;
 exports.getTableSchema = getTableSchema;
-exports.getObjectIds = getObjectIds;
 exports.getQueryQueue = getQueryQueue;
 exports.getFlowClasses = getFlowClasses;
 exports.getChartData = getChartData;

@@ -191,9 +191,9 @@ and need to add the iconClass tag wherever we need to show some icons
                     <resources>
                         <resource>
                             <rootDir>/monitor/infra/common/ui</rootDir>
-                            <js>monitor_infra_constants.js</js>
-                            <js>monitor_infra_utils.js</js>
-                            <view>monitor_infra_common.view</view>
+                            <!-- <js>monitor_infra_constants.js</js> -->
+                            <!-- <js>monitor_infra_utils.js</js> -->
+                            <!-- <view>monitor_infra_common.view</view> -->
                         </resource>
                     </resources>
                     <iconClass>icon-desktop</iconClass>
@@ -964,6 +964,22 @@ and need to add the iconClass tag wherever we need to show some icons
                     </items>
                 </item>
                 <item>
+                    <label>Logs</label>
+                    <iconClass>icon-contrail-system-logs</iconClass>
+                    <init>/reports/qe/ui/js/qe.init.js</init>
+                    <items>
+                        <item>
+                            <hash>query_log_object1</hash>
+                            <label>Object Logs</label>
+                            <loader>
+                                <class>qeLoader</class>
+                                <function>renderObjectLogs</function>
+                            </loader>
+                            <searchStrings>Query Object Logs</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                <item>
                     <label>Statistics</label>
                     <iconClass>icon-contrail-system-stats</iconClass>
                     <init>/reports/qe/ui/js/qe.init.js</init>
@@ -980,8 +996,8 @@ and need to add the iconClass tag wherever we need to show some icons
                     </items>
                 </item>
                 <item>
-                    <label>Flows Old</label>
-                    <iconClass>icon-exchange</iconClass>
+                    <label>Old Queries</label>
+                    <iconClass>icon-sign-blank</iconClass>
                     <items>
                         <item>
                             <hash>query_flow_series</hash>
@@ -1013,7 +1029,7 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                         <item>
                             <hash>query_flow_queue</hash>
-                            <label>Query Queue</label>
+                            <label>Flow Query Queue</label>
                             <resources>
                                 <resource>
                                     <rootDir>/reports</rootDir>
@@ -1025,12 +1041,6 @@ and need to add the iconClass tag wherever we need to show some icons
                             </resources>
                             <searchStrings>Flow Query Queue</searchStrings>
                         </item>
-                    </items>
-                </item>
-                <item>
-                    <label>Logs Old</label>
-                    <iconClass>icon-contrail-system-logs</iconClass>
-                    <items>
                         <item>
                             <hash>query_log_system</hash>
                             <label>System Logs</label>
@@ -1061,7 +1071,7 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                         <item>
                             <hash>query_log_queue</hash>
-                            <label>Query Queue</label>
+                            <label>Logs Query Queue</label>
                             <resources>
                                 <resource>
                                     <rootDir>/reports</rootDir>
@@ -1073,15 +1083,9 @@ and need to add the iconClass tag wherever we need to show some icons
                             </resources>
                             <searchStrings>Logs Query Queue</searchStrings>
                         </item>
-                    </items>
-                </item>
-                <item>
-                    <label>Statistics Old</label>
-                    <iconClass>icon-contrail-system-stats</iconClass>
-                    <items>
                         <item>
                             <hash>query_stat_query</hash>
-                            <label>Query</label>
+                            <label>Stat Query</label>
                             <resources>
                                 <resource>
                                     <rootDir>/reports</rootDir>
@@ -1095,7 +1099,7 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                         <item>
                             <hash>query_stat_queue</hash>
-                            <label>Query Queue</label>
+                            <label>Stat Query Queue</label>
                             <resources>
                                 <resource>
                                     <rootDir>/reports</rootDir>
