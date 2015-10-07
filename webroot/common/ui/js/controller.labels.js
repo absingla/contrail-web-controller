@@ -526,6 +526,12 @@ define([
         this.QE_STAT_QUERY_LINE_CHART_ID = "qe-stat-query-line-chart"
         this.QE_STAT_QUERY_CHART_GRID_ID = "qe-stat-query-chart-grid";
 
+        this.QE_OBJECT_LOGS_ID = "qe-object-logs";
+        this.QE_OBJECT_LOGS_SECTION_ID = "qe--object-logs-section";
+        this.QE_OBJECT_LOGS_TAB_ID = "qe-object-logs-tab";
+        this.QE_OBJECT_LOGS_GRID_ID = "qe-object-logs-grid";
+        this.QE_SELECT_OBJECT_TABLE = "Select Object Table";
+
         this.TITLE_QUERY = "Query";
         this.TITLE_RESULTS = "Results";
         this.TITLE_CHART = "Chart";
