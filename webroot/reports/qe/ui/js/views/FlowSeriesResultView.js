@@ -30,6 +30,8 @@ define([
                     }
                 };
 
+            queryFormModel.to_time(serverCurrentTime);
+
             var contrailListModel = new ContrailListModel(listModelConfig);
 
             modelMap[qewc.UMID_FLOW_SERIES_FORM_MODEL] = queryFormModel;

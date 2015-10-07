@@ -20,6 +20,13 @@ define([
             {'id': '0', 'text': 'EGRESS'}
         ];
 
+        this.TIME_GRANULARITY_INTERVAL_VALUES = {
+            secs: 1000,
+            mins: 60 * 1000,
+            hrs: 60 * 60 * 1000,
+            days: 24 * 60 * 60 * 1000
+        };
+
         this.URL_TABLES = "/api/qe/tables";
         this.URL_PREFIX_TABLE_SCHEMA = "/api/qe/table/schema/";
 

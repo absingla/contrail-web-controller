@@ -120,6 +120,7 @@ define([
             }
         };
 
+        //TODO- remove this
         self.addFlowMissingPoints = function(tsData, options, plotFields, color, counter) {
             var fromTime = options.fromTime,
                 toTime = options.toTime,
@@ -157,6 +158,34 @@ define([
             }
 
             return plotData;
+        };
+
+        self.addFSMissingPoints = function(chartDataRow, queryFormModel, plotFields, color, counter) {
+            var chartDataValues = chartDataRow.values,
+                newChartDataValues = {},
+                emptyChartDataValue  = {},
+                timeRange = queryFormModel.time_range(),
+                toTime = queryFormModel.to_time(),
+                fromTime = toTime - (timeRange * 1000),
+                timeGranularity = queryFormModel.time_granularity(),
+                timeGranularityUnit = queryFormModel.time_granularity_unit(),
+                timeInterval = timeGranularity * qewc.TIME_GRANULARITY_INTERVAL_VALUES[timeGranularityUnit];
+
+            $.each(plotFields, function(plotFieldKey, plotFieldValue) {
+                emptyChartDataValue[plotFieldValue] = 0;
+            });
+
+            for (var i = fromTime; i <= toTime; i += timeInterval) {
+                if (!contrail.checkIfExist(chartDataValues[i])) {
+                    newChartDataValues[i] = emptyChartDataValue
+                } else {
+                    newChartDataValues[i] = chartDataValues[i];
+                }
+            }
+
+            chartDataRow.values = newChartDataValues;
+
+            return chartDataRow;
         };
     };
 
