@@ -10,46 +10,44 @@ define([
 
     var FlowSeriesResultView = QueryResultView.extend({
         render: function () {
-            var self = this,
-                viewConfig = self.attributes.viewConfig,
-                serverCurrentTime = getCurrentTime4MemCPUCharts(),
+            var self = this, viewConfig = self.attributes.viewConfig,
+                serverCurrentTime = qewu.getCurrentTime4Client(),
                 queryFormModel = self.model,
                 timeRange = parseInt(queryFormModel.time_range()),
-                modelMap = contrail.handleIfNull(self.modelMap, {});
-
-            var postDataObj = queryFormModel.getQueryRequestPostData(serverCurrentTime),
-                fsRemoteConfig = {
-                    url: "/api/qe/query",
-                    type: 'POST',
-                    data: JSON.stringify(postDataObj)
-                },
-                listModelConfig = {
-                    remote: {
-                        ajaxConfig: fsRemoteConfig,
-                        dataParser: function(response) {
-                            return response['data'];
-                        },
-                        successCallback: function(response, contrailListModel) {
-                            // TODO: Show Message if query is queued.
-                        }
-                    }
-                };
-
-            var contrailListModel = new ContrailListModel(listModelConfig);
-
-            if (timeRange !== -1) {
-                queryFormModel.to_time(serverCurrentTime);
-                queryFormModel.from_time(serverCurrentTime - (timeRange * 1000));
-            }
-
-            modelMap[qewc.UMID_FLOW_SERIES_FORM_MODEL] = queryFormModel;
+                modelMap = contrail.handleIfNull(self.modelMap, {}),
+                contrailListModel;
 
             $.ajax({
                 url: '/api/service/networking/web-server-info'
             }).done(function (resultJSON) {
                 serverCurrentTime = resultJSON['serverUTCTime'];
             }).always(function() {
-                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, fsRemoteConfig, serverCurrentTime), null, null, modelMap)
+                var postDataObj = queryFormModel.getQueryRequestPostData(serverCurrentTime),
+                    fsRemoteConfig = {
+                        url: "/api/qe/query",
+                        type: 'POST',
+                        data: JSON.stringify(postDataObj)
+                    },
+                    listModelConfig = {
+                        remote: {
+                            ajaxConfig: fsRemoteConfig,
+                            dataParser: function(response) {
+                                return response['data'];
+                            },
+                            successCallback: function(response, contrailListModel) {
+                                // TODO: Show Message if query is queued.
+                            }
+                        }
+                    };
+
+                if (timeRange !== -1) {
+                    queryFormModel.to_time(serverCurrentTime);
+                    queryFormModel.from_time(serverCurrentTime - (timeRange * 1000));
+                }
+
+                contrailListModel = new ContrailListModel(listModelConfig);
+                modelMap[qewc.UMID_FLOW_SERIES_FORM_MODEL] = queryFormModel;
+                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, fsRemoteConfig, serverCurrentTime), null, null, modelMap);
             });
         },
 

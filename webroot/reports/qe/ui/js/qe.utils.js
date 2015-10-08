@@ -160,6 +160,12 @@ define([
             return plotData;
         };
 
+        self.getCurrentTime4Client = function() {
+            var now = new Date(), currentTime;
+            currentTime = now.getTime();
+            return currentTime;
+        };
+
         self.addFSMissingPoints = function(chartDataRow, queryFormModel, plotFields, color, counter) {
             var chartDataValues = chartDataRow.values,
                 newChartDataValues = {},
@@ -208,12 +214,12 @@ define([
                 toTimeUTC = now.getTime();
             }
             fromTimeUTC = toTimeUTC - (timeRange * 1000);
-            if (queryPrefix !== 'fs' && queryPrefix !== 'stat') {
-                toTime = "now";
-                fromTime = "now-" + timeRange + "s";
-            } else {
+            if (queryPrefix == qewc.FS_QUERY_PREFIX || queryPrefix == qewc.STAT_QUERY_PREFIX) {
                 toTime = toTimeUTC;
                 fromTime = fromTimeUTC;
+            } else {
+                toTime = "now";
+                fromTime = "now-" + timeRange + "s";
             }
         } else {
             // used for custom time range
@@ -228,6 +234,7 @@ define([
         if (typeof fromTimeUTC !== 'undefined' && typeof tgMicroSecs !== 'undefined') {
             fromTimeUTC = ceilFromTime(fromTimeUTC, tgMicroSecs);
         }
+
         return {fromTime: fromTime, toTime: toTime, fromTimeUTC: fromTimeUTC, toTimeUTC: toTimeUTC, reRunTimeRange: timeRange};
     };
 

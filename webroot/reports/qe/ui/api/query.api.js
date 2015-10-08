@@ -289,7 +289,7 @@ function initPollingConfig(options, fromTime, toTime) {
         timeRange = (toTime - fromTime) / 60000000;
     }
     if (timeRange <= 720) {
-        options.pollingInterval = 4000;
+        options.pollingInterval = 5000;
         options.maxCounter = 2;
         options.pollingTimeout = 3600000;
     } else if (timeRange > 720 && timeRange <= 1440) {
@@ -301,6 +301,50 @@ function initPollingConfig(options, fromTime, toTime) {
         options.maxCounter = 1;
         options.pollingTimeout = 7200000;
     }
+};
+
+function fetchQueryResults(res, jsonData, options) {
+    var queryId = options['queryId'], chunkSize = options['chunkSize'],
+        queryJSON = options['queryJSON'], progress;
+
+    opServer.authorize(function () {
+        opServer.api.get(jsonData['href'], function (error, queryResults) {
+            progress = queryResults['progress'];
+            options['counter'] += 1;
+            if (error) {
+                logutils.logger.error(error.stack);
+                clearInterval(options['intervalId']);
+                clearTimeout(options['timeoutId']);
+                options['progress'] = progress;
+                if (options.status == 'run') {
+                    commonUtils.handleJSONResponse(error, res, null);
+                } else if (options.status == 'queued') {
+                    options.status = 'error';
+                    options.errorMessage = error;
+                    updateQueryStatus(options);
+                }
+            } else if (progress == 100) {
+                clearInterval(options['intervalId']);
+                clearTimeout(options['timeoutId']);
+                options['progress'] = progress;
+                options['count'] = queryResults.chunks[0]['count'];
+                jsonData['href'] = queryResults.chunks[0]['href'];
+                fetchQueryResults(res, jsonData, options);
+            } else if (progress == null || progress === 'undefined') {
+                processQueryResults(res, queryResults, options);
+                if (options.status == 'queued') {
+                    options['endTime'] = new Date().getTime();
+                    options['status'] = 'completed';
+                    updateQueryStatus(options);
+                }
+            } else if (options['counter'] == options.maxCounter) {
+                options['progress'] = progress;
+                options['status'] = 'queued';
+                updateQueryStatus(options);
+                commonUtils.handleJSONResponse(null, res, {status: "queued", data: []});
+            }
+        });
+    });
 };
 
 function sendCachedJSON4Url(opsUrl, res, expireTime) {
@@ -492,50 +536,6 @@ function parseOpsQueryIdFromUrl(url) {
         opsQueryId = urlArray[urlArray.length - 1];
     }
     return opsQueryId;
-};
-
-function fetchQueryResults(res, jsonData, options) {
-    var queryId = options['queryId'], chunkSize = options['chunkSize'],
-        queryJSON = options['queryJSON'], progress;
-
-    opServer.authorize(function () {
-        opServer.api.get(jsonData['href'], function (error, queryResults) {
-            progress = queryResults['progress'];
-            options['counter'] += 1;
-            if (error) {
-                logutils.logger.error(error.stack);
-                clearInterval(options['intervalId']);
-                clearTimeout(options['timeoutId']);
-                options['progress'] = progress;
-                if (options.status == 'run') {
-                    commonUtils.handleJSONResponse(error, res, null);
-                } else if (options.status == 'queued') {
-                    options.status = 'error';
-                    options.errorMessage = error;
-                    updateQueryStatus(options);
-                }
-            } else if (progress == 100) {
-                clearInterval(options['intervalId']);
-                clearTimeout(options['timeoutId']);
-                options['progress'] = progress;
-                options['count'] = queryResults.chunks[0]['count'];
-                jsonData['href'] = queryResults.chunks[0]['href'];
-                fetchQueryResults(res, jsonData, options);
-            } else if (progress == null || progress === 'undefined') {
-                processQueryResults(res, queryResults, options);
-                if (options.status == 'queued') {
-                    options['endTime'] = new Date().getTime();
-                    options['status'] = 'completed';
-                    updateQueryStatus(options);
-                }
-            } else if (options['counter'] == options.maxCounter) {
-                options['progress'] = progress;
-                options['status'] = 'queued';
-                updateQueryStatus(options);
-                commonUtils.handleJSONResponse(null, res, {status: "queued", data: []});
-            }
-        });
-    });
 };
 
 function stopFetchQueryResult(options) {
