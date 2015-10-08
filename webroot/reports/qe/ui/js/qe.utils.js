@@ -164,9 +164,8 @@ define([
             var chartDataValues = chartDataRow.values,
                 newChartDataValues = {},
                 emptyChartDataValue  = {},
-                timeRange = queryFormModel.time_range(),
                 toTime = queryFormModel.to_time(),
-                fromTime = toTime - (timeRange * 1000),
+                fromTime = queryFormModel.from_time(),
                 timeGranularity = queryFormModel.time_granularity(),
                 timeGranularityUnit = queryFormModel.time_granularity_unit(),
                 timeInterval = timeGranularity * qewc.TIME_GRANULARITY_INTERVAL_VALUES[timeGranularityUnit];

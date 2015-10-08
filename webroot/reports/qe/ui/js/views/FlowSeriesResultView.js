@@ -10,9 +10,11 @@ define([
 
     var FlowSeriesResultView = QueryResultView.extend({
         render: function () {
-            var self = this, viewConfig = self.attributes.viewConfig,
+            var self = this,
+                viewConfig = self.attributes.viewConfig,
                 serverCurrentTime = getCurrentTime4MemCPUCharts(),
                 queryFormModel = self.model,
+                timeRange = parseInt(queryFormModel.time_range()),
                 modelMap = contrail.handleIfNull(self.modelMap, {});
 
             var postDataObj = queryFormModel.getQueryRequestPostData(serverCurrentTime),
@@ -33,9 +35,12 @@ define([
                     }
                 };
 
-            queryFormModel.to_time(serverCurrentTime);
-
             var contrailListModel = new ContrailListModel(listModelConfig);
+
+            if (timeRange !== -1) {
+                queryFormModel.to_time(serverCurrentTime);
+                queryFormModel.from_time(serverCurrentTime - (timeRange * 1000));
+            }
 
             modelMap[qewc.UMID_FLOW_SERIES_FORM_MODEL] = queryFormModel;
 
