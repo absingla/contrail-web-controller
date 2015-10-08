@@ -48,15 +48,15 @@ define([
                 olGridColumns = qewgc.getColumnDisplay4Grid(postDataObj.formModelAttrs.table_name, cowc.QE_OBJECT_TABLE_TYPE, selectArray);
 
             var resultsViewConfig = {
-                elementId: ctwl.QE_OBJECT_LOGS_TAB_ID,
+                elementId: cowl.QE_OBJECT_LOGS_TAB_ID,
                 view: "TabsView",
                 viewConfig: {
                     theme: cowc.TAB_THEME_OVERCAST,
                     activate: function (e, ui) {},
                     tabs: [
                         {
-                            elementId: ctwl.QE_OBJECT_LOGS_GRID_ID,
-                            title: ctwl.TITLE_RESULTS,
+                            elementId: cowl.QE_OBJECT_LOGS_GRID_ID,
+                            title: cowl.TITLE_RESULTS,
                             view: "GridView",
                             viewConfig: {
                                 elementConfig: getObjectLogsGridConfig(olRemoteConfig, olGridColumns, pagerOptions)
@@ -74,7 +74,7 @@ define([
         var gridElementConfig = {
             header: {
                 title: {
-                    text: ctwl.TITLE_OBJECT_LOGS,
+                    text: cowl.TITLE_OBJECT_LOGS,
                     icon : 'icon-table'
                 },
                 defaultControls: {

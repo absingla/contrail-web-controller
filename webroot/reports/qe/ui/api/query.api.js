@@ -265,6 +265,7 @@ function executeQuery(res, options) {
                 options['intervalId'] = setInterval(fetchQueryResults, options.pollingInterval, res, jsonData, options);
                 options['timeoutId'] = setTimeout(stopFetchQueryResult, options.pollingTimeout, options);
             } else {
+                console.log("### async === false");
                 processQueryResults(res, jsonData, options);
             }
         }, async ? asyncHeader : {});

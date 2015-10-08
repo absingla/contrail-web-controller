@@ -15,14 +15,14 @@ define([
                 queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
                 objectLogs = new ObjectLogsFormModel(),
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
-                queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + qewc.OBJECT_LOGS_PREFIX + cowc.QE_FORM_SUFFIX;
+                queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.OBJECT_LOGS_PREFIX + cowc.QE_FORM_SUFFIX;
 
             self.model = objectLogs;
-            self.$el.append(queryPageTmpl({queryPrefix: qewc.OBJECT_LOGS_PREFIX }));
+            self.$el.append(queryPageTmpl({queryPrefix: cowc.OBJECT_LOGS_PREFIX }));
 
             self.renderView4Config($(self.$el).find(queryFormId), this.model, self.getViewConfig(), null, null, null, function () {
-                self.model.showErrorAttr(ctwl.QE_OBJECT_LOGS_ID, false);
-                Knockback.applyBindings(self.model, document.getElementById(ctwl.QE_OBJECT_LOGS_ID));
+                self.model.showErrorAttr(cowl.QE_OBJECT_LOGS_ID, false);
+                Knockback.applyBindings(self.model, document.getElementById(cowl.QE_OBJECT_LOGS_ID));
                 kbValidation.bind(self);
                 $("#run_query").on('click', function() {
                     self.renderQueryResult();
@@ -36,7 +36,7 @@ define([
 
         renderQueryResult: function() {
             var self = this,
-                queryResultId = cowc.QE_HASH_ELEMENT_PREFIX + qewc.OBJECT_LOGS_PREFIX + cowc.QE_RESULTS_SUFFIX,
+                queryResultId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.OBJECT_LOGS_PREFIX + cowc.QE_RESULTS_SUFFIX,
                 responseViewConfig = {
                     view: "ObjectLogsResultView",
                     viewPathPrefix: "reports/qe/ui/js/views/",
@@ -61,10 +61,10 @@ define([
                                     viewConfig: {
                                         path: 'table_name', dataBindValue: 'table_name', class: "span3",
                                         elementConfig: {
-                                            defaultValueId: 0, allowClear: false, placeholder: ctwl.QE_SELECT_OBJECT_TABLE,
+                                            defaultValueId: 0, allowClear: false, placeholder: cowl.QE_SELECT_OBJECT_TABLE,
                                             dataTextField: "name", dataValueField: "name",
                                             dataSource: {
-                                                type: 'remote', url: qewc.URL_TABLES, parse: function (response) {
+                                                type: 'remote', url: cowc.URL_TABLES, parse: function (response) {
                                                     var parsedOptionList = [];
                                                     for(var i = 0; i < response.length; i++) {
                                                         if(response[i].type == 'OBJECT') {
@@ -85,7 +85,7 @@ define([
                                     elementId: 'time_range', view: "FormDropdownView",
                                     viewConfig: {
                                         path: 'time_range', dataBindValue: 'time_range', class: "span3",
-                                        elementConfig: {dataTextField: "text", dataValueField: "id", data: qewc.TIMERANGE_DROPDOWN_VALUES}}
+                                        elementConfig: {dataTextField: "text", dataValueField: "id", data: cowc.TIMERANGE_DROPDOWN_VALUES}}
                                 },
                                 {
                                     elementId: 'from_time', view: "FormDateTimePickerView",

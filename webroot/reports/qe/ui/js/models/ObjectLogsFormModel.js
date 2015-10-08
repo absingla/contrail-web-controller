@@ -12,7 +12,7 @@ define([
         defaultSelectFields: [],
 
         constructor: function (modelData) {
-            var defaultConfig = qewmc.getQueryModelConfig({table_type: cowc.QE_OBJECT_TABLE_TYPE, query_prefix: qewc.OBJECT_LOGS_PREFIX});
+            var defaultConfig = qewmc.getQueryModelConfig({table_type: cowc.QE_OBJECT_TABLE_TYPE, query_prefix: cowc.OBJECT_LOGS_PREFIX});
 
             modelData = $.extend(true, {}, defaultConfig, modelData);
             QueryFormModel.prototype.constructor.call(this, modelData);
