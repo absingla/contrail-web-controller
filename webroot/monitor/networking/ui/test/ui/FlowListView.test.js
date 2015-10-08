@@ -63,38 +63,6 @@ define([
         return {
             rootView: mnPageLoader.mnView,
             tests: [
-<<<<<<< HEAD
-            {
-                viewId: ctwl.PROJECT_FLOW_GRID_ID,
-                suites: [
-                    {
-                        class: GridViewTestSuite,
-                        groups: ['all'],
-                        severity: cotc.SEVERITY_LOW
-                    },
-                    {
-                        class: GridListModelTestSuite,
-                        groups: ['all'],
-                        severity: cotc.SEVERITY_LOW,
-                        modelConfig: {
-                            dataGenerator: cttu.commonGridDataGenerator,
-                            dataParsers: {}
-                        }
-                    }
-                ]
-            },
-            {
-                viewId: ctwl.FLOWS_SCATTER_CHART_ID,
-                suites: [
-                    {
-                        class: ZoomScatterChartViewTestSuite,
-                        groups: ['all'],
-                        severity: cotc.SEVERITY_LOW
-                    }
-                ]
-            }
-        ]
-=======
                 {
                     viewId: ctwl.PROJECT_FLOW_GRID_ID,
                     suites: [
@@ -125,7 +93,6 @@ define([
                     ]
                 }
             ]
->>>>>>> ccb32b744e323b54d6bfa42af245e95714e8b1b0
         };
 
     };
