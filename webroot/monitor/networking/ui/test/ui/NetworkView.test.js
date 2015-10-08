@@ -11,8 +11,8 @@ define([
     'co-details-view-test-suite',
     'co-chart-view-line-test-suite',
     'co-chart-view-zoom-scatter-test-suite',
-    'co-tabs-view-test-suite',
-], function (CUnit, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite, DetailsViewTestSuite, LineWithFocusChartViewTestSuite, ZoomScatterChartViewTestSuite, TabsViewTestSuite) {
+
+], function (CUnit, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite, DetailsViewTestSuite, LineWithFocusChartViewTestSuite, ZoomScatterChartViewTestSuite) {
 
     var moduleId = cttm.PROJECTS_VIEW_COMMON_TEST_MODULE;
 
@@ -22,19 +22,19 @@ define([
         var responses = [];
 
         /*
-        /api/tenants/config/domains                                                                                                     done
-        /api/tenants/config/projects                                                                                                    done
-        /api/tenants/networks/default-domain:admin                                                                                      done
-        /api/tenant/networking/virtual-network/summary?fqNameRegExp=default-domain:admin:frontend                                       done
-        /api/tenant/networking/flow-series/vn?minsSince=120&fqName=default-domain:admin:frontend&sampleCnt=120                          done
-        /api/tenant/networking/network/stats/top?minsSince=10&fqName=default-domain:admin:frontend                                      done
-        /api/tenant/monitoring/network-connected-graph?fqName=default-domain:admin:frontend                                             done
-        /api/tenant/monitoring/network-config-graph?fqName=default-domain:admin:frontend                                                done
-        /api/tenant/networking/virtual-machines/details?fqnUUID=ad8a9efc-9b7e-4425-9735-03bda0d2726e&count=10&type=vn                   done
-        /api/tenant/networking/virtual-machines/summary                                                                                 done
-        /api/tenant/networking/virtual-machine-interfaces/summary                                                                       done
-        /api/tenant/networking/stats                                                                                                    done
-        */
+         /api/tenants/config/domains                                                                                                     done
+         /api/tenants/config/projects                                                                                                    done
+         /api/tenants/networks/default-domain:admin                                                                                      done
+         /api/tenant/networking/virtual-network/summary?fqNameRegExp=default-domain:admin:frontend                                       done
+         /api/tenant/networking/flow-series/vn?minsSince=120&fqName=default-domain:admin:frontend&sampleCnt=120                          done
+         /api/tenant/networking/network/stats/top?minsSince=10&fqName=default-domain:admin:frontend                                      done
+         /api/tenant/monitoring/network-connected-graph?fqName=default-domain:admin:frontend                                             done
+         /api/tenant/monitoring/network-config-graph?fqName=default-domain:admin:frontend                                                done
+         /api/tenant/networking/virtual-machines/details?fqnUUID=ad8a9efc-9b7e-4425-9735-03bda0d2726e&count=10&type=vn                   done
+         /api/tenant/networking/virtual-machines/summary                                                                                 done
+         /api/tenant/networking/virtual-machine-interfaces/summary                                                                       done
+         /api/tenant/networking/stats                                                                                                    done
+         */
 
         responses.push(CUnit.createFakeServerResponse( {
             url: cttu.getRegExForUrl(ctwc.URL_ALL_DOMAINS),
@@ -127,16 +127,6 @@ define([
         return {
             rootView: mnPageLoader.mnView,
             tests: [
-                {
-                    viewId: ctwl.NETWORK_TABS_ID,
-                    suites: [
-                        {
-                            class: TabsViewTestSuite,
-                            groups: ['all'],
-                            severity: cotc.SEVERITY_LOW
-                        }
-                    ]
-                },
                 {
                     viewId: ctwl.NETWORK_DETAILS_ID,
                     suites: [

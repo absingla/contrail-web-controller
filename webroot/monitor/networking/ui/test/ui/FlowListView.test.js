@@ -19,20 +19,20 @@ define([
         var responses = [];
 
         /*
-        * Full Query
-        * /api/admin/reports/query?port=34560-34815
-        * &timeRange=600
-        * &table=FlowSeriesTable
-        * &fromTimeUTC=1443571409000
-        * &toTimeUTC=1443572009000
-        * &select=sourcevn%2C+destvn%2C+sourceip%2C+destip%2C+protocol%2C+sport%2C+dport%2C+sum(bytes)%2C+sum(packets)%2Cflow_count
-        * &where=
-        *       (sport%3D34560-34815+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D6)
-        *       +OR+
-        *       (sport%3D34560-34815+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D1)
-        *       +OR+
-        *       (sport%3D34560-34815+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D17)
-        * */
+         * Full Query
+         * /api/admin/reports/query?port=34560-34815
+         * &timeRange=600
+         * &table=FlowSeriesTable
+         * &fromTimeUTC=1443571409000
+         * &toTimeUTC=1443572009000
+         * &select=sourcevn%2C+destvn%2C+sourceip%2C+destip%2C+protocol%2C+sport%2C+dport%2C+sum(bytes)%2C+sum(packets)%2Cflow_count
+         * &where=
+         *       (sport%3D34560-34815+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D6)
+         *       +OR+
+         *       (sport%3D34560-34815+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D1)
+         *       +OR+
+         *       (sport%3D34560-34815+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D17)
+         * */
 
         responses.push(CUnit.createFakeServerResponse( {
             method: "GET",
@@ -63,6 +63,7 @@ define([
         return {
             rootView: mnPageLoader.mnView,
             tests: [
+<<<<<<< HEAD
             {
                 viewId: ctwl.PROJECT_FLOW_GRID_ID,
                 suites: [
@@ -93,6 +94,38 @@ define([
                 ]
             }
         ]
+=======
+                {
+                    viewId: ctwl.PROJECT_FLOW_GRID_ID,
+                    suites: [
+                        {
+                            class: GridViewTestSuite,
+                            groups: ['all'],
+                            severity: cotc.SEVERITY_LOW
+                        },
+                        {
+                            class: GridListModelTestSuite,
+                            groups: ['all'],
+                            severity: cotc.SEVERITY_LOW,
+                            modelConfig: {
+                                dataGenerator: cttu.commonGridDataGenerator,
+                                dataParsers: {}
+                            }
+                        }
+                    ]
+                },
+                {
+                    viewId: ctwl.FLOWS_SCATTER_CHART_ID,
+                    suites: [
+                        {
+                            class: ZoomScatterChartViewTestSuite,
+                            groups: ['all'],
+                            severity: cotc.SEVERITY_LOW
+                        }
+                    ]
+                }
+            ]
+>>>>>>> ccb32b744e323b54d6bfa42af245e95714e8b1b0
         };
 
     };

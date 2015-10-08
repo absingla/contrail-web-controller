@@ -18,20 +18,20 @@ define([
         var responses = [];
 
         /*
-        * Full Query
-        * /api/admin/reports/query?port=9110
-        * &timeRange=600
-        * &table=FlowSeriesTable
-        * &fromTimeUTC=1443653652505
-        * &toTimeUTC=1443654252505
-        * &select=sourcevn%2C+destvn%2C+sourceip%2C+destip%2C+protocol%2C+sport%2C+dport%2C+sum(bytes)%2C+sum(packets)%2Cflow_count
-        * &where=
-        *   (dport%3D9110+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D6)
-        *       +OR+
-        *   (dport%3D9110+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D1)
-        *       +OR+
-        *   (dport%3D9110+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D17)
-        * */
+         * Full Query
+         * /api/admin/reports/query?port=9110
+         * &timeRange=600
+         * &table=FlowSeriesTable
+         * &fromTimeUTC=1443653652505
+         * &toTimeUTC=1443654252505
+         * &select=sourcevn%2C+destvn%2C+sourceip%2C+destip%2C+protocol%2C+sport%2C+dport%2C+sum(bytes)%2C+sum(packets)%2Cflow_count
+         * &where=
+         *   (dport%3D9110+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D6)
+         *       +OR+
+         *   (dport%3D9110+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D1)
+         *       +OR+
+         *   (dport%3D9110+AND+sourcevn%3Ddefault-domain%3Aadmin%3Afrontend+AND+protocol%3D17)
+         * */
 
 
         responses.push(CUnit.createFakeServerResponse( {

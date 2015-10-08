@@ -19,17 +19,17 @@ define([
         var responses = [];
 
         /*
-            /api/tenants/config/domains                                                                                                     [done]
-            /api/tenants/config/projects                                                                                                    [done]
-            /api/tenant/networking/virtual-networks/details                                                                                 [done]
-            /api/tenant/networking/network/stats/top?minsSince=10&fqName=default-domain:admin&useServerTime=true&type=port&_=1442526971361  [done]
-            /api/tenant/monitoring/project-connected-graph?fqName=default-domain:admin&_=1442526971867                                      [done]
-            /api/tenant/monitoring/project-config-graph?fqName=default-domain:admin&_=1442869670788                                         [done]
-            /api/tenant/networking/virtual-networks/details?count=25&fqn=default-domain:admin&startAt=1442869670641                         [done]
-            /api/tenant/networking/virtual-machines/details?fqnUUID=ba710bf3-922d-4cda-bbb4-a2e2e76533bf&count=10&type=project              [done]
-            /api/tenant/networking/virtual-machine-interfaces/summary                                                                       [done]
-            /api/tenant/networking/stats                                                                                                    [done]
-        */
+         /api/tenants/config/domains                                                                                                     [done]
+         /api/tenants/config/projects                                                                                                    [done]
+         /api/tenant/networking/virtual-networks/details                                                                                 [done]
+         /api/tenant/networking/network/stats/top?minsSince=10&fqName=default-domain:admin&useServerTime=true&type=port&_=1442526971361  [done]
+         /api/tenant/monitoring/project-connected-graph?fqName=default-domain:admin&_=1442526971867                                      [done]
+         /api/tenant/monitoring/project-config-graph?fqName=default-domain:admin&_=1442869670788                                         [done]
+         /api/tenant/networking/virtual-networks/details?count=25&fqn=default-domain:admin&startAt=1442869670641                         [done]
+         /api/tenant/networking/virtual-machines/details?fqnUUID=ba710bf3-922d-4cda-bbb4-a2e2e76533bf&count=10&type=project              [done]
+         /api/tenant/networking/virtual-machine-interfaces/summary                                                                       [done]
+         /api/tenant/networking/stats                                                                                                    [done]
+         */
 
         responses.push(CUnit.createFakeServerResponse( {
             url: cttu.getRegExForUrl(ctwc.URL_ALL_DOMAINS),

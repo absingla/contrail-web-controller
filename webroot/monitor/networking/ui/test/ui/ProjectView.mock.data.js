@@ -2562,5 +2562,5 @@ define(['underscore'], function (_) {
         virtualMachinesSummaryMockData: virtualMachinesSummaryMockData,
         networkingStatsMockData: networkingStatsMockData,
         virtualMachinesStatsMockData: virtualMachinesStatsMockData
-};
+    };
 });
