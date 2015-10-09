@@ -19,7 +19,10 @@ define([
             }
 
             contrailListModel.onAllRequestsComplete.subscribe(function() {
-                self.renderFlowSeriesLineChart()
+                //TODO: Load chart only if data is not queued.
+                if (contrailListModel.getItems().length > 0) {
+                    self.renderFlowSeriesLineChart()
+                }
             });
         },
 
