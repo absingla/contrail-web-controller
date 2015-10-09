@@ -7,6 +7,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-qunit");
     grunt.loadNpmTasks('grunt-qunit-junit');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadTasks(__dirname + '/../../../../contrail-web-core/webroot/test/ui/js/tasks');
     //this option is to avoid interruption of test case execution on failure of one in sequence
     //grunt.option('force',true);
     grunt.option('stack', true);
@@ -61,11 +62,11 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/network-list-view-test-results.xml',
+                    outputFile: __dirname + '/reports/tests/network-list-view-test-results.xml',
                     suite: 'networkListView'
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/network-list-view-test-results.html'
+                    outputFile: __dirname + '/reports/tests/network-list-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
@@ -82,11 +83,11 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/network-view-test-results.xml',
+                    outputFile: __dirname + '/reports/tests/network-view-test-results.xml',
                     suite: 'networkView'
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/network-view-test-results.html'
+                    outputFile: __dirname + '/reports/tests/network-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
@@ -103,11 +104,11 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/project-list-view-test-results.xml',
+                    outputFile: __dirname + '/reports/tests/project-list-view-test-results.xml',
                     suite: 'projectListView'
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/project-list-view-test-results.html'
+                    outputFile: __dirname + '/reports/tests/project-list-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
@@ -124,11 +125,11 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/project-view-test-results.xml',
+                    outputFile: __dirname + '/reports/tests/project-view-test-results.xml',
                     suite: 'projectView'
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/project-view-test-results.html'
+                    outputFile: __dirname + '/reports/tests/project-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
@@ -145,11 +146,11 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/dashBoard-view-test-results.xml',
+                    outputFile: __dirname + '/reports/tests/dashBoard-view-test-results.xml',
                     suite: 'dashBoardView'
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/dashBoard-view-test-results.html'
+                    outputFile: __dirname + '/reports/tests/dashBoard-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
@@ -166,11 +167,11 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/instance-list-view-test-results.xml',
+                    outputFile: __dirname + '/reports/tests/instance-list-view-test-results.xml',
                     suite: 'instanceListView',
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/instance-list-view-test-results.html'
+                    outputFile: __dirname + '/reports/tests/instance-list-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
@@ -187,11 +188,11 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/flow-list-view-test-results.xml',
+                    outputFile: __dirname + '/reports/tests/flow-list-view-test-results.xml',
                     suite: 'FlowListView',
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/flow-list-view-test-results.html'
+                    outputFile: __dirname + '/reports/tests/flow-list-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
@@ -208,11 +209,11 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/flow-grid-view-test-results.xml',
+                    outputFile: __dirname + '/reports/tests/flow-grid-view-test-results.xml',
                     suite: 'FlowGridView',
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/flow-grid-view-test-results.html'
+                    outputFile: __dirname + '/reports/tests/flow-grid-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
@@ -229,23 +230,30 @@ module.exports = function (grunt) {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
                 },
                 junitReporter: {
-                    outputFile: __dirname + '/reports/instance-view-test-results.xml',
+                    outputFile: __dirname + '/reports/tests/instance-view-test-results.xml',
                     suite: 'InstanceView',
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/instance-view-test-results.html'
+                    outputFile: __dirname + '/reports/tests/instance-view-test-results.html'
                 },
                 coverageReporter: {
                     type : 'html',
-                    dir : __dirname + '/reports/coverage/InstanceView/'
+                    dir : __dirname + '/reports/coverage/instanceView/'
                 }
             }
         }
     };
 
+    var htmlReporterOutputFiles = [],
+        junitReporterOutputFiles = [],
+        coverageReporterDirs = [];
+
     for (var feature in karmaConfig) {
         if (feature != 'options') {
             karmaConfig[feature]['options']['files'] = commonFiles.concat(karmaConfig[feature]['options']['files']);
+            htmlReporterOutputFiles.push(karmaConfig[feature]['options']['htmlReporter']['outputFile']);
+            junitReporterOutputFiles.push(karmaConfig[feature]['options']['junitReporter']['outputFile']);
+            coverageReporterDirs.push(karmaConfig[feature]['options']['coverageReporter']['dir']);
         }
     }
 
@@ -267,7 +275,30 @@ module.exports = function (grunt) {
             instanceListView: 'instanceListView',
             instanceView    : 'instanceView',
             flowListView    : 'flowListView',
-            flowGridView    : 'flowGridView'
+            flowGridView    : 'flowGridView',
+            mergeResultsAndCoverage: 'mergeResultsAndCoverage'
+        },
+        mergeResults: {
+            options: {
+                mergePath: __dirname + '/reports/',
+                mergeFileName: 'test-results'
+            },
+            htmlFiles: [
+                //Add additional html report files to merge if any
+            ].concat(htmlReporterOutputFiles),
+            xmlFiles: [
+                //Add additional junit report xml files to merge if any
+            ].concat(junitReporterOutputFiles)
+        },
+        mergeCoverage: {
+            options: {
+                basePath: __dirname,
+                mergePath: __dirname + '/reports/',
+                coverageDirFromMergePath: './coverage/'
+            },
+            dir: [
+                //Add additional coverage dir path if any
+            ].concat(coverageReporterDirs)
         }
     });
 
@@ -290,6 +321,9 @@ module.exports = function (grunt) {
             grunt.task.run('karma:flowListView');
         } else if (this.target == 'flowGridView') {
             grunt.task.run('karma:flowGridView');
+        } else if (this.target == 'mergeResultsAndCoverage') {
+            grunt.task.run('mergeResults');
+            grunt.task.run('mergeCoverage');
         }
     });
 };
