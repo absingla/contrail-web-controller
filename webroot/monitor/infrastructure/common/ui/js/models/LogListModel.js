@@ -4,9 +4,6 @@
 
 define(['contrail-list-model'], function(ContrailListModel) {
     var LogListModel = function() {
-        if (LogListModel.prototype.singletonInstance) {
-            return LogListModel.prototype.singletonInstance;
-        }
         var listModelConfig = {
             remote : {
                 ajaxConfig : {
@@ -20,6 +17,7 @@ define(['contrail-list-model'], function(ContrailListModel) {
         };
 
         function parseDashboardLogs(result) {
+            var UVEModuleIds = monitorInfraConstants.UVEModuleIds;
             retArr = $.map(result['data'],function(obj,idx) {
                 obj['message'] = formatXML2JSON(obj['Xmlmessage']);
                 obj['timeStr'] = diffDates(new XDate(obj['MessageTS']/1000),new XDate());
@@ -68,9 +66,7 @@ define(['contrail-list-model'], function(ContrailListModel) {
             });
             return retArr;
         };
-        LogListModel.prototype.singletonInstance =
-            new ContrailListModel(listModelConfig);
-        return LogListModel.prototype.singletonInstance;
+        return ContrailListModel(listModelConfig);
     };
     return LogListModel;
 });
