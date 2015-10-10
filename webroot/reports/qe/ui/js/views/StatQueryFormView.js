@@ -25,7 +25,9 @@ define([
                 Knockback.applyBindings(self.model, document.getElementById(cowl.QE_STAT_QUERY_ID));
                 kbValidation.bind(self);
                 $("#run_query").on('click', function() {
-                    self.renderQueryResult();
+                    if (self.model.model().isValid(true, 'runQueryValidation')) {
+                        self.renderQueryResult();
+                    }
                 });
             });
 
@@ -42,8 +44,10 @@ define([
                     viewPathPrefix: "reports/qe/ui/js/views/",
                     app: cowc.APP_CONTRAIL_CONTROLLER,
                     viewConfig: {}
-                };
+                },
+                queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.STAT_QUERY_PREFIX + cowc.QE_FORM_SUFFIX;
 
+            $(queryFormId).parents('.widget-box').data('widget-action').collapse();
             self.renderView4Config($(self.$el).find(queryResultId), this.model, responseViewConfig);
         },
 
@@ -57,9 +61,11 @@ define([
                         {
                             columns: [
                                 {
-                                    elementId: 'table_name', view: "FormDropdownView",
+                                    elementId: 'table_name', view: "FormComboboxView",
                                     viewConfig: {
-                                        path: 'table_name', dataBindValue: 'table_name', class: "span3",
+                                        path: 'table_name',
+                                        dataBindValue: 'table_name',
+                                        class: "span3",
                                         elementConfig: {
                                             defaultValueId: 0, allowClear: false, placeholder: cowl.QE_SELECT_STAT_TABLE,
                                             dataTextField: "name", dataValueField: "name",
@@ -111,12 +117,16 @@ define([
                             columns: [
                                 {
                                     elementId: 'select', view: "FormTextAreaView",
-                                    viewConfig: {path: 'select', dataBindValue: 'select', class: "span9", editPopupConfig: {
-                                        renderEditFn: function() {
-                                            var tableName = self.model.table_name();
-                                            self.renderSelect({className: qewu.getModalClass4Table(tableName)});
+                                    viewConfig: {
+                                        path: 'select', dataBindValue: 'select', class: "span9",
+                                        disabled: 'isDisabledSelect()',
+                                        editPopupConfig: {
+                                            renderEditFn: function(event) {
+                                                var tableName = self.model.table_name();
+                                                self.renderSelect({className: qewu.getModalClass4Table(tableName)});
+                                            }
                                         }
-                                    }}
+                                    }
                                 },
                                 {
                                     elementId: 'time-granularity-section',
@@ -159,11 +169,14 @@ define([
                             columns: [
                                 {
                                     elementId: 'where', view: "FormTextAreaView",
-                                    viewConfig: {path: 'where', dataBindValue: 'where', class: "span9", placeHolder: "*", editPopupConfig: {
-                                        renderEditFn: function() {
-                                            self.renderWhere({className: cowc.QE_MODAL_CLASS_700});
+                                    viewConfig: {
+                                        path: 'where', dataBindValue: 'where', class: "span9", placeHolder: "*",
+                                        editPopupConfig: {
+                                            renderEditFn: function() {
+                                                self.renderWhere({className: cowc.QE_MODAL_CLASS_700});
+                                            }
                                         }
-                                    }}
+                                    }
                                 }
                             ]
                         },

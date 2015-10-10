@@ -27,15 +27,17 @@ define([
         },
 
         renderFlowSeriesLineChart: function() {
-            var self = this,
-                viewConfig = self.attributes.viewConfig,
-                queryId = viewConfig['queryId'],
-                selectArray = viewConfig['selectArray'],
-                modelMap = contrail.handleIfNull(self.modelMap, {});
+            var self = this;
+            if (self.model.getLength() > 0) {
+                var viewConfig = self.attributes.viewConfig,
+                    queryId = viewConfig['queryId'],
+                    selectArray = viewConfig['selectArray'],
+                    modelMap = contrail.handleIfNull(self.modelMap, {});
 
-            modelMap[cowc.UMID_FLOW_SERIES_LINE_CHART_MODEL] = new ContrailListModel({data: []});
-            modelMap[cowc.UMID_FLOW_SERIES_CHART_MODEL] = getChartDataModel(queryId, modelMap);
-            self.renderView4Config(self.$el, null, getQueryChartViewConfig(queryId, selectArray, modelMap), null, null, modelMap);
+                modelMap[cowc.UMID_FLOW_SERIES_LINE_CHART_MODEL] = new ContrailListModel({data: []});
+                modelMap[cowc.UMID_FLOW_SERIES_CHART_MODEL] = getChartDataModel(queryId, modelMap);
+                self.renderView4Config(self.$el, null, getQueryChartViewConfig(queryId, selectArray, modelMap), null, null, modelMap);
+            }
         }
     });
 

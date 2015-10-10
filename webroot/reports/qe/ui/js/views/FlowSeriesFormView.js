@@ -25,7 +25,9 @@ define([
                 Knockback.applyBindings(self.model, document.getElementById(cowl.QE_FLOW_SERIES_ID));
                 kbValidation.bind(self);
                 $("#run_query").on('click', function() {
-                    self.renderQueryResult();
+                    if (self.model.model().isValid(true, 'runQueryValidation')) {
+                        self.renderQueryResult();
+                    }
                 });
             });
 

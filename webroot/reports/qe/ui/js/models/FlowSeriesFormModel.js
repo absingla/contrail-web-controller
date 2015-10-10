@@ -20,7 +20,14 @@ define([
             return this;
         },
 
-        validations: {}
+        validations: {
+            runQueryValidation: {
+                'select': {
+                    required: true,
+                    msg: smwm.getRequiredMessage('select')
+                }
+            },
+        }
     });
 
     return FormSeriesFormModel;

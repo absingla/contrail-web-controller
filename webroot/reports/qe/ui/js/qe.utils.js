@@ -183,8 +183,8 @@ define([
             var chartDataValues = chartDataRow.values,
                 newChartDataValues = {},
                 emptyChartDataValue  = {},
-                toTime = queryFormModel.to_time(),
-                fromTime = queryFormModel.from_time(),
+                toTime = queryFormModel.to_time_utc(),
+                fromTime = queryFormModel.from_time_utc(),
                 timeGranularity = queryFormModel.time_granularity(),
                 timeGranularityUnit = queryFormModel.time_granularity_unit(),
                 timeInterval = timeGranularity * cowc.TIME_GRANULARITY_INTERVAL_VALUES[timeGranularityUnit];
