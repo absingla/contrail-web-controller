@@ -36,17 +36,19 @@ define([
     function getSelectDataObject() {
         var selectDataObject = {};
 
+        selectDataObject.requestState = ko.observable(cowc.DATA_REQUEST_STATE_FETCHING);
         selectDataObject.fields = ko.observableArray([]);
-        selectDataObject.enable_map = {};
+        selectDataObject.enable_map = ko.observable({});
 
         selectDataObject.select_all_text = ko.observable("Select All");
+        selectDataObject.select_fields = ko.observableArray([]);
         selectDataObject.checked_fields = ko.observableArray([]);
 
-        selectDataObject.on_select = function (data, event) {
-            var fieldName = $(event.currentTarget).attr('name'),
-                dataObject = data.select_data_object(),
+        selectDataObject.on_select = function (root, data, event) {
+            var fieldName = data.name,
+                dataObject = root.select_data_object(),
                 checkedFields = dataObject.checked_fields,
-                isEnableMap = dataObject.enable_map,
+                isEnableMap = dataObject.enable_map(),
                 key, keyLower, nonAggKey;
 
             if (fieldName == 'T') {
@@ -111,7 +113,7 @@ define([
         selectDataObject.on_select_all = function (data, event) {
             var dataObject = data.select_data_object(),
                 selectAllText = dataObject.select_all_text(),
-                isEnableMap = dataObject.enable_map,
+                isEnableMap = dataObject.enable_map(),
                 checkedFields = dataObject.checked_fields,
                 key, nonAggKey;
 
@@ -149,7 +151,7 @@ define([
 
         selectDataObject.reset = function(data, event) {
             var dataObject = data.select_data_object(),
-                isEnableMap = dataObject.enable_map,
+                isEnableMap = dataObject.enable_map(),
                 checkedFields = dataObject.checked_fields;
 
             dataObject.select_all_text("Select All");
