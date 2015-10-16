@@ -20,10 +20,10 @@ define([
             return this;
         },
 
-        isDisabledSelect: function() {
+        isTableNameAvailable: function() {
             var tableName = this.table_name();
 
-            return (tableName === null || tableName === '');
+            return !(tableName === null || tableName === '');
         },
 
         validations: {

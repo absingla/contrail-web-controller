@@ -119,7 +119,7 @@ define([
                                     elementId: 'select', view: "FormTextAreaView",
                                     viewConfig: {
                                         path: 'select', dataBindValue: 'select', class: "span9",
-                                        disabled: 'isDisabledSelect()',
+                                        visible: 'isTableNameAvailable()',
                                         editPopupConfig: {
                                             renderEditFn: function(event) {
                                                 var tableName = self.model.table_name();
@@ -171,6 +171,7 @@ define([
                                     elementId: 'where', view: "FormTextAreaView",
                                     viewConfig: {
                                         path: 'where', dataBindValue: 'where', class: "span9", placeHolder: "*",
+                                        visible: 'isTableNameAvailable()',
                                         editPopupConfig: {
                                             renderEditFn: function() {
                                                 self.renderWhere({className: cowc.QE_MODAL_CLASS_700});
@@ -184,11 +185,15 @@ define([
                             columns: [
                                 {
                                     elementId: 'filter', view: "FormTextAreaView",
-                                    viewConfig: {path: 'filter', dataBindValue: 'filter', class: "span9", editPopupConfig: {
-                                        renderEditFn: function() {
-                                            self.renderFilter({className: cowc.QE_MODAL_CLASS_700});
+                                    viewConfig: {
+                                        path: 'filter', dataBindValue: 'filter', class: "span9",
+                                        visible: 'isTableNameAvailable()',
+                                        editPopupConfig: {
+                                            renderEditFn: function() {
+                                                self.renderFilter({className: cowc.QE_MODAL_CLASS_700});
+                                            }
                                         }
-                                    }}
+                                    }
                                 }
                             ]
                         },
