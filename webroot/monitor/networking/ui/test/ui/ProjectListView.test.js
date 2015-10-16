@@ -7,8 +7,9 @@ define([
     'ct-test-messages',
     'project-list-view-mock-data',
     'co-grid-contrail-list-model-test-suite',
-    'co-grid-view-test-suite'
-], function (CUnit, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite) {
+    'co-grid-view-test-suite',
+    'co-chart-view-zoom-scatter-test-suite',
+], function (CUnit, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite) {
 
     var moduleId = cttm.PROJECTS_LIST_VIEW_COMMON_TEST_MODULE;
 
@@ -87,6 +88,17 @@ define([
                         //    severity: cotc.SEVERITY_LOW
                         //},
                     ]
+                },
+                {
+                    viewId: 'projects-scatter-chart',
+                    suites: [
+                        {
+                            class: ZoomScatterChartTestSuite,
+                            groups: ['all'],
+                            severity: cotc.SEVERITY_LOW
+                        }
+                    ]
+
                 }
             ]
         } ;
