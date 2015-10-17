@@ -58,6 +58,16 @@ define([
             rootView: mnPageLoader.mnView,
             tests: [
                 {
+                    viewId: ctwl.NETWORKS_PORTS_SCATTER_CHART_ID,
+                    suites: [
+                        {
+                            class: ZoomScatterChartTestSuite,
+                            groups: ['all'],
+                            severity: cotc.SEVERITY_LOW
+                        }
+                    ]
+                },
+                {
                     viewId: 'project-network-grid',
                     suites: [
                         {
@@ -72,8 +82,8 @@ define([
                             modelConfig: {
                                 dataGenerator: cttu.commonGridDataGenerator,
                                 dataParsers: {
-                                    mockDataParseFn: cttu.deleteSizeField,
-                                    gridDataParseFn: cttu.deleteSizeField
+                                    mockDataParseFn: cttu.deleteFieldsForNetworkListViewScatterChart,
+                                    gridDataParseFn: cttu.deleteFieldsForNetworkListViewScatterChart
                                 }
                             }
                         },
@@ -83,17 +93,6 @@ define([
                             severity: cotc.SEVERITY_LOW
                         },
                     ]
-                },
-                {
-                    viewId: ctwl.NETWORKS_PORTS_SCATTER_CHART_ID,
-                    suites: [
-                        {
-                            class: ZoomScatterChartTestSuite,
-                            groups: ['all'],
-                            severity: cotc.SEVERITY_LOW
-                        }
-                    ]
-
                 }
             ]
         } ;

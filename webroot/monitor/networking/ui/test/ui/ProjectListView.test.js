@@ -63,6 +63,16 @@ define([
             rootView: mnPageLoader.mnView,
             tests: [
                 {
+                    viewId: 'projects-scatter-chart',
+                    suites: [
+                        {
+                            class: ZoomScatterChartTestSuite,
+                            groups: ['all'],
+                            severity: cotc.SEVERITY_LOW
+                        }
+                    ]
+                },
+                {
                     viewId: 'projects-grid',
                     suites: [
                         {
@@ -77,8 +87,8 @@ define([
                             modelConfig: {
                                 dataGenerator: cttu.commonGridDataGenerator,
                                 dataParsers: {
-                                    mockDataParseFn: cttu.deleteSizeField,
-                                    gridDataParseFn: cttu.deleteSizeField
+                                    mockDataParseFn: cttu.deleteFieldsForProjectListViewScatterChart,
+                                    gridDataParseFn: cttu.deleteFieldsForProjectListViewScatterChart
                                 }
                             }
                         },
@@ -88,17 +98,6 @@ define([
                         //    severity: cotc.SEVERITY_LOW
                         //},
                     ]
-                },
-                {
-                    viewId: 'projects-scatter-chart',
-                    suites: [
-                        {
-                            class: ZoomScatterChartTestSuite,
-                            groups: ['all'],
-                            severity: cotc.SEVERITY_LOW
-                        }
-                    ]
-
                 }
             ]
         } ;
