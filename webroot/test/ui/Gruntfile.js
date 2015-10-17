@@ -274,7 +274,7 @@ module.exports = function (grunt) {
             },
             junitReporter: {
                 outputFile: __dirname + '/reports/tests/nm-test-results.xml',
-                    suite: 'InstanceView',
+                    suite: 'networkMonitoring',
             },
             htmlReporter: {
                 outputFile: __dirname + '/reports/tests/nm-test-results.html'
@@ -293,7 +293,7 @@ module.exports = function (grunt) {
             },
             junitReporter: {
                 outputFile: __dirname + '/reports/tests/web-controller-test-results.xml',
-                    suite: 'InstanceView',
+                    suite: 'webController',
             },
             htmlReporter: {
                 outputFile: __dirname + '/reports/tests/web-controller-test-results.html'
