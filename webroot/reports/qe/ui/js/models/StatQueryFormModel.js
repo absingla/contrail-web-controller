@@ -30,11 +30,11 @@ define([
             runQueryValidation: {
                 'table_name': {
                     required: true,
-                    msg: smwm.getRequiredMessage('table_name')
+                    msg: ctwm.getRequiredMessage('table_name')
                 },
                 'select': {
                     required: true,
-                    msg: smwm.getRequiredMessage('select')
+                    msg: ctwm.getRequiredMessage('select')
                 }
             },
         }
