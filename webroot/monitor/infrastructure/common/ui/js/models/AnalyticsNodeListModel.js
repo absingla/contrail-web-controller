@@ -19,7 +19,8 @@ define(['contrail-list-model'], function(ContrailListModel) {
                             .parseAndMergeGeneratorWithPrimaryDataForInfraNodes(
                                 response, contrailListModel);
                     }
-                }, {
+                },
+                {
                     getAjaxConfig : function() {
                         var postData =
                             monitorInfraUtils.getPostData("analytics-node", '', '',
@@ -30,15 +31,24 @@ define(['contrail-list-model'], function(ContrailListModel) {
                             data : JSON.stringify(postData)
                         };
                     },
-                    sucessCallback : function(response, contrailListModel) {
-                        if (result != null && result[0] != null) {
+                    successCallback : function(response, contrailListModel) {
+                        if (response != null && response[0] != null) {
                             monitorInfraUtils
-                                .mergeCollectorDataAndPrimaryData(result[0],
+                                .mergeCollectorDataAndPrimaryData(response[0],
                                         contrailListModel);
                         }
                     }
+                },
+                {
+                    getAjaxConfig: function(responseJSON) {
+                        return monitorInfraUtils.getAjaxConfigForInfraNodesCpuStats(
+                                monitorInfraConstants.ANALYTICS_NODE,responseJSON,'summary');
+                    },
+                    successCallback: function(response, contrailListModel) {
+                        monitorInfraUtils.parseAndMergeCpuStatsWithPrimaryDataForInfraNodes(
+                        response, contrailListModel);
+                    }
                 }
-                //Need to add cpu stats
                 ]
             },
             cacheConfig : {
