@@ -63,27 +63,25 @@ define([
                 view: "TabsView",
                 viewConfig: {
                     theme: cowc.TAB_THEME_OVERCAST,
-                    activate: function (e, ui) {
-                        var selTab = $(ui.newTab.context).text();
-                        if (selTab == cowl.TITLE_RESULTS) {
-                            $('#' + cowl.QE_FLOW_SERIES_GRID_ID).data('contrailGrid').refreshView();
-                        } else if (selTab == cowl.TITLE_CHART) {
-                            $('#' + cowl.QE_FLOW_SERIES_CHART_ID).find('svg').trigger('refresh');
-                            $('#' + cowl.QE_FLOW_SERIES_CHART_GRID_ID).data('contrailGrid').refreshView();
-                        }
-                    },
                     tabs: [
                         {
                             elementId: cowl.QE_FLOW_SERIES_GRID_ID,
                             title: cowl.TITLE_RESULTS,
                             view: "GridView",
+                            tabConfig: {
+                                activate: function(event, ui) {
+                                    if ($('#' + cowl.QE_FLOW_SERIES_GRID_ID).data('contrailGrid')) {
+                                        $('#' + cowl.QE_FLOW_SERIES_GRID_ID).data('contrailGrid').refreshView();
+                                    }
+                                }
+                            },
                             viewConfig: {
                                 elementConfig: getFlowSeriesGridConfig(fsRemoteConfig, fsGridColumns, pagerOptions)
                             }
                         }
                     ]
                 }
-            }
+            };
 
             if(selectArray.indexOf("T=") != -1) {
                 resultsViewConfig['viewConfig']['tabs'].push({
@@ -92,6 +90,14 @@ define([
                     view: "FlowSeriesLineChartView",
                     viewPathPrefix: "reports/qe/ui/js/views/",
                     app: cowc.APP_CONTRAIL_CONTROLLER,
+                    tabConfig: {
+                        activate: function (event, ui) {
+                            $('#' + cowl.QE_FLOW_SERIES_CHART_ID).find('svg').trigger('refresh');
+                            if ($('#' + cowl.QE_FLOW_SERIES_CHART_GRID_ID).data('contrailGrid')) {
+                                $('#' + cowl.QE_FLOW_SERIES_CHART_GRID_ID).data('contrailGrid').refreshView();
+                            }
+                        }
+                    },
                     viewConfig: {
                         queryId: postDataObj.queryId,
                         selectArray: selectArray
