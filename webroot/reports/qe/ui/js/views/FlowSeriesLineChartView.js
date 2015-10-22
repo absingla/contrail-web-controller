@@ -10,23 +10,7 @@ define([
 ], function (_, ContrailView, ContrailListModel, QueryLineChartView) {
 
     var FlowSeriesLineChartView = QueryLineChartView.extend({
-        render: function () {
-            var self = this,
-                contrailListModel = self.model;
-
-            if(!(contrailListModel.isRequestInProgress())) {
-               self.renderFlowSeriesLineChart()
-            }
-
-            contrailListModel.onAllRequestsComplete.subscribe(function() {
-                //TODO: Load chart only if data is not queued.
-                if (contrailListModel.getItems().length > 0) {
-                    self.renderFlowSeriesLineChart()
-                }
-            });
-        },
-
-        renderFlowSeriesLineChart: function() {
+        render: function() {
             var self = this;
             if (self.model.getLength() > 0) {
                 var viewConfig = self.attributes.viewConfig,

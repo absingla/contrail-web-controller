@@ -47,7 +47,18 @@ define([
 
                 contrailListModel = new ContrailListModel(listModelConfig);
                 modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL] = queryFormModel;
-                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, fsRemoteConfig, serverCurrentTime), null, null, modelMap);
+                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, fsRemoteConfig, serverCurrentTime), null, null, modelMap, function(flowSeriesResultView) {
+                    var selectArray = queryFormModel.select().replace(/ /g, "").split(",");
+
+                    if(selectArray.indexOf("T=") != -1) {
+                        contrailListModel.onAllRequestsComplete.subscribe(function () {
+                            //TODO: Load chart only if data is not queued.
+                            if (contrailListModel.getItems().length > 0) {
+                                flowSeriesResultView.childViewMap[cowl.QE_FLOW_SERIES_TAB_ID].renderNewTab(cowl.QE_FLOW_SERIES_TAB_ID, self.getFlowSeriesChartTabViewConfig(postDataObj));
+                            }
+                        });
+                    }
+                });
             });
         },
 
@@ -83,29 +94,36 @@ define([
                 }
             };
 
-            if(selectArray.indexOf("T=") != -1) {
-                resultsViewConfig['viewConfig']['tabs'].push({
-                    elementId: cowl.QE_FLOW_SERIES_CHART_ID,
-                    title: cowl.TITLE_CHART,
-                    view: "FlowSeriesLineChartView",
-                    viewPathPrefix: "reports/qe/ui/js/views/",
-                    app: cowc.APP_CONTRAIL_CONTROLLER,
-                    tabConfig: {
-                        activate: function (event, ui) {
-                            $('#' + cowl.QE_FLOW_SERIES_CHART_ID).find('svg').trigger('refresh');
-                            if ($('#' + cowl.QE_FLOW_SERIES_CHART_GRID_ID).data('contrailGrid')) {
-                                $('#' + cowl.QE_FLOW_SERIES_CHART_GRID_ID).data('contrailGrid').refreshView();
-                            }
+            return resultsViewConfig;
+        },
+
+        getFlowSeriesChartTabViewConfig: function(postDataObj) {
+            var queryFormModel = this.model,
+                selectArray = queryFormModel.select().replace(/ /g, "").split(","),
+                flowSeriesChartTabViewConfig = [];
+
+            flowSeriesChartTabViewConfig.push({
+                elementId: cowl.QE_FLOW_SERIES_CHART_ID,
+                title: cowl.TITLE_CHART,
+                view: "FlowSeriesLineChartView",
+                viewPathPrefix: "reports/qe/ui/js/views/",
+                app: cowc.APP_CONTRAIL_CONTROLLER,
+                tabConfig: {
+                    activate: function (event, ui) {
+                        $('#' + cowl.QE_FLOW_SERIES_CHART_ID).find('svg').trigger('refresh');
+                        if ($('#' + cowl.QE_FLOW_SERIES_CHART_GRID_ID).data('contrailGrid')) {
+                            $('#' + cowl.QE_FLOW_SERIES_CHART_GRID_ID).data('contrailGrid').refreshView();
                         }
                     },
-                    viewConfig: {
-                        queryId: postDataObj.queryId,
-                        selectArray: selectArray
-                    }
-                });
-            }
+                    renderOnActivate: true
+                },
+                viewConfig: {
+                    queryId: postDataObj.queryId,
+                    selectArray: selectArray
+                }
+            });
 
-            return resultsViewConfig;
+            return flowSeriesChartTabViewConfig;
         }
     });
 
