@@ -10,9 +10,10 @@ define([
     'co-details-view-test-suite',
     'co-grid-contrail-list-model-test-suite',
     'co-grid-view-test-suite',
-    'co-chart-view-line-bar-test-suite'
+    'co-chart-view-line-bar-test-suite',
+    'co-chart-view-line-test-suite',
 ], function (CUnit, cttu, cttm, TestMockdata, TabsViewTestSuite, DetailsViewTestSuite,
-             GridListModelTestSuite, GridViewTestSuite, LineBarChartViewTestSuite) {
+             GridListModelTestSuite, GridViewTestSuite, LineBarChartViewTestSuite, LineWithFocusChartViewTestSuite) {
 
     var moduleId = cttm.INSTANCE_VIEW_COMMON_TEST_MODULE;
 
@@ -140,6 +141,16 @@ define([
                     suites: [
                         {
                             class: LineBarChartViewTestSuite,
+                            groups: ['all'],
+                            severity: cotc.SEVERITY_LOW
+                        }
+                    ]
+                },
+                {
+                    viewId: ctwl.INSTANCE_TRAFFIC_STATS_ID,
+                    suites: [
+                        {
+                            class: LineWithFocusChartViewTestSuite,
                             groups: ['all'],
                             severity: cotc.SEVERITY_LOW
                         }
