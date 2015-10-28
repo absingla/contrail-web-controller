@@ -43,7 +43,10 @@ define([
                     var configNodeData = result;
                     var nodeIp;
                     var obj = monitorInfraParsers.
-                        parseConfigNodesDashboardData([result])[0];
+                        parseConfigNodesDashboardData([{
+                            name: monitorInfraUtils.getIPOrHostName(viewConfig),
+                            value: result
+                        }])[0];
                     //Further parsing required for Details page done below
 
                     var overallStatus;
@@ -73,6 +76,8 @@ define([
                     obj['processes'] = '&nbsp;';
 
                     obj['analyticsDetails'] = getAnalyticsNodeDetails(result);
+
+                    obj['cpu'] = monitorInfraParsers.getCpuText(obj['cpu']);
 
                     obj['lastLogTimestamp'] = getLastLogTime(result);
 
@@ -217,6 +222,11 @@ define([
                         key: 'lastLogTimestamp',
                         label: 'Last Log',
                         templateGenerator: 'TextGenerator'
+                    },
+                    {
+                        key: 'cores',
+                        label: 'Core File(s)',
+                        templateGenerator: 'TextGenerator'
                     }
                 ]
         );
@@ -297,29 +307,31 @@ define([
               var currProc = processStateList[i];
               if(currProc.process_name == "contrail-discovery:0"){
                  ret[monitorInfraConstants.UVEModuleIds['DISCOVERY_SERVICE']] =
-                     getProcessUpTime(currProc);
+                     monitorInfraUtils.getProcessUpTime(currProc);
               } else if(currProc.process_name == "contrail-discovery"){
                  ret[monitorInfraConstants.UVEModuleIds['DISCOVERY_SERVICE']] =
-                     getProcessUpTime(currProc);
+                     monitorInfraUtils.getProcessUpTime(currProc);
               } else if (currProc.process_name == "contrail-api:0"){
                  ret[monitorInfraConstants.UVEModuleIds['APISERVER']] =
-                     getProcessUpTime(currProc);
+                     monitorInfraUtils.getProcessUpTime(currProc);
               } else if (currProc.process_name == "contrail-api"){
                  ret[monitorInfraConstants.UVEModuleIds['APISERVER']] =
-                     getProcessUpTime(currProc);
+                     monitorInfraUtils.getProcessUpTime(currProc);
               } else if (currProc.process_name == "contrail-config-nodemgr"){
-                 ret['contrail-config-nodemgr'] = getProcessUpTime(currProc);
+                 ret['contrail-config-nodemgr'] = monitorInfraUtils.
+                                                     getProcessUpTime(currProc);
               } else if (currProc.process_name == "contrail-svc-monitor"){
                  ret[monitorInfraConstants.UVEModuleIds['SERVICE_MONITOR']] =
-                                             getProcessUpTime(currProc);
+                     monitorInfraUtils.getProcessUpTime(currProc);
               } else if (currProc.process_name == "ifmap"){
                  ret[monitorInfraConstants.UVEModuleIds['IFMAP']] =
-                                             getProcessUpTime(currProc);
+                     monitorInfraUtils.getProcessUpTime(currProc);
               } else if (currProc.process_name == "contrail-schema"){
                  ret[monitorInfraConstants.UVEModuleIds['SCHEMA']] =
-                                             getProcessUpTime(currProc);
+                     monitorInfraUtils.getProcessUpTime(currProc);
               } else if (currProc.process_name == 'contrail-zookeeper') {
-                     ret['contrail-zookeeper'] = getProcessUpTime(currProc);
+                     ret['contrail-zookeeper'] = monitorInfraUtils.
+                                                     getProcessUpTime(currProc);
                  }
            }
         }

@@ -41,6 +41,7 @@ define([
 
         this.URL_QUERY = '/api/admin/reports/query';
         this.URL_GET_GLOBAL_VROUTER_CONFIG = '/api/tenants/config/global-vrouter-config';
+
         this.URL_GET_PROJECT_QUOTA_USED =
             '/api/tenants/config/project-quotas-info?id={0}';
         this.URL_GET_GLOBAL_VROUTER_CONFIG =
@@ -51,6 +52,12 @@ define([
             '/api/tenants/config/securitygroup-details?projUUID={0}'
         this.URL_GET_SEC_GRP_LIST =
             '/api/tenants/config/securitygroup';
+        this.URL_GET_LIST_SERVICE_INSTS_CONFIG =
+            '/api/tenants/config/list-service-instances/{0}';
+        this.URL_GET_SERVICE_INSTS_STATUS =
+            '/api/tenants/config/service-instances-status/{0}';
+        this.URL_GET_SERVICE_INST_TMPLTS =
+            '/api/tenants/config/service-instance-templates/{0}';
 
         this.FILTERS_COLUMN_VN = ['UveVirtualNetworkAgent:interface_list', 'UveVirtualNetworkAgent:in_bandwidth_usage', 'UveVirtualNetworkAgent:out_bandwidth_usage',
             'UveVirtualNetworkConfig:connected_networks', 'UveVirtualNetworkAgent:virtualmachine_list', 'UveVirtualNetworkAgent:acl', 'UveVirtualNetworkAgent:total_acl_rules',
@@ -74,6 +81,13 @@ define([
         this.URL_NETWORK = '/#p=mon_networking_networks&q[type]=network&q[view]=details&q[focusedElement][fqName]={{key}}&q[focusedElement][type]=virtual-network';
         this.URL_INSTANCE = '/#p=mon_networking_instances&q[type]=instance&q[view]=details&q[focusedElement][fqName]={{params.vn}}&q[focusedElement][uuid]={{key}}&q[focusedElement][type]=virtual-network';
         this.URL_VROUTER = '/#p=mon_infra_vrouter&q[node]={{key}}';
+
+        this.URL_LOGICAL_ROUTER_IN_CHUNKS = '/api/admin/config/get-data?type=logical-router&count={0}&fqnUUID={1}';
+        this.URL_All_NETWORK_IN_PROJECT = '/api/tenants/config/all-virtual-networks?uuid={0}';
+        this.URL_All_EXTERNAL_NETWORK = '/api/tenants/config/external-virtual-networks';
+        this.URL_LOGICAL_ROUTER_POST = '/api/tenants/config/logicalrouter';
+        this.URL_LOGICAL_ROUTER_PUT = '/api/tenants/config/logicalrouter/{0}';
+        this.URL_LOGICAL_ROUTER_VIEW_PATH_PREFIX = 'config/networking/logicalrouter/ui/js/views/';
 
         this.get = function () {
             var args = arguments;
@@ -126,7 +140,7 @@ define([
         this.UCID_CONNECTED_NETWORK_TRAFFIC_STATS_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:{1}:traffic-stats";
         this.UCID_INSTANCE_INTERFACE_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:{1}:interfaces";
         this.UCID_INSTANCE_CPU_MEMORY_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:{1}:cpu-memory";
-        
+
         this.UCID_NODE_CPU_MEMORY_LIST = 'node_details' + "{0}:cpu-memory";
 
         this.GRAPH_DIR_LR = "LR";
@@ -165,6 +179,40 @@ define([
              green : 'okay'
         };
         this.LINK_CONNECTOR_STRING = " --- ";
+
+        // Underlay constants
+        this.UNDERLAY_TABS_VIEW_ID = 'underlayTabsView';
+        this.UNDERLAY_TAB_ID = 'underlayTabs';
+        this.TRACEFLOW_RADIOBUTTON_ID = 'traceFlowRadioBtns';
+        this.TRACEFLOW_DROPDOWN_ID = 'traceFlowDropdown';
+        this.TRACEFLOW_RESULTS_GRID_ID = 'traceFlowResultsGrid';
+        this.DEFAULT_INTROSPECTPORT = '8085';
+        this.UNDERLAY_PROUTER_INTERFACE_TAB_ID = 'pRouterInterfaces';
+        this.UNDERLAY_TRACEFLOW_TAB_ID = 'traceFlow';
+        this.UNDERLAY_DETAILS_TAB_ID = 'details';
+        this.FLOW_RECORD_TABLE = "FlowRecordTable";
+        this.FR_QUERY_PREFIX = "fr";
+        this.TIMERANGE_DROPDOWN_VALUES = [
+            {'id': 600, 'text': 'Last 10 Mins'},
+            {'id': 1800, 'text': 'Last 30 Mins'},
+            {'id': 3600, 'text': 'Last 1 Hr'},
+            {'id': 21600, 'text': 'Last 6 Hrs'},
+            {'id': 43200, 'text': 'Last 12 Hrs'},
+            {'id': -1, 'text': 'Custom'}
+        ];
+        this.UNDERLAY_SEARCHFLOW_TAB_ID = 'searchFlow';
+        this.UNDERLAY_TRAFFICSTATS_TAB_ID = 'trafficStats';
+        this.PROUTER = 'physical-router';
+        this.VROUTER = 'virtual-router';
+        this.VIRTUALMACHINE = 'virtual-machine';
+        this.UNDERLAY_LINK = 'link';
+        this.TRACEFLOW_MAXATTEMPTS = 3;
+        this.TRACEFLOW_INTERVAL = 5;
+        this.UNDERLAY_PROUTER_TAB_INDEXES = [2, 3];
+        this.UNDERLAY_LINK_TAB_INDEX = [4];
+        this.UNDERLAY_VM_TAB_INDEXES = [5, 6, 7, 8, 9, 10];
+        this.UNDERLAY_VROUTER_TAB_INDEXES = [11, 12, 13, 14, 15, 16];
+
         this.getProjectsURL = function (domain) {
             //If the role is admin then we will display all the projects else the projects which has access
             var url = '/api/tenants/projects/' + domain,
@@ -419,6 +467,66 @@ define([
         this.URL_ALARM_DETAILS_IN_CHUNKS =
             '/api/tenant/monitoring/alarms?count={0}&startAt={1}';
 
+        //BGP
+        this.URL_GET_BGP = '/api/tenants/config/bgp/get-bgp-routers';
+        this.URL_GET_ASN = '/api/tenants/admin/config/global-asn';
+        this.BGP_ADDRESS_FAMILY_DATA = [
+                                           {
+                                               text : 'inet-vpn',
+                                               value : 'inet-vpn',
+                                               locked : true
+                                           },
+                                           {
+                                               text : 'inet6-vpn',
+                                               value : 'inet6-vpn'
+                                           },
+                                           {
+                                                text : 'route-target',
+                                                value : 'route-target'
+                                           },
+                                           {
+                                                text : 'e-vpn',
+                                                value : 'e-vpn'
+                                           }
+                                       ];
+        this.CN_ADDRESS_FAMILY_DATA = [
+                                          {
+                                              text : 'route-target',
+                                              value : 'route-target',
+                                              locked : true
+                                          },
+                                          {
+                                              text : 'inet-vpn',
+                                              value : 'inet-vpn',
+                                              locked : true
+                                          },
+                                          {
+                                               text : 'inet6-vpn',
+                                               value : 'inet6-vpn',
+                                               locked : true
+                                          },
+                                          {
+                                               text : 'e-vpn',
+                                               value : 'e-vpn',
+                                               locked : true
+                                          },
+                                          {
+                                               text : 'erm-vpn',
+                                               value : 'erm-vpn',
+                                               locked : true
+                                          }
+                                      ];
+         this.AUTHENTICATION_DATA = [
+                                        {
+                                            text : 'None',
+                                            value : 'none'
+                                        },
+                                        {
+                                            text : 'md5',
+                                            value : 'md5'
+                                        }
+                                    ];
+
         //Physical Routers constants
         this.URL_PHYSICAL_ROUTERS_DETAILS_IN_CHUNKS =
             '/api/tenants/config/physical-routers-with-intf-count';
@@ -430,8 +538,8 @@ define([
         this.URL_VIRTUAL_NETWORK_DETAILS =
             'api/tenants/config/virtual-networks';
         this.SNMP_VERSION_DATA = [
-            {'value' : 'v2', "text" : '2'},
-            {'value' : 'v3', "text" : '3'}
+            {'value' : '2', "label" : '2c'},
+            {'value' : '3', "label" : '3'}
         ];
         this.SNMP_SECURITY_LEVEL = [
             {'value' : 'none', "text" : 'None'},
@@ -443,7 +551,6 @@ define([
             {'value' : 'embedded', "text" : 'Embedded'},
             {'value' : 'torAgent', "text" : 'TOR Agent'}
         ];
-
 
         // VRouter Config Constants
         this.URL_CFG_VROUTER_DETAILS =
@@ -460,6 +567,29 @@ define([
         // Service Template Config Constants
         this.URL_CFG_SVC_TEMPLATE_DETAILS =
             '/api/tenants/config/service-templates';
+
+        //Interfaces
+        this.URL_PHYSICAL_ROUTER_LIST =
+            '/api/tenants/config/physical-routers-list';
+        this.URL_GET_INTERFACES =
+            '/api/tenants/config/get-interfaces';
+        this.INTERFACE_TYPE_DATA = [
+            {'value' : 'physical', "text" : 'Physical'},
+            {'value' : 'logical', "text" : 'Logical'}
+        ];
+        this.URL_GET_INTERFACE_DELIMITERS =
+            '/api/admin/webconfig/physicaldevices/interface_delimiters';
+        this.URL_GET_VN_INF = '/api/tenants/config/vn-list-details';
+        this.URL_GET_VN_INTERNALS_INF =
+            '/api/tenants/config/get-virtual-machine-details/?vn_uuid={0}';
+        this.LOGICAL_INF_TYPE_DATA = [
+            {'value' : 'l2', "text" : 'Server'},
+            {'value' : 'l3', "text" : 'L3'}
+        ];
+        this.INF_PARENT_TYPE_DATA = [
+            {'value' : 'physical-router', "text" : 'Physical Router'},
+            {'value' : 'physical-interface', "text" : 'Physical Interface'}
+        ];
     };
 
     //str will be [0-9]+(m|h|s|d)

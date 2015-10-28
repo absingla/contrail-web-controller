@@ -55,7 +55,10 @@ define([
                 dataParser: function(result) {
                     var ctrlNodeData = result;
                     var obj = monitorInfraParsers.
-                        parseControlNodesDashboardData([result])[0];
+                        parseControlNodesDashboardData([{
+                            name: monitorInfraUtils.getIPOrHostName(viewConfig),
+                            value: result
+                        }])[0];
                     //Further parsing required for Details page done below
                     var overallStatus;
                     try{
@@ -99,6 +102,8 @@ define([
 
                     obj['vRouterPeerDetails'] =
                             getVRouterPeersDetails(ctrlNodeData,obj);
+
+                    obj['cpu'] = monitorInfraParsers.getCpuText(obj['cpu']);
 
                     obj['lastLogTimestamp'] =
                             getLastLogTime(ctrlNodeData);
@@ -235,6 +240,11 @@ define([
             {
                 key: 'lastLogTimestamp',
                 label: 'Last Log',
+                templateGenerator: 'TextGenerator'
+            },
+            {
+                key: 'cores',
+                label: 'Core File(s)',
                 templateGenerator: 'TextGenerator'
             }
         ]);

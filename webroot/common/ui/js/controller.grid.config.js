@@ -46,45 +46,33 @@ define([
             }
         ];
 
-        this.physicalRoutersColumns = [
+        this.bgpRouterColumns = [
                 {
-                    id : 'pRouterName',
-                    field : 'pRouterName',
-                    name : 'Name' ,
-                    cssClass :'cell-hyperlink-blue',
-                    events : {
-                        onClick : function(e, dc) {
-                            layoutHandler.setURLHashParams({uuid : dc.uuid},
-                            {p : 'config_pd_interfaces' ,merge : false,
-                            triggerHashChange : true});
-                        }
-                    }
-                },
-                {
-                    id : 'mgmtIP',
-                    field : 'mgmtIP',
-                    name : 'Management IP',
+                    field:"ip",
+                    id:"ip",
+                    name:"IP Address",
+                    sortable: true,
                     sorter : comparatorIP
                 },
                 {
-                    id : 'dataIP',
-                    field : 'dataIP',
-                    name : 'VTEP Address',
-                    sorter : comparatorIP
+                    field:"role",
+                    id:"role",
+                    name:"Type",
+                    sortable: true
                 },
                 {
-                    id : 'interfaces',
-                    field : 'totalInterfacesCount',
-                    name : 'Interfaces',
-                    cssClass :'cell-hyperlink-blue',
-                    events : {
-                        onClick : function(e, dc) {
-                            layoutHandler.setURLHashParams({uuid : dc.uuid},
-                            {p : 'config_pd_interfaces' ,merge : false,
-                            triggerHashChange : true});
-                        }
-                    }
-                }];
+                    field:"vendor",
+                    id:"vendor",
+                    name:"Vendor",
+                    sortable: true
+                },
+                {
+                    field:"name",
+                    id:"name",
+                    name:"HostName",
+                    sortable: true
+                }
+        ];
 
         this.getVMInterfacesLazyRemoteConfig = function () {
             return [
@@ -112,6 +100,103 @@ define([
                     }
                 }
             ]
+        };
+
+        this.instanceInterfaceColumns = [
+             {
+                 field: 'ip',
+                 name: 'IP Address',
+                 minWidth: 150,
+                 searchable: true
+             },
+             {
+                 field: 'vm_name',
+                 name: 'Instance Name',
+                 minWidth: 200,
+                 searchable: true
+             },
+             {
+                 field: 'floatingIP',
+                 name: 'Floating IPs In/Out',
+                 formatter: function (r, c, v, cd, dc) {
+                     return cowf.formatValueArray4Grid(dc['floatingIP']);
+                 },
+                 minWidth: 200
+             },
+             {
+                 field: '',
+                 name: 'Traffic In/Out (Last 1 Hr)',
+                 minWidth: 150,
+                 formatter: function (r, c, v, cd, dc) {
+                     return contrail.format("{0} / {1}", cowu.addUnits2Bytes(dc['inBytes60'], true), cowu.addUnits2Bytes(dc['outBytes60'], true));
+                 }
+             },
+             {
+                 field: '',
+                 name: 'Throughput In/Out',
+                 minWidth: 150,
+                 formatter: function (r, c, v, cd, dc) {
+                     return contrail.format("{0} / {1}", formatThroughput(dc['in_bw_usage'], true), formatThroughput(dc['out_bw_usage'], true));
+                 }
+             },
+             {
+                 name: 'Status',
+                 minWidth: 100,
+                 searchable: true,
+                 formatter: function (r, c, v, cd, dc) {
+                     if (dc.active) {
+                         return ('<div class="status-badge-rounded status-active"></div>&nbsp;Active');
+                     } else {
+                         return ('<div class="status-badge-rounded status-inactive"></div>&nbsp;Inactive');
+                     }
+                 }
+             }
+        ];
+
+        this.getInterfaceStatsLazyRemoteConfig = function () {
+            return [
+                {
+                    getAjaxConfig: function (responseJSON) {
+                        var names, lazyAjaxConfig;
+
+                        names = $.map(responseJSON, function (item) {
+                            return item['name'];
+                        });
+
+                        lazyAjaxConfig = {
+                            url: ctwc.URL_VM_VN_STATS,
+                            type: 'POST',
+                            data: JSON.stringify({
+                                data: {
+                                    type: 'virtual-machine-interface',
+                                    uuids: names.join(','),
+                                    minSince: 60,
+                                    useServerTime: true
+                                }
+                            })
+                        }
+                        return lazyAjaxConfig;
+                    },
+                    successCallback: function (response, contrailListModel) {
+                        var statDataList = ctwp.parseInstanceInterfaceStats(response[0]),
+                            dataItems = contrailListModel.getItems(),
+                            statData;
+
+                        for (var j = 0; j < statDataList.length; j++) {
+                            statData = statDataList[j];
+                            for (var i = 0; i < dataItems.length; i++) {
+                                var dataItem = dataItems[i];
+                                if (statData['name'] == dataItem['name']) {
+                                    dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
+                                    dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
+                                    break;
+                                }
+                            }
+                        }
+                        contrailListModel.updateData(dataItems);
+                    }
+                }
+            ];
         };
 
         this.getAcknowledgeAction = function (onClickFunction, divider) {

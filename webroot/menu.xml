@@ -75,25 +75,10 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>Physical Topology</label>
                             <resources>
                                 <resource>
-                                    <rootDir>/monitor/infra/underlay/ui</rootDir>
-                                    <view>monitor_infra_underlay.view</view>
-                                    <view>flow_queries.view</view>
-                                    <view>queries.view</view>
-                                    <js>monitor_infra_underlay.js</js>
-                                    <js>flow_queries.js</js>
-                                    <class>underlayRenderer</class>
-                                </resource>
-                                <resource>
-                                    <rootDir>/monitor/infra/vrouter/ui</rootDir>
-                                    <view>monitor_infra_vrouter.view</view>
-                                    <js>monitor_infra_vrouter.js</js>
-                                    <js>monitor_infra_vrouter_flows.js</js>
-                                    <js>monitor_infra_vrouter_details.js</js>
-                                    <js>monitor_infra_vrouter_interfaces.js</js>
-                                    <js>monitor_infra_vrouter_networks.js</js>
-                                    <js>monitor_infra_vrouter_acl.js</js>
-                                    <js>monitor_infra_vrouter_flows.js</js>
-                                    <js>monitor_infra_vrouter_routes.js</js>
+                                    <rootDir>/monitor/infrastructure/underlay/ui</rootDir>
+                                    <js>underlay.main.js</js>
+                                    <class>underlayPageLoader</class>
+                                    <function>renderUnderlayPage</function>
                                 </resource>
                             </resources>
                         </item>
@@ -351,12 +336,16 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>BGP Routers</label>
                             <hash>config_infra_bgp</hash>
                             <resources>
-                                <resource>
-                                    <rootDir>/config/bgp/ui</rootDir>
-                                    <view>bgp_config.view</view>
-                                    <js>bgp_config.js</js>
-                                    <class>bgpConfigObj</class>
+                                 <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
                                 </resource>
+                                <resource>
+                                    <rootDir>/config/infra/bgp/ui</rootDir>
+                                    <js>bgp.main.js</js>
+                                    <class>configBGPPageLoader</class>
+                                    <function>renderBGP</function>
+                                 </resource>
                             </resources>
                             <searchStrings>Configure BGP Routers</searchStrings>
                         </item>
@@ -429,13 +418,6 @@ and need to add the iconClass tag wherever we need to show some icons
                         <resource>
                             <rootDir>/common/ui</rootDir>
                             <js>controller.app.js</js>
-                            <class>configPhysicalDevicesPageLoader</class>
-                        </resource>
-                        <resource>
-                            <rootDir>/config/physicaldevices/ui</rootDir>
-                            <js>physicaldevices.main.js</js>
-                            <template>physicaldevices.tmpl</template>
-                            <class>configPhysicalDevicesPageLoader</class>
                         </resource>
                     </resources>
                     <items>
@@ -444,8 +426,9 @@ and need to add the iconClass tag wherever we need to show some icons
                             <hash>config_pd_physicalRouters</hash>
                             <resources>
                                 <resource>
-                                    <rootDir>/config/physicaldevices/ui</rootDir>
-                                    <class>configPhysicalDevicesPageLoader</class>
+                                    <rootDir>/config/physicaldevices/physicalrouters/ui</rootDir>
+                                    <js>physicalrouters.main.js</js>
+                                    <class>configPhysicalRoutersPageLoader</class>
                                     <function>renderPhysicalRouters</function>
                                 </resource>
                             </resources>
@@ -456,10 +439,11 @@ and need to add the iconClass tag wherever we need to show some icons
                             <hash>config_pd_interfaces</hash>
                             <resources>
                                 <resource>
-                                    <rootDir>/config/physicaldevices/physicalinterfaces/ui</rootDir>
-                                    <js>physicalinterfaces_config.js</js>
-                                    <view>physicalinterfaces_config.view</view>
-                                    <class>physicalInterfacesConfigObj</class>
+                                    <rootDir>/config/physicaldevices/interfaces/ui</rootDir>
+                                    <js>interfaces.main.js</js>
+                                    <template>interfaces.tmpl</template>
+                                    <class>configInterfacesPageLoader</class>
+                                    <function>renderInterfaces</function>
                                 </resource>
                             </resources>
                             <searchStrings>Configure Interfaces</searchStrings>
@@ -539,10 +523,15 @@ and need to add the iconClass tag wherever we need to show some icons
                             <hash>config_net_routers</hash>
                             <resources>
                                 <resource>
-                                    <rootDir>/config/logicalrouters/ui</rootDir>
-                                    <js>router_config.js</js>
-                                    <view>router_config.view</view>
-                                    <class>routerConfigObj</class>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                    <class>renderLogicalRouter</class>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/logicalrouter/ui</rootDir>
+                                    <js>logicalRouter.main.js</js>
+                                    <class>ConfigLogicalRouterLoader</class>
+                                    <function>renderLogicalRouter</function>
                                 </resource>
                             </resources>
                             <access>
@@ -623,10 +612,13 @@ and need to add the iconClass tag wherever we need to show some icons
                             <hash>config_sc_svcInstances</hash>
                             <resources>
                                 <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
                                     <rootDir>/config/services/instances/ui</rootDir>
-                                    <js>svcinstances_config.js</js>
-                                    <view>svcinstances_config.view</view>
-                                    <class>ServicesInstancesObj</class>
+                                    <js>svcInst.main.js</js>
+                                    <class>svcInstPageLoader</class>
+                                    <function>renderSvcInst</function>
                                 </resource>
                             </resources>
                             <searchStrings>Configure Service Instances</searchStrings>

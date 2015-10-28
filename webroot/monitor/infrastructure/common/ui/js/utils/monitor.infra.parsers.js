@@ -18,10 +18,10 @@ define(
                     var retArr = [];
                     $.each(result,function(idx,d) {
                         var obj = {};
-                        obj['x'] = parseFloat(jsonPath(d,'$..cpu_info.cpu_share')[0]);
+                        obj['x'] = parseFloat(jsonPath(d,'$.value.ControlCpuState.cpu_info[0].cpu_share')[0]);
                         //Info:Need to specify the processname explictly
                         //for which we need res memory && Convert to MB
-                        obj['y'] = parseInt(jsonPath(d,'$..meminfo.res')[0])/1024;
+                        obj['y'] = parseInt(jsonPath(d,'$.value.ControlCpuState.cpu_info[0].mem_res')[0])/1024;
                         obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : '-';
                         obj['x'] = $.isNumeric(obj['x']) ? obj['x'] : 0;
                         obj['y'] = $.isNumeric(obj['y']) ? obj['y'] : 0;
@@ -47,14 +47,26 @@ define(
                         }
                         obj['summaryIps'] = monitorInfraUtils.
                                             getControlIpAddresses(d,"summary");
-                        obj['memory'] =
-                            formatMemory(ifNull(jsonPath(d,'$..meminfo')[0]),'-');
+                        obj['memory'] = monitorInfraUtils.
+                            formatMemoryForDisplay(ifNull(jsonPath(d,
+                                    '$.value.ControlCpuState.cpu_info[0].mem_res')[0]));
                         obj['size'] =
                             ifNull(jsonPath(d,'$..output_queue_depth')[0],0)+1;
                         obj['shape'] = 'circle';
                         obj['name'] = d['name'];
                         obj['link'] =
-                            {p:'mon_infra_control',q:{node:obj['name'],tab:''}};
+                            {
+                                p: 'mon_infra_control',
+                                q: {
+                                    type: 'controlNode',
+                                    view: 'details',
+                                    focusedElement: {
+                                        node: obj['name'],
+                                        tab:'details'
+                                    }
+                                },
+                                merge:false
+                            };
                         obj['version'] = ifEmpty(self.getNodeVersion(jsonPath(d,
                             '$.value.BgpRouterState.build_info')[0]),'-');
                         obj['totalPeerCount'] =
@@ -145,6 +157,7 @@ define(
                                                 .sort(dashboardUtils.sortInfraAlerts);
                         obj['color'] = monitorInfraUtils.getControlNodeColor(d,obj);
                         obj['rawData'] = d;
+                        obj['cores'] = self.getCores(d);
                         retArr.push(obj);
                     });
                     retArr.sort(dashboardUtils.sortNodesByColor);
@@ -242,9 +255,14 @@ define(
                         obj['name'] = d['name'];
                         obj['link'] = {
                             p: 'mon_infra_vrouter',
+                            merge:false,
                             q: {
-                                node: obj['name'],
-                                tab: ''
+                                type: "vRouter",
+                                view: "details",
+                                focusedElement: {
+                                    node: obj['name'],
+                                    tab: 'details'
+                                }
                             }
                         };
                         obj['instCnt'] = getValueByJsonPath(dValue,
@@ -301,6 +319,7 @@ define(
                             dashboardUtils.sortInfraAlerts);
                         //Decide color based on parameters
                         obj['color'] = monitorInfraUtils.getvRouterColor(d, obj);
+                        obj['cores'] = self.getCores(d);
                         obj['rawData'] = d;
                         retArr.push(obj);
                     }
@@ -362,9 +381,14 @@ define(
                         obj['name'] = d['name'];
                         obj['link'] = {
                             p : 'mon_infra_analytics',
+                            merge:false,
                             q : {
-                                node : obj['name'],
-                                tab : ''
+                                type: "analyticsNode",
+                                view: "details",
+                                focusedElement: {
+                                    node: obj['name'],
+                                    tab: 'details'
+                                }
                             }
                         };
                         obj['errorStrings'] = ifNull(jsonPath(d,
@@ -400,6 +424,7 @@ define(
                         obj['alerts'] = obj['nodeAlerts'].concat(obj['processAlerts'])
                                             .sort(dashboardUtils.sortInfraAlerts);
                         obj['color'] = monitorInfraUtils.getAnalyticsNodeColor(d, obj);
+                        obj['cores'] = self.getCores(d);
                         obj['rawData'] = d;
                         retArr.push(obj);
                     });
@@ -432,7 +457,18 @@ define(
                         obj['display_type'] = 'Config Node';
                         obj['name'] = d['name'];
                         obj['link'] =
-                            {p:'mon_infra_config',q:{node:obj['name'],tab:''}};
+                            {
+                                p: 'mon_infra_config',
+                                merge: false,
+                                q: {
+                                    type: "configNode",
+                                    view: "details",
+                                    focusedElement: {
+                                        node: obj['name'],
+                                        tab: 'details'
+                                    }
+                                }
+                            };
                         obj['isNTPUnsynced'] =
                             monitorInfraUtils.isNTPUnsynced(jsonPath(d,'$..NodeStatus')[0]);
                         obj['isConfigMissing'] =
@@ -479,6 +515,7 @@ define(
                             obj['nodeAlerts'].concat(obj['processAlerts'])
                                 .sort(dashboardUtils.sortInfraAlerts);
                         obj['color'] = monitorInfraUtils.getConfigNodeColor(d,obj);
+                        obj['cores'] = self.getCores(d);
                         obj['rawData'] = d;
                         retArr.push(obj);
                     });
@@ -545,8 +582,17 @@ define(
                         obj['type'] = 'dbNode';
                         obj['display_type'] = 'Database Node';
                         obj['name'] = d['name'];
-                        obj['link'] = {p:'mon_infra_database',
-                            q:{node:obj['name'],tab:''}};
+                        obj['link'] = {
+                            p: 'mon_infra_database',
+                            q: {
+                                type: "databaseNode",
+                                view: "details",
+                                focusedElement: {
+                                    node: obj['name'],
+                                    tab: 'details'
+                                }
+                            }
+                        };
                         obj['processAlerts'] =
                             infraMonitorAlertUtils.getProcessAlerts(d,obj);
                         obj['isPartialUveMissing'] = false;
@@ -562,6 +608,7 @@ define(
                         obj['alerts'] = obj['nodeAlerts'].concat(obj['processAlerts'])
                             .sort(dashboardUtils.sortInfraAlerts);
                         obj['color'] = monitorInfraUtils.getDatabaseNodeColor(d,obj);
+                        obj['cores'] = self.getCores(d);
                         obj['rawData'] = d;
                         retArr.push(obj);
                     });
@@ -1675,6 +1722,68 @@ define(
                                 wrapLabelValue('Label', lbl));
                             return x;
                     }
+                };
+                this.parseUnderlayFlowRecords = function (response) {
+                    var graphView =
+                        $("#"+ctwl.UNDERLAY_GRAPH_ID).data('graphView');
+                    response['vRouters'] = graphView.model.vRouters;
+                    var vRouters = ifNull(response['vRouters'],[]);
+                    $.each(ifNull(response['data'],[]),function (idx,obj) {
+                        var formattedVrouter,formattedOtherVrouter,
+                            formattedSrcVN,formattedDestVN;
+                        var vRouterIp =
+                            validateIPAddress(handleNull4Grid(obj['vrouter_ip'])) == true ?
+                            handleNull4Grid(obj['vrouter_ip']) : noDataStr,
+                                formattedVrouter = noDataStr;
+                        var vrouter = ifNull(obj['vrouter'],noDataStr);
+                        if(vRouterIp != noDataStr || vrouter != noDataStr)
+                            formattedVrouter =
+                                contrail.format('{0} ({1})',vrouter, vRouterIp);
+                        var othervRouterIp =
+                            validateIPAddress(handleNull4Grid(obj['other_vrouter_ip'])) == true ?
+                                handleNull4Grid(obj['other_vrouter_ip']) : noDataStr,
+                                formattedOtherVrouter = noDataStr;
+                            if(othervRouterIp != noDataStr) {
+                                $.each(vRouters,function(idx,obj){
+                                    var ipList = getValueByJsonPath(obj,
+                                        'more_attributes;VrouterAgent;self_ip_list',[]);
+                                    if(ipList.indexOf(othervRouterIp) > -1)
+                                        formattedOtherVrouter = contrail.format('{0} ({1})',
+                                            ifNull(obj['name'],noDataStr), othervRouterIp);
+                                });
+                            }
+                       var formattedSrcVN = handleNull4Grid(obj['sourcevn']);
+                       formattedSrcVN = formatVN(formattedSrcVN);
+                       var formattedDestVN = handleNull4Grid(obj['destvn']);
+                       formattedDestVN = formatVN(formattedSrcVN);
+                       obj['formattedVrouter'] = formattedVrouter;
+                       obj['formattedOtherVrouter'] = formattedOtherVrouter;
+                       obj['formattedSrcVN'] = formattedSrcVN[0];
+                       obj['formattedDestVN'] = formattedDestVN[0];
+                    });
+
+                    return response['data'];
+                }
+
+                self.getCores = function (data) {
+                    var fileList=[];
+                    var fileArrList=[];
+                    var procCoreList = jsonPath(data,'$..NodeStatus.process_info[*].core_file_list');
+                    if (procCoreList){
+                        fileArrList = ifNull(procCoreList,[]);
+                    }
+                    // var allCoresList = ifNull(jsonPath(data,'$..NodeStatus.all_core_file_list')[0],[]);
+                    // fileArrList = fileArrList.concat([allCoresList]);
+                    for (var i=0;i<fileArrList.length;i++){
+                        var files=fileArrList[i];
+                       for (var j=0;j<files.length;j++)
+                           fileList.push(files[j])
+                    }
+                    return (fileList.length == 0)? '-' : fileList;
+                }
+
+                self.getCpuText = function (cpu) {
+                    return (cpu != '-')? cpu + ' %' : cpu;
                 }
             };
 

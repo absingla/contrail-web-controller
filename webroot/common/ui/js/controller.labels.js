@@ -129,49 +129,10 @@ define([
             lls_fab_address_ip: 'Address Type',
             ip_fabric_DNS_service_name: 'Fabric DNS',
 
-            /*Physical Routers*/
-            pmodel: 'Model',
-            snmpMntd: "SNMP Monitored",
-            mgmtIP: "Management IP",
-            dataIP: "VTEP Address",
-            torAgent1: "TOR Agent1",
-            torAgent2: "TOR Agent2",
-            tsn1: "TSN1",
-            tsn2: "TSN2",
-            physical_router: "Physical Router",
-            pRouterName: "Name",
-            snmpLocalPort: "Local Port",
-            snmpRetries: "Retries",
-            snmpTimeout: "Timeout(secs)",
-            snmpV2Community: "Community",
-            snmpVersion: "SNMP Version",
-            expDetSnmpVersion: "SNMP Version",
-            snmpV3SecurityName: "Security Name",
-            snmpV3SecurityLevel: "Security Level",
-            snmpv3AuthProtocol: "Authentication Protocol",
-            snmpv3AuthPasswd: "Password",
-            snmpv3PrivProtocol: "Privacy Protocol",
-            snmpv3PrivPasswd: "Password",
-            snmpV3SecurityEngineId: "Security Engine Id",
-            snmpv3Context: "Context",
-            snmpv3ContextEngineId: "Context Engine Id",
-            snmpv3EngineId: "Engine Id",
-            snmpv3EngineBoots: "Engine Boots",
-            snmpv3EngineTime: "Engine Time",
-            displayVirtualRouters: "Associated Virtual Router(s)",
-            totalInterfacesCount: "Interfaces",
-            isJunosPortEnabled: "Junos Service Ports",
-            netConfUserName: "Netconf Username",
-            netConfPasswd: "Password",
-            bgpGateWay: "BGP Gateway",
-            vns: "Virtual Networks",
-            virtualRouterType: 'Type',
-            netconfManaged: 'Netconf Managed',
-
             /*Virtual Router Config*/
             virtual_router_type: "Type",
             physical_router_back_refs: "Physical Routers",
-            virtual_router_ip_address: "IP Address"
+            virtual_router_ip_address: "IP Address",
         };
 
         this.TOP_CONTENT_CONTAINER = "top-content-container";
@@ -295,7 +256,7 @@ define([
         this.TITLE_TRAFFIC_STATISTICS_OUT = "Traffic Statistics Out";
         this.TITLE_PORT_DISTRIBUTION = "Port Distribution";
         this.TITLE_PORT_MAP = "Port Map";
-        
+
          /** Titles used in node details chart widget **/
         this.TITLE_CONTROLNODE_CPU_MEM_UTILIZATION = 'Control Node CPU/Memory Utilization';
         this.TITLE_VROUTER_AGENT_CPU_MEM_UTILIZATION = 'vRouter Agent CPU/Memory Utilization';
@@ -322,6 +283,23 @@ define([
         this.TITLE_GRAPH_ELEMENT_VIRTUAL_NETWORK = 'virtual network';
         this.TITLE_GRAPH_ELEMENT_VIRTUAL_MACHINE = 'virtual machine';
         this.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK = 'link';
+
+        //Underlay labels
+        this.UNDERLAY_GRAPH_ID = "underlay-graph";
+        this.URL_UNDERLAY_TOPOLOGY = '/api/tenant/networking/underlay-topology';
+        this.URL_UNDERLAY_TOPOLOGY_REFRESH = this.URL_UNDERLAY_TOPOLOGY + '?forceRefresh';
+        this.TMPL_UNDERLAY_GRAPH_VIEW = 'underlay-graph-template';
+        this.UNDERLAY_CONTROLPANEL = 'underlay-controlpanel';
+        this.TITLE_GRAPH_ELEMENT_PHYSICAL_ROUTER = 'Physical Router';
+        this.TITLE_GRAPH_ELEMENT_VIRTUAL_ROUTER = 'Virtual Router';
+        this.UNDERLAY_VIEWPATH_PREFIX =
+            'monitor/infrastructure/underlay/ui/js/views/';
+        this.UNDERLAY_TRACEFLOW_TITLE = 'Trace Flows';
+        this.UNDERLAY_PROUTER_INTERFACES_TITLE = 'Interfaces';
+        this.UNDERLAY_PROUTER_DETAILS = 'Physical Router Details';
+        this.UNDERLAY_SEARCHFLOW_TITLE = 'Search Flows';
+        this.UNDERLAY_TRAFFIC_STATISTICS = 'Traffic Statistics';
+        this.UNDERLAY_SEARCHFLOW_WIDGET_TITLE = 'Query Flow Records';
 
         //Alarms labels
         this.ALARMS_BREADCRUMB_DROPDOWN = "alarms-breadcrumb-dropdown";
@@ -393,7 +371,7 @@ define([
         this.CONTROLNODE_DETAILS_TABS_ID = 'control_nodes_details-tab';
         this.CONTROLNODE_DETAILS_LINE_CHART_ID = 'control_node_details_chart';
         this.CONTROLNODE_DETAILS_CHART_WIDGET = 'controlnode-details-chart-widget';
-        
+
         this.CONTROLNODE_PEERS_GRID_SECTION_ID = 'control_node_peers_grid_section_id';
         this.CONTROLNODE_PEERS_GRID_VIEW_ID = 'control_node_peers_id';
         this.CONTROLNODE_PEERS_GRID_ID = "control_node_peers_grid_id";
@@ -420,7 +398,6 @@ define([
         this.VROUTER_SUMMARY_SCATTERCHART_SECTION_ID =
             'vrouter-nodes-scatterchart-section';
         this.CACHE_VROUTER = 'cache-vrouter-nodes';
-        
         this.VROUTER_TAB_SEARCH_PREFIX = 'Search';
         this.VROUTER_TAB_SECTION_ID = 'vrouter_tab_section';
         this.VROUTER_TAB_VIEW_ID = 'vrouter_tab_view';
@@ -474,7 +451,7 @@ define([
         this.VROUTER_FLOWS_RESULTS = 'vrouter_flows-results';
         this.VROUTER_FLOWS_PREFIX = 'vrouter_flows';
         this.VROUTER_FLOWS_GRID_ID = this.VROUTER_FLOWS_PREFIX + '-results';
- 
+
         //Database node labels
         this.DATABASENODE_VIEWPATH_PREFIX =
             'monitor/infrastructure/databasenode/ui/js/views/';
@@ -524,7 +501,7 @@ define([
         this.ANALYTICS_DETAILS_COLLECTOR_CHART_WIDGET = 'analytics_node_details_collector_chart_widget';
         this.ANALYTICS_DETAILS_QE_CHART_WIDGET = 'analytics_node_details_qe_chart_widget';
         this.ANALYTICS_DETAILS_ANALYTICS_CHART_WIDGET = 'analytics_node_details_analytics_chart_widget';
-            
+
         this.ANALYTICSNODE_GENERATORS_GRID_SECTION_ID = 'analytics_node_generators_grid_section';
         this.ANALYTICSNODE_GENERATORS_GRID_ID = 'analytics_node_generators_grid';
         this.ANALYTICSNODE_GENERATORS_TITLE = 'Generators';
@@ -560,11 +537,12 @@ define([
         this.TITLE_OVSDB_MANAGED_TOR = "Add OVSDB Managed ToR";
         this.CREATE_NETCONF_MANAGED_PHYSICAL_ROUTER = "Netconf Managed Physical Router";
         this.TITLE_NETCONF_MANAGED_TOR = "Add Netconf Managed Physical Router";
-        this.CREATE_CPE_ROUTER = "CPE Router";
+        this.CREATE_CPE_ROUTER = "vCPE Router";
         this.CREATE_PHYSICAL_ROUTER = "Physical Router";
         this.PHYSICAL_ROUTER_ADD = "Add";
         this.PHYSICAL_ROUTER_PREFIX_ID = 'physical_router';
-        this.SELECT_ENTER_NAME = "Select or Enter Name";
+        this.SELECT_ENTER_TOR_AGENT_NAME = "Select or Enter TOR Agent Name";
+        this.SELECT_ENTER_TSN_NAME = "Select or Enter TSN Name";
         this.SNMP_AUTH = "auth";
         this.SNMP_AUTHPRIV = "authpriv";
         this.TITLE_PHYSICAL_ROUTER_PROPERTIES = "Physical Router Properties";
@@ -582,7 +560,7 @@ define([
         this.CPE_ROUTER_TYPE = 'cpe';
         this.PHYSICAL_ROUTER_TYPE = 'prouter';
         this.TITLE_EDIT_NETCONF_MANAGED_PR = 'Edit Netconf Managed Physical Router';
-        this.TITLE_CPE_ROUTER = "Add VCPE";
+        this.TITLE_CPE_ROUTER = "Add vCPE Router";
         this.TITLE_EDIT_VCPE_ROUTER = "Edit VCPE";
         this.CREATE_ACTION = "create";
         this.EDIT_ACTION = "edit";
@@ -594,6 +572,8 @@ define([
         this.NETCONF_SETTINGS_TITLE = 'Netconf Settings';
         this.TOR_AGENT = "TOR Agent";
         this.TITLE_EDIT_PHYSICAL_ROUTER = "Edit Physical Router";
+        this.TITLE_PHYSICAL_ROUTER_DELETE = 'Delete Physical Router';
+        this.TITLE_PHYSICAL_ROUTER_MULTI_DELETE = 'Delete Physical Router(s)';
 
         // VRouter Config labels
         this.CFG_VROUTER_PAGE_ID = 'config-vrouter-page';
@@ -656,7 +636,7 @@ define([
         this.CONFIG_QUOTAS_SECTION_ID = 'config-quotas-section';
         this.CONFIG_QUOTAS_ID = 'config-quotas';
         this.QUOTAS_GRID_ID = 'quotas-grid';
-        this.QUOTAS_PREFIX_ID = 'qts';
+        this.QUOTAS_PREFIX_ID = 'quotas';
         this.TITLE_EDIT_QUOTAS = 'Edit Project Quotas';
 
         /* Global Config */
@@ -664,7 +644,7 @@ define([
         this.CONFIG_GLOBAL_CONFIG_SECTION_ID = 'config-global-config-section';
         this.CONFIG_GLOBAL_CONFIG_ID = 'config-global-config';
         this.GLOBAL_CONFIG_GRID_ID = 'global-config-grid';
-        this.GLOBAL_CONFIG_PREFIX_ID = 'glblCfg';
+        this.GLOBAL_CONFIG_PREFIX_ID = 'global_config';
         this.TITLE_EDIT_GLOBAL_CONFIG = 'Edit Global Config';
         this.TITLE_GLOBAL_CONFIG = 'Global Config';
 
@@ -682,6 +662,94 @@ define([
         this.TITLE_DEL_SEC_GRP = 'Delete Security Group';
         this.TITLE_EDIT_SEC_GRP = 'Edit Security Group';
         this.SEC_GRP_DETAILS = 'Security Group Details';
+
+        /* Service Instance */
+        this.CONFIG_SERVICE_INSTANCES_PAGE_ID =
+            'config-service-instances-page';
+        this.CONFIG_SERVICE_INSTANCES_LIST_VIEW_ID =
+            'config-service-instances-list';
+        this.CONFIG_SERVICE_INSTANCES_SECTION_ID = 'svcInst';
+        this.CONFIG_SERVICE_INSTANCES_ID = 'config-service-instances';
+        this.TITLE_SERVICE_INSTANCES = 'Service Instances';
+        this.SERVICE_INSTANCES_GRID_ID = 'service-instances-grid';
+        this.SERVICE_INSTANCES_PREFIX_ID = 'service_instance';
+        this.TITLE_CREATE_SERVICE_INSTANCE = 'Create Service Instance';
+        this.TITLE_ADD_SERVICE_INSTANCE = 'Add Service Instance';
+        this.TITLE_DEL_SERVICE_INSTANCES = 'Delete Service Instance';
+        this.TITLE_EDIT_SERVICE_INSTANCE = 'Edit Service Instance';
+        this.SVC_INST_DETAILS = 'Service Instance Details';
+
+        //Interfaces
+        this.CONFIG_INTERFACES_LIST_ID = "config-interfaces-list";
+        this.PROUTER_BREADCRUMB_DROPDOWN = "prouter-breadcrumb-dropdown";
+        this.PROUTER_KEY = "prouter";
+        this.NO_PROUTER_FOUND = "No Physical Router found";
+        this.CONFIG_INTERFACES_SECTION_ID = "config-interfaces-section";
+        this.CONFIG_INTERFACES_ID = "config-interfaces";
+        this.TITLE_INTERFACES = "Interfaces";
+        this.INF_VIEW_PATH_PREFIX =
+            "config/physicaldevices/interfaces/ui/js/views/";
+        this.CONFIG_INTERFACES_LIST_VIEW_ID = "config-interfaces-list";
+        this.INTERFACES_GRID_ID = "interfaces-grid";
+        this.TITLE_ADD_INTERFACE = "Add Interface";
+        this.INTERFACE_PREFIX_ID = "interface"
+        this.LOGICAL_INF_ACCORDION = "logical_inf_accordion";
+        this.LOGICAL_INF_SECTION = "logical_inf_section";
+        this.LOGICAL_INF_SECTION_TITLE =
+            "Logical Interface Properties";
+        this.ENTER_SERVER = "Enter or Choose mac";
+        this.TITLE_EDIT_INF = "Edit Interface";
+        this.PHYSICAL_INF = "physical";
+        this.LOGICAL_INF = "logical";
+        this.LOGICAL_INF_L2_TYPE = 'l2';
+        this.LOGICAL_INF_L3_TYPE = 'l3';
+        this.VLAN = 'logical_interface_vlan_tag';
+        this.LOGICAL_INF_TYPE = 'logical_interface_type';
+        this.TITLE_DELETE_ALL_CONFIG = "Delete All";
+        this.BM_CLEAR_VMI = "bm_clear_vmi";
+        this.INF_PROPERTIES = 'Interface Properties';
+        this.INF_ED_TMPL = 'BlockListTemplateGenerator';
+        this.INF_TG = 'TextGenerator';
+        this.IP_PH = 'Auto Allocate or Enter an IP';
+        this.PARENT_TYPE_PROUTER = 'physical-router';
+        this.PARENT_TYPE_PINF = 'physical-interface';
+        this.TITLE_INTERFACE_DELETE = 'Delete Interface';
+        this.TITLE_INTERFACE_MULTI_DELETE = 'Delete Interface(s)';
+
+        //BGP Router labels
+        this.CONFIG_BGP_LIST_ID = "config-bgp-list";
+        this.BGP_GRID_ID = "bgp-grid";
+        this.CONFIG_BGP_SECTION_ID = "config-bgp-section";
+        this.CONFIG_BGP_LIST_VIEW_ID = "config-bgp-list-view";
+        this.TITLE_BGP = "BGP Routers";
+        this.BGP_PREFIX_ID = 'bgp_router';
+        this.TITLE_BGP_DETAILS =  'Details';
+        this.TITLE_BGP_PROPERTIES =  'BGP Properties';
+        this.TITLE_ADD_BGP = 'Create BGP Router';
+        this.TITLE_EDIT_BGP = 'Edit BGP Router';
+        this.CONTROL_NODE_TYPE = 'control_node';
+        this.TITLE_BGP_DELETE = 'Delete BGP Router';
+        this.TITLE_BGP_MULTI_DELETE = 'Delete BGP Router(s)';
+
+        //Logical Router Labels
+        this.CONFIG_LOGICAL_ROUTER_PAGE_ID = "config-logical-router-page";
+        this.CONFIG_LOGICAL_ROUTER_TITLE = "Routers";
+        this.TITLE_ADD_LOGICAL_ROUTER = "Create Routers";
+        this.CONFIG_LOGICAL_ROUTER_LIST_VIEW_ID = "config-logical-router-list-view";
+        this.CONFIG_LOGICAL_ROUTER_FORMAT_ID = "config-logical-router-format-id";
+        this.CONFIG_LOGICAL_ROUTER_LIST = "config-logical-router-list";
+        this.LOGICAL_ROUTER_GRID_ID = "config-logical-router-grid-id";
+        this.TITLE_LOGICAL_ROUTER_DETAILS = "Logical Router Detail";
+        this.TITLE_LOGICAL_ROUTER_EDIT = "Edit";
+        this.TITLE_LOGICAL_ROUTER_DELETE = "Delete";
+        this.TITLE_DEL_CONFiRM = "Confirm";
+        this.LOGICAL_ROUTER_PREFIX_ID = "logical_router";
+        this.TITLE_EDIT_LOGICAL_ROUTER = "Edit Logical Router";
+        this.ENTER_NAME = "Enter Name";
+        this.SELECT_EXT_GATEWAY = "Select External Gateway";
+        this.SELECT_CONN_NET = "Select Connected Network(s)";
+        this.TITLE_LOGICAL_ROUTER = 'Logical Router';
+
     };
     return CTLabels;
 });
