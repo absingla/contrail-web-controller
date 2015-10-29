@@ -47,14 +47,14 @@ define([
 
                 contrailListModel = new ContrailListModel(listModelConfig);
                 modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL] = queryFormModel;
-                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, fsRemoteConfig, serverCurrentTime), null, null, modelMap, function(flowSeriesResultView) {
+                self.renderView4Config(self.$el, contrailListModel, self.getFlowSeriesResultGridTabViewConfig(postDataObj, fsRemoteConfig, serverCurrentTime), null, null, modelMap, function(flowSeriesResultView) {
                     var selectArray = queryFormModel.select().replace(/ /g, "").split(",");
 
                     if(selectArray.indexOf("T=") != -1) {
                         contrailListModel.onAllRequestsComplete.subscribe(function () {
                             //TODO: Load chart only if data is not queued.
                             if (contrailListModel.getItems().length > 0) {
-                                flowSeriesResultView.childViewMap[cowl.QE_FLOW_SERIES_TAB_ID].renderNewTab(cowl.QE_FLOW_SERIES_TAB_ID, self.getFlowSeriesChartTabViewConfig(postDataObj));
+                                flowSeriesResultView.childViewMap[cowl.QE_FLOW_SERIES_TAB_ID].renderNewTab(cowl.QE_FLOW_SERIES_TAB_ID, self.getFlowSeriesResultChartTabViewConfig(postDataObj));
                             }
                         });
                     }
@@ -62,7 +62,7 @@ define([
             });
         },
 
-        getViewConfig: function (postDataObj, fsRemoteConfig, serverCurrentTime) {
+        getFlowSeriesResultGridTabViewConfig: function (postDataObj, fsRemoteConfig, serverCurrentTime) {
             var self = this, viewConfig = self.attributes.viewConfig,
                 pagerOptions = viewConfig['pagerOptions'],
                 queryFormModel = this.model,
@@ -97,7 +97,7 @@ define([
             return resultsViewConfig;
         },
 
-        getFlowSeriesChartTabViewConfig: function(postDataObj) {
+        getFlowSeriesResultChartTabViewConfig: function(postDataObj) {
             var queryFormModel = this.model,
                 selectArray = queryFormModel.select().replace(/ /g, "").split(","),
                 flowSeriesChartTabViewConfig = [];

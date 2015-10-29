@@ -11,9 +11,11 @@ define([
 
     var FlowSeriesQueryView = QueryFormView.extend({
         render: function (options) {
-            var self = this, viewConfig = self.attributes.viewConfig,
+            var self = this,
+                viewConfig = self.attributes.viewConfig,
+                formData = contrail.checkIfExist(viewConfig.formData) ? formatFormData(viewConfig.formData) : {},
                 queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
-                flowSeriesQueryModel = new FlowSeriesFormModel(),
+                flowSeriesQueryModel = new FlowSeriesFormModel(formData),
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
                 queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_FORM_SUFFIX;
 
@@ -38,8 +40,10 @@ define([
 
         renderQueryResult: function() {
             var self = this,
+                viewConfig = self.attributes.viewConfig,
                 queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_FORM_SUFFIX,
                 queryResultId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_RESULTS_SUFFIX,
+                widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
                 responseViewConfig = {
                     view: "FlowSeriesResultView",
                     viewPathPrefix: "reports/qe/ui/js/views/",
@@ -47,7 +51,10 @@ define([
                     viewConfig: {}
                 };
 
-            $(queryFormId).parents('.widget-box').data('widget-action').collapse();
+            if (widgetConfig !== null) {
+                $(queryFormId).parents('.widget-box').data('widget-action').collapse();
+            }
+
             self.renderView4Config($(self.$el).find(queryResultId), this.model, responseViewConfig);
         },
 
@@ -192,6 +199,19 @@ define([
             };
         }
     });
+
+    function formatFormData(formData) {
+        var queryJSON = formData.queryJSON,
+            formModelData = {
+                time_tange: -1,
+                from_time: queryJSON.start_time,
+                to_time: queryJSON.end_time,
+                time_granularity: formData.tg,
+                time_granularity_unit: formData.tgUnit
+            };
+
+        return formData
+    }
 
     return FlowSeriesQueryView;
 });

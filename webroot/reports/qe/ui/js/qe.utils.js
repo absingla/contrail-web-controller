@@ -78,7 +78,6 @@ define([
             return JSON.stringify(engQueryJSON);
         };
 
-
         self.getFromTimeElementConfig = function(fromTimeId, toTimeId) {
             return {
                 onShow: function(cdt) {
@@ -179,7 +178,7 @@ define([
             return currentTime;
         };
 
-        self.addFSMissingPoints = function(chartDataRow, queryFormModel, plotFields, color, counter) {
+        self.addFSMissingPoints = function(chartDataRow, queryFormModel, plotFields) {
             var chartDataValues = chartDataRow.values,
                 newChartDataValues = {},
                 emptyChartDataValue  = {},
@@ -264,6 +263,21 @@ define([
             });
 
             return whereOrJSONArr;
+        };
+
+        self.getAggregateSelectFields = function(queryFormModel) {
+            var selectArray = queryFormModel.select().replace(/ /g, "").split(","),
+                aggregateSelectArray = [],
+                selectValueLowerCase = '';
+
+            $.each(selectArray, function(selectKey, selectValue) {
+                selectValueLowerCase = selectValue.toLowerCase();
+                if (selectValueLowerCase.indexOf('sum(') != -1 || selectValueLowerCase.indexOf('count(') != -1 || selectValueLowerCase.indexOf('min(') != -1 || selectValueLowerCase.indexOf('max(') != -1) {
+                    aggregateSelectArray.push(selectValue);
+                }
+            });
+
+            return aggregateSelectArray
         };
 
         self.getNameSuffixKey = function(name, nameOptionList) {
@@ -405,7 +419,8 @@ define([
                 populateWhereANDClause(whereANDClause, whereANDClauseArray[0].trim(), whereANDClauseArray[1].trim(), operator);
                 whereANDArray[i] = whereANDClause;
             } else {
-                whereANDClauseWithSuffixArrray = whereANDClause.split('&');
+                var whereANDClauseWithSuffixArrray = whereANDClause.split('&'),
+                    whereANDTerm = '';
                 // Treat whereANDClauseWithSuffixArrray[0] as a normal AND term and
                 // whereANDClauseWithSuffixArrray[1] as a special suffix term
                 if (whereANDClauseWithSuffixArrray != null && whereANDClauseWithSuffixArrray.length != 0) {
