@@ -1371,7 +1371,8 @@ define([
             {select: "Source", display:{id:"Source", field:"Source", name:"Source", width:150, searchable: true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Source);}}},
             {select: "ModuleId", display:{id: "ModuleId", field: "ModuleId", name: "Module Id", width: 150, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.ModuleId);}}},
             {select: "Messagetype", display:{id:"Messagetype", field:"Messagetype", name:"Message Type", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Messagetype); }}},
-            {select: "SystemLog", display:{id:"SystemLog", field:"SystemLog", name:"System Log", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return formatXML2JSON(dc.SystemLog); }}}
+            {select: "SystemLog", display:{id:"SystemLog", field:"SystemLog", name:"System Log", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return formatXML2JSON(dc.SystemLog); }}},
+            {select: "ObjectLog", display:{id:"ObjectLog", field:"ObjectLog", name:"Object Log", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return formatXML2JSON(dc.ObjectLog); }}}
         ]
     };
 

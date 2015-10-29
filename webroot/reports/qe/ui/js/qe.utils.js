@@ -291,7 +291,23 @@ define([
             });
 
             return nameSuffixKey;
-        }
+        };
+
+        self.isAggregateField = function(fieldName) {
+            var fieldNameLower = fieldName.toLowerCase(),
+                isAggregate = false;
+
+            var AGGREGATE_PREFIX_ARRAY = ['min(', 'max(', 'count(', 'sum('];
+
+            for (var i = 0; i < AGGREGATE_PREFIX_ARRAY.length; i++) {
+                if(fieldNameLower.indexOf(AGGREGATE_PREFIX_ARRAY[i]) != -1) {
+                    isAggregate = true;
+                    break;
+                }
+            }
+
+            return isAggregate;
+        };
     };
 
     function getTimeRangeObj(formModelAttrs, serverCurrentTime) {

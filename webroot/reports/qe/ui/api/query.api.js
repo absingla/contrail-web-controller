@@ -304,44 +304,44 @@ function initPollingConfig(options, fromTime, toTime) {
     }
 };
 
-function fetchQueryResults(res, jsonData, options) {
-    var queryId = options['queryId'], chunkSize = options['chunkSize'],
-        queryJSON = options['queryJSON'], progress;
+function fetchQueryResults(res, jsonData, queryOptions) {
+    var queryId = queryOptions['queryId'], chunkSize = queryOptions['chunkSize'],
+        queryJSON = queryOptions['queryJSON'], progress;
 
     opServer.authorize(function () {
         opServer.api.get(jsonData['href'], function (error, queryResults) {
             progress = queryResults['progress'];
-            options['counter'] += 1;
+            queryOptions['counter'] += 1;
             if (error) {
                 logutils.logger.error(error.stack);
-                clearInterval(options['intervalId']);
-                clearTimeout(options['timeoutId']);
-                options['progress'] = progress;
-                if (options.status == 'run') {
+                clearInterval(queryOptions['intervalId']);
+                clearTimeout(queryOptions['timeoutId']);
+                queryOptions['progress'] = progress;
+                if (queryOptions.status == 'run') {
                     commonUtils.handleJSONResponse(error, res, null);
-                } else if (options.status == 'queued') {
-                    options.status = 'error';
-                    options.errorMessage = error;
-                    updateQueryStatus(options);
+                } else if (queryOptions.status == 'queued') {
+                    queryOptions.status = 'error';
+                    queryOptions.errorMessage = error;
+                    updateQueryStatus(queryOptions);
                 }
             } else if (progress == 100) {
-                clearInterval(options['intervalId']);
-                clearTimeout(options['timeoutId']);
-                options['progress'] = progress;
-                options['count'] = queryResults.chunks[0]['count'];
+                clearInterval(queryOptions['intervalId']);
+                clearTimeout(queryOptions['timeoutId']);
+                queryOptions['progress'] = progress;
+                queryOptions['count'] = queryResults.chunks[0]['count'];
                 jsonData['href'] = queryResults.chunks[0]['href'];
-                fetchQueryResults(res, jsonData, options);
+                fetchQueryResults(res, jsonData, queryOptions);
             } else if (progress == null || progress === 'undefined') {
-                processQueryResults(res, queryResults, options);
-                if (options.status == 'queued') {
-                    options['endTime'] = new Date().getTime();
-                    options['status'] = 'completed';
-                    updateQueryStatus(options);
+                processQueryResults(res, queryResults, queryOptions);
+                if (queryOptions.status == 'queued') {
+                    queryOptions['endTime'] = new Date().getTime();
+                    queryOptions['status'] = 'completed';
+                    updateQueryStatus(queryOptions);
                 }
-            } else if (options['counter'] == options.maxCounter) {
-                options['progress'] = progress;
-                options['status'] = 'queued';
-                updateQueryStatus(options);
+            } else if (queryOptions['counter'] == queryOptions.maxCounter) {
+                queryOptions['progress'] = progress;
+                queryOptions['status'] = 'queued';
+                updateQueryStatus(queryOptions);
                 commonUtils.handleJSONResponse(null, res, {status: "queued", data: []});
             }
         });
@@ -545,22 +545,22 @@ function stopFetchQueryResult(options) {
     updateQueryStatus(options);
 };
 
-function updateQueryStatus(options) {
+function updateQueryStatus(queryOptions) {
     var queryStatus = {
-        startTime: options.startTime, queryId: options.queryId,
-        url: options.url, queryJSON: options.queryJSON, progress: options.progress, status: options.status,
-        tableName: options.queryJSON['table'], count: options.count, timeTaken: -1, errorMessage: options.errorMessage,
-        reRunTimeRange: options.reRunTimeRange, reRunQueryString: getReRunQueryString(options.reRunQuery, options.reRunTimeRange),
-        opsQueryId: options.opsQueryId, engQueryStr: options['engQueryStr']
+        startTime: queryOptions.startTime, queryId: queryOptions.queryId,
+        url: queryOptions.url, queryJSON: queryOptions.queryJSON, progress: queryOptions.progress, status: queryOptions.status,
+        tableName: queryOptions.queryJSON['table'], count: queryOptions.count, timeTaken: -1, errorMessage: queryOptions.errorMessage,
+        reRunTimeRange: queryOptions.reRunTimeRange, reRunQueryString: getReRunQueryString(queryOptions.reRunQuery, queryOptions.reRunTimeRange),
+        opsQueryId: queryOptions.opsQueryId, engQueryStr: queryOptions['engQueryStr']
     };
-    if (queryStatus.tableName == 'FlowSeriesTable' || queryStatus.tableName.indexOf('StatTable.') != -1) {
-        queryStatus.tg = options.tg;
-        queryStatus.tgUnit = options.tgUnit;
+    if (queryStatus.tableName == 'FlowSeriesTable' || queryOptions.tableType == "STAT") {
+        queryStatus.tg = queryOptions.tg;
+        queryStatus.tgUnit = queryOptions.tgUnit;
     }
-    if (options.progress == 100) {
-        queryStatus.timeTaken = (options.endTime - queryStatus.startTime) / 1000;
+    if (queryOptions.progress == 100) {
+        queryStatus.timeTaken = (queryOptions.endTime - queryStatus.startTime) / 1000;
     }
-    redisClient.hmset(options.queryQueue, options.queryId, JSON.stringify(queryStatus));
+    redisClient.hmset(queryOptions.queryQueue, queryOptions.queryId, JSON.stringify(queryStatus));
 };
 
 function getReRunQueryString(reRunQuery, reRunTimeRange) {
@@ -577,7 +577,7 @@ function getReRunQueryString(reRunQuery, reRunTimeRange) {
         delete reRunQuery['toTimeUTC'];
         delete reRunQuery['reRunTimeRange'];
     }
-//   reRunQueryString = qs.stringify(reRunQuery);
+    //reRunQueryString = qs.stringify(reRunQuery);
     return reRunQuery;
 };
 
@@ -610,9 +610,9 @@ function processQueryResults(res, queryResults, queryOptions) {
     saveQueryResult2Redis(resultJSON, total, queryId, chunkSize, getSortStatus4Query(queryJSON), queryJSON);
 
     if (table == 'FlowSeriesTable') {
-        saveData4Chart2Redis(queryId, resultJSON, queryJSON['select_fields'], 'flow_class_id');
+        saveData4Chart2Redis(queryId, resultJSON, queryJSON['select_fields'], 'flow_class_id', "T");
     } else if (tableType = "STAT") {
-        saveData4Chart2Redis(queryId, resultJSON, queryJSON['select_fields'], 'CLASS(T=)');
+        saveData4Chart2Redis(queryId, resultJSON, queryJSON['select_fields'], 'CLASS(T=)', "T=");
     }
 };
 
@@ -649,7 +649,7 @@ function getSortStatus4Query(queryJSON) {
     return sortStatus;
 };
 
-function saveData4Chart2Redis(queryId, dataJSON, selectFields, groupFieldName) {
+function saveData4Chart2Redis(queryId, dataJSON, selectFields, groupFieldName, timeFieldName) {
     var resultData = {}, uniqueChartGroupArray = [], charGroupArray = [],
         result, i, k, chartGroupId, chartGroup, secTime;
 
@@ -663,7 +663,7 @@ function saveData4Chart2Redis(queryId, dataJSON, selectFields, groupFieldName) {
                 charGroupArray.push(chartGroup);
             }
 
-            secTime = Math.floor(dataJSON[i]['T'] / 1000);
+            secTime = Math.floor(dataJSON[i][timeFieldName] / 1000);
             result = {'date': new Date(secTime)};
             result[groupFieldName] = chartGroupId;
 
@@ -685,9 +685,14 @@ function saveData4Chart2Redis(queryId, dataJSON, selectFields, groupFieldName) {
 };
 
 function getGroupRecord4Chart(row, groupFieldName) {
-    var groupRecord = _.extend({}, row);
-    //TODO: Don't send aggregated fields
-    groupRecord['chart_group_id'] = row[groupFieldName];
+    var groupRecord = {chart_group_id: row[groupFieldName]};
+
+    for (var fieldName in row) {
+        if(!isAggregateField(fieldName)) {
+            groupRecord[fieldName] = row[fieldName];
+        }
+    }
+
     return groupRecord;
 };
 
@@ -961,6 +966,22 @@ function isEmptyObject(obj) {
             return false;
     }
     return true;
+};
+
+function isAggregateField(fieldName) {
+    var fieldNameLower = fieldName.toLowerCase(),
+        isAggregate = false;
+
+    var AGGREGATE_PREFIX_ARRAY = ['min(', 'max(', 'count(', 'sum('];
+
+    for (var i = 0; i < AGGREGATE_PREFIX_ARRAY.length; i++) {
+        if(fieldNameLower.indexOf(AGGREGATE_PREFIX_ARRAY[i]) != -1) {
+            isAggregate = true;
+            break;
+        }
+    }
+
+    return isAggregate;
 };
 
 exports.runGETQuery = runGETQuery;

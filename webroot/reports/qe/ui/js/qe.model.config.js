@@ -57,7 +57,7 @@ define([
                     checkedFields.remove('T=');
                     for (key in isEnableMap) {
                         keyLower = key.toLowerCase();
-                        if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
+                        if (qewu.isAggregateField(key)) {
                             checkedFields.remove(key);
                             isEnableMap[key](false);
 
@@ -73,7 +73,7 @@ define([
                 } else {
                     for (key in isEnableMap) {
                         keyLower = key.toLowerCase();
-                        if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
+                        if (qewu.isAggregateField(key)) {
                             isEnableMap[key](true);
                         }
                     }
@@ -83,7 +83,7 @@ define([
                     checkedFields.remove('T');
                     for (key in isEnableMap) {
                         keyLower = key.toLowerCase();
-                        if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
+                        if (qewu.isAggregateField(key)) {
                             isEnableMap[key](true);
                             checkedFields.push(key);
 
@@ -97,7 +97,7 @@ define([
                 } else {
                     for (key in isEnableMap) {
                         keyLower = key.toLowerCase();
-                        if (keyLower.indexOf('sum(') != -1 || keyLower.indexOf('count(') != -1 || keyLower.indexOf('min(') != -1 || keyLower.indexOf('max(') != -1) {
+                        if (qewu.isAggregateField(key)) {
                             checkedFields.remove(key);
 
                             nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
@@ -127,7 +127,7 @@ define([
                 }
 
                 for (key in isEnableMap) {
-                    if (key.indexOf('sum(') != -1 || key.indexOf('count(') != -1 || key.indexOf('min(') != -1 || key.indexOf('max(') != -1) {
+                    if (qewu.isAggregateField(key)) {
                         checkedFields.push(key);
 
                         nonAggKey = key.substring(key.indexOf('(') + 1, key.indexOf(')'));
