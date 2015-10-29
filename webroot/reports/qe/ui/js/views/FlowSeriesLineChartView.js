@@ -26,7 +26,7 @@ define([
     });
 
     function getQueryChartViewConfig(queryId, selectArray, modelMap) {
-        var flowUrl = '/api/admin/reports/query/flow-classes?queryId=' + queryId;
+        var flowUrl = '/api/qe/query/chart-groups?queryId=' + queryId;
 
         return {
             elementId: cowl.QE_FLOW_SERIES_CHART_PAGE_ID,
