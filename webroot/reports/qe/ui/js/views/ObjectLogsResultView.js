@@ -30,17 +30,23 @@ define([
                         remote: {
                             ajaxConfig: olRemoteConfig,
                             dataParser: function(response) {
-                                return response['data'];
+                                var gridData = response['data'];
+                                for (var i = 0 ; i < gridData.length; i++) {
+                                    gridData[i]["ObjectLog"] = contrail.checkIfExist(gridData[i]["ObjectLog"]) ? qewu.formatXML2JSON(gridData[i]["ObjectLog"]) : null;
+                                    gridData[i]["SystemLog"] = contrail.checkIfExist(gridData[i]["SystemLog"]) ? qewu.formatXML2JSON(gridData[i]["SystemLog"], true) : null;
+                                }
+                                return gridData;
                             }
                         }
                     };
 
+                postDataObj.chunkSize = cowc.QE_RESULT_CHUNK_SIZE_1K;
                 contrailListModel = new ContrailListModel(listModelConfig);
-                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, olRemoteConfig, serverCurrentTime))
+                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, listModelConfig, serverCurrentTime))
             });
         },
 
-        getViewConfig: function (postDataObj, olRemoteConfig, serverCurrentTime) {
+        getViewConfig: function (postDataObj, listModelConfig, serverCurrentTime) {
             var self = this, viewConfig = self.attributes.viewConfig,
                 pagerOptions = viewConfig['pagerOptions'],
                 queryFormModel = this.model,
@@ -59,7 +65,7 @@ define([
                             title: cowl.TITLE_RESULTS,
                             view: "GridView",
                             viewConfig: {
-                                elementConfig: getObjectLogsGridConfig(olRemoteConfig, olGridColumns, pagerOptions)
+                                elementConfig: getObjectLogsGridConfig(listModelConfig, olGridColumns, pagerOptions)
                             }
                         }
                     ]
@@ -70,7 +76,7 @@ define([
         }
     });
 
-    function getObjectLogsGridConfig(olRemoteConfig, olGridColumns, pagerOptions) {
+    function getObjectLogsGridConfig(listModelConfig, olGridColumns, pagerOptions) {
         var gridElementConfig = {
             header: {
                 title: {
@@ -87,25 +93,15 @@ define([
             body: {
                 options: {
                     autoRefresh: false,
-                    checkboxSelectable: false,
-                    fixedRowHeight: 30
+                    checkboxSelectable: false
                 },
-                dataSource: {
-                    remote: {
-                        ajaxConfig: olRemoteConfig,
-                        dataParser: function(response) {
-                            console.log(response);
-                            return response['data'];
-                        },
-                        serverSidePagination: true
-                    }
-                }
+                dataSource: { remote: $.extend(true, {}, listModelConfig.remote, { serverSidePagination: true }) }
             },
             columnHeader: {
                 columns: olGridColumns
             },
             footer: {
-                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 100, pageSizeSelect: [100, 200, 300, 500] } })
+                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 20, pageSizeSelect: [10, 20, 50, 100] } })
             }
         };
         return gridElementConfig;

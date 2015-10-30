@@ -1369,10 +1369,10 @@ define([
             {select: "MessageTS", display:{id: "MessageTS", field: "MessageTS", name: "Time", width:210, filterable:false, groupable:false, formatter: function(r, c, v, cd, dc) { return (dc.MessageTS && dc.MessageTS != '')  ? (formatMicroDate(dc.MessageTS)) : ''; }}},
             {select: "ObjectId", display:{id:"ObjectId", field:"ObjectId", name:"Object Id", width:150, searchable: true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.ObjectId);}}},
             {select: "Source", display:{id:"Source", field:"Source", name:"Source", width:150, searchable: true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Source);}}},
-            {select: "ModuleId", display:{id: "ModuleId", field: "ModuleId", name: "Module Id", width: 150, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.ModuleId);}}},
+            {select: "ModuleId", display:{id: "ModuleId", field: "ModuleId", name: "Module Id", minWidth: 150, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.ModuleId);}}},
             {select: "Messagetype", display:{id:"Messagetype", field:"Messagetype", name:"Message Type", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Messagetype); }}},
-            {select: "SystemLog", display:{id:"SystemLog", field:"SystemLog", name:"System Log", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return formatXML2JSON(dc.SystemLog); }}},
-            {select: "ObjectLog", display:{id:"ObjectLog", field:"ObjectLog", name:"Object Log", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return formatXML2JSON(dc.ObjectLog); }}}
+            {select: "SystemLog", display:{id:"SystemLog", field:"SystemLog", name:"System Log", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return contrail.checkIfExist(dc.SystemLog) ? contrail.formatJSON2HTML(dc.SystemLog, 0) : null}}},
+            {select: "ObjectLog", display:{id:"ObjectLog", field:"ObjectLog", name:"Object Log", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return contrail.checkIfExist(dc.ObjectLog) ? contrail.formatJSON2HTML(dc.ObjectLog, 0) : null}}}
         ]
     };
 

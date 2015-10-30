@@ -308,6 +308,74 @@ define([
 
             return isAggregate;
         };
+
+        self.formatXML2JSON = function(xmlString, is4SystemLogs) {
+            if (xmlString && xmlString != '') {
+                var xmlDoc = filterXML(xmlString, is4SystemLogs);
+                return convertXML2JSON(serializer.serializeToString(xmlDoc));
+            } else {
+                return '';
+            }
+        };
+    };
+
+    function filterXML(xmlString, is4SystemLogs) {
+        var xmlDoc = parseXML(xmlString);
+        $(xmlDoc).find("[type='struct']").each(function () {
+            formatStruct(this);
+        });
+        if(!is4SystemLogs) {
+            $(xmlDoc).find("[type='sandesh']").each(function () {
+                formatSandesh(this, is4SystemLogs);
+            });
+        }
+        $(xmlDoc).find("[type]").each(function () {
+            removeAttributes(this, ['type', 'size', 'identifier', 'aggtype', 'key']);
+        });
+        $(xmlDoc).find("data").each(function () {
+            $(this).children().unwrap();
+        });
+        return xmlDoc;
+    }
+
+    function formatStruct(xmlNode) {
+        $(xmlNode).find("list").each(function () {
+            $(this).children().unwrap();
+        });
+        //$(xmlNode).children().unwrap();
+    };
+
+    function formatSandesh(xmlNode, is4SystemLogs) {
+        var messageString = '', nodeCount, i;
+        $(xmlNode).find("file").each(function () {
+            $(this).remove();
+        });
+        $(xmlNode).find("line").each(function () {
+            $(this).remove();
+        });
+        if(is4SystemLogs != null && is4SystemLogs) {
+            nodeCount = $(xmlNode).find("[identifier]").length;
+            for (i = 1; i < (nodeCount + 1); i++) {
+                $(xmlNode).find("[identifier='" + i + "']").each(function () {
+                    messageString += $(this).text() + ' ';
+                    $(this).remove();
+                });
+            }
+            if (messageString != '') {
+                $(xmlNode).text(messageString);
+            }
+            removeAttributes(xmlNode, ['type']);
+        }
+    };
+
+    function removeAttributes(xmlNode, attrArray) {
+        for (var i = 0; i < attrArray.length; i++) {
+            xmlNode.removeAttribute(attrArray[i]);
+        }
+    };
+
+    function convertXML2JSON(xmlString) {
+        return $.xml2json(xmlString);
     };
 
     function getTimeRangeObj(formModelAttrs, serverCurrentTime) {
