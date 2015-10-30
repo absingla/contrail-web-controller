@@ -481,10 +481,20 @@ and need to add the iconClass tag wherever we need to show some icons
                             <hash>config_net_ports</hash>
                             <resources>
                                 <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                    <class>renderPort</class>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/port/ui</rootDir>
+                                    <js>port.main.js</js>
+                                    <class>ConfigPortLoader</class>
+                                    <function>renderPort</function>
+<!--                                <resource>
                                     <rootDir>/config/ports/ui</rootDir>
                                     <js>ports_config.js</js>
                                     <view>ports_config.view</view>
-                                    <class>portsConfigObj</class>
+                                    <class>portsConfigObj</class>-->
                                 </resource>
                             </resources>
                             <searchStrings>Ports</searchStrings>
@@ -494,10 +504,15 @@ and need to add the iconClass tag wherever we need to show some icons
                             <hash>config_net_policies</hash>
                             <resources>
                                 <resource>
-                                    <rootDir>/config/networkpolicies/ui</rootDir>
-                                    <js>policy_config.js</js>
-                                    <view>policy_config.view</view>
-                                    <class>networkpolicyConfigObj</class>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                    <class>renderPolicies</class>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/policy/ui</rootDir>
+                                    <js>policy.main.js</js>
+                                    <class>ConfigPoliciesLoader</class>
+                                    <function>renderPolicies</function>
                                 </resource>
                             </resources>
                             <searchStrings>Configure Network Policies</searchStrings>
@@ -637,36 +652,42 @@ and need to add the iconClass tag wherever we need to show some icons
                         </orchModels>
                     </access>
                     <iconClass>icon-globe</iconClass>
+                    <init>/config/networking.init.js</init>
                     <items>
-                        <item>
+                       <item>
                             <label>Servers</label>
-                            <hash>config_dns_dnsservers</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/config/dns/servers/ui</rootDir>
-                                    <js>dnsservers_config.js</js>
-                                    <view>dnsservers_config.view</view>
-                                    <class>dnsServersConfigObj</class>
-                                </resource>
-                            </resources>
+                            <hash>config_dns_servers</hash>
+                               <resources>
+                                   <resource>
+                                       <rootDir>/common/ui</rootDir>
+                                   </resource>
+                                   <resource>
+                                       <rootDir>/config/dns/servers/ui</rootDir>
+                                       <js>DnsServer.main.js</js>
+                                       <class>DnsServerLoader</class>
+                                       <function>renderDnsServer</function>
+                                   </resource>
+                               </resources>
                             <searchStrings>Configure DNS Servers</searchStrings>
                         </item>
                         <item>
                             <label>Records</label>
-                            <hash>config_dns_dnsrecords</hash>
+                            <hash>config_dns_records</hash>
                             <resources>
                                 <resource>
+                                   <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
                                     <rootDir>/config/dns/records/ui</rootDir>
-                                    <js>dnsrecords_config.js</js>
-                                    <view>dnsrecords_config.view</view>
-                                    <class>dnsRecordsConfigObj</class>
+                                    <js>DnsRecords.main.js</js>
+                                    <class>DnsRecordsLoader</class>
+                                    <function>renderDnsRecords</function>
                                 </resource>
                             </resources>
                             <searchStrings>Configure DNS Records</searchStrings>
                         </item>
                     </items>
                 </item>
-
                 <!--
                 <item>
                     <label>IPAM</label>
@@ -688,7 +709,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>Quotas</label>
                         </item>
                         -->
-            </items>
+        </items>
         </item>
         <item>
             <label>Setting</label>

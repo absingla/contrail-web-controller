@@ -228,6 +228,35 @@ define([
             };
         };
 
+        this.getDNSListModelConfig = function(dns) {
+            return {
+                remote: {
+                    ajaxConfig: {
+                        url: '/api/tenants/config/list-virtual-DNSs/' + dns
+                    },
+                    dataParser: function(response) {
+                        return  $.map(response, function (n, i) {
+                            return {
+                                fq_name: n.to.join(':'),
+                                name: n.to[1],
+                                value: n.uuid
+                            };
+                        });
+                    },
+                    failureCallback: function(xhr, ContrailListModel) {
+                        var dataErrorTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
+                            dataErrorConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_ERROR_PAGE, {errorMessage: xhr.responseText});
+
+                        $(contentContainer).html(dataErrorTemplate(dataErrorConfig));
+                    }
+                }/*,
+                cacheConfig : {
+                    ucid: ctwc.get(ctwc.UCID_BC_DOMAIN_ALL_DNS, dns),
+                    loadOnTimeout: false,
+                    cacheTimeout: cowc.PROJECT_CACHE_UPDATE_INTERVAL
+                }*/
+            };
+        };
         this.getProjects4Domain = function(domain) {
             var listModelConfig = {
                 remote: {
@@ -317,6 +346,16 @@ define([
                 contrail.getTemplate4Id('core-modal-template');
             var modalId = 'dashboard-alerts-modal';
             var modalLayout = modalTemplate({prefixId: prefixId, modalId: modalId});
+            var formId = prefixId + '_modal';
+            cowu.createModal({
+                'modalId': modalId,
+                'className': 'modal-840',
+                'title': 'Alerts',
+                'body': modalLayout,
+                'onCancel': function() {
+                    $("#" + modalId).modal('hide');
+                }
+            });
             if(cfgObj.model == null) {
                 require(['dashboard-alert-list-model','monitor-infra-parsers',
                     'monitor-infra-constants','monitor-infra-utils'],
@@ -332,25 +371,23 @@ define([
                             monitorInfraParsers = new MonitorInfraParsers();
                         }
                         cfgObj.model = new AlertListModel();
+                        require(['alert-grid-view'], function(AlertGridView) {
+                            var alertGridView = new AlertGridView({
+                                el:$("#" + modalId).find('#' + formId),
+                                model:cfgObj.model
+                            });
+                            alertGridView.render();
+                        });
                     });
-            }
-            cowu.createModal({
-                'modalId': modalId,
-                'className': 'modal-840',
-                'title': 'Alerts',
-                'body': modalLayout,
-                'onCancel': function() {
-                    $("#" + modalId).modal('hide');
-                }
-            });
-            var formId = prefixId + '_modal';
-            require(['alert-grid-view'], function(AlertGridView) {
-                var alertGridView = new AlertGridView({
-                    el:$("#" + modalId).find('#' + formId),
-                    model:cfgObj.model
+            } else {
+                require(['alert-grid-view'], function(AlertGridView) {
+                    var alertGridView = new AlertGridView({
+                        el:$("#" + modalId).find('#' + formId),
+                        model:cfgObj.model
+                    });
+                    alertGridView.render();
                 });
-                alertGridView.render();
-            });
+            }
         };
 
         this.deleteCGridData = function(data) {

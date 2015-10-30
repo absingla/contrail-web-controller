@@ -13,7 +13,7 @@ var configUtil       = module.exports;
 // '/src/serverroot/common/rest.api');
 var async = require('async');
 
-var portsConfig = require('../../ports/api/portsconfig.api'),
+var portsConfig = require('../../networking/port/api/portsconfig.api'),
     logutils = require(process.mainModule.exports["corePath"] +
                        '/src/serverroot/utils/log.utils'),
     appErrors = require(process.mainModule.exports["corePath"] +
@@ -26,12 +26,16 @@ var vnConfig = require('../../vn/api/vnconfig.api');
 var nwIpam = require('../../networking/ipam/api/ipamconfig.api');
 var logicalRtr =
     require('../../networking/logicalrouter/api/logicalrouterconfig.api');
-
+var vdns = require('../../dns/servers/api/virtualdnsserversconfig.api');
+var policyConfig =
+    require('../../networking/policy/api/policyconfig.api');
 var errorData = [];
 var configCBDelete = 
 {
     'virtual-machine-interface': portsConfig.deletePortsCB,
-    'logical-router': logicalRtr.deleteLogicalRouterAsync
+    'logical-router': logicalRtr.deleteLogicalRouterAsync,
+    'virtual-DNS': vdns.deleteVirtualDNSCallback,
+    'network-policy': policyConfig.deletePolicyAsync
 }
 
 var getConfigPageRespCB = {

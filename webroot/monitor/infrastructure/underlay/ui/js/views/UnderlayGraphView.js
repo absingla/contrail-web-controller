@@ -109,7 +109,11 @@ define([
                 childElementsArray = childElementsArray.filter(function(n){ return n != undefined });
                 addElementsToGraph(childElementsArray);
                 adjustDimensions(childElementsArray, graphModel);
-                //_this.renderUnderlayViz();
+                // Need to call the initClickevents again because
+                // to bind events to newly added elements like vRouters
+                cowu.bindPopoverInTopology(getUnderlayTooltipConfig(self),
+                    graphView);
+                $(".popover").popover().hide();
                 var connectionWrapIds = [];
                 for (var i = 0; i < links.length; i++) {
                     var endpoints = links[i].endpoints;
@@ -899,8 +903,13 @@ define([
         self.renderView4Config($('#'+ctwc.UNDERLAY_DETAILS_TAB_ID),
             null,
             monitorInfraUtils.
-                getUnderlayDetailsTabViewConfig({data:data}),
-            null, null, null);
+                getUnderlayDetailsTabViewConfig({data:data}), null,null, null,
+                function () {
+                    $('span.intfCnt').on('click', function (){
+                        $('#'+ctwc.UNDERLAY_TAB_ID).tabs({active:
+                            ctwc.UNDERLAY_PROUTER_TAB_INDEXES[1]});
+                    });
+            });
         for(var i = 0; i < getValueByJsonPath(nodeDetails,
             'more_attributes;ifTable',[]).length; i++ ) {
             var intfObj =

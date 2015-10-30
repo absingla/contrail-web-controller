@@ -89,6 +89,14 @@ define([
         this.URL_LOGICAL_ROUTER_PUT = '/api/tenants/config/logicalrouter/{0}';
         this.URL_LOGICAL_ROUTER_VIEW_PATH_PREFIX = 'config/networking/logicalrouter/ui/js/views/';
 
+        this.URL_POLICIES_VIEW_PATH_PREFIX = 'config/networking/policy/ui/js/views/';
+        this.URL_POLICIES_IN_CHUNKS = '/api/admin/config/get-data?type=network-policy&count={0}&fqnUUID={1}';
+
+        this.URL_PORT_POST = '/api/tenants/config/ports';
+        this.URL_PORT_PUT = '/api/tenants/config/ports/{0}';
+        this.URL_PORT_VIEW_PATH_PREFIX = 'config/networking/port/ui/js/views/';
+        this.URL_GET_PORT_UUID = '/api/tenants/config/get-config-uuid-list?type=virtual-machine-interface&parentUUID={0}';
+        this.URL_GET_PORT = '/api/tenants/config/get-virtual-machine-details-paged';
         this.get = function () {
             var args = arguments;
             return cowc.getValueFromTemplate(args);
@@ -131,6 +139,7 @@ define([
 
         this.UCID_BC_ALL_DOMAINS = this.UCID_PREFIX_BREADCRUMB + ':all-domains';
         this.UCID_BC_DOMAIN_ALL_PROJECTS = this.UCID_PREFIX_BREADCRUMB + ':{0}:all-projects';
+        this.UCID_BC_DOMAIN_ALL_DNS = this.UCID_PREFIX_BREADCRUMB + ':{0}:all-dns';
         this.UCID_BC_PROJECT_ALL_NETWORKS = this.UCID_PREFIX_BREADCRUMB + ':{0}:all-networks';
         this.UCID_BC_NETWORK_ALL_INSTANCES = this.UCID_PREFIX_BREADCRUMB + ':{0}:all-instances';
 
