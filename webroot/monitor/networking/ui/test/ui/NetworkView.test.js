@@ -189,7 +189,7 @@ define([
 
     };
 
-    var testInitFn = function() {
+    var testInitFn = function(defObj) {
         //simulate click on all the tabs
         var networkTabsViewObj = mnPageLoader.mnView.viewMap[ctwl.NETWORK_TABS_ID],
             networkTabs = networkTabsViewObj.attributes.viewConfig.tabs;
@@ -197,6 +197,13 @@ define([
         _.each(networkTabs, function(tab) {
             $("#" + tab.elementId + "-tab-link").trigger("click");
         });
+
+        setTimeout(function() {
+                defObj.resolve();
+            },
+            // Add necessary timeout for the tab elements to load properly and resolve the promise
+            0
+        );
 
         return;
     };

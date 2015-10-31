@@ -161,7 +161,7 @@ define([
 
     };
 
-    var testInitFn = function() {
+    var testInitFn = function(defObj) {
         //simulate click on all the tabs
         var projectTabsViewObj = mnPageLoader.mnView.viewMap[ctwl.PROJECT_TABS_ID],
             projectTabs = projectTabsViewObj.attributes.viewConfig.tabs;
@@ -170,6 +170,9 @@ define([
             $("#" + tab.elementId + "-tab-link").trigger("click");
         });
 
+        setTimeout(function() {
+            defObj.resolve();
+        }, 500);
         return;
     };
 
