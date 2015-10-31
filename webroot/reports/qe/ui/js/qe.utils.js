@@ -317,6 +317,28 @@ define([
                 return '';
             }
         };
+
+        self.getLevelName4Value = function(logValue) {
+            var count = cowc.QE_LOG_LEVELS.length;
+            for (var i = 0; i < count; i++) {
+                if (cowc.QE_LOG_LEVELS[i].value == logValue) {
+                    return cowc.QE_LOG_LEVELS[i].name;
+                }
+            }
+            return logValue;
+        };
+
+        self.handleNull4Grid = function(value, placeHolder) {
+            if(value == 0) {
+                return 0;
+            } else if (value != null && value != '') {
+                return value;
+            } else if (placeHolder != null) {
+                return placeHolder;
+            } else {
+                return '';
+            }
+        };
     };
 
     function filterXML(xmlString, is4SystemLogs) {

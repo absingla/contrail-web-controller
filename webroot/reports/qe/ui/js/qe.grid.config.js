@@ -1366,13 +1366,25 @@ define([
             {select:"Source", display:{id:'Source', field:'Source', width:150, name:"Source", groupable:false}}
         ],
         "defaultObjectColumns": [
-            {select: "MessageTS", display:{id: "MessageTS", field: "MessageTS", name: "Time", width:210, filterable:false, groupable:false, formatter: function(r, c, v, cd, dc) { return (dc.MessageTS && dc.MessageTS != '')  ? (formatMicroDate(dc.MessageTS)) : ''; }}},
+            {select: "MessageTS", display:{id: "MessageTS", field: "MessageTS", name: "Time", minWidth:210, filterable:false, groupable:false, formatter: function(r, c, v, cd, dc) { return (dc.MessageTS && dc.MessageTS != '')  ? (formatMicroDate(dc.MessageTS)) : ''; }}},
             {select: "ObjectId", display:{id:"ObjectId", field:"ObjectId", name:"Object Id", width:150, searchable: true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.ObjectId);}}},
             {select: "Source", display:{id:"Source", field:"Source", name:"Source", width:150, searchable: true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Source);}}},
             {select: "ModuleId", display:{id: "ModuleId", field: "ModuleId", name: "Module Id", minWidth: 150, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.ModuleId);}}},
             {select: "Messagetype", display:{id:"Messagetype", field:"Messagetype", name:"Message Type", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Messagetype); }}},
             {select: "SystemLog", display:{id:"SystemLog", field:"SystemLog", name:"System Log", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return contrail.checkIfExist(dc.SystemLog) ? contrail.formatJSON2HTML(dc.SystemLog, 0) : null}}},
             {select: "ObjectLog", display:{id:"ObjectLog", field:"ObjectLog", name:"Object Log", width:300, searchable:true, formatter: function(r, c, v, cd, dc) { return contrail.checkIfExist(dc.ObjectLog) ? contrail.formatJSON2HTML(dc.ObjectLog, 0) : null}}}
+        ],
+        "MessageTable": [
+            {select: "MessageTS", display:{id: "MessageTS", field: "MessageTS", name: "Time", minWidth:210, filterable:false, groupable:false, formatter: function(r, c, v, cd, dc) { return (dc.MessageTS && dc.MessageTS != '')  ? (formatMicroDate(dc.MessageTS)) : ''; }}},
+            {select: "Source", display:{id:"Source", field:"Source", name:"Source", width:150, searchable: true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Source);}}},
+            {select: "NodeType", display:{id:"NodeType", field:"NodeType", name:"Node Type", width:150, searchable: true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.NodeType);}}},
+            {select: "ModuleId", display:{id: "ModuleId", field: "ModuleId", name: "Module Id", minWidth: 150, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.ModuleId);}}},
+            {select: "Category", display:{id: "Category", field: "Category", name: "Category", minWidth: 150, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Category);}}},
+            {select: "Messagetype", display:{id:"Messagetype", field:"Messagetype", name:"Message Type", width:200, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Messagetype); }}},
+            {select: "Level", display:{id:"Level", field:"Level", name:"Level", width:150, searchable:true, formatter: function(r, c, v, cd, dc) { return qewu.getLevelName4Value(dc.Level); }}},
+            {select: "Context", display:{id:"Context", field:"Context", name:"Context", width:150, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Context); }}},
+            {select: "Keyword", display:{id:"Keyword", field:"Keyword", name:"Keyword", width:150, searchable:true, formatter: function(r, c, v, cd, dc) { return handleNull4Grid(dc.Keyword); }}},
+            {select: "Xmlmessage", display:{id:"Xmlmessage", field:"Xmlmessage", name:"Log Message", width:500, formatter: function(r, c, v, cd, dc) { return '<span class="word-break-normal">' + contrail.checkIfExist(dc.Xmlmessage) ? handleNull4Grid(dc.Xmlmessage['log_msg']) : '' + '</span>'; }, exportConfig: { allow: true, advFormatter: function(dc) { return dc.Xmlmessage } }}},
         ]
     };
 
