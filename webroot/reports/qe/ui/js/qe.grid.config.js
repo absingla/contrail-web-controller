@@ -19,6 +19,19 @@ define([
             return newColumnDisplay;
         };
 
+        this.getColumnDisplay4ChartGroupGrid = function(tableName, tableType, selectArray) {
+            var newColumnDisplay = [],
+                columnDisplay = getColumnDisplay4Query(tableName, tableType);
+
+            $.each(columnDisplay, function(key, val){
+                if (selectArray.indexOf(val.select) != -1 && !qewu.isAggregateField(val.select) && val.select !== 'T' && val.select !== 'T=') {
+                    newColumnDisplay.push(val.display);
+                }
+            });
+
+            return newColumnDisplay;
+        };
+
         this.getQueueColumnDisplay = function() {
             return [
                 { id:"startTime", field:"startTime", name:"Date", width:150, minWidth: 150, formatter: function(r, c, v, cd, dc) { return moment(dc.startTime).format('YYYY-MM-DD HH:mm:ss'); } },

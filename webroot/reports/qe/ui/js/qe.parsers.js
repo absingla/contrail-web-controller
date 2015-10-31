@@ -12,7 +12,7 @@ define([
             var chartData = [];
 
             $.each(response, function(fcKey, fcValue) {
-                chartData.push({flow_class_id: fcKey, values: fcValue});
+                chartData.push({chart_group_id: fcKey, values: fcValue});
 
             });
 
