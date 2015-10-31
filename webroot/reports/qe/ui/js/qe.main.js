@@ -27,16 +27,20 @@ function QELoader() {
                 this.qeView.renderFlowSeries({hashParams: hashParams});
                 break;
 
-            case 'renderStatQuery':
-                this.qeView.renderStatQuery({hashParams: hashParams});
+            case 'renderFlowQueue':
+                this.qeView.renderFlowQueue({hashParams: hashParams});
+                break;
+
+            case 'renderSystemLogs':
+                this.qeView.renderSystemLogs({hashParams: hashParams});
                 break;
 
             case 'renderObjectLogs':
                 this.qeView.renderObjectLogs({hashParams: hashParams});
                 break;
 
-            case 'renderFlowQueue':
-                this.qeView.renderFlowQueue({hashParams: hashParams});
+            case 'renderStatQuery':
+                this.qeView.renderStatQuery({hashParams: hashParams});
                 break;
         }
     },

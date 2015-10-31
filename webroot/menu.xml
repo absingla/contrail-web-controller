@@ -35,7 +35,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <role>superAdmin</role>
                         </roles>
                         <orchModels>
-                           <model>openstack</model>
+                            <model>openstack</model>
                             <model>cloudstack</model>
                             <model>vcenter</model>
                         </orchModels>
@@ -336,7 +336,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>BGP Routers</label>
                             <hash>config_infra_bgp</hash>
                             <resources>
-                                 <resource>
+                                <resource>
                                     <rootDir>/common/ui</rootDir>
                                     <js>controller.app.js</js>
                                 </resource>
@@ -345,7 +345,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <js>bgp.main.js</js>
                                     <class>configBGPPageLoader</class>
                                     <function>renderBGP</function>
-                                 </resource>
+                                </resource>
                             </resources>
                             <searchStrings>Configure BGP Routers</searchStrings>
                         </item>
@@ -490,11 +490,11 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <js>port.main.js</js>
                                     <class>ConfigPortLoader</class>
                                     <function>renderPort</function>
-<!--                                <resource>
-                                    <rootDir>/config/ports/ui</rootDir>
-                                    <js>ports_config.js</js>
-                                    <view>ports_config.view</view>
-                                    <class>portsConfigObj</class>-->
+                                    <!--                                <resource>
+                                                                        <rootDir>/config/ports/ui</rootDir>
+                                                                        <js>ports_config.js</js>
+                                                                        <view>ports_config.view</view>
+                                                                        <class>portsConfigObj</class>-->
                                 </resource>
                             </resources>
                             <searchStrings>Ports</searchStrings>
@@ -654,20 +654,20 @@ and need to add the iconClass tag wherever we need to show some icons
                     <iconClass>icon-globe</iconClass>
                     <init>/config/networking.init.js</init>
                     <items>
-                       <item>
+                        <item>
                             <label>Servers</label>
                             <hash>config_dns_servers</hash>
-                               <resources>
-                                   <resource>
-                                       <rootDir>/common/ui</rootDir>
-                                   </resource>
-                                   <resource>
-                                       <rootDir>/config/dns/servers/ui</rootDir>
-                                       <js>DnsServer.main.js</js>
-                                       <class>DnsServerLoader</class>
-                                       <function>renderDnsServer</function>
-                                   </resource>
-                               </resources>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/dns/servers/ui</rootDir>
+                                    <js>DnsServer.main.js</js>
+                                    <class>DnsServerLoader</class>
+                                    <function>renderDnsServer</function>
+                                </resource>
+                            </resources>
                             <searchStrings>Configure DNS Servers</searchStrings>
                         </item>
                         <item>
@@ -675,7 +675,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <hash>config_dns_records</hash>
                             <resources>
                                 <resource>
-                                   <rootDir>/common/ui</rootDir>
+                                    <rootDir>/common/ui</rootDir>
                                 </resource>
                                 <resource>
                                     <rootDir>/config/dns/records/ui</rootDir>
@@ -709,7 +709,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>Quotas</label>
                         </item>
                         -->
-        </items>
+            </items>
         </item>
         <item>
             <label>Setting</label>
@@ -822,6 +822,15 @@ and need to add the iconClass tag wherever we need to show some icons
                     <iconClass>icon-contrail-system-logs</iconClass>
                     <init>/reports/qe/ui/js/qe.init.js</init>
                     <items>
+                        <item>
+                            <hash>query_log_system1</hash>
+                            <label>System Logs</label>
+                            <loader>
+                                <class>qeLoader</class>
+                                <function>renderSystemLogs</function>
+                            </loader>
+                            <searchStrings>Query System Logs</searchStrings>
+                        </item>
                         <item>
                             <hash>query_log_object1</hash>
                             <label>Object Logs</label>

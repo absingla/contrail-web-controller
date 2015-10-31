@@ -13,6 +13,7 @@ define([
             var self = this, viewConfig = self.attributes.viewConfig,
                 serverCurrentTime = qewu.getCurrentTime4Client(),
                 queryFormModel = self.model,
+                timeRange = parseInt(queryFormModel.time_range()),
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 contrailListModel;
 
@@ -35,6 +36,11 @@ define([
                             }
                         }
                     };
+
+                if (timeRange !== -1) {
+                    queryFormModel.to_time(serverCurrentTime);
+                    queryFormModel.from_time(serverCurrentTime - (timeRange * 1000));
+                }
 
                 contrailListModel = new ContrailListModel(listModelConfig);
                 modelMap[cowc.UMID_STAT_QUERY_FORM_MODEL] = queryFormModel;

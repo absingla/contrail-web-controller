@@ -114,7 +114,7 @@ define([
 
     function getChartGridViewConfig(flowUrl, selectArray, modelMap) {
         var statTableName = modelMap[cowc.UMID_STAT_QUERY_FORM_MODEL].table_name(),
-            columnDisplay = qewgc.getColumnDisplay4Grid(statTableName, cowc.QE_STAT_TABLE_TYPE, selectArray),
+            columnDisplay = qewgc.getColumnDisplay4ChartGroupGrid(statTableName, cowc.QE_STAT_TABLE_TYPE, selectArray, true),
             lineWithFocusChartModel = modelMap[cowc.UMID_STAT_QUERY_LINE_CHART_MODEL],
             chartListModel = modelMap[cowc.UMID_STAT_QUERY_CHART_MODEL],
             chartColorAvailableKeys = ['id_0', null, null, null, null],
@@ -215,6 +215,7 @@ define([
     function formatChartData(modelMap, chartColorAvailableKeys) {
         var queryFormModel = modelMap[cowc.UMID_STAT_QUERY_FORM_MODEL],
             chartListModel = modelMap[cowc.UMID_STAT_QUERY_CHART_MODEL],
+            aggregateSelectFields = qewu.getAggregateSelectFields(queryFormModel),
             chartData = [];
 
         $.each(chartColorAvailableKeys, function(colorKey, colorValue) {
@@ -223,16 +224,22 @@ define([
                 var chartDataRow = chartListModel.getItemById(colorValue),
                     chartDataValue = {
                         cgrid: 'id_' + colorKey,
-                        key: '#' + colorKey + ' Sum(Bytes)',
+                        key: '#' + colorKey,
                         values: [],
                         color: d3_category5[colorKey]
                     };
 
-                qewu.addFSMissingPoints(chartDataRow, queryFormModel, ['sum(bytes)','sum(packets)'])
+                qewu.addChartMissingPoints(chartDataRow, queryFormModel, aggregateSelectFields);
 
                 $.each(chartDataRow.values, function (fcItemKey, fcItemValue) {
-                    var ts = parseInt(fcItemKey);
-                    chartDataValue.values.push({x: ts, y: fcItemValue['sum(bytes)'], 'sum(bytes)': fcItemValue['sum(bytes)'], 'sum(packets)': fcItemValue['sum(packets)']});
+                    var ts = parseInt(fcItemKey),
+                        chartDataValueItemObj = {x: ts};
+
+                    $.each(aggregateSelectFields, function(selectFieldKey, selectFieldValue) {
+                        chartDataValueItemObj[selectFieldValue] = fcItemValue[selectFieldValue]
+                    });
+
+                    chartDataValue.values.push(chartDataValueItemObj);
                 });
 
                 chartData.push(chartDataValue);

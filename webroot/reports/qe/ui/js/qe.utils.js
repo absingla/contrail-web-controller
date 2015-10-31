@@ -178,7 +178,7 @@ define([
             return currentTime;
         };
 
-        self.addFSMissingPoints = function(chartDataRow, queryFormModel, plotFields) {
+        self.addChartMissingPoints = function(chartDataRow, queryFormModel, plotFields) {
             var chartDataValues = chartDataRow.values,
                 newChartDataValues = {},
                 emptyChartDataValue  = {},
@@ -267,12 +267,10 @@ define([
 
         self.getAggregateSelectFields = function(queryFormModel) {
             var selectArray = queryFormModel.select().replace(/ /g, "").split(","),
-                aggregateSelectArray = [],
-                selectValueLowerCase = '';
+                aggregateSelectArray = [];
 
             $.each(selectArray, function(selectKey, selectValue) {
-                selectValueLowerCase = selectValue.toLowerCase();
-                if (selectValueLowerCase.indexOf('sum(') != -1 || selectValueLowerCase.indexOf('count(') != -1 || selectValueLowerCase.indexOf('min(') != -1 || selectValueLowerCase.indexOf('max(') != -1) {
+                if (self.isAggregateField(selectValue)) {
                     aggregateSelectArray.push(selectValue);
                 }
             });
@@ -313,6 +311,28 @@ define([
             if (xmlString && xmlString != '') {
                 var xmlDoc = filterXML(xmlString, is4SystemLogs);
                 return convertXML2JSON(serializer.serializeToString(xmlDoc));
+            } else {
+                return '';
+            }
+        };
+
+        self.getLevelName4Value = function(logValue) {
+            var count = cowc.QE_LOG_LEVELS.length;
+            for (var i = 0; i < count; i++) {
+                if (cowc.QE_LOG_LEVELS[i].value == logValue) {
+                    return cowc.QE_LOG_LEVELS[i].name;
+                }
+            }
+            return logValue;
+        };
+
+        self.handleNull4Grid = function(value, placeHolder) {
+            if(value == 0) {
+                return 0;
+            } else if (value != null && value != '') {
+                return value;
+            } else if (placeHolder != null) {
+                return placeHolder;
             } else {
                 return '';
             }
@@ -383,14 +403,17 @@ define([
             timeRange = formModelAttrs['time_range'],
             tgUnit = formModelAttrs['tg_unit'],
             tgValue = formModelAttrs['tg_value'],
-            fromDate, toDate, fromTimeUTC, toTimeUTC,
+            fromDate, toDate, fromTimeUTC, toTimeUTC, serverDateObj,
             fromTime, toTime, now, tgMicroSecs = 0;
 
         tgMicroSecs = getTGMicroSecs(tgValue, tgUnit);
 
         if (timeRange > 0) {
             if (serverCurrentTime) {
-                toTimeUTC = serverCurrentTime;
+                serverDateObj =  new Date(serverCurrentTime);
+                serverDateObj.setSeconds(0);
+                serverDateObj.setMilliseconds(0);
+                toTimeUTC = serverDateObj.getTime();
             } else {
                 now = new Date();
                 now.setSeconds(0);

@@ -227,7 +227,7 @@ define([
                         color: d3_category5[colorKey]
                     };
 
-                qewu.addFSMissingPoints(chartDataRow, queryFormModel, aggregateSelectFields);
+                qewu.addChartMissingPoints(chartDataRow, queryFormModel, aggregateSelectFields);
 
                 $.each(chartDataRow.values, function (fcItemKey, fcItemValue) {
                     var ts = parseInt(fcItemKey),
