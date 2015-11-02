@@ -482,6 +482,8 @@ define([
         this.CONTROLNODE_PEERS_TITLE = "Peers";
         this.CONTROLNODE_ROUTES_GRID_VIEW_ID =
             'control_node_routes_grid_view';
+        this.CONTROLNODE_CONSOLE_LOGS_VIEW_ID =
+            'control_node_console_logs_view';
         this.CONTROLNODE_ROUTES_ID = 'control_node_routes';
         this.CONTROLNODE_ROUTES_GRID_ID = 'control_node_route_grid';
         this.CONTROLNODE_ROUTES_RESULT_VIEW =
