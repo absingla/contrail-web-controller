@@ -729,30 +729,33 @@ and need to add the iconClass tag wherever we need to show some icons
                 <item>
                     <label>Config DB</label>
                     <iconClass>icon-contrail-config-db</iconClass>
+                    <init>/setting/configdb/ui/js/cdb.init.js</init>
                     <items>
                         <item>
                             <hash>setting_configdb_fqname</hash>
                             <label>FQ Name Table</label>
-                            <resources>
-                                <resource>
-                                    <rootDir>/setting/config_db</rootDir>
-                                    <view>cdb_query.view</view>
-                                    <js>cdb_query.js</js>
-                                    <class>fqNameTableObj</class>
-                                </resource>
-                            </resources>
+                            <loader>
+                                <class>cdbPageLoader</class>
+                                <function>renderFQTable</function>
+                            </loader>
+                            <queryParams>
+                                <view>list</view>
+                                <type>fqTableNames</type>
+                            </queryParams>
+                            <searchStrings>FQ Name Table</searchStrings>
                         </item>
                         <item>
                             <hash>setting_configdb_uuid</hash>
                             <label>UUID Table</label>
-                            <resources>
-                                <resource>
-                                    <rootDir>/setting/config_db</rootDir>
-                                    <view>cdb_query.view</view>
-                                    <js>cdb_query.js</js>
-                                    <class>uuidTableObj</class>
-                                </resource>
-                            </resources>
+                            <loader>
+                                <class>cdbPageLoader</class>
+                                <function>renderUUIDTable</function>
+                            </loader>
+                            <queryParams>
+                                <view>list</view>
+                                <type>uuidTableNames</type>
+                            </queryParams>
+                            <searchStrings>UUID Table</searchStrings>
                         </item>
                     </items>
                 </item>
