@@ -34,7 +34,8 @@ define([
                             dataParser: function(response) {
                                 return response['data'];
                             },
-                            successCallback: function(response, contrailListModel) {
+                            //TODO: We should not need to implement success callback in each grid to show grid message based on status
+                            successCallback: function(resultJSON, contrailListModel, response) {
                                 // TODO: Show Message if query is queued.
                             }
                         }
