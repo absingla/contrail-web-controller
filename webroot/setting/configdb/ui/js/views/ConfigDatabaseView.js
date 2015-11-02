@@ -317,8 +317,6 @@ define([
             ajaxConfig.type = "DELETE";
             ajaxConfig.url = url;
 
-            console.log(ajaxConfig);
-            return;
             contrail.ajaxHandler(ajaxConfig, function (response) {
                 if (contrail.checkIfFunction(callbackObj.success)) {
                     callbackObj.success();
