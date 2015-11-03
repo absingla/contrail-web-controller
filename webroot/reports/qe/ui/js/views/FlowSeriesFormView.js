@@ -13,7 +13,7 @@ define([
         render: function (options) {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
-                formData = contrail.checkIfExist(viewConfig.formData) ? formatFormData(viewConfig.formData) : {},
+                formData = contrail.checkIfExist(viewConfig.formData) ? viewConfig.formData : {},
                 queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
                 flowSeriesQueryModel = new FlowSeriesFormModel(formData),
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
@@ -199,19 +199,6 @@ define([
             };
         }
     });
-
-    function formatFormData(formData) {
-        var queryJSON = formData.queryJSON,
-            formModelData = {
-                time_tange: -1,
-                from_time: queryJSON.start_time,
-                to_time: queryJSON.end_time,
-                time_granularity: formData.tg,
-                time_granularity_unit: formData.tgUnit
-            };
-
-        return formData
-    }
 
     return FlowSeriesQueryView;
 });
