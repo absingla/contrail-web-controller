@@ -800,7 +800,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     <init>/reports/qe/ui/js/qe.init.js</init>
                     <items>
                         <item>
-                            <hash>query_flow_series1</hash>
+                            <hash>query_flow_series</hash>
                             <label>Flow Series</label>
                             <loader>
                                 <class>qeLoader</class>
@@ -809,7 +809,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Query Flow Series</searchStrings>
                         </item>
                         <item>
-                            <hash>query_flow_record1</hash>
+                            <hash>query_flow_record</hash>
                             <label>Flow Record</label>
                             <loader>
                                 <class>qeLoader</class>
@@ -818,7 +818,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Query Flow Record</searchStrings>
                         </item>
                         <item>
-                            <hash>query_flow_queue1</hash>
+                            <hash>query_flow_queue</hash>
                             <label>Flow Queue</label>
                             <loader>
                                 <class>qeLoader</class>
@@ -834,7 +834,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     <init>/reports/qe/ui/js/qe.init.js</init>
                     <items>
                         <item>
-                            <hash>query_log_system1</hash>
+                            <hash>query_log_system</hash>
                             <label>System Logs</label>
                             <loader>
                                 <class>qeLoader</class>
@@ -843,7 +843,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Query System Logs</searchStrings>
                         </item>
                         <item>
-                            <hash>query_log_object1</hash>
+                            <hash>query_log_object</hash>
                             <label>Object Logs</label>
                             <loader>
                                 <class>qeLoader</class>
@@ -859,7 +859,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     <init>/reports/qe/ui/js/qe.init.js</init>
                     <items>
                         <item>
-                            <hash>query_stat_query1</hash>
+                            <hash>query_stat_query</hash>
                             <label>Query</label>
                             <loader>
                                 <class>qeLoader</class>
@@ -869,12 +869,13 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                     </items>
                 </item>
+                <!--
                 <item>
                     <label>Old Queries</label>
                     <iconClass>icon-sign-blank</iconClass>
                     <items>
                         <item>
-                            <hash>query_flow_series</hash>
+                            <hash>query_flow_series2</hash>
                             <label>Flow Series</label>
                             <resources>
                                 <resource>
@@ -888,7 +889,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Query Flow Series</searchStrings>
                         </item>
                         <item>
-                            <hash>query_flow_records</hash>
+                            <hash>query_flow_records2</hash>
                             <label>Flow Records</label>
                             <resources>
                                 <resource>
@@ -902,7 +903,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Query Flow Records</searchStrings>
                         </item>
                         <item>
-                            <hash>query_flow_queue</hash>
+                            <hash>query_flow_queue2</hash>
                             <label>Flow Query Queue</label>
                             <resources>
                                 <resource>
@@ -916,7 +917,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Flow Query Queue</searchStrings>
                         </item>
                         <item>
-                            <hash>query_log_system</hash>
+                            <hash>query_log_system2</hash>
                             <label>System Logs</label>
                             <resources>
                                 <resource>
@@ -930,7 +931,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Query System Logs</searchStrings>
                         </item>
                         <item>
-                            <hash>query_log_object</hash>
+                            <hash>query_log_object2</hash>
                             <label>Object Logs</label>
                             <resources>
                                 <resource>
@@ -944,7 +945,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Query Object Logs</searchStrings>
                         </item>
                         <item>
-                            <hash>query_log_queue</hash>
+                            <hash>query_log_queue2</hash>
                             <label>Logs Query Queue</label>
                             <resources>
                                 <resource>
@@ -958,7 +959,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Logs Query Queue</searchStrings>
                         </item>
                         <item>
-                            <hash>query_stat_query</hash>
+                            <hash>query_stat_query2</hash>
                             <label>Stat Query</label>
                             <resources>
                                 <resource>
@@ -972,7 +973,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Query Statistics</searchStrings>
                         </item>
                         <item>
-                            <hash>query_stat_queue</hash>
+                            <hash>query_stat_queue2</hash>
                             <label>Stat Query Queue</label>
                             <resources>
                                 <resource>
@@ -987,6 +988,7 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                     </items>
                 </item>
+                -->
             </items>
         </item>
     </items>
