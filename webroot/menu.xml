@@ -809,6 +809,15 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Query Flow Series</searchStrings>
                         </item>
                         <item>
+                            <hash>query_flow_record1</hash>
+                            <label>Flow Record</label>
+                            <loader>
+                                <class>qeLoader</class>
+                                <function>renderFlowRecord</function>
+                            </loader>
+                            <searchStrings>Query Flow Record</searchStrings>
+                        </item>
+                        <item>
                             <hash>query_flow_queue1</hash>
                             <label>Flow Queue</label>
                             <loader>

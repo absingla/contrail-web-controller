@@ -27,6 +27,10 @@ function QELoader() {
                 this.qeView.renderFlowSeries({hashParams: hashParams});
                 break;
 
+            case 'renderFlowRecord':
+                this.qeView.renderFlowRecord({hashParams: hashParams});
+                break;
+
             case 'renderFlowQueue':
                 this.qeView.renderFlowQueue({hashParams: hashParams});
                 break;

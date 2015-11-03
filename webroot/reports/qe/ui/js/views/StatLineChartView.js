@@ -250,8 +250,6 @@ define([
     }
 
     function getFilterConfig(aggregateSelectFields, modelMap) {
-        console.log(aggregateSelectFields)
-
         var filterConfig = {
             groups: [
                 {

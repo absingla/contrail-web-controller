@@ -204,8 +204,6 @@ define([
         this.UNDERLAY_PROUTER_INTERFACE_TAB_ID = 'pRouterInterfaces';
         this.UNDERLAY_TRACEFLOW_TAB_ID = 'traceFlow';
         this.UNDERLAY_DETAILS_TAB_ID = 'details';
-        this.FLOW_RECORD_TABLE = "FlowRecordTable";
-        this.FR_QUERY_PREFIX = "fr";
         this.TIMERANGE_DROPDOWN_VALUES = [
             {'id': 600, 'text': 'Last 10 Mins'},
             {'id': 1800, 'text': 'Last 30 Mins'},
