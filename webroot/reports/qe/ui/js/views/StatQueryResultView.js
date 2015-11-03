@@ -149,7 +149,6 @@ define([
                     remote: {
                         ajaxConfig: statRemoteConfig,
                         dataParser: function(response) {
-                            console.log(response);
                             return response['data'];
                         },
                         serverSidePagination: true
