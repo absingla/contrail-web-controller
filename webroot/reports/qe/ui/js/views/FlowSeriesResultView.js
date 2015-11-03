@@ -5,65 +5,96 @@
 define([
     'underscore',
     'query-result-view',
-    'contrail-list-model'
-], function (_, QueryResultView, ContrailListModel) {
+    'contrail-list-model',
+    'reports/qe/ui/js/models/FlowSeriesFormModel'
+], function (_, QueryResultView, ContrailListModel, FlowSeriesFormModel) {
 
     var FlowSeriesResultView = QueryResultView.extend({
         render: function () {
             var self = this, viewConfig = self.attributes.viewConfig,
                 serverCurrentTime = qewu.getCurrentTime4Client(),
-                queryFormModel = self.model,
-                timeRange = parseInt(queryFormModel.time_range()),
-                modelMap = contrail.handleIfNull(self.modelMap, {}),
-                contrailListModel;
+                formData = contrail.checkIfExist(viewConfig.formData) ? viewConfig.formData : {},
+                queryFormModel = contrail.checkIfExist(self.model) ? self.model : new FlowSeriesFormModel(formData),
+                postDataObj;
 
-            $.ajax({
-                url: '/api/service/networking/web-server-info'
-            }).done(function (resultJSON) {
-                serverCurrentTime = resultJSON['serverUTCTime'];
-            }).always(function() {
-                var postDataObj = queryFormModel.getQueryRequestPostData(serverCurrentTime),
-                    fsRemoteConfig = {
-                        url: "/api/qe/query",
-                        type: 'POST',
-                        data: JSON.stringify(postDataObj)
-                    },
-                    listModelConfig = {
-                        remote: {
-                            ajaxConfig: fsRemoteConfig,
-                            dataParser: function(response) {
-                                return response['data'];
-                            },
-                            //TODO: We should not need to implement success callback in each grid to show grid message based on status
-                            successCallback: function(resultJSON, contrailListModel, response) {
-                                // TODO: Show Message if query is queued.
-                            }
-                        }
-                    };
+            if (!contrail.checkIfExist(self.model)) {
+                self.model = queryFormModel;
+            }
 
-                if (timeRange !== -1) {
-                    queryFormModel.to_time(serverCurrentTime);
-                    queryFormModel.from_time(serverCurrentTime - (timeRange * 1000));
-                }
+            if (viewConfig.queryType == 'queue') {
 
-                contrailListModel = new ContrailListModel(listModelConfig);
-                modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL] = queryFormModel;
-                self.renderView4Config(self.$el, contrailListModel, self.getFlowSeriesResultGridTabViewConfig(postDataObj, fsRemoteConfig, serverCurrentTime), null, null, modelMap, function(flowSeriesResultView) {
-                    var selectArray = queryFormModel.select().replace(/ /g, "").split(",");
+                postDataObj = {
+                    pageSize: 50,
+                    page: 1,
+                    queryId: formData.queryId
+                };
 
-                    if(selectArray.indexOf("T=") != -1) {
-                        contrailListModel.onAllRequestsComplete.subscribe(function () {
-                            //TODO: Load chart only if data is not queued.
-                            if (contrailListModel.getItems().length > 0) {
-                                flowSeriesResultView.childViewMap[cowl.QE_FLOW_SERIES_TAB_ID].renderNewTab(cowl.QE_FLOW_SERIES_TAB_ID, self.getFlowSeriesResultChartTabViewConfig(postDataObj));
-                            }
-                        });
+                self.renderFlowSeriesResult(postDataObj, queryFormModel);
+            } else {
+                $.ajax({
+                    url: '/api/service/networking/web-server-info'
+                }).done(function (resultJSON) {
+                    serverCurrentTime = resultJSON['serverUTCTime'];
+                }).always(function() {
+                    var timeRange = parseInt(queryFormModel.time_range());
+
+                    postDataObj = queryFormModel.getQueryRequestPostData(serverCurrentTime)
+
+                    if (timeRange !== -1) {
+                        queryFormModel.to_time(serverCurrentTime);
+                        queryFormModel.from_time(serverCurrentTime - (timeRange * 1000));
                     }
+
+                    self.renderFlowSeriesResult(postDataObj, queryFormModel);
                 });
+            }
+        },
+
+        renderFlowSeriesResult: function(postDataObj, queryFormModel) {
+            var self = this,
+                modelMap = contrail.handleIfNull(self.modelMap, {}),
+                contrailListModel,
+                fsRemoteConfig = {
+                    url: "/api/qe/query",
+                    type: 'POST',
+                    data: JSON.stringify(postDataObj)
+                },
+                listModelConfig = {
+                    remote: {
+                        ajaxConfig: fsRemoteConfig,
+                        dataParser: function(response) {
+                            return response['data'];
+                        },
+                        //TODO: We should not need to implement success callback in each grid to show grid message based on status
+                        successCallback: function(resultJSON, contrailListModel, response) {
+                            //TODO - Remove this setTimeout
+                            setTimeout(function(){
+                                if (response.status === 'queued') {
+                                    $('#' + cowl.QE_FLOW_SERIES_GRID_ID).data('contrailGrid').showGridMessage(response.status)
+                                }
+                            }, 500);
+
+                        }
+                    }
+                };
+
+            contrailListModel = new ContrailListModel(listModelConfig);
+            modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL] = queryFormModel;
+            self.renderView4Config(self.$el, contrailListModel, self.getFlowSeriesResultGridTabViewConfig(postDataObj, fsRemoteConfig), null, null, modelMap, function(flowSeriesResultView) {
+                var selectArray = queryFormModel.select().replace(/ /g, "").split(",");
+
+                if(selectArray.indexOf("T=") != -1) {
+                    contrailListModel.onAllRequestsComplete.subscribe(function () {
+                        //TODO: Load chart only if data is not queued.
+                        if (contrailListModel.getItems().length > 0) {
+                            flowSeriesResultView.childViewMap[cowl.QE_FLOW_SERIES_TAB_ID].renderNewTab(cowl.QE_FLOW_SERIES_TAB_ID, self.getFlowSeriesResultChartTabViewConfig(postDataObj));
+                        }
+                    });
+                }
             });
         },
 
-        getFlowSeriesResultGridTabViewConfig: function (postDataObj, fsRemoteConfig, serverCurrentTime) {
+        getFlowSeriesResultGridTabViewConfig: function (postDataObj, fsRemoteConfig) {
             var self = this, viewConfig = self.attributes.viewConfig,
                 pagerOptions = viewConfig['pagerOptions'],
                 queryFormModel = this.model,
@@ -155,6 +186,13 @@ define([
                             return response['data'];
                         },
                         serverSidePagination: true
+                    }
+                },
+                statusMessages: {
+                    queued: {
+                        type: 'status',
+                        iconClasses: '',
+                        text: 'Your query has been queued.'
                     }
                 }
             },

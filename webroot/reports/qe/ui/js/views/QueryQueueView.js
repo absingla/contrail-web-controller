@@ -130,13 +130,30 @@ define([
                         viewPathPrefix: "reports/qe/ui/js/views/",
                         app: cowc.APP_CONTRAIL_CONTROLLER,
                         viewConfig: {
-                            formData: queryQueueItem
+                            formData: formatFormData(queryQueueItem)
+                        }
+                    },
+                    {
+                        view: "FlowSeriesResultView",
+                        viewPathPrefix: "reports/qe/ui/js/views/",
+                        app: cowc.APP_CONTRAIL_CONTROLLER,
+                        viewConfig: {
+                            formData: formatFormData(queryQueueItem),
+                            queryType: 'queue'
                         }
                     }
                 ]
             }
-        }
+        };
     };
+
+    function formatFormData(formData) {
+        var formModelData = formData.reRunQueryString.formModelAttrs;
+
+        formModelData.queryId = formData.queryId;
+
+        return formModelData;
+    }
 
     return QueryQueueView;
 });
