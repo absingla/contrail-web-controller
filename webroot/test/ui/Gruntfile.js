@@ -18,10 +18,12 @@ module.exports = function (grunt) {
         {pattern: 'contrail-web-core/webroot/css/**/*.css', included: false},
         {pattern: 'contrail-web-core/webroot/css/**/*.ttf', included: false},
         {pattern: 'contrail-web-core/webroot/css/**/*.woff', included: false},
+        {pattern: 'contrail-web-core/webroot/css/**/*.svg', included: false},
         {pattern: 'contrail-web-core/webroot/test/ui/**/*.css', included: false},
 
         {pattern: 'contrail-web-core/webroot/assets/**/*.woff', included: false},
         {pattern: 'contrail-web-core/webroot/assets/**/*.ttf', included: false},
+        {pattern: 'contrail-web-core/webroot/assets/**/*.svg', included: false},
 
         {pattern: 'contrail-web-core/webroot/img/**/*.png', included: false},
         {pattern: 'contrail-web-core/webroot/css/**/*.png', included: false},
@@ -269,7 +271,7 @@ module.exports = function (grunt) {
     karmaConfig['runAllNMTests'] = {
         options:{
             files: [],
-                preprocessors: {
+            preprocessors: {
                 'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
             },
             junitReporter: {
@@ -280,8 +282,16 @@ module.exports = function (grunt) {
                 outputFile: __dirname + '/reports/tests/nm-test-results.html'
             },
             coverageReporter: {
-                type : 'html',
-                    dir : __dirname + '/reports/coverage/nm/'
+                reporters: [
+                    {
+                        type : 'html',
+                        dir : __dirname + '/reports/coverage/nm/'
+                    },
+                    {
+                        type : 'json',
+                        dir : __dirname + '/reports/coverage/nm/'
+                    }
+                ]
             }
         }
     };
@@ -289,7 +299,7 @@ module.exports = function (grunt) {
         options:{
             files: [],
                 preprocessors: {
-                'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+                'contrail-web-controller/webroot/monitor/**/ui/js/**/*.js': ['coverage']
             },
             junitReporter: {
                 outputFile: __dirname + '/reports/tests/web-controller-test-results.xml',
@@ -355,7 +365,12 @@ module.exports = function (grunt) {
             grunt.log.writeln('>>>>>>>> Running Network Monitoring feature tests. <<<<<<<');
             grunt.task.run('karma:runAllNMTests');
             grunt.log.writeln('Test results: ' + karmaConfig['runAllNMTests']['options']['htmlReporter']['outputFile']);
-            grunt.log.writeln('Coverage Report: ' + karmaConfig['runAllNMTests']['options']['coverageReporter']['dir']);
+            grunt.log.writeln('Coverage Reports: ');
+            var reporters = karmaConfig['runAllNMTests']['options']['coverageReporter']['reporters'];
+            for (var i=0; i< reporters.length ; i++) {
+                grunt.log.writeln('Type: ' + reporters[i]['type']);
+                grunt.log.writeln('Dir: ' + reporters[i]['dir']);
+            }
         }else if (target == 'networkListView') {
             grunt.task.run('karma:networkListView');
         } else if (target == 'networkView') {
