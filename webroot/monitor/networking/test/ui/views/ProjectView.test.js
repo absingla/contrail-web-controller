@@ -13,6 +13,8 @@ define([
 
     var moduleId = cttm.PROJECTS_VIEW_COMMON_TEST_MODULE;
 
+    var testType = cotc.VIEW_TEST;
+
     var fakeServerConfig = cotr.getDefaultFakeServerConfig();
 
     var fakeServerResponsesConfig = function() {
@@ -176,7 +178,7 @@ define([
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
 
     cotr.startTestRunner(pageTestConfig);
 
