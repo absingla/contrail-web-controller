@@ -17,7 +17,6 @@ define([
                 'policy_rule': []
             },
             'is_sec_grp_id_auto': true,
-            'customValue': {},
             'configured_security_group_id': null
         },
         validateAttr: function(attributePath, validation, data) {
@@ -31,7 +30,8 @@ define([
 
             switch (attributePath) {
             case 'configured_security_group_id':
-                if (true == attributes['is_sec_grp_id_auto']) {
+                if ((true == attributes['is_sec_grp_id_auto']) ||
+                    ("true" == attributes['is_sec_grp_id_auto'])) {
                     needValidate = false;
                 }
                 break;
@@ -53,9 +53,26 @@ define([
                     required: true
                 },
                 'configured_security_group_id': function(val, attr, obj) {
-                    if (false == obj['is_sec_grp_id_auto']) {
-                        if ((null == val) || ("" == val.trim())) {
+                    if ((false == obj['is_sec_grp_id_auto']) ||
+                        ("false" == obj['is_sec_grp_id_auto'])) {
+                        if (null != val) {
+                            if (val instanceof String) {
+                                val = val.trim();
+                                if ("" == val) {
+                                    return "Security Group ID is required";
+                                }
+                            }
+                        } else {
                             return "Security Group ID is required";
+                        }
+                        val = Number(val);
+                        if (isNaN(val)) {
+                            return 'Configured security group id must be a ' +
+                                'number';
+                        }
+                        if ((val < 1) || (val > 7999999)) {
+                            return 'Security Group Id has to be between 1 to' +
+                                ' 7999999.';
                         }
                         return Backbone.Validation.validators.pattern(val,
                                                                       attr,
@@ -82,22 +99,28 @@ define([
                 var remoteAddr = sgUtils.getRemoteAddr(polRules[i], direction);
                 var addr =remoteAddr.text;
                 if (!isValidIP(addr)) {
-                    addr = sgUtils.formatSGAddrDropDownEntry(addr.split(':'));
+                    var fomattedAddr = sgUtils.formatSGAddrDropDownEntry(addr.split(':'));
+                    addr = fomattedAddr.value;
                 } else {
-                    addr = remoteAddr;
+                    addr = remoteAddr.text + '~' + 'subnet';
                 }
                 var remotePorts =
                     polRules[i]['dst_ports'][0]['start_port'] + " - " +
                     polRules[i]['dst_ports'][0]['end_port'];
+
                 var ruleObj = {direction: direction, ethertype: ethertype,
                                protocol: protocol, remotePorts: remotePorts,
-                               customValue : addr};
+                               remoteAddr : addr};
 
                 var ruleModel = new SecGrpRulesModel(ruleObj);
                 ruleModels.push(ruleModel);
             }
             ruleCollectionModel = new Backbone.Collection(ruleModels);
             modelConfig['rules'] = ruleCollectionModel;
+            if (null == modelConfig['uuid']) {
+                /* Create */
+                modelConfig = this.createDefaultRules(modelConfig);
+            }
             return modelConfig;
         },
         getRemoteAddresses: function() {
@@ -110,13 +133,26 @@ define([
         },
         addSecGrpRule: function() {
             var ruleName = this.model().attributes['display_name'];
-            sgUtils.addCurrentSG(ruleName);
             var rules = this.model().attributes['rules'];
             var newRule = new SecGrpRulesModel(
                 {direction: 'Ingress', ethertype: 'IPv4', protocol: 'TCP',
                  remotePorts: '0 - 65535',
-                 customValue: {'text': '0.0.0.0/0', groupName: 'CIDR'}});
+                 remoteAddr: '0.0.0.0/0~subnet'});
             rules.add([newRule]);
+        },
+        createDefaultRules: function(model) {
+            var rules = model['rules'];
+            var newRule = new SecGrpRulesModel(
+                {direction: 'Egress', ethertype: 'IPv4', protocol: 'ANY',
+                 remotePorts: '0 - 65535',
+                 remoteAddr: '0.0.0.0/0~subnet'});
+            rules.add([newRule]);
+            newRule = new SecGrpRulesModel(
+                {direction: 'Egress', ethertype: 'IPv6', protocol: 'ANY',
+                 remotePorts: '0 - 65535',
+                 remoteAddr: '::/0~subnet'});
+            rules.add([newRule]);
+            return model;
         },
         getSecGrpRuleList: function(attr) {
             var rulesArr = [];
@@ -157,13 +193,18 @@ define([
                 newSecGrpData['security_group_entries'] = {};
                 newSecGrpData['security_group_entries']['policy_rule'] =
                     configRules;
-                newSecGrpData['configured_security_group_id'] =
-                    Number(newSecGrpData['configured_security_group_id']);
+                if ((true == newSecGrpData['is_sec_grp_id_auto']) ||
+                    ("true" == newSecGrpData['is_sec_grp_id_auto'])) {
+                    newSecGrpData['configured_security_group_id'] = 0;
+                } else {
+                    newSecGrpData['configured_security_group_id'] =
+                        Number(newSecGrpData['configured_security_group_id']);
+                }
                 ajaxConfig = {};
                 ctwu.deleteCGridData(newSecGrpData);
                 delete newSecGrpData['rules'];
                 delete newSecGrpData['sgRules'];
-                delete newSecGrpData['customValue'];
+                delete newSecGrpData['is_sec_grp_id_auto'];
 
                 var putData = {};
                 putData['security-group'] = newSecGrpData;

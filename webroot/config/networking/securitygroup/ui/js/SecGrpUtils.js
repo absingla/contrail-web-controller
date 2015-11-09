@@ -81,12 +81,12 @@ define([
         };
         self.getRemoteAddr = function(rule, uiDirection) {
             var remoteAddr = "";
-            var parType = 'CIDR';
+            var parType = 'subnet';
             if (uiDirection == "Ingress"){
                 if ((rule.src_addresses[0].security_group != "local") &&
                     (rule.src_addresses[0].security_group != null)) {
                     remoteAddr = rule.src_addresses[0].security_group;
-                    parType = 'SecurityGroup';
+                    parType = 'security_group';
                 }  else if (rule.src_addresses[0].subnet !== null) {
                     remoteAddr = rule.src_addresses[0].subnet.ip_prefix + "/" +
                         rule.src_addresses[0].subnet.ip_prefix_len;
@@ -95,7 +95,7 @@ define([
                 if ((rule.dst_addresses[0].security_group != "local") &&
                     (rule.dst_addresses[0].security_group != null)) {
                     remoteAddr = rule.dst_addresses[0].security_group;
-                    parType = 'SecurityGroup';
+                    parType = 'security_group';
                 }  else if(rule.dst_addresses[0].subnet !== null) {
                     remoteAddr = rule.dst_addresses[0].subnet.ip_prefix + "/" +
                         rule.dst_addresses[0].subnet.ip_prefix_len;
@@ -113,12 +113,8 @@ define([
                 var etherType = uiRules[i]['ethertype'];
                 var remoteAddr = uiRules[i]['remoteAddr'];
                 var remotePorts = uiRules[i]['remotePorts'];
-                var remoteAddrArr = remoteAddr.split(':');
-                if (3 == remoteAddrArr.length) {
-                    selectedRemoteAddrType = 'SecurityGroup';
-                } else {
-                    selectedRemoteAddrType = 'CIDR';
-                }
+                var remoteAddrArray = remoteAddr.split('~');
+                var group, groupValue;
                 sgConfig[i] = {};
                 sgConfig[i]["direction"] = ">";
                 sgConfig[i]["protocol"] = protocol.toLowerCase();
@@ -177,30 +173,35 @@ define([
                 sgConfig[i]["dst_addresses"][0]["security_group"] = null;
                 sgConfig[i]["dst_addresses"][0]["subnet"] = null;
                 sgConfig[i]["ethertype"] = etherType;
-
+                if(remoteAddrArray.length !== 2) {
+                    continue;
+                } else {
+                    groupValue = remoteAddrArray[0];
+                    group = remoteAddrArray[1];
+                }
                 if (direction == "Ingress") {
                     sgConfig[i]["dst_addresses"][0]["security_group"] = "local";
-                    if (selectedRemoteAddrType == "SecurityGroup") {
-                        if (remoteAddr.split(":").length == 3) {
+                    if (group == "security_group") {
+                        if (groupValue.split(":").length == 3) {
                             sgConfig[i]["src_addresses"][0]["security_group"] =
-                                remoteAddr;
-                        } else if (remoteAddr.split(":").length == 1) {
+                                groupValue;
+                        } else if (groupValue.split(":").length == 1) {
                             sgConfig[i]["src_addresses"][0]["security_group"] =
                                 selectedDomain + ":" + selectedProject + ":" +
-                                remoteAddr;
+                                groupValue;
                         }
-                    } else if (selectedRemoteAddrType == "CIDR") {
+                    } else if (group == "subnet") {
                         sgConfig[i]["src_addresses"][0]["subnet"] = {};
-                        if ((remoteAddr == null) || (remoteAddr == "") ||
-                            (remoteAddr == "Enter a CIDR") ||
-                            (remoteAddr == "0.0.0.0/0")) {
+                        if ((groupValue == null) || (groupValue == "") ||
+                            (groupValue == "Enter a CIDR") ||
+                            (groupValue == "0.0.0.0/0")) {
                             if(etherType == "IPv4"){
-                                remoteAddr = "0.0.0.0/0";
+                                groupValue = "0.0.0.0/0";
                             } else if(etherType == "IPv6"){
-                                remoteAddr = "::/0";
+                                groupValue = "::/0";
                             }
                         }
-                        var subnetAdd = remoteAddr.split("/")
+                        var subnetAdd = groupValue.split("/")
                         if(subnetAdd[0] == ""){
                             if(etherType == "IPv4"){
                                 subnetAdd[0] = "0.0.0.0";
@@ -220,27 +221,27 @@ define([
                     }
                 } else if(direction == "Egress"){
                     sgConfig[i]["src_addresses"][0]["security_group"] = "local";
-                    if (selectedRemoteAddrType == "SecurityGroup") {
-                        if (remoteAddr.split(":").length == 3) {
+                    if (group == "securit_group") {
+                        if (groupValue.split(":").length == 3) {
                             sgConfig[i]["dst_addresses"][0]["security_group"] =
-                                remoteAddr;
-                        } else if (remoteAddr.split(":").length == 1) {
+                                groupValue;
+                        } else if (groupValue.split(":").length == 1) {
                             sgConfig[i]["dst_addresses"][0]["security_group"] =
                                 selectedDomain + ":" + selectedProject + ":" +
-                                remoteAddr;
+                                groupValue;
                         }
-                    } else if (selectedRemoteAddrType == "CIDR") {
+                    } else if (group == "subnet") {
                         sgConfig[i]["dst_addresses"][0]["subnet"] = {};
-                        if ((remoteAddr == null) || (remoteAddr == "") ||
-                            (remoteAddr == "Enter a CIDR") ||
-                            (remoteAddr == "0.0.0.0/0")) {
+                        if ((groupValue == null) || (groupValue == "") ||
+                            (groupValue == "Enter a CIDR") ||
+                            (groupValue == "0.0.0.0/0")) {
                             if(etherType == "IPv4"){
-                                remoteAddr = "0.0.0.0/0";
+                                groupValue = "0.0.0.0/0";
                             } else if(etherType == "IPv6"){
-                                remoteAddr = "::/0";
+                                groupValue = "::/0";
                             }
                         }
-                        var subnetAdd = remoteAddr.split("/")
+                        var subnetAdd = groupValue.split("/")
                         if(subnetAdd[0] == ""){
                             if(etherType == "IPv4"){
                                 subnetAdd[0] = "0.0.0.0";
@@ -315,6 +316,7 @@ define([
                                 elementId: 'rules',
                                 view: 'FormEditableGridView',
                                 viewConfig: {
+                                        label: 'Security Group Rules',
                                         path: 'rules',
                                         validations: 'secGrpRulesValidation',
                                         collection: 'rules',
@@ -376,7 +378,6 @@ define([
                                                 width: 250,
                                                 path: 'remoteAddr',
                                                 dataBindValue: 'remoteAddr()',
-                                                customValue : "customValue()",
                                                 elementConfig: {
                                                     minimumResultsForSearch : 1,
                                                     dataTextField: "text",
@@ -384,13 +385,15 @@ define([
                                                     data: window.sg.secGrpList,
                                                     queryMap: [
                                                         {
-                                                            grpName : 'CIDR',
+                                                            name : 'CIDR',
+                                                            value : 'subnet',
                                                             iconClass:
                                                                 'icon-contrail-network-ipam'
                                                         },
                                                         {
-                                                            grpName :
-                                                                'SecurityGroup',
+                                                            name :
+                                                                'Security Group',
+                                                            value : 'security_group',
                                                             iconClass:
                                                                 'icon-contrail-security-group'
                                                         }
@@ -448,7 +451,7 @@ define([
                                         onClick: "function() {\
                                             $root.addSecGrpRule();\
                                         }",
-                                        buttonTitle: "Add"
+                                        buttonTitle: "Add Rule"
                                     }]
                                 }
                             }]
@@ -489,43 +492,36 @@ define([
             }
             return returnString;
         },
-        self.addCurrentSG = function (currentSG) {
-            var isAvailable = false;
-            if (null == currentSG) {
-                return;
-            }
-            currentSG = currentSG.trim();
-            if ("" == currentSG) {
-                return;
-            }
-            var remoteAddValue = window.sg.secGrpList;
-            var allSecurietyGroup = remoteAddValue[1].children;
-            var sgLen = allSecurietyGroup.length;
-            for (var i = 0; i < sgLen; i++) {
-                var tempLoopSGVal = allSecurietyGroup[i].value;
-                if (tempLoopSGVal.split(":").length > 1) {
-                    if ((currentSG == tempLoopSGVal) ||
-                        (currentSG == tempLoopSGVal.split(":")[2])) {
-                        isAvailable = true;
-                        break;
-                    }
-                } else {
-                    allSecurietyGroup.splice(i , 1);
-                    sgLen--;
+        self.addCurrentSG = function () {
+            try {
+                var secGrpName = $('#display_name').find('input').val();
+                if ((null != secGrpName) && ("" != secGrpName.trim())) {
+                    secGrpName = getCookie('domain') + ":" + getCookie('project') +
+                        ":" + secGrpName.trim();
                 }
+            } catch(e) {
+                secGrpName = "";
             }
-            if (isAvailable ==  false) {
-                var value = getCookie('domain') + ":" + getCookie('project') +
-                    ":" + currentSG;
-                allSecurietyGroup.unshift({"id": value,
-                                          "parent": "SecurityGroup",
-                                          "text": currentSG + " (Current)",
-                                          "value": value});
+            if ((null != secGrpName) && ("" != secGrpName.trim())) {
+                var remoteAddValue = window.sg.secGrpList;
+                var allSecurietyGroup = remoteAddValue[1].children;
+                secGrpName = secGrpName + '~' + 'security_group';
+                if ((null != allSecurietyGroup[0]) &&
+                    ('Current Security Group' !=
+                     allSecurietyGroup[0]['text'])) {
+                    allSecurietyGroup.unshift({"id": secGrpName,
+                                               "parent": "security_group",
+                                               "text": 'Current Security Group',
+                                               "value": secGrpName});
+                } else {
+                    allSecurietyGroup[0]['value'] = secGrpName;
+                    allSecurietyGroup[0]['id'] = secGrpName;
+                }
                 remoteAddValue[1].children = allSecurietyGroup;
                 window.sg.secGrpList = remoteAddValue;
             }
         },
-        self.resetDataSource = function () {
+        self.deleteCurrentSG = function () {
             var remoteAddValue = window.sg.secGrpList;
             if ((null == remoteAddValue) || (null == remoteAddValue[1]) ||
                 (null == remoteAddValue[1].children)) {
@@ -540,7 +536,8 @@ define([
                 (null == allSecurietyGroup[0].text)) {
                 return;
             }
-            var ctSGIdx = allSecurietyGroup[0].text.indexOf(" (Current)");
+            var ctSGIdx =
+                allSecurietyGroup[0].text.indexOf("Current Security Group");
             if (ctSGIdx > -1) {
                 allSecurietyGroup.splice(0, 1);
                 remoteAddValue[1].children = allSecurietyGroup;
@@ -556,13 +553,14 @@ define([
             }
             var fqNameValue = sgFqn.join(':');
             if ((sgFqn[0] == domain) && (sgFqn[1] == project)) {
-                return {text: sgFqn[2], value: fqNameValue, groupName:
-                    "SecurityGroup", id: fqNameValue};
+                return {text: sgFqn[2], value: fqNameValue + '~' + 'security_group',
+                    groupName: "Security Group", id: fqNameValue};
             }
             var fqNameTxt = sgFqn[2] +' (' +
+
                 sgFqn[0] + ':' + sgFqn[1] + ')';
-            return {text : fqNameTxt, value : fqNameValue,
-                    groupName: "SecurityGroup", id: fqNameValue};
+            return {text : fqNameTxt, value : fqNameValue + '~' + 'security_group',
+                    groupName: "Security Group", id: fqNameValue};
         }
     };
     return secGrpUtils;
