@@ -27,7 +27,7 @@ module.exports = function (grunt) {
 
         {pattern: 'contrail-web-core/webroot/img/**/*.png', included: false},
         {pattern: 'contrail-web-core/webroot/css/**/*.png', included: false},
-        {pattern: 'contrail-web-core/webroot/assets/select2/styles/**/*.png', included: false},
+        {pattern: 'contrail-web-core/webroot/assets/**/*.png', included: false},
         {pattern: 'contrail-web-core/webroot/css/**/*.gif', included: false},
 
         //Everything except library test suites and test files.
