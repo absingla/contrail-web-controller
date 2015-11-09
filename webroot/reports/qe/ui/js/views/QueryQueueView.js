@@ -83,7 +83,6 @@ define([
                 options: {
                     autoRefresh: false,
                     checkboxSelectable: true,
-                    fixedRowHeight: 30,
                     actionCell: [
                         {
                             title: 'View Results',
