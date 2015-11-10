@@ -50,7 +50,8 @@ define([
                 pagerOptions = viewConfig['pagerOptions'],
                 queryFormModel = this.model,
                 selectArray = queryFormModel.select().replace(/ /g, "").split(","),
-                olGridColumns = qewgc.getColumnDisplay4Grid(postDataObj.formModelAttrs.table_name, cowc.QE_LOG_TABLE_TYPE, selectArray);
+                olGridColumns = qewgc.getColumnDisplay4Grid(postDataObj.formModelAttrs.table_name, cowc.QE_LOG_TABLE_TYPE, selectArray),
+                gridTitle = contrail.checkIfExist(viewConfig['title']) ? viewConfig['title'] : cowl.TITLE_SYSTEM_LOGS;
 
             var resultsViewConfig = {
                 elementId: cowl.QE_SYSTEM_LOGS_TAB_ID,
@@ -64,7 +65,7 @@ define([
                             title: cowl.TITLE_RESULTS,
                             view: "GridView",
                             viewConfig: {
-                                elementConfig: getSystemLogsGridConfig(listModelConfig, olGridColumns, pagerOptions)
+                                elementConfig: getSystemLogsGridConfig(listModelConfig, olGridColumns, pagerOptions, gridTitle)
                             }
                         }
                     ]
@@ -75,11 +76,11 @@ define([
         }
     });
 
-    function getSystemLogsGridConfig(listModelConfig, olGridColumns, pagerOptions) {
+    function getSystemLogsGridConfig(listModelConfig, olGridColumns, pagerOptions, gridTitle) {
         var gridElementConfig = {
             header: {
                 title: {
-                    text: cowl.TITLE_SYSTEM_LOGS,
+                    text: gridTitle,
                     icon : 'icon-table'
                 },
                 defaultControls: {

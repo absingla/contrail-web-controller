@@ -187,7 +187,6 @@ function runQuery(req, res, queryReqObj) {
         chunkSize = parseInt(queryReqObj['chunkSize']), options;
 
     options = {"queryId": queryId, "chunk": chunk, "sort": sort, "chunkSize": chunkSize, "toSort": true};
-
     logutils.logger.debug('Query Request: ' + JSON.stringify(queryReqObj));
 
     if (queryId != null) {
@@ -712,23 +711,21 @@ function setMicroTimeRange(query, fromTime, toTime) {
 function getQueryJSON4Table(queryReqObj) {
     var formModelAttrs = queryReqObj['formModelAttrs'],
         tableName = formModelAttrs['table_name'], tableType = formModelAttrs['table_type'],
-        queryJSON = {"table": tableName, "start_time": "", "end_time": "", "select_fields": [], "filter": [], "limit": 150000};
+        queryJSON = {"table": tableName, "start_time": "", "end_time": "", "select_fields": [], "filter": []};
 
     var fromTimeUTC = formModelAttrs['from_time_utc'], toTimeUTC = formModelAttrs['to_time_utc'],
         select = formModelAttrs['select'], where = formModelAttrs['where'], filters = formModelAttrs['filter'],
-        autoLimit = queryReqObj['autoLimit'], autoSort = queryReqObj['autoSort'],
-        direction = formModelAttrs['direction'];
+        autoSort = queryReqObj['autoSort'], direction = formModelAttrs['direction'];
 
-    autoLimit = (autoLimit != null && autoLimit == "true") ? true : false;
     autoSort = (autoSort != null && autoSort == "true") ? true : false;
+    queryJSON['limit'] = getQueryLimit(tableType, formModelAttrs);
 
     if (tableType == 'LOG') {
         queryJSON = _.extend({}, queryJSON, {
             "select_fields": ["MessageTS", "Type", "Level"],
             "filter": [[{"name": "Type", "value": "1", "op": 1}], [{"name": "Type", "value": "10", "op": 1}]],
             "sort_fields": ['MessageTS'],
-            "sort": 2,
-            "limit": 150000
+            "sort": 2
         });
 
         if(formModelAttrs['log_level'] != null && formModelAttrs['log_level'] != "") {
@@ -738,7 +735,6 @@ function getQueryJSON4Table(queryReqObj) {
         }
     } else if (tableName == 'FlowSeriesTable') {
         autoSort = (select.indexOf('T=') == -1 && select.indexOf('T') == -1) ? false : autoSort;
-
         queryJSON = _.extend({}, queryJSON, {"select_fields": ['flow_class_id', 'direction_ing']});
 
         if (autoSort) {
@@ -749,27 +745,15 @@ function getQueryJSON4Table(queryReqObj) {
             queryJSON['sort'] = 2;
         }
 
-        if (autoLimit) {
-            queryJSON['limit'] = 150000;
-        }
     } else if (tableName == 'FlowRecordTable') {
         queryJSON = _.extend({}, queryJSON, {"select_fields": ['direction_ing']});
 
-        if (autoLimit) {
-            queryJSON['limit'] = 150000;
-        } else if (formModelAttrs['limit'] != null) {
-            queryJSON['limit'] = parseInt(formModelAttrs['limit']);
-        }
     } else if (tableType == "OBJECT") {
         autoSort = (select.indexOf('MessageTS') == -1) ? false : autoSort;
 
         if (autoSort) {
             queryJSON['sort_fields'] = ['MessageTS'];
             queryJSON['sort'] = 2;
-        }
-
-        if (autoLimit) {
-            queryJSON['limit'] = 50000;
         }
 
     } else if (tableType == "STAT") {
@@ -788,6 +772,20 @@ function getQueryJSON4Table(queryReqObj) {
     }
 
     return queryJSON;
+};
+
+function getQueryLimit(tableType, formModelAttrs) {
+    var limit = (tableType == "OBJECT" || tableType == "LOG") ? 50000 : 150000;
+
+    if(formModelAttrs['limit'] != null) {
+        try {
+            var parsedLimit = parseInt(formModelAttrs['limit']);
+            limit = parsedLimit;
+        } catch (error) {
+            logutils.logger.error(error.stack);
+        }
+    }
+    return limit;
 };
 
 function parseSelect(query, formModelAttrs) {
