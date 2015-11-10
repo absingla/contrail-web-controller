@@ -28,7 +28,10 @@ define([
     function getQueryChartViewConfig(queryId, selectArray, modelMap) {
         var queryFormModel = modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL],
             flowUrl = '/api/qe/query/chart-groups?queryId=' + queryId,
+            queryIdSuffix = '-' + queryId,
             aggregateSelectFields = qewu.getAggregateSelectFields(queryFormModel),
+            flowSeriesLineChartId = cowl.QE_FLOW_SERIES_LINE_CHART_ID + queryIdSuffix,
+            flowSeriesChartGridId = cowl.QE_FLOW_SERIES_CHART_GRID_ID + queryIdSuffix,
             chartAxesOptions = {};
 
         $.each(aggregateSelectFields, function(selectFieldKey, selectFieldValue) {
@@ -43,19 +46,19 @@ define([
         });
 
         return {
-            elementId: cowl.QE_FLOW_SERIES_CHART_PAGE_ID,
+            elementId: cowl.QE_FLOW_SERIES_CHART_PAGE_ID + queryIdSuffix,
             view: "SectionView",
             viewConfig: {
                 rows: [
                     {
                         columns: [
                             {
-                                elementId: cowl.QE_FLOW_SERIES_LINE_CHART_ID,
+                                elementId: flowSeriesLineChartId,
                                 title: cowl.TITLE_CHART,
                                 view: "LineWithFocusChartView",
                                 viewConfig: {
                                     widgetConfig: {
-                                        elementId: cowl.QE_FLOW_SERIES_LINE_CHART_ID + '-widget',
+                                        elementId: flowSeriesLineChartId + '-widget',
                                         view: "WidgetView",
                                         viewConfig: {
                                             header: false,
@@ -85,7 +88,7 @@ define([
                     {
                         columns: [
                             {
-                                elementId: cowl.QE_FLOW_SERIES_CHART_GRID_ID,
+                                elementId: flowSeriesChartGridId,
                                 view: "GridView",
                                 viewConfig: {
                                     elementConfig: getChartGridViewConfig(flowUrl, selectArray, modelMap)
@@ -264,7 +267,7 @@ define([
                 text: selectFieldValue,
                 events: {
                     click: function(event) {
-                        var chartModel = $('#' + cowl.QE_FLOW_SERIES_LINE_CHART_ID).data('chart'),
+                        var chartModel = $('#' + flowSeriesLineChartId).data('chart'),
                             chartOptions = chartModel.chartOptions,
                             chartAxesOption = chartOptions.chartAxesOptions[selectFieldValue];
 
@@ -273,8 +276,8 @@ define([
                             .tickFormat(chartAxesOption['yFormatter'])
                             .showMaxMin(false);
 
-                        $('#' + cowl.QE_FLOW_SERIES_LINE_CHART_ID).data('chart').chartOptions.chartAxesOptionKey = selectFieldValue;
-                        $('#' + cowl.QE_FLOW_SERIES_LINE_CHART_ID).data('chart').update();
+                        $('#' + flowSeriesLineChartId).data('chart').chartOptions.chartAxesOptionKey = selectFieldValue;
+                        $('#' + flowSeriesLineChartId).data('chart').update();
                     }
                 }
             })
