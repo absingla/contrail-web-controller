@@ -716,7 +716,7 @@ function getQueryJSON4Table(queryReqObj) {
         queryJSON = {"table": tableName, "start_time": "", "end_time": "", "select_fields": [], "filter": []};
 
     var fromTimeUTC = formModelAttrs['from_time_utc'], toTimeUTC = formModelAttrs['to_time_utc'],
-        select = formModelAttrs['select'], where = formModelAttrs['where'], filters = formModelAttrs['filter'],
+        select = formModelAttrs['select'], where = formModelAttrs['where'], filters = formModelAttrs['filters'],
         autoSort = queryReqObj['autoSort'], direction = formModelAttrs['direction'];
 
     autoSort = (autoSort != null && autoSort == "true") ? true : false;
@@ -767,7 +767,7 @@ function getQueryJSON4Table(queryReqObj) {
     setMicroTimeRange(queryJSON, fromTimeUTC, toTimeUTC);
     parseSelect(queryJSON, formModelAttrs);
     parseWhere(queryJSON, where);
-    //parseFSFilter(queryJSON, filters);
+    parseFilters(queryJSON, filters);
 
     if (direction != "" && parseInt(direction) >= 0) {
         queryJSON['dir'] = parseInt(direction);
@@ -824,11 +824,34 @@ function parseWhere(query, where) {
     }
 };
 
+function parseFilters(query, filters) {
+    var filtersArray = splitString2Array(filters, ","),
+        filter, filterBy, limitBy;
 
-function parseFilter(query, filters) {
+    for (var i = 0; i < filtersArray.length; i++) {
+        filter = filtersArray[i];
+
+        if(filter.indexOf('filter:') != -1) {
+            filterBy = splitString2Array(filter, ":")[1];
+
+            if(filterBy.length > 0) {
+                parseFilterBy(query, filterBy);
+            }
+
+        } else if (filter.indexOf('limit:') != -1) {
+            limitBy = splitString2Array(filter, ":")[1];
+
+            if(limitBy.length > 0) {
+                parseLimitBy(query, limitBy);
+            }
+        }
+    }
+};
+
+function parseFilterBy(query, filterBy) {
     var filtersArray, filtersLength, filterClause = [], i, filterObj;
-    if (filters != null && filters.trim() != '') {
-        filtersArray = filters.split(' AND ');
+    if (filterBy != null && filterBy.trim() != '') {
+        filtersArray = filterBy.split(' AND ');
         filtersLength = filtersArray.length;
         for (i = 0; i < filtersLength; i += 1) {
             filtersArray[i] = filtersArray[i].trim();
@@ -849,6 +872,15 @@ function parseFilterObj(filter, operator) {
         filterObj.op = getOperatorCode(operator);
     }
     return filterObj
+};
+
+function parseLimitBy(query, limitBy) {
+    try {
+        var parsedLimit = parseInt(limitBy);
+        query['limit'] = parsedLimit;
+    } catch (error) {
+        logutils.logger.error(error.stack);
+    }
 };
 
 function parseWhereANDClause(whereANDClause) {
