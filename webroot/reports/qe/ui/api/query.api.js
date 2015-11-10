@@ -720,7 +720,6 @@ function getQueryJSON4Table(queryReqObj) {
         autoSort = queryReqObj['autoSort'], direction = formModelAttrs['direction'];
 
     autoSort = (autoSort != null && autoSort == "true") ? true : false;
-    queryJSON['limit'] = getQueryLimit(tableType, formModelAttrs);
 
     if (tableType == 'LOG') {
         queryJSON = _.extend({}, queryJSON, {
@@ -767,26 +766,24 @@ function getQueryJSON4Table(queryReqObj) {
     setMicroTimeRange(queryJSON, fromTimeUTC, toTimeUTC);
     parseSelect(queryJSON, formModelAttrs);
     parseWhere(queryJSON, where);
-    parseFilters(queryJSON, filters);
+    if(filters != null && filters != "") {
+        parseFilters(queryJSON, filters);
+    }
 
     if (direction != "" && parseInt(direction) >= 0) {
         queryJSON['dir'] = parseInt(direction);
     }
 
+    if(queryJSON['limit'] == null) {
+        queryJSON['limit'] = getDefaultQueryLimit(tableType);
+    }
+
     return queryJSON;
 };
 
-function getQueryLimit(tableType, formModelAttrs) {
+function getDefaultQueryLimit(tableType) {
     var limit = (tableType == "OBJECT" || tableType == "LOG") ? 50000 : 150000;
 
-    if(formModelAttrs['limit'] != null) {
-        try {
-            var parsedLimit = parseInt(formModelAttrs['limit']);
-            limit = parsedLimit;
-        } catch (error) {
-            logutils.logger.error(error.stack);
-        }
-    }
     return limit;
 };
 
