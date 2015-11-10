@@ -84,7 +84,7 @@ define([
                 defaultControls: {
                     collapseable: true,
                     exportable: true,
-                    refreshable: false,
+                    refreshable: true,
                     searchable: true
                 }
             },
@@ -167,14 +167,12 @@ define([
                     title: 'Delete Query', btnName: 'Confirm',
                     body: 'Are you sure you want to remove this query?',
                     onSave: function () {
-                        var postDataJSON = {queryQueue: queryQueueType, queryIds: [queryId]};
-
-                        var ajaxConfig = {
-                            url: '/api/admin/reports/query',
-                            type: 'DELETE',
-                            data: {queryQueue: queryQueueType, queryIds: [queryId]}
-                        };
-
+                        var postDataJSON = {queryQueue: queryQueueType, queryIds: [queryId]},
+                            ajaxConfig = {
+                                url: '/api/qe/query',
+                                type: 'DELETE',
+                                data: JSON.stringify(postDataJSON)
+                            };
                         contrail.ajaxHandler(ajaxConfig);
                         $("#" + modalId).modal('hide');
                     }, onCancel: function () {

@@ -123,8 +123,10 @@ function getChartData(req, res) {
 
 // Handle request to delete redis cache for given query ids.
 function deleteQueryCache4Ids(req, res) {
-    var queryIds = req.body.queryIds;
-    var queryQueue = req.body.queryQueue;
+    var queryIds = req.body.queryIds,
+        queryQueue = req.body.queryQueue;
+
+
     for (var i = 0; i < queryIds.length; i++) {
         redisClient.hdel(queryQueue, queryIds[i]);
         redisClient.keys(queryIds[i] + "*", function (error, keysArray) {
@@ -217,7 +219,7 @@ function getQueryOptions(queryReqObj) {
     var formModelAttrs = queryReqObj['formModelAttrs'],
         tableType = formModelAttrs['table_type'],
         queryId = queryReqObj['queryId'], chunkSize = parseInt(queryReqObj['chunkSize']),
-        async = (queryReqObj['async'] != null && queryReqObj['async'] == "true") ? true : false,
+        async = (queryReqObj['async'] != null) ? queryReqObj['async'] : false,
         reRunTimeRange = queryReqObj['reRunTimeRange'], reRunQuery = queryReqObj, engQueryStr = queryReqObj['engQueryStr'],
         saveQuery = queryReqObj['saveQuery'];
 
