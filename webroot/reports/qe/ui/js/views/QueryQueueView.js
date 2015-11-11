@@ -67,15 +67,14 @@ define([
             if (queryQueueResultTabView === null) {
                 self.renderView4Config($(queryQueueResultId), null, getQueryQueueTabViewConfig(queryQueueItem, queryResultType));
             } else {
-                queryQueueResultTabView.renderNewTab(cowl.QE_FLOW_QUEUE_TAB_ID, getFlowSeriesTabConfig(queryQueueItem, queryResultType));
+                queryQueueResultTabView.renderNewTab(cowl.QE_FLOW_QUEUE_TAB_ID, getFlowSeriesTabConfig(queryQueueItem, queryResultType), true);
             }
         }
 
     });
 
     function getQueryQueueGridConfig(queryQueueType, queueRemoteConfig, pagerOptions, queryQueueView) {
-        var queryQueueListModel = queryQueueView.model,
-            gridElementConfig = {
+        return {
             header: {
                 title: {
                     text: cowl.TITLE_FLOW_QUERY_QUEUE,
@@ -107,7 +106,6 @@ define([
                 pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 100, pageSizeSelect: [100, 200, 300, 500] } })
             }
         };
-        return gridElementConfig;
     };
 
     function getQueueActionColumn(queryQueueType, queryQueueItem, queryQueueView) {
@@ -136,16 +134,18 @@ define([
             if(errorMessage.message != null && errorMessage.message != '') {
                 errorMessage = errorMessage.message;
             }
-            //TODO - Show error in modal
-            //actionCell.push({
-            //    title: 'View Error',
-            //    iconClass: 'icon-exclamation-sign',
-            //    onClick: function(rowIndex){
-            //        showInfoWindow(errorMessage,'Error');
-            //    }
-            //});
+            //TODO - test this
+            actionCell.push({
+                title: 'View Error',
+                iconClass: 'icon-exclamation-sign',
+                onClick: function(rowIndex){
+                    //TODO - create info modal
+                    showInfoWindow(errorMessage,'Error');
+                }
+            });
         }
-        if(reRunTimeRange != null && reRunTimeRange != '0') {
+
+        if(reRunTimeRange !== null && reRunTimeRange != -1) {
             actionCell.push({
                 title: 'Rerun Query',
                 iconClass: 'icon-repeat',
@@ -173,7 +173,11 @@ define([
                                 type: 'DELETE',
                                 data: JSON.stringify(postDataJSON)
                             };
-                        contrail.ajaxHandler(ajaxConfig);
+                        contrail.ajaxHandler(ajaxConfig, null, function() {
+                            var queryQueueGridId = cowc.QE_HASH_ELEMENT_PREFIX + queryQueueType + cowc.QE_QUEUE_GRID_SUFFIX;
+
+                            $(queryQueueGridId).data('contrailGrid').refreshData();
+                        });
                         $("#" + modalId).modal('hide');
                     }, onCancel: function () {
                         $("#" + modalId).modal('hide');
@@ -184,18 +188,18 @@ define([
 
         return actionCell;
 
-    }
+    };
 
     function getQueryQueueTabViewConfig(queryQueueItem, queryResultType) {
         return {
             elementId: cowl.QE_FLOW_QUEUE_TAB_ID,
             view: "TabsView",
             viewConfig: {
-                theme: cowc.TAB_THEME_OVERCAST,
+                theme: cowc.TAB_THEME_WIDGET_CLASSIC,
                 tabs: getFlowSeriesTabConfig(queryQueueItem, queryResultType)
             }
         };
-    }
+    };
 
     function getFlowSeriesTabConfig(queryQueueItem, queryResultType) {
         var formData = formatFormData(queryQueueItem),
@@ -204,21 +208,20 @@ define([
             queryIdSuffix = '-' + queryId,
             tabViewName = '', tabTitle = '', tabElementId;
 
-        console.log(queryId)
-
         if (queryPrefix === cowc.FS_QUERY_PREFIX) {
             tabElementId = cowl.QE_FLOW_SERIES_ID + queryIdSuffix;
             tabViewName = 'FlowSeriesFormView';
-            tabTitle = cowl.TITLE_FLOW_SERIES_QUERY
+            tabTitle = cowl.TITLE_FLOW_SERIES;
         } else if (queryPrefix === cowc.FR_QUERY_PREFIX) {
             tabElementId = cowl.QE_FLOW_RECORD_ID + queryIdSuffix;
             tabViewName = 'FlowRecordFormView';
-            tabTitle = cowl.TITLE_FLOW_RECORD_QUERY
+            tabTitle = cowl.TITLE_FLOW_RECORD;
         }
 
         return [{
             elementId: cowl.QE_FLOW_QUEUE_TAB_ID + queryIdSuffix,
             title: tabTitle,
+            iconClass: 'icon-table',
             view: "SectionView",
             tabConfig: {
                 activate: function(event, ui) {

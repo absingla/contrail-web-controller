@@ -115,11 +115,12 @@ define([
                 elementId: flowSeriesTabId,
                 view: "TabsView",
                 viewConfig: {
-                    theme: cowc.TAB_THEME_OVERCAST,
+                    theme: cowc.TAB_THEME_WIDGET_CLASSIC,
                     tabs: [
                         {
                             elementId: flowSeriesGridId,
                             title: cowl.TITLE_RESULTS,
+                            iconClass: 'icon-table',
                             view: "GridView",
                             tabConfig: {
                                 activate: function(event, ui) {
@@ -152,6 +153,7 @@ define([
             flowSeriesChartTabViewConfig.push({
                 elementId: flowSeriesChartId,
                 title: cowl.TITLE_CHART,
+                iconClass: 'icon-bar-chart',
                 view: "FlowSeriesLineChartView",
                 viewPathPrefix: "reports/qe/ui/js/views/",
                 app: cowc.APP_CONTRAIL_CONTROLLER,

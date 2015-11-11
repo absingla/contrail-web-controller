@@ -68,7 +68,7 @@ define([
                                                     custom: {
                                                         filterChart: {
                                                             enable: true,
-                                                            viewConfig: getFilterConfig(aggregateSelectFields, modelMap)
+                                                            viewConfig: getFilterConfig(queryId, aggregateSelectFields, modelMap)
                                                         }
                                                     }
                                                 }
@@ -250,8 +250,10 @@ define([
         return chartData
     };
 
-    function getFilterConfig(aggregateSelectFields, modelMap) {
-        var filterConfig = {
+    function getFilterConfig(queryId, aggregateSelectFields, modelMap) {
+        var queryIdSuffix = '-' + queryId,
+            flowSeriesLineChartId = cowl.QE_FLOW_SERIES_LINE_CHART_ID + queryIdSuffix,
+            filterConfig = {
             groups: [
                 {
                     id: 'by-node-color',

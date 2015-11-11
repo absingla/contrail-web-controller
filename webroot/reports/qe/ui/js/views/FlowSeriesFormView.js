@@ -31,7 +31,7 @@ define([
                 kbValidation.bind(self);
                 $("#run_query").on('click', function() {
                     if (self.model.model().isValid(true, 'runQueryValidation')) {
-                        self.renderQueryResult('new', null);
+                        self.renderQueryResult('new', formData);
                     }
                 });
 
@@ -62,7 +62,7 @@ define([
                     }
                 };
 
-            if (widgetConfig !== null) {
+            if (widgetConfig !== null && queryResultType == 'new') {
                 $(queryFormId).parents('.widget-box').data('widget-action').collapse();
             }
 
