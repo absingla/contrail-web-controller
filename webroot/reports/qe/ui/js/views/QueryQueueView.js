@@ -39,21 +39,22 @@ define([
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 queryQueueType = viewConfig.queueType,
-                pagerOptions = viewConfig['pagerOptions'];
+                pagerOptions = viewConfig['pagerOptions'],
+                queueColorMap = [null, null, null, null, null];
 
             var resultsViewConfig = {
                 elementId: cowl.QE_FLOW_QUEUE_GRID_ID,
                 title: cowl.TITLE_FLOW_QUERY_QUEUE,
                 view: "GridView",
                 viewConfig: {
-                    elementConfig: getQueryQueueGridConfig(queryQueueType, queueRemoteConfig, pagerOptions, self)
+                    elementConfig: getQueryQueueGridConfig(queryQueueType, queueRemoteConfig, pagerOptions, self, queueColorMap)
                 }
             };
 
             return resultsViewConfig;
         },
 
-        renderQueryQueueResult: function(queryQueueItem, queryResultType) {
+        renderQueryQueueResult: function(queryQueueItem, queryResultType, queueColorMap, renderCompleteCB) {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 childViewMap = self.childViewMap,
@@ -65,15 +66,16 @@ define([
             $(queryQueueGridId).data('contrailGrid').collapse();
 
             if (queryQueueResultTabView === null) {
-                self.renderView4Config($(queryQueueResultId), null, getQueryQueueTabViewConfig(queryQueueItem, queryResultType));
+                self.renderView4Config($(queryQueueResultId), null, getQueryQueueTabViewConfig(queryQueueItem, queryResultType, queueColorMap), null, null, null, renderCompleteCB);
             } else {
-                queryQueueResultTabView.renderNewTab(cowl.QE_FLOW_QUEUE_TAB_ID, getFlowSeriesTabConfig(queryQueueItem, queryResultType), true);
+                queryQueueResultTabView.renderNewTab(cowl.QE_FLOW_QUEUE_TAB_ID, getFlowSeriesTabConfig(queryQueueItem, queryResultType, queueColorMap), true);
+                renderCompleteCB();
             }
         }
 
     });
 
-    function getQueryQueueGridConfig(queryQueueType, queueRemoteConfig, pagerOptions, queryQueueView) {
+    function getQueryQueueGridConfig(queryQueueType, queueRemoteConfig, pagerOptions, queryQueueView, queueColorMap) {
         return {
             header: {
                 title: {
@@ -92,7 +94,7 @@ define([
                     autoRefresh: false,
                     checkboxSelectable: true,
                     actionCell: function(dc){
-                        return getQueueActionColumn(queryQueueType, dc, queryQueueView);
+                        return getQueueActionColumn(queryQueueType, dc, queryQueueView, queueColorMap);
                     }
                 },
                 dataSource: {
@@ -108,7 +110,7 @@ define([
         };
     };
 
-    function getQueueActionColumn(queryQueueType, queryQueueItem, queryQueueView) {
+    function getQueueActionColumn(queryQueueType, queryQueueItem, queryQueueView, queueColorMap) {
         var queryQueueListModel = queryQueueView.model,
             queryFormModelData = queryQueueItem.reRunQueryString.formModelAttrs,
             status = queryQueueItem.status,
@@ -127,7 +129,23 @@ define([
                 title: 'View Results',
                 iconClass: 'icon-list-alt',
                 onClick: function(rowIndex){
-                    queryQueueView.renderQueryQueueResult(queryQueueListModel.getItem(rowIndex), 'queue');
+                    if (_.compact(queueColorMap).length < 5) {
+                        var queryQueueItem = queryQueueListModel.getItem(rowIndex),
+                            queryId = queryQueueItem.queryId,
+                            badgeColorKey = getBadgeColorkey4Value(queueColorMap, null),
+                            tabLinkId = cowl.QE_FLOW_QUEUE_TAB_ID + '-' + queryId + '-tab-link';
+
+                        queryQueueView.renderQueryQueueResult(queryQueueItem, 'queue', queueColorMap, function() {
+                            $('#label-icon-badge-' + queryId).addClass('icon-badge-color-' + badgeColorKey);
+                            $('#' + tabLinkId).find('.contrail-tab-link-icon').addClass('icon-badge-color-' + badgeColorKey);
+                            queueColorMap[badgeColorKey] = queryId;
+                        });
+
+                    } else {
+                        //TODO - create info modal
+                        showInfoWindow('Maximum 5 Query Results can be viewed. Please delete to view new queries from queue.', 'Max Query Result Reached');
+                    }
+
                 }
             });
         } else if(errorMessage != null) {
@@ -150,7 +168,7 @@ define([
                 title: 'Rerun Query',
                 iconClass: 'icon-repeat',
                 onClick: function(rowIndex){
-                    queryQueueView.renderQueryQueueResult(queryQueueListModel.getItem(rowIndex), 'rerun');
+                    queryQueueView.renderQueryQueueResult(queryQueueListModel.getItem(rowIndex), 'rerun', queueColorMap);
                 }
             });
         }
@@ -190,18 +208,18 @@ define([
 
     };
 
-    function getQueryQueueTabViewConfig(queryQueueItem, queryResultType) {
+    function getQueryQueueTabViewConfig(queryQueueItem, queryResultType, queueColorMap) {
         return {
             elementId: cowl.QE_FLOW_QUEUE_TAB_ID,
             view: "TabsView",
             viewConfig: {
                 theme: cowc.TAB_THEME_WIDGET_CLASSIC,
-                tabs: getFlowSeriesTabConfig(queryQueueItem, queryResultType)
+                tabs: getFlowSeriesTabConfig(queryQueueItem, queryResultType, queueColorMap)
             }
         };
     };
 
-    function getFlowSeriesTabConfig(queryQueueItem, queryResultType) {
+    function getFlowSeriesTabConfig(queryQueueItem, queryResultType, queueColorMap) {
         var formData = formatFormData(queryQueueItem),
             queryPrefix = formData.query_prefix,
             queryId = formData.queryId,
@@ -225,11 +243,25 @@ define([
             view: "SectionView",
             tabConfig: {
                 activate: function(event, ui) {
-                    var flowSeriesGridId = cowl.QE_FLOW_SERIES_GRID_ID + queryIdSuffix;
+                    var flowResultGridId = '';
 
-                    if ($('#' + flowSeriesGridId).data('contrailGrid')) {
-                        $('#' + flowSeriesGridId).data('contrailGrid').refreshView();
+                    if (queryPrefix === cowc.FS_QUERY_PREFIX) {
+                        flowResultGridId = cowl.QE_FLOW_SERIES_GRID_ID + queryIdSuffix;
+                    } else if (queryPrefix === cowc.FR_QUERY_PREFIX) {
+                        flowResultGridId = cowl.QE_FLOW_RECORD_GRID_ID + queryIdSuffix;
                     }
+
+                    if ($('#' + flowResultGridId).data('contrailGrid')) {
+                        $('#' + flowResultGridId).data('contrailGrid').refreshView();
+                    }
+                },
+                removable: true,
+                onRemoveTab: function () {
+                    var badgeColorKey = getBadgeColorkey4Value(queueColorMap, queryId);
+
+                    $('#label-icon-badge-' + queryId).removeClass('icon-badge-color-' + badgeColorKey);
+
+                    queueColorMap[badgeColorKey] = null;
                 }
             },
             viewConfig: {
@@ -276,6 +308,19 @@ define([
         formModelData.queryId = queryQueueItem.queryId;
 
         return formModelData;
+    }
+
+    function getBadgeColorkey4Value(queueColorMap, value) {
+        var badgeColorKey = null;
+
+        $.each(queueColorMap, function(colorKey, colorValue) {
+            if (colorValue === value) {
+                badgeColorKey = colorKey;
+                return false;
+            }
+        });
+
+        return badgeColorKey
     }
 
     return QueryQueueView;
