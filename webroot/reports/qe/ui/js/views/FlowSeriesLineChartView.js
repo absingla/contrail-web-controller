@@ -20,12 +20,12 @@ define([
 
                 modelMap[cowc.UMID_FLOW_SERIES_LINE_CHART_MODEL] = new ContrailListModel({data: []});
                 modelMap[cowc.UMID_FLOW_SERIES_CHART_MODEL] = getChartDataModel(queryId, modelMap);
-                self.renderView4Config(self.$el, null, getQueryChartViewConfig(queryId, selectArray, modelMap), null, null, modelMap);
+                self.renderView4Config(self.$el, null, getQueryChartViewConfig(queryId, selectArray, modelMap, self), null, null, modelMap);
             }
         }
     });
 
-    function getQueryChartViewConfig(queryId, selectArray, modelMap) {
+    function getQueryChartViewConfig(queryId, selectArray, modelMap, parentView) {
         var queryFormModel = modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL],
             flowUrl = '/api/qe/query/chart-groups?queryId=' + queryId,
             queryIdSuffix = '-' + queryId,
@@ -91,7 +91,7 @@ define([
                                 elementId: flowSeriesChartGridId,
                                 view: "GridView",
                                 viewConfig: {
-                                    elementConfig: getChartGridViewConfig(flowUrl, selectArray, modelMap)
+                                    elementConfig: getChartGridViewConfig(flowUrl, selectArray, modelMap, parentView)
                                 }
                             }
                         ]
@@ -114,15 +114,14 @@ define([
         return badgeColorKey
     }
 
-    function getChartGridViewConfig(flowUrl, selectArray, modelMap) {
+    function getChartGridViewConfig(flowUrl, selectArray, modelMap, parentView) {
         var columnDisplay = qewgc.getColumnDisplay4Grid(cowc.FLOW_CLASS, cowc.QE_FLOW_TABLE_TYPE, selectArray),
             lineWithFocusChartModel = modelMap[cowc.UMID_FLOW_SERIES_LINE_CHART_MODEL],
             chartListModel = modelMap[cowc.UMID_FLOW_SERIES_CHART_MODEL],
             chartColorAvailableKeys = ['id_0', null, null, null, null],
             display = [
                 {
-                    id: 'fc-badge', field:"", name:"", resizable: false, sortable: false,
-                    width: 30, minWidth: 30, searchable: false, exportConfig: { allow: false },
+                    id: 'fc-badge', field:"", name:"", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: { allow: false },
                     formatter: function(r, c, v, cd, dc){
                         return '<span class="label-icon-badge label-icon-badge-' + dc.cgrid + ((r === 0) ? ' icon-badge-color-0' : '') + '" data-color_key="' + ((r === 0) ? 0 : -1) + '"><i class="icon-circle"></i></span>';
                     },
@@ -147,6 +146,16 @@ define([
                                 }
                             }
                         }
+                    }
+                },
+                {
+                    id: 'fc-details', field:"", name:"", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: { allow: false },
+                    formatter: function(r, c, v, cd, dc){
+                        return '<i class="icon-external-link-sign"></i>';
+                    },
+                    cssClass: 'cell-hyperlink-blue',
+                    events: {
+                        onClick: getOnClickFlowRecord(parentView)
                     }
                 }
             ];
@@ -185,6 +194,27 @@ define([
         };
 
         return viewConfig;
+    };
+
+
+    function getOnClickFlowRecord(parentView) {
+        return function (e, selRowDataItem) {
+            var elementId = parentView.$el,
+                queryFormModel = parentView.modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL],
+                flowRecordDetailsConfig = {
+                    elementId: cowl.QE_FLOW_DETAILS_TAB_VIEW__ID,
+                    view: "FlowDetailsTabView",
+                    viewPathPrefix: "reports/qe/ui/js/views/",
+                    app: cowc.APP_CONTRAIL_CONTROLLER,
+                    viewConfig: {
+                        className: 'modal-980',
+                        queryFormAttributes: queryFormModel.getFormModelAttributes(),
+                        selectedFlowRecord: selRowDataItem
+                    }
+                };
+
+            parentView.renderView4Config(elementId, null, flowRecordDetailsConfig);
+        }
     };
 
     function getChartDataModel(queryId, modelMap) {
