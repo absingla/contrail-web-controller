@@ -71,13 +71,9 @@ define([
                         },
                         //TODO: We should not need to implement success callback in each grid to show grid message based on status
                         successCallback: function(resultJSON, contrailListModel, response) {
-                            //TODO - Remove this setTimeout
-                            setTimeout(function(){
-                                if (response.status === 'queued') {
-                                    $('#' + flowSeriesGridId).data('contrailGrid').showGridMessage(response.status)
-                                }
-                            }, 500);
-
+                            if (response.status === 'queued') {
+                                $('#' + flowSeriesGridId).data('contrailGrid').showGridMessage(response.status)
+                            }
                         }
                     }
                 };
@@ -87,15 +83,16 @@ define([
             self.renderView4Config(self.$el, contrailListModel, self.getFlowSeriesResultGridTabViewConfig(postDataObj, fsRemoteConfig), null, null, modelMap, function(flowSeriesResultView) {
                 var selectArray = queryFormModel.select().replace(/ /g, "").split(",");
 
-                if(selectArray.indexOf("T=") != -1) {
-                    contrailListModel.onAllRequestsComplete.subscribe(function () {
-                        //TODO: Load chart only if data is not queued.
+                contrailListModel.onAllRequestsComplete.subscribe(function () {
+                    queryFormModel.is_request_in_progress(false);
+
+                    if(selectArray.indexOf("T=") != -1) {
                         if (contrailListModel.getItems().length > 0) {
                             flowSeriesResultView.childViewMap[flowSeriesTabId]
                                 .renderNewTab(flowSeriesTabId, self.getFlowSeriesResultChartTabViewConfig(postDataObj));
                         }
-                    });
-                }
+                    }
+                });
             });
         },
 
@@ -194,7 +191,8 @@ define([
                 options: {
                     autoRefresh: false,
                     checkboxSelectable: false,
-                    fixedRowHeight: 30
+                    fixedRowHeight: 30,
+                    lazyLoading: true
                 },
                 dataSource: {
                     remote: {

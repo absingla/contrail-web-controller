@@ -168,7 +168,22 @@ define([
                 title: 'Rerun Query',
                 iconClass: 'icon-repeat',
                 onClick: function(rowIndex){
-                    queryQueueView.renderQueryQueueResult(queryQueueListModel.getItem(rowIndex), 'rerun', queueColorMap);
+                    if (_.compact(queueColorMap).length < 5) {
+                        var queryQueueItem = queryQueueListModel.getItem(rowIndex),
+                            queryId = queryQueueItem.queryId,
+                            badgeColorKey = getBadgeColorkey4Value(queueColorMap, null),
+                            tabLinkId = cowl.QE_FLOW_QUEUE_TAB_ID + '-' + queryId + '-tab-link';
+
+                        queryQueueView.renderQueryQueueResult(queryQueueItem, 'rerun', queueColorMap, function() {
+                            $('#label-icon-badge-' + queryId).addClass('icon-badge-color-' + badgeColorKey);
+                            $('#' + tabLinkId).find('.contrail-tab-link-icon').addClass('icon-badge-color-' + badgeColorKey);
+                            queueColorMap[badgeColorKey] = queryId;
+                        });
+
+                    } else {
+                        //TODO - create info modal
+                        showInfoWindow('Maximum 5 Query Results can be viewed. Please delete to view new queries from queue.', 'Max Query Result Reached');
+                    }
                 }
             });
         }
