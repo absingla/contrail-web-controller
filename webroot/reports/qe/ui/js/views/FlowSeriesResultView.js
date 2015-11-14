@@ -23,8 +23,6 @@ define([
 
             if (viewConfig.queryResultType == 'queue') {
                 postDataObj = {
-                    pageSize: 50,
-                    page: 1,
                     queryId: formData.queryId
                 };
 

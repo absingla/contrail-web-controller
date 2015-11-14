@@ -112,12 +112,11 @@ define([
 
     function getQueueActionColumn(queryQueueType, queryQueueItem, queryQueueView, queueColorMap) {
         var queryQueueListModel = queryQueueView.model,
-            queryFormModelData = queryQueueItem.reRunQueryString.formModelAttrs,
+            queryFormModelData = queryQueueItem.queryReqObj.formModelAttrs,
             status = queryQueueItem.status,
             queryId = queryQueueItem.queryId,
             errorMessage = queryQueueItem.errorMessage,
             reRunTimeRange = queryFormModelData.rerun_time_range,
-            reRunQueryString = queryQueueItem.reRunQueryString,
             actionCell = [];
 
         if(status == 'queued'){
@@ -318,9 +317,9 @@ define([
     }
 
     function formatFormData(queryQueueItem) {
-        var formModelData = queryQueueItem.reRunQueryString.formModelAttrs;
+        var formModelData = queryQueueItem.queryReqObj.formModelAttrs;
 
-        formModelData.queryId = queryQueueItem.queryId;
+        formModelData.queryId = queryQueueItem.queryReqObj.queryId;
 
         return formModelData;
     }
