@@ -794,7 +794,7 @@ function parseWhere(query, where) {
 };
 
 function parseFilters(query, filters) {
-    var filtersArray = splitString2Array(filters, ","),
+    var filtersArray = splitString2Array(filters, "&"),
         filter, filterBy, limitBy;
 
     for (var i = 0; i < filtersArray.length; i++) {
@@ -812,6 +812,18 @@ function parseFilters(query, filters) {
 
             if(limitBy.length > 0) {
                 parseLimitBy(query, limitBy);
+            }
+        } else if (filter.indexOf('sort_fields:') != -1){
+            sort_fields = splitString2Array(filter, ":")[1];
+
+            if(sort_fields.length > 0) {
+                parseSortFields(query, sort_fields);
+            }
+        } else if (filter.indexOf('sort:') != -1){
+            sort_order = splitString2Array(filter, ":")[1];
+
+            if(sort_order.length > 0) {
+                parseSortOrder(query, sort_order);
             }
         }
     }
@@ -847,6 +859,22 @@ function parseLimitBy(query, limitBy) {
     try {
         var parsedLimit = parseInt(limitBy);
         query['limit'] = parsedLimit;
+    } catch (error) {
+        logutils.logger.error(error.stack);
+    }
+};
+
+function parseSortOrder(query, sortOrder) {
+    try {
+        query['sort'] = sortOrder;
+    } catch (error) {
+        logutils.logger.error(error.stack);
+    }
+};
+
+function parseSortFields(query, sortFields) {
+    try {
+        query['sort_fields'] = sortFields.split(',');
     } catch (error) {
         logutils.logger.error(error.stack);
     }
