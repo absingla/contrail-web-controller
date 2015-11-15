@@ -114,7 +114,7 @@ define([
         var queryQueueListModel = queryQueueView.model,
             queryFormModelData = queryQueueItem.queryReqObj.formModelAttrs,
             status = queryQueueItem.status,
-            queryId = queryQueueItem.queryId,
+            queryId = queryQueueItem.queryReqObj.queryId,
             errorMessage = queryQueueItem.errorMessage,
             reRunTimeRange = queryFormModelData.rerun_time_range,
             actionCell = [];
@@ -130,13 +130,14 @@ define([
                 onClick: function(rowIndex){
                     if (_.compact(queueColorMap).length < 5) {
                         var queryQueueItem = queryQueueListModel.getItem(rowIndex),
-                            queryId = queryQueueItem.queryId,
+                            queryId = queryQueueItem.queryReqObj.queryId,
                             badgeColorKey = getBadgeColorkey4Value(queueColorMap, null),
                             tabLinkId = cowl.QE_FLOW_QUEUE_TAB_ID + '-' + queryId + '-tab-link';
 
                         queryQueueView.renderQueryQueueResult(queryQueueItem, 'queue', queueColorMap, function() {
                             $('#label-icon-badge-' + queryId).addClass('icon-badge-color-' + badgeColorKey);
                             $('#' + tabLinkId).find('.contrail-tab-link-icon').addClass('icon-badge-color-' + badgeColorKey);
+                            $('#' + tabLinkId).data('badge_color_key', badgeColorKey)
                             queueColorMap[badgeColorKey] = queryId;
                         });
 
@@ -169,13 +170,14 @@ define([
                 onClick: function(rowIndex){
                     if (_.compact(queueColorMap).length < 5) {
                         var queryQueueItem = queryQueueListModel.getItem(rowIndex),
-                            queryId = queryQueueItem.queryId,
+                            queryId = queryQueueItem.queryReqObj.queryId,
                             badgeColorKey = getBadgeColorkey4Value(queueColorMap, null),
                             tabLinkId = cowl.QE_FLOW_QUEUE_TAB_ID + '-' + queryId + '-tab-link';
 
                         queryQueueView.renderQueryQueueResult(queryQueueItem, 'rerun', queueColorMap, function() {
                             $('#label-icon-badge-' + queryId).addClass('icon-badge-color-' + badgeColorKey);
                             $('#' + tabLinkId).find('.contrail-tab-link-icon').addClass('icon-badge-color-' + badgeColorKey);
+                            $('#' + tabLinkId).data('badge_color_key', badgeColorKey)
                             queueColorMap[badgeColorKey] = queryId;
                         });
 
@@ -234,9 +236,9 @@ define([
     };
 
     function getFlowSeriesTabConfig(queryQueueItem, queryResultType, queueColorMap) {
-        var formData = formatFormData(queryQueueItem),
-            queryPrefix = formData.query_prefix,
-            queryId = formData.queryId,
+        var queryFormAttributes = queryQueueItem.queryReqObj,
+            queryPrefix = queryFormAttributes.formModelAttrs.query_prefix,
+            queryId = queryFormAttributes.queryId,
             queryIdSuffix = '-' + queryId,
             tabViewName = '', tabTitle = '', tabElementId;
 
@@ -288,7 +290,7 @@ define([
                                 viewPathPrefix: "reports/qe/ui/js/views/",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {
-                                    formData: formData,
+                                    queryFormAttributes: queryFormAttributes,
                                     queryResultType: queryResultType,
                                     widgetConfig: {
                                         elementId: cowl.QE_FLOW_SERIES_ID + queryIdSuffix + '-widget',
@@ -314,14 +316,6 @@ define([
                 ]
             }
         }];
-    }
-
-    function formatFormData(queryQueueItem) {
-        var formModelData = queryQueueItem.queryReqObj.formModelAttrs;
-
-        formModelData.queryId = queryQueueItem.queryReqObj.queryId;
-
-        return formModelData;
     }
 
     function getBadgeColorkey4Value(queueColorMap, value) {

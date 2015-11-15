@@ -16,22 +16,22 @@ define([
                 var viewConfig = self.attributes.viewConfig,
                     queryId = viewConfig['queryId'],
                     selectArray = viewConfig['selectArray'],
+                    flowSeriesChartGridId = viewConfig.flowSeriesChartGridId,
                     modelMap = contrail.handleIfNull(self.modelMap, {});
 
                 modelMap[cowc.UMID_FLOW_SERIES_LINE_CHART_MODEL] = new ContrailListModel({data: []});
                 modelMap[cowc.UMID_FLOW_SERIES_CHART_MODEL] = getChartDataModel(queryId, modelMap);
-                self.renderView4Config(self.$el, null, getQueryChartViewConfig(queryId, selectArray, modelMap, self), null, null, modelMap);
+                self.renderView4Config(self.$el, null, getQueryChartViewConfig(queryId, selectArray, modelMap, self, flowSeriesChartGridId), null, null, modelMap);
             }
         }
     });
 
-    function getQueryChartViewConfig(queryId, selectArray, modelMap, parentView) {
+    function getQueryChartViewConfig(queryId, selectArray, modelMap, parentView, flowSeriesChartGridId) {
         var queryFormModel = modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL],
             flowUrl = '/api/qe/query/chart-groups?queryId=' + queryId,
             queryIdSuffix = '-' + queryId,
             aggregateSelectFields = qewu.getAggregateSelectFields(queryFormModel),
             flowSeriesLineChartId = cowl.QE_FLOW_SERIES_LINE_CHART_ID + queryIdSuffix,
-            flowSeriesChartGridId = cowl.QE_FLOW_SERIES_CHART_GRID_ID + queryIdSuffix,
             chartAxesOptions = {};
 
         $.each(aggregateSelectFields, function(selectFieldKey, selectFieldValue) {
@@ -68,7 +68,7 @@ define([
                                                     custom: {
                                                         filterChart: {
                                                             enable: true,
-                                                            viewConfig: getFilterConfig(queryId, aggregateSelectFields, modelMap)
+                                                            viewConfig: getFilterConfig(queryId, aggregateSelectFields, flowSeriesLineChartId, modelMap)
                                                         }
                                                     }
                                                 }
@@ -280,10 +280,8 @@ define([
         return chartData
     };
 
-    function getFilterConfig(queryId, aggregateSelectFields, modelMap) {
-        var queryIdSuffix = '-' + queryId,
-            flowSeriesLineChartId = cowl.QE_FLOW_SERIES_LINE_CHART_ID + queryIdSuffix,
-            filterConfig = {
+    function getFilterConfig(queryId, aggregateSelectFields, flowSeriesLineChartId, modelMap) {
+        var filterConfig = {
             groups: [
                 {
                     id: 'by-node-color',

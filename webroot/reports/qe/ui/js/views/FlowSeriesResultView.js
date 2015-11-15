@@ -13,8 +13,8 @@ define([
         render: function () {
             var self = this, viewConfig = self.attributes.viewConfig,
                 serverCurrentTime = qewu.getCurrentTime4Client(),
-                formData = contrail.checkIfExist(viewConfig.formData) ? viewConfig.formData : {},
-                queryFormModel = contrail.checkIfExist(self.model) ? self.model : new FlowSeriesFormModel(formData),
+                queryFormAttributes = contrail.checkIfExist(viewConfig.queryFormAttributes) ? viewConfig.queryFormAttributes : {},
+                queryFormModel = contrail.checkIfExist(self.model) ? self.model : new FlowSeriesFormModel(queryFormAttributes.formModelAttrs),
                 postDataObj;
 
             if (!contrail.checkIfExist(self.model)) {
@@ -23,7 +23,7 @@ define([
 
             if (viewConfig.queryResultType == 'queue') {
                 postDataObj = {
-                    queryId: formData.queryId
+                    queryId: queryFormAttributes.queryId
                 };
 
                 self.renderFlowSeriesResult(postDataObj, queryFormModel);
@@ -50,8 +50,8 @@ define([
         renderFlowSeriesResult: function(postDataObj, queryFormModel) {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
-                formData = contrail.checkIfExist(viewConfig.formData) ? viewConfig.formData : {},
-                formQueryIdSuffix = (!$.isEmptyObject(formData)) ? '-' + formData.queryId : '',
+                queryFormAttributes = contrail.checkIfExist(viewConfig.queryFormAttributes) ? viewConfig.queryFormAttributes : {},
+                formQueryIdSuffix = (!$.isEmptyObject(queryFormAttributes)) ? '-' + queryFormAttributes.queryId : '',
                 flowSeriesGridId = cowl.QE_FLOW_SERIES_GRID_ID + formQueryIdSuffix,
                 flowSeriesTabId = cowl.QE_FLOW_SERIES_TAB_ID + formQueryIdSuffix,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
@@ -69,16 +69,20 @@ define([
                         },
                         //TODO: We should not need to implement success callback in each grid to show grid message based on status
                         successCallback: function(resultJSON, contrailListModel, response) {
-                            if (response.status === 'queued') {
-                                $('#' + flowSeriesGridId).data('contrailGrid').showGridMessage(response.status)
-                            }
+                            //TODO - Remove this setTimeout
+                            setTimeout(function(){
+                                if (response.status === 'queued') {
+                                    $('#' + flowSeriesGridId).data('contrailGrid').showGridMessage(response.status)
+                                }
+                            }, 500);
+
                         }
                     }
                 };
 
             contrailListModel = new ContrailListModel(listModelConfig);
             modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL] = queryFormModel;
-            self.renderView4Config(self.$el, contrailListModel, self.getFlowSeriesResultGridTabViewConfig(postDataObj, fsRemoteConfig), null, null, modelMap, function(flowSeriesResultView) {
+            self.renderView4Config(self.$el, contrailListModel, self.getFlowSeriesResultGridTabViewConfig(postDataObj, fsRemoteConfig, flowSeriesGridId, flowSeriesTabId), null, null, modelMap, function(flowSeriesResultView) {
                 var selectArray = queryFormModel.select().replace(/ /g, "").split(",");
 
                 contrailListModel.onAllRequestsComplete.subscribe(function () {
@@ -87,20 +91,16 @@ define([
                     if(selectArray.indexOf("T=") != -1) {
                         if (contrailListModel.getItems().length > 0) {
                             flowSeriesResultView.childViewMap[flowSeriesTabId]
-                                .renderNewTab(flowSeriesTabId, self.getFlowSeriesResultChartTabViewConfig(postDataObj));
+                                .renderNewTab(flowSeriesTabId, self.getFlowSeriesResultChartTabViewConfig(postDataObj, formQueryIdSuffix));
                         }
                     }
                 });
             });
         },
 
-        getFlowSeriesResultGridTabViewConfig: function (postDataObj, fsRemoteConfig) {
+        getFlowSeriesResultGridTabViewConfig: function (postDataObj, fsRemoteConfig, flowSeriesGridId, flowSeriesTabId) {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
-                formData = contrail.checkIfExist(viewConfig.formData) ? viewConfig.formData : {},
-                formQueryIdSuffix = (!$.isEmptyObject(formData)) ? '-' + formData.queryId : '',
-                flowSeriesGridId = cowl.QE_FLOW_SERIES_GRID_ID + formQueryIdSuffix,
-                flowSeriesTabId = cowl.QE_FLOW_SERIES_TAB_ID + formQueryIdSuffix,
                 pagerOptions = viewConfig['pagerOptions'],
                 queryFormModel = this.model,
                 selectArray = queryFormModel.select().replace(/ /g, "").split(","),
@@ -135,10 +135,8 @@ define([
             return resultsViewConfig;
         },
 
-        getFlowSeriesResultChartTabViewConfig: function(postDataObj) {
+        getFlowSeriesResultChartTabViewConfig: function(postDataObj, formQueryIdSuffix) {
             var self = this,
-                viewConfig = self.attributes.viewConfig,
-                formQueryIdSuffix = '-' + postDataObj.queryId,
                 flowSeriesChartId = cowl.QE_FLOW_SERIES_CHART_ID + formQueryIdSuffix,
                 flowSeriesChartGridId = cowl.QE_FLOW_SERIES_CHART_GRID_ID + formQueryIdSuffix,
                 queryFormModel = self.model,
@@ -163,7 +161,9 @@ define([
                 },
                 viewConfig: {
                     queryId: postDataObj.queryId,
-                    selectArray: selectArray
+                    selectArray: selectArray,
+                    flowSeriesChartId: flowSeriesChartId,
+                    flowSeriesChartGridId: flowSeriesChartGridId
                 }
             });
 
