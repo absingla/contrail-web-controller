@@ -14,7 +14,7 @@ define([
             var self = this, viewConfig = self.attributes.viewConfig,
                 serverCurrentTime = qewu.getCurrentTime4Client(),
                 formData = contrail.checkIfExist(viewConfig.formData) ? viewConfig.formData : {},
-                queryFormModel = contrail.checkIfExist(self.model) ? self.model : new FlowSeriesFormModel(formData, {async: false}),
+                queryFormModel = contrail.checkIfExist(self.model) ? self.model : new FlowSeriesFormModel(formData),
                 postDataObj;
 
             if (!contrail.checkIfExist(self.model)) {
@@ -28,7 +28,7 @@ define([
             }).always(function () {
                 var timeRange = parseInt(queryFormModel.time_range());
 
-                postDataObj = queryFormModel.getQueryRequestPostData(serverCurrentTime);
+                postDataObj = queryFormModel.getQueryRequestPostData(serverCurrentTime, null, true);
 
                 if (timeRange !== -1) {
                     queryFormModel.to_time(serverCurrentTime);

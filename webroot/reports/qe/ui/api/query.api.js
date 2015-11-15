@@ -81,16 +81,17 @@ function getTableColumnValues(req, res, appData) {
 
 // Handle request to get query queue.
 function getQueryQueue(req, res) {
-    var queryQueue = req.param('queryQueue');
+    var queryQueue = req.param('queryQueue'),
+        responseArray = [];
     redisClient.hvals(queryQueue, function (error, results) {
         if (error) {
             logutils.logger.error(error.stack);
             commonUtils.handleJSONResponse(error, res, null);
         } else {
             for (var i = 0; i < results.length; i++) {
-                results[i] = JSON.parse(results[i])
+                responseArray[i] = JSON.parse(results[i])
             }
-            commonUtils.handleJSONResponse(error, res, results);
+            commonUtils.handleJSONResponse(error, res, responseArray);
         }
     });
 };
