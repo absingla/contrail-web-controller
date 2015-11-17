@@ -126,11 +126,12 @@ define([
     });
 
     function getQueryFormData(queryFormAttributes, selectedFlowRecord, direction, isReversed) {
-        var newQueryFormAttributes = $.extend(true, {}, queryFormAttributes),
+        var newQueryFormAttributes = $.extend(true, {}, queryFormAttributes, {table_name: cowc.FLOW_SERIES_TABLE, table_type: cowc.QE_FLOW_TABLE_TYPE, query_prefix: cowc.FS_QUERY_PREFIX}),
             appendWhereClause = "", newWhereClause = "",
-            oldWhereClause = newQueryFormAttributes["where"],
+            oldWhereClause = queryFormAttributes["where"],
             oldWhereArray;
 
+        newQueryFormAttributes['select'] = "vrouter, sourcevn, sourceip, destvn, destip, protocol, sport, dport, flow_count, bytes, T, packets";
         newQueryFormAttributes['direction'] = (direction == "ingress") ? "1" : "0";
 
         for (var key in selectedFlowRecord) {

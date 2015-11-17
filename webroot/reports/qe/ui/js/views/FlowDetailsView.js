@@ -128,8 +128,8 @@ define([
             footer: {
                 pager: contrail.handleIfNull(pagerOptions, {
                     options: {
-                        pageSize: 10,
-                        pageSizeSelect: [10, 20, 30, 50]
+                        pageSize: 5,
+                        pageSizeSelect: [5, 10, 25, 50]
                     }
                 })
             }

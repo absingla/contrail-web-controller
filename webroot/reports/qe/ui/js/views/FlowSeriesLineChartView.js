@@ -117,7 +117,6 @@ define([
     function getChartGridViewConfig(flowUrl, selectArray, modelMap, parentView) {
         var columnDisplay = qewgc.getColumnDisplay4Grid(cowc.FLOW_CLASS, cowc.QE_FLOW_TABLE_TYPE, selectArray),
             lineWithFocusChartModel = modelMap[cowc.UMID_FLOW_SERIES_LINE_CHART_MODEL],
-            chartListModel = modelMap[cowc.UMID_FLOW_SERIES_CHART_MODEL],
             chartColorAvailableKeys = ['id_0', null, null, null, null],
             display = [
                 {
@@ -155,7 +154,7 @@ define([
                     },
                     cssClass: 'cell-hyperlink-blue',
                     events: {
-                        onClick: getOnClickFlowRecord(parentView)
+                        onClick: qewgc.getOnClickFlowRecord(parentView, parentView.modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL])
                     }
                 }
             ];
@@ -194,27 +193,6 @@ define([
         };
 
         return viewConfig;
-    };
-
-
-    function getOnClickFlowRecord(parentView) {
-        return function (e, selRowDataItem) {
-            var elementId = parentView.$el,
-                queryFormModel = parentView.modelMap[cowc.UMID_FLOW_SERIES_FORM_MODEL],
-                flowRecordDetailsConfig = {
-                    elementId: cowl.QE_FLOW_DETAILS_TAB_VIEW__ID,
-                    view: "FlowDetailsTabView",
-                    viewPathPrefix: "reports/qe/ui/js/views/",
-                    app: cowc.APP_CONTRAIL_CONTROLLER,
-                    viewConfig: {
-                        className: 'modal-980',
-                        queryFormAttributes: queryFormModel.getFormModelAttributes(),
-                        selectedFlowRecord: selRowDataItem
-                    }
-                };
-
-            parentView.renderView4Config(elementId, null, flowRecordDetailsConfig);
-        }
     };
 
     function getChartDataModel(queryId, modelMap) {
