@@ -21,7 +21,7 @@ define([
             cowu.createModal({
                 'modalId': modalId,
                 'className': className,
-                'title': cowl.TITLE_FLOW_RECORD_DETAILS,
+                'title': cowl.TITLE_FLOW_DETAILS,
                 'body': "<div id='" + modalId + "-body" + "'></div>",
                 'onSave': function () {
                     $("#" + modalId).modal('hide');
@@ -46,39 +46,75 @@ define([
                         theme: cowc.TAB_THEME_WIDGET_CLASSIC,
                         tabs: [
                             {
-                                elementId: flowDetailsTabPrefix + "-ingress",
-                                title: "Ingress",
+                                elementId: flowDetailsTabPrefix + cowl.QE_INGRESS_SUFFIX_ID,
+                                title: cowl.TITLE_INGRESS,
                                 view: "FlowDetailsView",
                                 viewPathPrefix: "reports/qe/ui/js/views/",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 tabConfig: {
                                     activate: function (event, ui) {
-                                        if ($("#" + flowDetailsTabPrefix + "-ingress").data('contrailGrid')) {
-                                            $("#" + flowDetailsTabPrefix + "-ingress").data('contrailGrid').refreshView();
+                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_INGRESS_SUFFIX_ID).data('contrailGrid')) {
+                                            $("#" + flowDetailsTabPrefix + cowl.QE_INGRESS_SUFFIX_ID).data('contrailGrid').refreshView();
                                         }
                                     }
                                 },
                                 viewConfig: {
-                                    formData: getQueryFormData(queryFormAttributes, selectedFlowRecord, "ingress"),
-                                    flowDetailsGridId: flowDetailsGridPrefix + "-ingress"
+                                    formData: getQueryFormData(queryFormAttributes, selectedFlowRecord, "ingress", false),
+                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_INGRESS_SUFFIX_ID
                                 }
                             },
                             {
-                                elementId: flowDetailsTabPrefix + "-egress",
-                                title: "Egress",
+                                elementId: flowDetailsTabPrefix + cowl.QE_EGRESS_SUFFIX_ID,
+                                title: cowl.TITLE_EGRESS,
                                 view: "FlowDetailsView",
                                 viewPathPrefix: "reports/qe/ui/js/views/",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 tabConfig: {
                                     activate: function (event, ui) {
-                                        if ($("#" + flowDetailsTabPrefix + "-egress").data('contrailGrid')) {
-                                            $("#" + flowDetailsTabPrefix + "-egress").data('contrailGrid').refreshView();
+                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_EGRESS_SUFFIX_ID).data('contrailGrid')) {
+                                            $("#" + flowDetailsTabPrefix + cowl.QE_EGRESS_SUFFIX_ID).data('contrailGrid').refreshView();
                                         }
                                     }
                                 },
                                 viewConfig: {
-                                    formData: getQueryFormData(queryFormAttributes, selectedFlowRecord, "egress"),
-                                    flowDetailsGridId: flowDetailsGridPrefix + "-egress"
+                                    formData: getQueryFormData(queryFormAttributes, selectedFlowRecord, "egress", false),
+                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_EGRESS_SUFFIX_ID
+                                }
+                            },
+                            {
+                                elementId: flowDetailsTabPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID,
+                                title: cowl.TITLE_REVERSE_INGRESS,
+                                view: "FlowDetailsView",
+                                viewPathPrefix: "reports/qe/ui/js/views/",
+                                app: cowc.APP_CONTRAIL_CONTROLLER,
+                                tabConfig: {
+                                    activate: function (event, ui) {
+                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID).data('contrailGrid')) {
+                                            $("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID).data('contrailGrid').refreshView();
+                                        }
+                                    }
+                                },
+                                viewConfig: {
+                                    formData: getQueryFormData(queryFormAttributes, selectedFlowRecord, "ingress", true),
+                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID
+                                }
+                            },
+                            {
+                                elementId: flowDetailsTabPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID,
+                                title: cowl.TITLE_REVERSE_EGRESS,
+                                view: "FlowDetailsView",
+                                viewPathPrefix: "reports/qe/ui/js/views/",
+                                app: cowc.APP_CONTRAIL_CONTROLLER,
+                                tabConfig: {
+                                    activate: function (event, ui) {
+                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID).data('contrailGrid')) {
+                                            $("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID).data('contrailGrid').refreshView();
+                                        }
+                                    }
+                                },
+                                viewConfig: {
+                                    formData: getQueryFormData(queryFormAttributes, selectedFlowRecord, "egress", true),
+                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID
                                 }
                             }
                         ]
@@ -89,7 +125,7 @@ define([
         }
     });
 
-    function getQueryFormData(queryFormAttributes, selectedFlowRecord, direction) {
+    function getQueryFormData(queryFormAttributes, selectedFlowRecord, direction, isReversed) {
         var newQueryFormAttributes = $.extend(true, {}, queryFormAttributes),
             appendWhereClause = "", newWhereClause = "",
             oldWhereClause = newQueryFormAttributes["where"],
@@ -102,10 +138,10 @@ define([
                 case "sourcevn":
                     if(contrail.checkIfExist(selectedFlowRecord[key])) {
                         appendWhereClause += appendWhereClause.length > 0 ? " AND " : '';
-                        appendWhereClause += "sourcevn = " + selectedFlowRecord[key];
+                        appendWhereClause += (isReversed ? "destvn = " : "sourcevn = ") + selectedFlowRecord[key];
 
                         if(contrail.checkIfExist(selectedFlowRecord['sourceip'])) {
-                            appendWhereClause += " AND sourceip = " + selectedFlowRecord["sourceip"];
+                            appendWhereClause += (isReversed ? " AND destip = " : " AND sourceip = ") + selectedFlowRecord["sourceip"];
 
                         }
                     }
@@ -114,10 +150,10 @@ define([
                 case "destvn":
                     if(contrail.checkIfExist(selectedFlowRecord[key])) {
                         appendWhereClause += appendWhereClause.length > 0 ? " AND " : '';
-                        appendWhereClause += "destvn = " + selectedFlowRecord[key];
+                        appendWhereClause += (isReversed ? "sourcevn = " : "destvn = ") + selectedFlowRecord[key];
 
                         if(contrail.checkIfExist(selectedFlowRecord['destip'])) {
-                            appendWhereClause += " AND destip = " + selectedFlowRecord["destip"];
+                            appendWhereClause += (isReversed ? " AND sourceip = " : " AND destip = ") + selectedFlowRecord["destip"];
 
                         }
                     }
@@ -129,12 +165,12 @@ define([
                         appendWhereClause += "protocol = " + selectedFlowRecord[key];
 
                         if(contrail.checkIfExist(selectedFlowRecord['sport'])) {
-                            appendWhereClause += " AND sport = " + selectedFlowRecord["sport"];
+                            appendWhereClause += (isReversed ? " AND dport = " : " AND sport = ") + selectedFlowRecord["sport"];
 
                         }
 
                         if(contrail.checkIfExist(selectedFlowRecord['dport'])) {
-                            appendWhereClause += " AND dport = " + selectedFlowRecord["dport"];
+                            appendWhereClause += (isReversed ? " AND sport = " : " AND dport = ") + selectedFlowRecord["dport"];
 
                         }
                     }
