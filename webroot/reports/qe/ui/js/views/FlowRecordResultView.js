@@ -53,7 +53,11 @@ define([
 
                 contrailListModel = new ContrailListModel(listModelConfig);
                 modelMap[cowc.UMID_FLOW_RECORD_FORM_MODEL] = queryFormModel;
-                self.renderView4Config(self.$el, contrailListModel, self.getFlowRecordResultGridTabViewConfig(postDataObj, frRemoteConfig), null, null, modelMap);
+                self.renderView4Config(self.$el, contrailListModel, self.getFlowRecordResultGridTabViewConfig(postDataObj, frRemoteConfig), null, null, modelMap, function() {
+                    contrailListModel.onAllRequestsComplete.subscribe(function () {
+                        queryFormModel.is_request_in_progress(false);
+                    });
+                });
             });
         },
 
