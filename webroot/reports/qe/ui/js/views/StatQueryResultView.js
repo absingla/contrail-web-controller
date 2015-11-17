@@ -56,14 +56,15 @@ define([
                 self.renderView4Config(self.$el, contrailListModel, self.getStatResultGridTabViewConfig(postDataObj, statRemoteConfig, serverCurrentTime), null, null, modelMap, function(statResultView) {
                     var selectArray = queryFormModel.select().replace(/ /g, "").split(",");
 
-                    if(selectArray.indexOf("T=") != -1) {
-                        contrailListModel.onAllRequestsComplete.subscribe(function () {
+                    contrailListModel.onAllRequestsComplete.subscribe(function () {
+                        queryFormModel.is_request_in_progress(false);
+                        if(selectArray.indexOf("T=") != -1) {
                             //TODO: Load chart only if data is not queued.
                             if (contrailListModel.getItems().length > 0) {
                                 statResultView.childViewMap[cowl.QE_STAT_QUERY_TAB_ID].renderNewTab(cowl.QE_STAT_QUERY_TAB_ID, self.getStatResultChartTabViewConfig(postDataObj));
                             }
-                        });
-                    }
+                        }
+                    });
                 });
             });
         },

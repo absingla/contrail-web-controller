@@ -50,7 +50,11 @@ define([
 
                 postDataObj.chunkSize = cowc.QE_RESULT_CHUNK_SIZE_10K;
                 contrailListModel = new ContrailListModel(listModelConfig);
-                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, listModelConfig, serverCurrentTime))
+                self.renderView4Config(self.$el, contrailListModel, self.getViewConfig(postDataObj, listModelConfig, serverCurrentTime), null, null, null, function(){
+                    contrailListModel.onAllRequestsComplete.subscribe(function () {
+                        queryFormModel.is_request_in_progress(false);
+                    });
+                })
             });
         },
 

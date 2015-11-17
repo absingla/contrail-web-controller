@@ -123,7 +123,7 @@ define([
                                         style: 'display: none;',
                                         path: 'time_granularity',
                                         label: 'Time Granularity',
-                                        visible: 'select_data_object().checked_fields.indexOf("T=") != -1 ',
+                                        visible: 'isSelectTimeChecked()',
                                         childView: [
                                             {
                                                 elementId: 'time_granularity', view: "FormNumericTextboxView",
