@@ -44,7 +44,7 @@ define([
 
             var resultsViewConfig = {
                 elementId: cowl.QE_FLOW_QUEUE_GRID_ID,
-                title: cowl.TITLE_FLOW_QUERY_QUEUE,
+                title: cowl.TITLE_QUERY_QUEUE,
                 view: "GridView",
                 viewConfig: {
                     elementConfig: getQueryQueueGridConfig(queryQueueType, queueRemoteConfig, pagerOptions, self, queueColorMap)
@@ -79,8 +79,7 @@ define([
         return {
             header: {
                 title: {
-                    text: cowl.TITLE_FLOW_QUERY_QUEUE,
-                    icon : 'icon-table'
+                    text: cowl.TITLE_QUERY_QUEUE
                 },
                 defaultControls: {
                     collapseable: true,

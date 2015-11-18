@@ -220,12 +220,11 @@ function runNewQuery(req, res, queryId, queryReqObj) {
 function getQueryOptions(queryReqObj) {
     var formModelAttrs = queryReqObj['formModelAttrs'], tableType = formModelAttrs['table_type'],
         queryId = queryReqObj['queryId'], chunkSize = parseInt(queryReqObj['chunkSize']),
-        async = (queryReqObj['async'] != null) ? queryReqObj['async'] : false,
-        saveQuery = queryReqObj['saveQuery'];
+        async = (queryReqObj['async'] != null) ? queryReqObj['async'] : false;
 
     var queryOptions = {
         queryId: queryId, chunkSize: chunkSize, counter: 0, status: "run", async: async, count: 0, progress: 0, errorMessage: "",
-        queryReqObj: queryReqObj, opsQueryId: "", saveQuery: saveQuery, tableType: tableType
+        queryReqObj: queryReqObj, opsQueryId: "", tableType: tableType
     };
 
     if (tableType == 'LOG' || tableType == 'OBJECT') {
@@ -325,11 +324,9 @@ function fetchQueryResults(res, jsonData, queryOptions) {
                 fetchQueryResults(res, jsonData, queryOptions);
             } else if (progress == null || progress === 'undefined') {
                 processQueryResults(res, queryResults, queryOptions);
-                if (queryOptions.status == 'queued') {
-                    queryOptions['endTime'] = new Date().getTime();
-                    queryOptions['status'] = 'completed';
-                    updateQueryStatus(queryOptions);
-                }
+                queryOptions['endTime'] = new Date().getTime();
+                queryOptions['status'] = 'completed';
+                updateQueryStatus(queryOptions);
             } else if (queryOptions['counter'] == queryOptions.maxCounter) {
                 queryOptions['progress'] = progress;
                 queryOptions['status'] = 'queued';
@@ -574,10 +571,6 @@ function processQueryResults(res, queryResults, queryOptions) {
             responseJSON = resultJSON.slice(0, chunkSize);
         }
         commonUtils.handleJSONResponse(null, res, {data: responseJSON, total: total, queryJSON: queryJSON, chunk: 1, chunkSize: chunkSize, serverSideChunking: true});
-    }
-
-    if ((null != queryOptions['saveQuery']) && ((false == queryOptions['saveQuery']) || ('false' == queryOptions['saveQuery']))) {
-        return;
     }
 
     saveQueryResult2Redis(resultJSON, total, queryId, chunkSize, getSortStatus4Query(queryJSON), queryJSON);

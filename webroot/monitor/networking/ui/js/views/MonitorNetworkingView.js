@@ -301,7 +301,7 @@ define([
                         columns: [
                             {
                                 elementId: ctwl.FLOWS_GRID_ID,
-                                title: ctwl.TITLE_FLOWS,
+                                title: ctwl.TITLE_FLOW_SERIES,
                                 view: "FlowGridView",
                                 viewPathPrefix: "monitor/networking/ui/js/views/",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,

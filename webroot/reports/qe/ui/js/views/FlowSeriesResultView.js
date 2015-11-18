@@ -172,8 +172,7 @@ define([
         var gridElementConfig = {
             header: {
                 title: {
-                    text: cowl.TITLE_FLOW_SERIES,
-                    icon : 'icon-table'
+                    text: cowl.TITLE_FLOW_SERIES
                 },
                 defaultControls: {
                     collapseable: true,
