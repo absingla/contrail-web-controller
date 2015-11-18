@@ -685,7 +685,14 @@ function setMicroTimeRange(query, fromTime, toTime) {
 function getQueryJSON4Table(queryReqObj) {
     var formModelAttrs = queryReqObj['formModelAttrs'],
         tableName = formModelAttrs['table_name'], tableType = formModelAttrs['table_type'],
-        queryJSON = {"table": tableName, "start_time": "", "end_time": "", "select_fields": [], "filter": []};
+        queryJSON = {
+            "table" : tableName,
+            "start_time": "",
+            "end_time": "",
+            "select_fields": [],
+            // "filter" is a array of arrays ie. AND clauses inside just one OR clause
+            "filter": [[]]
+        };
 
     var fromTimeUTC = formModelAttrs['from_time_utc'], toTimeUTC = formModelAttrs['to_time_utc'],
         select = formModelAttrs['select'], where = formModelAttrs['where'], filters = formModelAttrs['filters'],
@@ -839,7 +846,12 @@ function parseFilterBy(query, filterBy) {
             filterObj = getFilterObj(filtersArray[i]);
             filterClause.push(filterObj);
         }
-        query['filter'] = query['filter'].concat(filterClause);
+        // Loop through the default filters and add the UI submitted ones to each
+        for(var j = 0; j < query['filter'].length; j++) {
+            var filterArr = query['filter'][j];
+            filterArr = filterArr.concat(filterClause);
+            query['filter'][j] = filterArr;
+        }
     }
 };
 
