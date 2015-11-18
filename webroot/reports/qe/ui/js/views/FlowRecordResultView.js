@@ -34,14 +34,10 @@ define([
                             dataParser: function(response) {
                                 return response['data'];
                             },
-                            //TODO: We should not need to implement success callback in each grid to show grid message based on status
                             successCallback: function(resultJSON, contrailListModel, response) {
-                                //TODO - Remove this setTimeout
-                                setTimeout(function(){
-                                    if (response.status === 'queued') {
-                                        $('#' + cowl.QE_FLOW_RECORD_GRID_ID).data('contrailGrid').showGridMessage(response.status)
-                                    }
-                                }, 500);
+                                if (response.status === 'queued') {
+                                    $('#' + cowl.QE_FLOW_RECORD_GRID_ID).data('contrailGrid').showGridMessage(response.status)
+                                }
                             }
                         }
                     };
@@ -130,7 +126,8 @@ define([
                 options: {
                     autoRefresh: false,
                     checkboxSelectable: false,
-                    fixedRowHeight: 30
+                    fixedRowHeight: 30,
+                    defaultDataStatusMessage: false
                 },
                 dataSource: {
                     remote: {

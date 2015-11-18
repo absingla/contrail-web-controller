@@ -36,14 +36,10 @@ define([
                                 }
                                 return gridData;
                             },
-                            //TODO: We should not need to implement success callback in each grid to show grid message based on status
                             successCallback: function(resultJSON, contrailListModel, response) {
-                                //TODO - Remove this setTimeout
-                                setTimeout(function(){
-                                    if (response.status === 'queued') {
-                                        $('#' + cowl.QE_SYSTEM_LOGS_GRID_ID).data('contrailGrid').showGridMessage(response.status)
-                                    }
-                                }, 500);
+                                if (response.status === 'queued') {
+                                    $('#' + cowl.QE_SYSTEM_LOGS_GRID_ID).data('contrailGrid').showGridMessage(response.status)
+                                }
                             }
                         }
                     };
@@ -107,7 +103,8 @@ define([
             body: {
                 options: {
                     autoRefresh: false,
-                    checkboxSelectable: false
+                    checkboxSelectable: false,
+                    defaultDataStatusMessage: false
                 },
                 dataSource: { remote: $.extend(true, {}, listModelConfig.remote, { serverSidePagination: true }) },
                 statusMessages: {

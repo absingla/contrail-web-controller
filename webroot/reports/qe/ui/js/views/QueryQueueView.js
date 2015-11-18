@@ -87,12 +87,38 @@ define([
                     exportable: true,
                     refreshable: true,
                     searchable: true
-                }
+                },
+                advanceControls: [
+                    {
+                        type: 'link',
+                        linkElementId: cowl.QE_DELETE_MULTIPLE_QUERY_QUEUE_CONTROL_ID,
+                        disabledLink: true,
+                        title: cowl.TITLE_DELETE_ALL_QUERY_QUEUE,
+                        iconClass: 'icon-trash',
+                        onClick: function (event, gridContainer, key) {
+                            if (!$('#' + cowl.QE_DELETE_MULTIPLE_QUERY_QUEUE_CONTROL_ID).hasClass('disabled-link')) {
+                                var gridCheckedRows = $(gridContainer).data('contrailGrid').getCheckedRows(),
+                                    queryIds = $.map(gridCheckedRows, function(rowValue, rowKey) {
+                                        return rowValue.queryReqObj.queryId;
+                                    });
+
+                                showDeleteQueueModal(queryQueueType, queryIds, queueColorMap);
+                            }
+                        }
+                    }
+                ]
             },
             body: {
                 options: {
                     autoRefresh: false,
-                    checkboxSelectable: true,
+                    checkboxSelectable: {
+                        onNothingChecked: function(e){
+                            $('#' + cowl.QE_DELETE_MULTIPLE_QUERY_QUEUE_CONTROL_ID).addClass('disabled-link');
+                        },
+                        onSomethingChecked: function(e){
+                            $('#' + cowl.QE_DELETE_MULTIPLE_QUERY_QUEUE_CONTROL_ID).removeClass('disabled-link');
+                        }
+                    },
                     actionCell: function(dc){
                         return getQueueActionColumn(queryQueueType, dc, queryQueueView, queueColorMap);
                     }
@@ -105,7 +131,7 @@ define([
                 columns: qewgc.getQueueColumnDisplay()
             },
             footer: {
-                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 100, pageSizeSelect: [100, 200, 300, 500] } })
+                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 5, pageSizeSelect: [5, 10, 25, 50] } })
             }
         };
     };
@@ -128,24 +154,8 @@ define([
                 title: 'View Results',
                 iconClass: 'icon-list-alt',
                 onClick: function(rowIndex){
-                    if (_.compact(queueColorMap).length < 5) {
-                        var queryQueueItem = queryQueueListModel.getItem(rowIndex),
-                            queryId = queryQueueItem.queryReqObj.queryId,
-                            badgeColorKey = getBadgeColorkey4Value(queueColorMap, null),
-                            tabLinkId = cowl.QE_FLOW_QUEUE_TAB_ID + '-' + queryId + '-tab-link';
-
-                        queryQueueView.renderQueryQueueResult(queryQueueItem, 'queue', queueColorMap, function() {
-                            $('#label-icon-badge-' + queryId).addClass('icon-badge-color-' + badgeColorKey);
-                            $('#' + tabLinkId).find('.contrail-tab-link-icon').addClass('icon-badge-color-' + badgeColorKey);
-                            $('#' + tabLinkId).data('badge_color_key', badgeColorKey)
-                            queueColorMap[badgeColorKey] = queryId;
-                        });
-
-                    } else {
-                        //TODO - create info modal
-                        showInfoWindow('Maximum 5 Query Results can be viewed. Please delete to view new queries from queue.', 'Max Query Result Reached');
-                    }
-
+                    var queryQueueItem = queryQueueListModel.getItem(rowIndex);
+                    viewOrRerunQueryAction (queryQueueItem, queryQueueView, queueColorMap, 'queue');
                 }
             });
         } else if(errorMessage != null) {
@@ -168,23 +178,8 @@ define([
                 title: 'Rerun Query',
                 iconClass: 'icon-repeat',
                 onClick: function(rowIndex){
-                    if (_.compact(queueColorMap).length < 5) {
-                        var queryQueueItem = queryQueueListModel.getItem(rowIndex),
-                            queryId = queryQueueItem.queryReqObj.queryId,
-                            badgeColorKey = getBadgeColorkey4Value(queueColorMap, null),
-                            tabLinkId = cowl.QE_FLOW_QUEUE_TAB_ID + '-' + queryId + '-tab-link';
-
-                        queryQueueView.renderQueryQueueResult(queryQueueItem, 'rerun', queueColorMap, function() {
-                            $('#label-icon-badge-' + queryId).addClass('icon-badge-color-' + badgeColorKey);
-                            $('#' + tabLinkId).find('.contrail-tab-link-icon').addClass('icon-badge-color-' + badgeColorKey);
-                            $('#' + tabLinkId).data('badge_color_key', badgeColorKey)
-                            queueColorMap[badgeColorKey] = queryId;
-                        });
-
-                    } else {
-                        //TODO - create info modal
-                        showInfoWindow('Maximum 5 Query Results can be viewed. Please delete to view new queries from queue.', 'Max Query Result Reached');
-                    }
+                    var queryQueueItem = queryQueueListModel.getItem(rowIndex);
+                    viewOrRerunQueryAction (queryQueueItem, queryQueueView, queueColorMap, 'rerun');
                 }
             });
         }
@@ -193,36 +188,64 @@ define([
             title: 'Delete Query',
             iconClass: 'icon-trash',
             onClick: function(rowIndex){
-                var modalId = queryFormModelData.query_prefix + cowl.QE_WHERE_MODAL_SUFFIX;
-
-                cowu.createModal({
-                    modalId: modalId,
-                    className: 'modal-700',
-                    title: 'Delete Query', btnName: 'Confirm',
-                    body: 'Are you sure you want to remove this query?',
-                    onSave: function () {
-                        var postDataJSON = {queryQueue: queryQueueType, queryIds: [queryId]},
-                            ajaxConfig = {
-                                url: '/api/qe/query',
-                                type: 'DELETE',
-                                data: JSON.stringify(postDataJSON)
-                            };
-                        contrail.ajaxHandler(ajaxConfig, null, function() {
-                            var queryQueueGridId = cowc.QE_HASH_ELEMENT_PREFIX + queryQueueType + cowc.QE_QUEUE_GRID_SUFFIX;
-
-                            $(queryQueueGridId).data('contrailGrid').refreshData();
-                        });
-                        $("#" + modalId).modal('hide');
-                    }, onCancel: function () {
-                        $("#" + modalId).modal('hide');
-                    }
-                });
+                showDeleteQueueModal(queryQueueType, [queryId], queueColorMap)
             }
         });
 
         return actionCell;
-
     };
+
+    function viewOrRerunQueryAction (queryQueueItem, queryQueueView, queueColorMap, queryType) {
+        if (_.compact(queueColorMap).length < 5) {
+            var queryId = queryQueueItem.queryReqObj.queryId,
+                badgeColorKey = getBadgeColorkey4Value(queueColorMap, null),
+                tabLinkId = cowl.QE_FLOW_QUEUE_TAB_ID + '-' + queryId + '-tab-link';
+
+            if ($('#' + tabLinkId).length === 0) {
+                queryQueueView.renderQueryQueueResult(queryQueueItem, queryType, queueColorMap, function() {
+                    $('#label-icon-badge-' + queryId).addClass('icon-badge-color-' + badgeColorKey);
+                    $('#' + tabLinkId).find('.contrail-tab-link-icon').addClass('icon-badge-color-' + badgeColorKey);
+                    $('#' + tabLinkId).data('badge_color_key', badgeColorKey)
+                    queueColorMap[badgeColorKey] = queryId;
+                });
+            } else {
+                //TODO - create info modal
+                showInfoWindow('Query Result has already been loaded.', 'Error');
+            }
+        } else {
+            //TODO - create info modal
+            showInfoWindow('Maximum 5 Query Results can be viewed. Please close the existing query results to view new queries from queue.', 'Error');
+        }
+    }
+
+    function showDeleteQueueModal(queryQueueType, queryIds, queueColorMap) {
+        var modalId = queryQueueType + cowl.QE_WHERE_MODAL_SUFFIX;
+        cowu.createModal({
+            modalId: modalId,
+            className: 'modal-700',
+            title: 'Delete Query', btnName: 'Confirm',
+            body: 'Are you sure you want to remove this query?',
+            onSave: function () {
+                var postDataJSON = {queryQueue: queryQueueType, queryIds: queryIds},
+                    ajaxConfig = {
+                        url: '/api/qe/query',
+                        type: 'DELETE',
+                        data: JSON.stringify(postDataJSON)
+                    };
+                contrail.ajaxHandler(ajaxConfig, null, function() {
+                    var queryQueueGridId = cowc.QE_HASH_ELEMENT_PREFIX + queryQueueType + cowc.QE_QUEUE_GRID_SUFFIX;
+                    $(queryQueueGridId).data('contrailGrid').refreshData();
+
+                    $.each(queryIds, function(queryIdKey, queryIdValue) {
+                        removeBadgeColorFromQueryQueue(queueColorMap, queryIdValue.queryId);
+                    });
+                });
+                $("#" + modalId).modal('hide');
+            }, onCancel: function () {
+                $("#" + modalId).modal('hide');
+            }
+        });
+    }
 
     function getQueryQueueTabViewConfig(queryQueueItem, queryResultType, queueColorMap) {
         return {
@@ -273,11 +296,7 @@ define([
                 },
                 removable: true,
                 onRemoveTab: function () {
-                    var badgeColorKey = getBadgeColorkey4Value(queueColorMap, queryId);
-
-                    $('#label-icon-badge-' + queryId).removeClass('icon-badge-color-' + badgeColorKey);
-
-                    queueColorMap[badgeColorKey] = null;
+                    removeBadgeColorFromQueryQueue(queueColorMap, queryId);
                 }
             },
             viewConfig: {
@@ -316,6 +335,16 @@ define([
                 ]
             }
         }];
+    }
+
+    function removeBadgeColorFromQueryQueue(queueColorMap, queryId) {
+        var badgeColorKey = getBadgeColorkey4Value(queueColorMap, queryId);
+
+        if (badgeColorKey !== null) {
+            $('#label-icon-badge-' + queryId).removeClass('icon-badge-color-' + badgeColorKey);
+            queueColorMap[badgeColorKey] = null;
+
+        }
     }
 
     function getBadgeColorkey4Value(queueColorMap, value) {

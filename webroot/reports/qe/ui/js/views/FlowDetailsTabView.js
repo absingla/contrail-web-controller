@@ -60,7 +60,8 @@ define([
                                 },
                                 viewConfig: {
                                     formData: getQueryFormData(queryFormAttributes, selectedFlowRecord, "ingress", false),
-                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_INGRESS_SUFFIX_ID
+                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_INGRESS_SUFFIX_ID,
+                                    flowDetailsTabId: flowDetailsTabPrefix + cowl.QE_INGRESS_SUFFIX_ID
                                 }
                             },
                             {
@@ -78,7 +79,8 @@ define([
                                 },
                                 viewConfig: {
                                     formData: getQueryFormData(queryFormAttributes, selectedFlowRecord, "egress", false),
-                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_EGRESS_SUFFIX_ID
+                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_EGRESS_SUFFIX_ID,
+                                    flowDetailsTabId: flowDetailsTabPrefix + cowl.QE_EGRESS_SUFFIX_ID
                                 }
                             },
                             {
@@ -96,7 +98,8 @@ define([
                                 },
                                 viewConfig: {
                                     formData: getQueryFormData(queryFormAttributes, selectedFlowRecord, "ingress", true),
-                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID
+                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID,
+                                    flowDetailsTabId: flowDetailsTabPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID
                                 }
                             },
                             {
@@ -114,7 +117,8 @@ define([
                                 },
                                 viewConfig: {
                                     formData: getQueryFormData(queryFormAttributes, selectedFlowRecord, "egress", true),
-                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID
+                                    flowDetailsGridId: flowDetailsGridPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID,
+                                    flowDetailsTabId: flowDetailsTabPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID
                                 }
                             }
                         ]

@@ -43,6 +43,7 @@ define([
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 flowDetailsGridId = viewConfig['flowDetailsGridId'],
+                flowDetailsTabId = viewConfig['flowDetailsTabId'],
                 contrailListModel,
                 fsRemoteConfig = {
                     url: "/api/qe/query",
@@ -54,6 +55,12 @@ define([
                         ajaxConfig: fsRemoteConfig,
                         dataParser: function (response) {
                             return response['data'];
+                        },
+                        successCallback: function(resultJSON, contrailListModel, response) {
+                            if (response.status === 'queued') {
+                                //TODO fix elementId inside gridView
+                                $('#' + flowDetailsTabId).data('contrailGrid').showGridMessage(response.status)
+                            }
                         }
                     }
                 };
@@ -103,7 +110,8 @@ define([
                 options: {
                     autoRefresh: false,
                     checkboxSelectable: false,
-                    fixedRowHeight: 30
+                    fixedRowHeight: 30,
+                    defaultDataStatusMessage: false
                 },
                 dataSource: {
                     remote: {
