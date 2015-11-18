@@ -40,6 +40,8 @@ define([
                             successCallback: function(resultJSON, contrailListModel, response) {
                                 if (response.status === 'queued') {
                                     $('#' + cowl.QE_OBJECT_LOGS_GRID_ID).data('contrailGrid').showGridMessage(response.status)
+                                } else if (contrailListModel.getItems().length == 0) {
+                                    $('#' + cowl.QE_OBJECT_LOGS_GRID_ID).data('contrailGrid').showGridMessage('empty')
                                 }
                             }
                         }

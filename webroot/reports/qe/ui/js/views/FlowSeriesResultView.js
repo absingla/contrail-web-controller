@@ -70,6 +70,8 @@ define([
                         successCallback: function(resultJSON, contrailListModel, response) {
                             if (response.status === 'queued') {
                                 $('#' + flowSeriesGridId).data('contrailGrid').showGridMessage(response.status)
+                            } else if (contrailListModel.getItems().length == 0) {
+                                $('#' + flowSeriesGridId).data('contrailGrid').showGridMessage('empty')
                             }
                         }
                     }

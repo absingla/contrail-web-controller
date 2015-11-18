@@ -37,6 +37,8 @@ define([
                             successCallback: function(resultJSON, contrailListModel, response) {
                                 if (response.status === 'queued') {
                                     $('#' + cowl.QE_FLOW_RECORD_GRID_ID).data('contrailGrid').showGridMessage(response.status)
+                                } else if (contrailListModel.getItems().length == 0) {
+                                    $('#' + cowl.QE_FLOW_RECORD_GRID_ID).data('contrailGrid').showGridMessage('empty')
                                 }
                             }
                         }
