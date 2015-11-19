@@ -68,7 +68,7 @@ define([
             if (queryQueueResultTabView === null) {
                 self.renderView4Config($(queryQueueResultId), null, getQueryQueueTabViewConfig(queryQueueItem, queryResultType, queueColorMap), null, null, null, renderCompleteCB);
             } else {
-                queryQueueResultTabView.renderNewTab(cowl.QE_FLOW_QUEUE_TAB_ID, getFlowSeriesTabConfig(queryQueueItem, queryResultType, queueColorMap), true);
+                queryQueueResultTabView.renderNewTab(cowl.QE_FLOW_QUEUE_TAB_ID, getQueryQueueTabConfig(queryQueueItem, queryResultType, queueColorMap), true);
                 renderCompleteCB();
             }
         }
@@ -252,12 +252,12 @@ define([
             view: "TabsView",
             viewConfig: {
                 theme: cowc.TAB_THEME_WIDGET_CLASSIC,
-                tabs: getFlowSeriesTabConfig(queryQueueItem, queryResultType, queueColorMap)
+                tabs: getQueryQueueTabConfig(queryQueueItem, queryResultType, queueColorMap)
             }
         };
     };
 
-    function getFlowSeriesTabConfig(queryQueueItem, queryResultType, queueColorMap) {
+    function getQueryQueueTabConfig(queryQueueItem, queryResultType, queueColorMap) {
         var queryFormAttributes = queryQueueItem.queryReqObj,
             queryPrefix = queryFormAttributes.formModelAttrs.query_prefix,
             queryId = queryFormAttributes.queryId,
