@@ -452,7 +452,14 @@ define([
                     viewPathPrefix:
                         ctwl.VROUTER_VIEWPATH_PREFIX,
                     app: cowc.APP_CONTRAIL_CONTROLLER,
-                    viewConfig: viewConfig
+                    viewConfig: viewConfig,
+                    tabConfig: {
+                        activate: function(event, ui) {
+                            if ($('#' + ctwl.VROUTER_DETAIL_PAGE_ID)) {
+                                $('#' + ctwl.VROUTER_DETAIL_PAGE_ID).trigger('refresh');
+                            }
+                        }
+                    }
                 },{
                     elementId: 'vrouter_interfaces_tab_id',
                     title: 'Interfaces',
@@ -480,7 +487,15 @@ define([
                                 }
                             }
                         }
-                    })
+                    }),
+                    tabConfig: {
+                        activate: function(event, ui) {
+                            if ($('#' + ctwl.VROUTER_INTERFACES_GRID_ID).data('contrailGrid')) {
+                                $('#' + ctwl.VROUTER_INTERFACES_GRID_ID).data('contrailGrid').refreshView();
+                            }
+                        },
+                        renderOnActivate: true
+                    }
                 },{
                     elementId: 'vrouter_networks_tab_id',
                     title: 'Networks',
@@ -507,7 +522,16 @@ define([
                                 }
                             }
                         }
-                    })
+                    }),
+                    tabConfig: {
+                        activate: function(event, ui) {
+                            if ($('#' + ctwl.VROUTER_NETWORKS_GRID_ID).data('contrailGrid')) {
+                                $('#' + ctwl.VROUTER_NETWORKS_GRID_ID).
+                                    data('contrailGrid').refreshView();
+                            }
+                        },
+                        renderOnActivate: true
+                    }
                 },{
                     elementId: 'vrouter_acl_tab_id',
                     title: 'ACL',
@@ -535,7 +559,16 @@ define([
                                 }
                             }
                         }
-                    })
+                    }),
+                    tabConfig: {
+                        activate: function(event, ui) {
+                            if ($('#' + ctwl.VROUTER_ACL_GRID_ID).data('contrailGrid')) {
+                                $('#' + ctwl.VROUTER_ACL_GRID_ID).
+                                    data('contrailGrid').refreshView();
+                            }
+                        },
+                        renderOnActivate: true
+                    }
                 },{
                     elementId: 'vrouter_flows_tab_id',
                     title: 'Flows',
@@ -543,7 +576,16 @@ define([
                     viewPathPrefix:
                         ctwl.VROUTER_VIEWPATH_PREFIX,
                     app: cowc.APP_CONTRAIL_CONTROLLER,
-                    viewConfig: viewConfig
+                    viewConfig: viewConfig,
+                    tabConfig: {
+                        activate: function(event, ui) {
+                            if ($('#' + ctwl.VROUTER_FLOWS_GRID_ID).data('contrailGrid')) {
+                                $('#' + ctwl.VROUTER_FLOWS_GRID_ID).
+                                    data('contrailGrid').refreshView();
+                            }
+                        },
+                        renderOnActivate: true
+                    }
                 },{
                     elementId: 'vrouter_routes_tab_id',
                     title: 'Routes',
@@ -551,9 +593,111 @@ define([
                     viewPathPrefix:
                         ctwl.VROUTER_VIEWPATH_PREFIX,
                     app: cowc.APP_CONTRAIL_CONTROLLER,
-                    viewConfig: viewConfig
+                    viewConfig: viewConfig,
+                    tabConfig: {
+                        activate: function(event, ui) {
+                            if ($('#' + ctwl.VROUTER_ROUTES_GRID_ID).data('contrailGrid')) {
+                                $('#' + ctwl.VROUTER_ROUTES_GRID_ID).
+                                    data('contrailGrid').refreshView();
+                            }
+                        },
+                        renderOnActivate: true
+                    }
+                },{
+                    elementId: 'vrouter_virtualmachines',
+                    title: 'Instances',
+                    view: "VRouterVirtualMachinesGridView",
+                    viewPathPrefix:
+                        ctwl.VROUTER_VIEWPATH_PREFIX,
+                    app: cowc.APP_CONTRAIL_CONTROLLER,
+                    viewConfig: viewConfig,
+                    tabConfig: {
+                        activate: function(event, ui) {
+                            if ($('#' + ctwl.VROUTER_INSTANCE_GRID_ID).data('contrailGrid')) {
+                                $('#' + ctwl.VROUTER_INSTANCE_GRID_ID).
+                                    data('contrailGrid').refreshView();
+                            }
+                        },
+                        renderOnActivate: true
+                    }
                 }
             ]
+        };
+        self.getDetailRowInstanceTemplateConfig = function () {
+            return {
+                templateGenerator: 'RowSectionTemplateGenerator',
+                templateGeneratorConfig: {
+                    rows: [
+                        {
+                            templateGenerator: 'ColumnSectionTemplateGenerator',
+                            templateGeneratorConfig: {
+                                columns: [
+                                    {
+                                        class: 'span6',
+                                        rows: [{
+                                            title: ctwl.TITLE_INSTANCE_DETAILS,
+                                            templateGenerator:
+                                                'BlockListTemplateGenerator',
+                                            templateGeneratorConfig: [
+                                                {
+                                                    key: 'uuid',
+                                                    templateGenerator:
+                                                        'TextGenerator'
+                                                },{
+                                                    key: 'vRouter',
+                                                    templateGenerator:
+                                                        'LinkGenerator',
+                                                    templateGeneratorConfig: {
+                                                        template:
+                                                            ctwc.URL_VROUTER,
+                                                        params: {}
+                                                    }
+                                                },{
+                                                    key: 'vn',
+                                                    templateGenerator:
+                                                        'TextGenerator'
+                                                },{
+                                                    key: 'ip',
+                                                    templateGenerator:
+                                                        'TextGenerator'
+                                                },{
+                                                    key: 'intfCnt',
+                                                    templateGenerator:
+                                                        'TextGenerator'
+                                             }]
+                                       }]
+                                    },
+                                    {
+                                        class: 'span6',
+                                        rows: [{
+                                            title: ctwl.TITLE_CPU_MEMORY_INFO,
+                                            templateGenerator: 'BlockListTemplateGenerator',
+                                            templateGeneratorConfig: [
+                                                {
+                                                    key: 'value.UveVirtualMachineAgent.cpu_info.cpu_one_min_avg',
+                                                    templateGenerator: 'TextGenerator'
+                                                },{
+                                                    key: 'value.UveVirtualMachineAgent.cpu_info.rss',
+                                                    templateGenerator: 'TextGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'kilo-byte'
+                                                    }
+                                                },{
+                                                    key: 'value.UveVirtualMachineAgent.cpu_info.vm_memory_quota',
+                                                    templateGenerator: 'TextGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'kilo-byte'
+                                                    }
+                                                }
+                                             ]
+                                        }]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            };
         };
     };
 
