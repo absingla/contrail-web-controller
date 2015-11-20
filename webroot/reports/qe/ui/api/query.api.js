@@ -975,10 +975,17 @@ function getTGSecs(tg, tgUnit) {
 
 function getFilterObj(filter) {
     var filterObj;
+    // order of if's is important here
+    // '=' should be last one to be checked else '!=', '>=', '<='
+    // will be matched as '='
     if (filter.indexOf('!=') != -1) {
         filterObj = parseFilterObj(filter, '!=');
     } else if (filter.indexOf(" RegEx= ") != -1) {
         filterObj = parseFilterObj(filter, 'RegEx=');
+    }  else if (filter.indexOf("<=") != -1) {
+        filterObj = parseFilterObj(filter, '<=');
+    } else if (filter.indexOf(">=") != -1) {
+        filterObj = parseFilterObj(filter, '>=');
     } else if (filter.indexOf("=") != -1) {
         filterObj = parseFilterObj(filter, '=');
     }
@@ -990,6 +997,10 @@ function getOperatorCode(operator) {
         return 1;
     } else if (operator == '!=') {
         return 2;
+    } else if (operator == '<=') {
+        return 5;
+    } else if (operator == '>=') {
+        return 6;
     } else if (operator == 'RegEx=') {
         return 8;
     } else if (operator == 'Starts with') {
