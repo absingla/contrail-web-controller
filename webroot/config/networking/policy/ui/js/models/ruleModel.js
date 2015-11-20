@@ -14,7 +14,9 @@ define([
             'action_list':{'simple_action':'pass',
                 'apply_service':null,
                 'gateway_name':null,
+                'log':false,
                 'mirror_to':{'analyzer_name':null}},
+            'log_checked':false,
             'apply_service_check' : false,
             'mirror_to_check' : false,
             'application':[],
@@ -71,6 +73,7 @@ define([
                 modelConfig["service_instance"] = null;
             }
             modelConfig["mirror"] = modelConfig["action_list"]["mirror_to"];
+            modelConfig["log_checked"] = modelConfig["action_list"]["log"];
             if(modelConfig["service_instance"] == null)
                 modelConfig["apply_service_check"] = false;
             else
@@ -84,7 +87,7 @@ define([
                 modelConfig["mirror_to_check"] = false;
             } else {
                 modelConfig["mirror"] =
-                     [modelConfig["action_list"]["mirror_to"]["analyzer_name"]];
+                     modelConfig["action_list"]["mirror_to"]["analyzer_name"];
                 modelConfig["mirror_to_check"] = true;
             }
             popupData = modelConfig["popupData"];
@@ -225,10 +228,10 @@ define([
                         }
                     }
                 },*/
-                'src_addresses': function(val, attr, data) {
+                'src_address': function(val, attr, data) {
                     if(val != "") {
                         var address = val.split("~");
-                        if(address.length == 1) {
+                        if(address.length == 2 && address[1] == 'subnet') {
                             if(!validateIPAddress(address[0].trim()) ||
                                 address[0]("/").length != 2) {
                                 return "Enter a valid CIDR in \
@@ -237,10 +240,10 @@ define([
                         }
                     }
                 },
-                'dst_addresses': function(val, attr, data) {
+                'dst_address': function(val, attr, data) {
                     if(val != "") {
                         var address = val.split("~");
-                        if(address.length == 1) {
+                        if(address.length == 2 && address[1] == 'subnet') {
                             if(!validateIPAddress(address[0].trim()) ||
                                 address[0]("/").length != 2) {
                                 return "Enter a valid CIDR in \
