@@ -97,7 +97,8 @@ define([
                     collapseable: true,
                     exportable: true,
                     refreshable: false,
-                    searchable: true
+                    searchable: true,
+                    columnPickable: true
                 }
             },
             body: {
