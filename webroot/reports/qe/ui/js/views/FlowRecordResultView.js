@@ -143,7 +143,7 @@ define([
                     queued: {
                         type: 'status',
                         iconClasses: '',
-                        text: 'Your query has been queued.'
+                        text: cowm.QE_QUERY_QUEUED
                     }
                 }
             },
