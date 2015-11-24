@@ -18,6 +18,8 @@ require.config({
         'controller-parsers': ctBaseDir + '/common/ui/js/controller.parsers',
         'controller-view-config': ctBaseDir + '/common/ui/js/controller.view.config',
         'controller-init': ctBaseDir + '/common/ui/js/controller.init',
+
+        //TODO: Only commons controller level definations should be created in this file.
         'searchflow-model': 'monitor/infrastructure/underlay/ui/js/models/' + 'SearchFlowFormModel',
         'traceflow-model': 'monitor/infrastructure/underlay/ui/js/models/' + 'TraceFlowTabModel',
         'underlay-graph-model' : 'monitor/infrastructure/underlay/ui/js/models/'+ 'UnderlayGraphModel',
