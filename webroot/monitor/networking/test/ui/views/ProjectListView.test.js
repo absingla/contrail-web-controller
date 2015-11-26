@@ -20,6 +20,13 @@ define([
     var fakeServerResponsesConfig = function() {
         var responses = [];
 
+        /*
+            /api/tenants/config/domains
+            /api/tenants/projects/default-domain
+            /api/tenant/networking/virtual-networks/details?count=25
+            /api/tenant/networking/stats
+        */
+
         responses.push(cotr.createFakeServerResponse( {
             url: cttu.getRegExForUrl(ctwc.URL_ALL_DOMAINS),
             body: JSON.stringify(TestMockdata.domainsMockData)
