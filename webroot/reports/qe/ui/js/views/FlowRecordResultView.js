@@ -73,7 +73,7 @@ define([
                     },
                     cssClass: 'cell-hyperlink-blue',
                     events: {
-                        onClick: qewgc.getOnClickFlowRecord(self, queryFormModel)
+                        onClick: qewgc.getOnClickFlowRecord(self, queryFormModel.getFormModelAttributes())
                     }
                 }
             ];
@@ -143,7 +143,7 @@ define([
                     queued: {
                         type: 'status',
                         iconClasses: '',
-                        text: cowm.QE_QUERY_QUEUED
+                        text: cowm.getQueryQueuedMessage(cowc.URL_QUERY_FLOW_QUEUE, cowl.TITLE_FLOW)
                     }
                 }
             },
