@@ -73,6 +73,10 @@ define([
         var selectArray = queryFormAttributes.select.replace(/ /g, "").split(","),
             queryResultGridColumns = qewgc.getColumnDisplay4Grid(queryFormAttributes.table_name, queryFormAttributes.table_type, selectArray);
 
+        if (contrail.checkIfExist(gridOptions.gridColumns)) {
+            queryResultGridColumns = gridOptions.gridColumns.concat(queryResultGridColumns)
+        }
+
         return {
             header: {
                 title: {

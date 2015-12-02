@@ -64,13 +64,9 @@ define([
             if (widgetConfig !== null) {
                 $(queryFormId).parents('.widget-box').data('widget-action').collapse();
             }
-            queryFormModel.is_request_in_progress(true);
 
-            $.ajax({
-                url: '/api/service/networking/web-server-info'
-            }).done(function (resultJSON) {
-                serverCurrentTime = resultJSON['serverUTCTime'];
-            }).always(function() {
+            queryFormModel.is_request_in_progress(true);
+            qewu.fetchServerCurrentTime(function(serverCurrentTime) {
                 var timeRange = parseInt(queryFormModel.time_range()),
                     queryResultPostData;
 
@@ -272,10 +268,10 @@ define([
     }
 
     function getQueryResultGridViewConfig(queryResultPostData) {
-        var flowSeriesGridId = cowl.QE_QUERY_RESULT_GRID_ID;
+        var queryResultGridId = cowl.QE_QUERY_RESULT_GRID_ID;
 
         return {
-            elementId: flowSeriesGridId,
+            elementId: queryResultGridId,
             title: cowl.TITLE_RESULTS,
             iconClass: 'icon-table',
             view: 'QueryResultGridView',

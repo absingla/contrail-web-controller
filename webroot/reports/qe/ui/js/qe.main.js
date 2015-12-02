@@ -46,6 +46,10 @@ function QELoader() {
             case 'renderStatQuery':
                 this.qeView.renderStatQuery({hashParams: hashParams});
                 break;
+
+            case 'renderStatQueue':
+                this.qeView.renderStatQueue({hashParams: hashParams});
+                break;
         }
     },
 

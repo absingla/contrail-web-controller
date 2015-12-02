@@ -18,7 +18,7 @@ define([
         },
 
         renderFlowQueue: function (viewConfig) {
-            this.renderView4Config(this.$el, null, getQueueViewConfig(viewConfig));
+            this.renderView4Config(this.$el, null, getQueueViewConfig(viewConfig, cowc.QE_FLOW_QUERY_QUEUE));
         },
 
         renderSystemLogs: function (viewConfig) {
@@ -31,7 +31,11 @@ define([
 
         renderStatQuery: function (viewConfig) {
             this.renderView4Config(this.$el, null, getStatQueryViewConfig(viewConfig));
-        }
+        },
+
+        renderStatQueue: function (viewConfig) {
+            this.renderView4Config(this.$el, null, getQueueViewConfig(viewConfig, cowc.QE_STAT_QUERY_QUEUE));
+        },
     });
 
     function getFlowSeriesViewConfig(config) {
@@ -239,7 +243,7 @@ define([
         }
     };
 
-    function getQueueViewConfig(config) {
+    function getQueueViewConfig(config, queueType) {
         var hashParams = config['hashParams'];
 
         return {
@@ -254,7 +258,7 @@ define([
                                 viewPathPrefix: "reports/qe/ui/js/views/",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {
-                                    queueType: cowc.QE_FLOW_QUERY_QUEUE
+                                    queueType: queueType
                                 }
                             }
                         ]

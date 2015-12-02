@@ -874,6 +874,15 @@ and need to add the iconClass tag wherever we need to show some icons
                             </loader>
                             <searchStrings>Query Statistics</searchStrings>
                         </item>
+                        <item>
+                            <hash>query_stat_queue</hash>
+                            <label>Stat Queue</label>
+                            <loader>
+                                <class>qeLoader</class>
+                                <function>renderStatQueue</function>
+                            </loader>
+                            <searchStrings>Stat Query Queue</searchStrings>
+                        </item>
                     </items>
                 </item>
                 <!--
