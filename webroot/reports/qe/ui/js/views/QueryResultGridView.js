@@ -17,7 +17,7 @@ define([
                 formQueryIdSuffix = contrail.checkIfKeyExistInObject(true, viewConfig.queryFormAttributes, 'queryId') ? '-' + viewConfig.queryFormAttributes.queryId : '',
                 queryResultGridId = cowl.QE_QUERY_RESULT_GRID_ID + formQueryIdSuffix,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
-                pagerOptions = viewConfig['pagerOptions'],
+                gridOptions = viewConfig['gridOptions'],
                 contrailListModel,
                 queryResultRemoteConfig = {
                     url: "/api/qe/query",
@@ -46,11 +46,11 @@ define([
             contrailListModel = new ContrailListModel(listModelConfig);
             modelMap[cowc.UMID_QUERY_RESULT_LIST_MODEL] = contrailListModel;
 
-            self.renderView4Config(self.$el, contrailListModel, getQueryResultGridViewConfig(queryResultRemoteConfig, queryResultGridId, queryFormAttributes, pagerOptions), null, null, modelMap);
+            self.renderView4Config(self.$el, contrailListModel, getQueryResultGridViewConfig(queryResultRemoteConfig, queryResultGridId, queryFormAttributes, gridOptions), null, null, modelMap);
         }
     });
 
-    function getQueryResultGridViewConfig(queryResultRemoteConfig, queryResultGridId, queryFormAttributes, pagerOptions) {
+    function getQueryResultGridViewConfig(queryResultRemoteConfig, queryResultGridId, queryFormAttributes, gridOptions) {
         return {
             elementId: queryResultGridId,
             title: cowl.TITLE_RESULTS,
@@ -64,19 +64,19 @@ define([
                 }
             },
             viewConfig: {
-                elementConfig: getQueryResultGridConfig(queryResultRemoteConfig, queryFormAttributes, pagerOptions)
+                elementConfig: getQueryResultGridConfig(queryResultRemoteConfig, queryFormAttributes, gridOptions)
             }
         };
     }
 
-    function getQueryResultGridConfig(queryResultRemoteConfig, queryFormAttributes, pagerOptions) {
+    function getQueryResultGridConfig(queryResultRemoteConfig, queryFormAttributes, gridOptions) {
         var selectArray = queryFormAttributes.select.replace(/ /g, "").split(","),
             queryResultGridColumns = qewgc.getColumnDisplay4Grid(queryFormAttributes.table_name, queryFormAttributes.table_type, selectArray);
 
         return {
             header: {
                 title: {
-                    text: cowl.TITLE_FLOW_SERIES
+                    text: gridOptions.titleText
                 },
                 defaultControls: {
                     collapseable: true,
@@ -106,7 +106,7 @@ define([
                     queued: {
                         type: 'status',
                         iconClasses: '',
-                        text: cowm.getQueryQueuedMessage(cowc.URL_QUERY_FLOW_QUEUE, cowl.TITLE_FLOW)
+                        text: cowm.getQueryQueuedMessage(gridOptions.queryQueueUrl, gridOptions.queryQueueTitle)
                     }
                 }
             },
@@ -114,7 +114,7 @@ define([
                 columns: queryResultGridColumns
             },
             footer: {
-                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 100, pageSizeSelect: [100, 200, 300, 500] } })
+                pager: contrail.handleIfNull(gridOptions.pagerOptions, { options: { pageSize: 100, pageSizeSelect: [100, 200, 300, 500] } })
             }
         };
     };

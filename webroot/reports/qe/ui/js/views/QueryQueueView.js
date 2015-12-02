@@ -366,7 +366,8 @@ define([
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {
                                     queryResultPostData: { queryId: queryId },
-                                    queryFormAttributes: queryFormAttributes
+                                    queryFormAttributes: queryFormAttributes,
+                                    gridOptions: getQueryQueueResultGridOptions(queryFormAttributes)
                                 }
                             }
                         ]
@@ -374,6 +375,31 @@ define([
                 ]
             }
         }];
+    }
+
+    function getQueryQueueResultGridOptions(queryFormAttributes) {
+        var queryPrefix = queryFormAttributes.formModelAttrs.query_prefix,
+            gridOptions = {};
+
+        switch(queryPrefix) {
+            case cowc.FS_QUERY_PREFIX:
+                gridOptions = {
+                    titleText: cowl.TITLE_FLOW_SERIES,
+                    queryQueueUrl: cowc.URL_QUERY_FLOW_QUEUE,
+                    queryQueueTitle: cowl.TITLE_FLOW
+                };
+                break;
+
+            case cowc.FR_QUERY_PREFIX:
+                gridOptions = {
+                    titleText: cowl.TITLE_FLOW_RECORD,
+                    queryQueueUrl: cowc.URL_QUERY_FLOW_QUEUE,
+                    queryQueueTitle: cowl.TITLE_FLOW
+                };
+                break;
+        }
+
+        return gridOptions
     }
 
     function getQueryResultChartTabViewConfig(queryQueueItem) {
@@ -398,7 +424,6 @@ define([
                         $('#' + queryResultChartGridId).data('contrailGrid').refreshView();
                     }
                 },
-                renderOnActivate: true,
                 removable: true
             },
             viewConfig: {

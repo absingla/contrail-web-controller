@@ -12,10 +12,10 @@ define([
     var FlowSeriesFormView = QueryFormView.extend({
         render: function () {
             var self = this,
+                viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
                 queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
-                viewConfig = self.attributes.viewConfig,
                 queryType = contrail.checkIfExist(hashParams.queryType) ? hashParams.queryType : null,
                 queryFormAttributes = contrail.checkIfExist(hashParams.queryFormAttributes) ? hashParams.queryFormAttributes : {},
                 flowSeriesQueryModel = new FlowSeriesFormModel(queryFormAttributes),
@@ -53,10 +53,18 @@ define([
 
         renderQueryResult: function() {
             var self = this,
+                viewConfig = self.attributes.viewConfig,
+                widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 queryFormModel = self.model,
+                queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_FORM_SUFFIX,
                 queryResultId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_RESULTS_SUFFIX,
                 queryResultTabId = cowl.QE_FLOW_SERIES_TAB_ID, serverCurrentTime;
+
+            if (widgetConfig !== null) {
+                $(queryFormId).parents('.widget-box').data('widget-action').collapse();
+            }
+            queryFormModel.is_request_in_progress(true);
 
             $.ajax({
                 url: '/api/service/networking/web-server-info'
@@ -81,11 +89,13 @@ define([
 
                         if (!(queryResultListModel.isRequestInProgress()) && queryResultListModel.getItems().length > 0) {
                             self.renderQueryResultChartTab(queryResultTabView, queryResultTabId, queryFormModel, queryResultPostData)
+                            queryFormModel.is_request_in_progress(false);
                         } else {
                             queryResultListModel.onAllRequestsComplete.subscribe(function () {
                                 if (queryResultListModel.getItems().length > 0) {
                                     self.renderQueryResultChartTab(queryResultTabView, queryResultTabId, queryFormModel, queryResultPostData)
                                 }
+                                queryFormModel.is_request_in_progress(false);
                             });
                         }
                 });
@@ -99,8 +109,6 @@ define([
                 formQueryIdSuffix = (!$.isEmptyObject(queryFormAttributes)) ? '-' + queryFormAttributes.queryId : '',
                 flowSeriesChartId = cowl.QE_FLOW_SERIES_CHART_ID + formQueryIdSuffix,
                 selectArray = queryFormModel.select().replace(/ /g, "").split(",");
-
-            queryFormModel.is_request_in_progress(false);
 
             if (selectArray.indexOf("T=") !== -1 && $('#' + flowSeriesChartId).length === 0) {
                 queryResultTabView
@@ -277,7 +285,13 @@ define([
                 //TODO
             },
             viewConfig: {
-                queryResultPostData: queryResultPostData
+                queryResultPostData: queryResultPostData,
+                gridOptions: {
+                    titleText: cowl.TITLE_FLOW_SERIES,
+                    queryQueueUrl: cowc.URL_QUERY_FLOW_QUEUE,
+                    queryQueueTitle: cowl.TITLE_FLOW
+
+                }
             }
         }
     }
