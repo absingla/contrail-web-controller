@@ -43,6 +43,10 @@ function QELoader() {
                 this.qeView.renderObjectLogs({hashParams: hashParams});
                 break;
 
+            case 'renderLogQueue':
+                this.qeView.renderLogQueue({hashParams: hashParams});
+                break;
+
             case 'renderStatQuery':
                 this.qeView.renderStatQuery({hashParams: hashParams});
                 break;

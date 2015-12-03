@@ -271,15 +271,23 @@ define([
 
         switch(queryPrefix) {
             case cowc.FS_QUERY_PREFIX:
-                hashP = cowc.FS_HASH_P
+                hashP = cowc.FS_HASH_P;
                 break;
 
             case cowc.FR_QUERY_PREFIX:
-                hashP = cowc.FR_HASH_P
+                hashP = cowc.FR_HASH_P;
+                break;
+
+            case cowc.SYSTEM_LOGS_PREFIX:
+                hashP = cowc.SL_HASH_P;
+                break;
+
+            case cowc.OBJECT_LOGS_PREFIX:
+                hashP = cowc.OL_HASH_P;
                 break;
 
             case cowc.STAT_QUERY_PREFIX:
-                hashP = cowc.STAT_HASH_P
+                hashP = cowc.STAT_HASH_P;
                 break;
         }
 
@@ -420,6 +428,29 @@ define([
                             onClick: qewgc.getOnClickFlowRecord(self, queryFormAttributes.formModelAttrs)
                         }
                     }]
+                };
+                break;
+
+            case cowc.SYSTEM_LOGS_PREFIX:
+                gridOptions = {
+                    titleText: cowl.TITLE_SYSTEM_LOGS,
+                    queryQueueUrl: cowc.URL_QUERY_LOG_QUEUE,
+                    queryQueueTitle: cowl.TITLE_LOG
+                };
+                break;
+
+            case cowc.OBJECT_LOGS_PREFIX:
+                gridOptions = {
+                    titleText: cowl.TITLE_OBJECT_LOGS,
+                    queryQueueUrl: cowc.URL_QUERY_LOG_QUEUE,
+                    queryQueueTitle: cowl.TITLE_LOG,
+                    listModelDataParser: function (data) {
+                        for (var i = 0 ; i < gridData.length; i++) {
+                            data[i]["ObjectLog"] = contrail.checkIfExist(gridData[i]["ObjectLog"]) ? qewu.formatXML2JSON(gridData[i]["ObjectLog"]) : null;
+                            data[i]["SystemLog"] = contrail.checkIfExist(gridData[i]["SystemLog"]) ? qewu.formatXML2JSON(gridData[i]["SystemLog"], true) : null;
+                        }
+                        return data;
+                    }
                 };
                 break;
 

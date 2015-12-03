@@ -858,6 +858,15 @@ and need to add the iconClass tag wherever we need to show some icons
                             </loader>
                             <searchStrings>Query Object Logs</searchStrings>
                         </item>
+                        <item>
+                            <hash>query_log_queue</hash>
+                            <label>Log Queue</label>
+                            <loader>
+                                <class>qeLoader</class>
+                                <function>renderLogQueue</function>
+                            </loader>
+                            <searchStrings>Log Query Queue</searchStrings>
+                        </item>
                     </items>
                 </item>
                 <item>

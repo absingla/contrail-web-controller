@@ -28,7 +28,11 @@ define([
                     remote: {
                         ajaxConfig: queryResultRemoteConfig,
                         dataParser: function(response) {
-                            return response['data'];
+                            if (contrail.checkIfFunction(gridOptions.listModelDataParser)) {
+                                return gridOptions.listModelDataParser(response['data'])
+                            } else {
+                                return response['data'];
+                            }
                         },
                         successCallback: function(resultJSON, contrailListModel, response) {
                             if (response.status === 'queued') {
@@ -86,7 +90,8 @@ define([
                     collapseable: true,
                     exportable: true,
                     refreshable: false,
-                    searchable: true
+                    searchable: true,
+                    columnPickable: true
                 }
             },
             body: {

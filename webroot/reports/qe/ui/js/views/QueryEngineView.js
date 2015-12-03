@@ -29,13 +29,17 @@ define([
             this.renderView4Config(this.$el, null, getObjectLogsViewConfig(viewConfig));
         },
 
+        renderLogQueue: function (viewConfig) {
+            this.renderView4Config(this.$el, null, getQueueViewConfig(viewConfig, cowc.QE_LOG_QUERY_QUEUE));
+        },
+
         renderStatQuery: function (viewConfig) {
             this.renderView4Config(this.$el, null, getStatQueryViewConfig(viewConfig));
         },
 
         renderStatQueue: function (viewConfig) {
             this.renderView4Config(this.$el, null, getQueueViewConfig(viewConfig, cowc.QE_STAT_QUERY_QUEUE));
-        },
+        }
     });
 
     function getFlowSeriesViewConfig(config) {

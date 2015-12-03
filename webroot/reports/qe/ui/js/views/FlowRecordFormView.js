@@ -10,7 +10,7 @@ define([
 ], function (_, QueryFormView, Knockback, FlowRecordFormModel) {
 
     var FlowRecordQueryView = QueryFormView.extend({
-        render: function (options) {
+        render: function () {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
