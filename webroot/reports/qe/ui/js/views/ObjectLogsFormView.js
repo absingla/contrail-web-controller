@@ -156,12 +156,16 @@ define([
                             columns: [
                                 {
                                     elementId: 'select', view: "FormTextAreaView",
-                                    viewConfig: {path: 'select', dataBindValue: 'select', class: "span9", editPopupConfig: {
-                                        renderEditFn: function() {
-                                            var tableName = self.model.table_name();
-                                            self.renderSelect({className: qewu.getModalClass4Table(tableName)});
+                                    viewConfig: {
+                                        path: 'select', dataBindValue: 'select', class: "span9",
+                                        visible: 'isTableNameAvailable()',
+                                        editPopupConfig: {
+                                            renderEditFn: function() {
+                                                var tableName = self.model.table_name();
+                                                self.renderSelect({className: qewu.getModalClass4Table(tableName)});
+                                            }
                                         }
-                                    }}
+                                    }
                                 }
                             ]
                         },
@@ -169,11 +173,15 @@ define([
                             columns: [
                                 {
                                     elementId: 'where', view: "FormTextAreaView",
-                                    viewConfig: {path: 'where', dataBindValue: 'where', class: "span9", placeHolder: "*", editPopupConfig: {
-                                        renderEditFn: function() {
-                                            self.renderWhere({className: cowc.QE_MODAL_CLASS_700});
+                                    viewConfig: {
+                                        path: 'where', dataBindValue: 'where', class: "span9", placeHolder: "*",
+                                        visible: 'isTableNameAvailable()',
+                                        editPopupConfig: {
+                                            renderEditFn: function() {
+                                                self.renderWhere({className: cowc.QE_MODAL_CLASS_700});
+                                            }
                                         }
-                                    }}
+                                    }
                                 }
                             ]
                         },
@@ -181,11 +189,15 @@ define([
                             columns: [
                                 {
                                     elementId: 'filters', view: "FormTextAreaView",
-                                    viewConfig: {path: 'filters', dataBindValue: 'filters', class: "span9", editPopupConfig: {
-                                        renderEditFn: function() {
-                                            self.renderFilters({className: cowc.QE_MODAL_CLASS_700});
+                                    viewConfig: {
+                                        path: 'filters', dataBindValue: 'filters', class: "span9",
+                                        visible: 'isTableNameAvailable()',
+                                        editPopupConfig: {
+                                            renderEditFn: function() {
+                                                self.renderFilters({className: cowc.QE_MODAL_CLASS_700});
+                                            }
                                         }
-                                    }}
+                                    }
                                 }
                             ]
                         },
