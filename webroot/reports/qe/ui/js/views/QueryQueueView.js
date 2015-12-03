@@ -119,7 +119,8 @@ define([
                     collapseable: true,
                     exportable: true,
                     refreshable: true,
-                    searchable: true
+                    searchable: true,
+                    columnPickable: true
                 },
                 advanceControls: [
                     {
@@ -144,6 +145,7 @@ define([
             body: {
                 options: {
                     autoRefresh: false,
+                    fixedRowHeight: 30,
                     checkboxSelectable: {
                         onNothingChecked: function(e){
                             $('#' + cowl.QE_DELETE_MULTIPLE_QUERY_QUEUE_CONTROL_ID).addClass('disabled-link');
@@ -164,7 +166,7 @@ define([
                 columns: qewgc.getQueueColumnDisplay()
             },
             footer: {
-                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 5, pageSizeSelect: [5, 10, 25, 50] } })
+                pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 25, pageSizeSelect: [25, 50, 100] } })
             }
         };
     };
@@ -444,13 +446,7 @@ define([
                     titleText: cowl.TITLE_OBJECT_LOGS,
                     queryQueueUrl: cowc.URL_QUERY_LOG_QUEUE,
                     queryQueueTitle: cowl.TITLE_LOG,
-                    listModelDataParser: function (data) {
-                        for (var i = 0 ; i < gridData.length; i++) {
-                            data[i]["ObjectLog"] = contrail.checkIfExist(gridData[i]["ObjectLog"]) ? qewu.formatXML2JSON(gridData[i]["ObjectLog"]) : null;
-                            data[i]["SystemLog"] = contrail.checkIfExist(gridData[i]["SystemLog"]) ? qewu.formatXML2JSON(gridData[i]["SystemLog"], true) : null;
-                        }
-                        return data;
-                    }
+                    fixedRowHeight: false
                 };
                 break;
 

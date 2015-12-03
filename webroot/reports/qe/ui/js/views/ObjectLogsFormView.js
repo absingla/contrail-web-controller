@@ -245,13 +245,7 @@ define([
                     titleText: cowl.TITLE_OBJECT_LOGS,
                     queryQueueUrl: cowc.URL_QUERY_LOG_QUEUE,
                     queryQueueTitle: cowl.TITLE_LOG,
-                    listModelDataParser: function (data) {
-                        for (var i = 0 ; i < gridData.length; i++) {
-                            data[i]["ObjectLog"] = contrail.checkIfExist(gridData[i]["ObjectLog"]) ? qewu.formatXML2JSON(gridData[i]["ObjectLog"]) : null;
-                            data[i]["SystemLog"] = contrail.checkIfExist(gridData[i]["SystemLog"]) ? qewu.formatXML2JSON(gridData[i]["SystemLog"], true) : null;
-                        }
-                        return data;
-                    }
+                    fixedRowHeight: false
                 }
             }
         }

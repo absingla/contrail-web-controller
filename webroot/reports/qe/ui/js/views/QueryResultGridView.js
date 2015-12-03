@@ -28,11 +28,7 @@ define([
                     remote: {
                         ajaxConfig: queryResultRemoteConfig,
                         dataParser: function(response) {
-                            if (contrail.checkIfFunction(gridOptions.listModelDataParser)) {
-                                return gridOptions.listModelDataParser(response['data'])
-                            } else {
-                                return response['data'];
-                            }
+                            return response['data'];
                         },
                         successCallback: function(resultJSON, contrailListModel, response) {
                             if (response.status === 'queued') {
@@ -98,7 +94,7 @@ define([
                 options: {
                     autoRefresh: false,
                     checkboxSelectable: false,
-                    fixedRowHeight: 30,
+                    fixedRowHeight: contrail.checkIfExist(gridOptions.fixedRowHeight) ? gridOptions.fixedRowHeight : 30,
                     lazyLoading: true,
                     defaultDataStatusMessage: false
                 },
