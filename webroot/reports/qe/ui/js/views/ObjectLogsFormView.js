@@ -42,6 +42,8 @@ define([
                     }
                 });
 
+                qewu.adjustHeight4FormTextarea(self.$el);
+
                 if (queryType === cowc.QUERY_TYPE_RERUN) {
                     self.renderQueryResult();
                 }

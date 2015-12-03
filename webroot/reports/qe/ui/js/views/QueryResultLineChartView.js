@@ -145,18 +145,21 @@ define([
                             }
                         }
                     }
-                },
-                {
-                    id: 'fc-details', field:"", name:"", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: { allow: false },
-                    formatter: function(r, c, v, cd, dc){
-                        return '<i class="icon-external-link-sign" title="Analyze Session"></i>';
-                    },
-                    cssClass: 'cell-hyperlink-blue',
-                    events: {
-                        onClick: qewgc.getOnClickFlowRecord(parentView, queryFormAttributes)
-                    }
                 }
             ];
+
+        if (queryFormAttributes.query_prefix === cowc.FS_QUERY_PREFIX) {
+            display.push({
+                id: 'fc-details', field:"", name:"", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: { allow: false },
+                formatter: function(r, c, v, cd, dc){
+                    return '<i class="icon-external-link-sign" title="Analyze Session"></i>';
+                },
+                cssClass: 'cell-hyperlink-blue',
+                events: {
+                    onClick: qewgc.getOnClickFlowRecord(parentView, queryFormAttributes)
+                }
+            });
+        }
 
         columnDisplay = display.concat(columnDisplay);
 

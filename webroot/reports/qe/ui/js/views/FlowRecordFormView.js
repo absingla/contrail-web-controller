@@ -41,6 +41,8 @@ define([
                     }
                 });
 
+                qewu.adjustHeight4FormTextarea(self.$el);
+
                 if (queryType === cowc.QUERY_TYPE_RERUN) {
                     self.renderQueryResult();
                 }
@@ -264,6 +266,7 @@ define([
                     queryQueueTitle: cowl.TITLE_FLOW,
                     gridColumns: [{
                         id: 'fr-details', field: "", name: "", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: {allow: false},
+                        allowColumnPickable: false,
                         formatter: function (r, c, v, cd, dc) {
                             return '<i class="icon-external-link-sign" title="Analyze Session"></i>';
                         },

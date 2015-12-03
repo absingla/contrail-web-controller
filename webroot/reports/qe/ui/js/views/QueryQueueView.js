@@ -120,7 +120,7 @@ define([
                     exportable: true,
                     refreshable: true,
                     searchable: true,
-                    columnPickable: true
+                    //columnPickable: true
                 },
                 advanceControls: [
                     {
@@ -249,11 +249,11 @@ define([
 
             if ($('#' + queryQueueResultGridTabLinkId).length === 0) {
                 queryQueueView.renderQueryResultGrid(queryQueueItem, queryType, queueColorMap, function() {
-                    $('#label-icon-badge-' + queryId).addClass('icon-badge-color-' + badgeColorKey);
-                    $('#' + queryQueueResultGridTabLinkId).find('.contrail-tab-link-icon').addClass('icon-badge-color-' + badgeColorKey);
+                    $('#label-icon-badge-' + queryId).addClass('icon-queue-badge-color-' + badgeColorKey);
+                    $('#' + queryQueueResultGridTabLinkId).find('.contrail-tab-link-icon').addClass('icon-queue-badge-color-' + badgeColorKey);
                     $('#' + queryQueueResultGridTabLinkId).data('badge_color_key', badgeColorKey);
 
-                    $('#' + queryQueueResultChartTabLinkId).find('.contrail-tab-link-icon').addClass('icon-badge-color-' + badgeColorKey);
+                    $('#' + queryQueueResultChartTabLinkId).find('.contrail-tab-link-icon').addClass('icon-queue-badge-color-' + badgeColorKey);
                     $('#' + queryQueueResultChartTabLinkId).data('badge_color_key', badgeColorKey);
                     queueColorMap[badgeColorKey] = queryId;
                 });
@@ -422,6 +422,7 @@ define([
                     queryQueueTitle: cowl.TITLE_FLOW,
                     gridColumns: [{
                         id: 'fr-details', field: "", name: "", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: {allow: false},
+                        allowColumnPickable: false,
                         formatter: function (r, c, v, cd, dc) {
                             return '<i class="icon-external-link-sign" title="Analyze Session"></i>';
                         },
@@ -530,7 +531,7 @@ define([
         var badgeColorKey = getBadgeColorkey4Value(queueColorMap, queryId);
 
         if (badgeColorKey !== null) {
-            $('#label-icon-badge-' + queryId).removeClass('icon-badge-color-' + badgeColorKey);
+            $('#label-icon-badge-' + queryId).removeClass('icon-queue-badge-color-' + badgeColorKey);
             queueColorMap[badgeColorKey] = null;
 
         }
