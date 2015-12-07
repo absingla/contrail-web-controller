@@ -387,8 +387,6 @@ define([
                             {
                                 elementId: queryResultGridId,
                                 view: 'QueryResultGridView',
-                                viewPathPrefix: "reports/qe/ui/js/views/",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {
                                     queryResultPostData: { queryId: queryId },
                                     queryFormAttributes: queryFormAttributes,
