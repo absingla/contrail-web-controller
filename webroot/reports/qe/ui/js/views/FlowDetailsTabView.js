@@ -149,7 +149,8 @@ define([
     });
 
     function getQueryFormData(queryResultPostData, selectedFlowRecord, direction, isReversed) {
-        var queryFormAttributes = queryResultPostData.formModelAttrs,
+        var newQueryResultPostData = $.extend(true, {}, queryResultPostData),
+            queryFormAttributes = queryResultPostData.formModelAttrs,
             newQueryFormAttributes = $.extend(true, {}, queryFormAttributes, {table_name: cowc.FLOW_SERIES_TABLE, table_type: cowc.QE_FLOW_TABLE_TYPE, query_prefix: cowc.FS_QUERY_PREFIX}),
             appendWhereClause = "", newWhereClause = "",
             oldWhereClause = queryFormAttributes["where"],
@@ -217,9 +218,9 @@ define([
             newQueryFormAttributes["where"] = "(" + appendWhereClause + ")";
         }
 
-        queryResultPostData.formModelAttrs = newQueryFormAttributes;
+        newQueryResultPostData.formModelAttrs = newQueryFormAttributes;
 
-        return queryResultPostData;
+        return newQueryResultPostData;
     }
 
 
