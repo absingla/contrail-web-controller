@@ -5,11 +5,10 @@
 define([
     'underscore',
     'contrail-view',
-    'contrail-list-model',
-    'query-line-chart-view'
-], function (_, ContrailView, ContrailListModel, QueryLineChartView) {
+    'contrail-list-model'
+], function (_, ContrailView, ContrailListModel) {
 
-    var QueryResultLineChartView = QueryLineChartView.extend({
+    var QueryResultLineChartView = ContrailView.extend({
         render: function() {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
