@@ -148,6 +148,9 @@ define([
                 options: {
                     autoRefresh: false,
                     fixedRowHeight: 30,
+                    sortable: {
+                        defaultSortCols: {'startTime': {sortAsc: false}}
+                    },
                     checkboxSelectable: {
                         onNothingChecked: function(e){
                             $('#' + cowl.QE_DELETE_MULTIPLE_QUERY_QUEUE_CONTROL_ID).addClass('disabled-link');

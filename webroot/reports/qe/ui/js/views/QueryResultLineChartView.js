@@ -182,8 +182,7 @@ define([
                         ajaxConfig: {
                             url: queryResultChartGroupUrl,
                             type: 'GET'
-                        },
-                        serverSidePagination: true
+                        }
                     }
                 }
             },
