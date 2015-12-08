@@ -68,8 +68,10 @@ define([
 
             if (queryQueueResultTabView === null) {
                 self.renderView4Config($(queryQueueResultId), null, getQueryQueueTabViewConfig(self, queryQueueItem, queryResultType, queueColorMap), null, null, modelMap, function() {
-                    queryQueueResultTabView = contrail.checkIfExist(childViewMap[cowl.QE_QUERY_QUEUE_TABS_ID]) ? childViewMap[cowl.QE_QUERY_QUEUE_TABS_ID] : null,
-                    self.renderQueryResultChart(queryQueueResultTabView, queryQueueItem, modelMap, renderCompleteCB);
+                    if (queryQueueResultTabView === null) {
+                        queryQueueResultTabView = contrail.checkIfExist(childViewMap[cowl.QE_QUERY_QUEUE_TABS_ID]) ? childViewMap[cowl.QE_QUERY_QUEUE_TABS_ID] : null;
+                        self.renderQueryResultChart(queryQueueResultTabView, queryQueueItem, modelMap, renderCompleteCB);
+                    }
                 });
             } else {
                 queryQueueResultTabView.renderNewTab(cowl.QE_QUERY_QUEUE_TABS_ID, getQueryResultGridTabViewConfig(self, queryQueueItem, queryResultType, queueColorMap), true, modelMap, function() {
