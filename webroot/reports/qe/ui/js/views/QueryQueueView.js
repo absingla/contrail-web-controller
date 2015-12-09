@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 
@@ -151,6 +151,9 @@ define([
                     sortable: {
                         defaultSortCols: {'startTime': {sortAsc: false}}
                     },
+                    detail: {
+                        template: cowu.generateDetailTemplateHTML(getDetailsTemplate(), cowc.APP_CONTRAIL_CONTROLLER)
+                    },
                     checkboxSelectable: {
                         onNothingChecked: function(e){
                             $('#' + cowl.QE_DELETE_MULTIPLE_QUERY_QUEUE_CONTROL_ID).addClass('disabled-link');
@@ -175,6 +178,101 @@ define([
             }
         };
     };
+
+    function getDetailsTemplate() {
+        return {
+            actions: [],
+            templateGenerator: 'ColumnSectionTemplateGenerator',
+            templateGeneratorConfig: {
+                columns: [
+                    {
+                        class: 'span6',
+                        rows: [
+                            {
+                                templateGenerator: 'BlockListTemplateGenerator',
+                                title: cowl.TITLE_QUERY,
+                                advancedViewOptions: false,
+                                templateGeneratorConfig: [
+                                    {
+                                        key: 'opsQueryId',
+                                        templateGenerator: 'TextGenerator'
+                                    },
+                                    {
+                                        key: 'queryReqObj.queryId',
+                                        templateGenerator: 'TextGenerator'
+                                    },
+                                    {
+                                        key: 'queryReqObj.formModelAttrs.table_name',
+                                        templateGenerator: 'TextGenerator'
+                                    },
+                                    {
+                                        key: 'queryReqObj.formModelAttrs.from_time_utc',
+                                        templateGenerator: 'TextGenerator',
+                                        templateGeneratorConfig: {
+                                            formatter: 'date-time'
+                                        }
+                                    },
+                                    {
+                                        key: 'queryReqObj.formModelAttrs.to_time_utc',
+                                        templateGenerator: 'TextGenerator',
+                                        templateGeneratorConfig: {
+                                            formatter: 'date-time'
+                                        }
+                                    },
+                                    {
+                                        key: 'queryReqObj.formModelAttrs.select',
+                                        templateGenerator: 'TextGenerator'
+                                    },
+                                    {
+                                        key: 'queryReqObj.formModelAttrs.filter',
+                                        templateGenerator: 'TextGenerator'
+                                    },
+                                    {
+                                        key: 'queryReqObj.formModelAttrs.where',
+                                        templateGenerator: 'TextGenerator'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        class: 'span6',
+                        rows: [
+                            {
+                                templateGenerator: 'BlockListTemplateGenerator',
+                                title: cowl.TITLE_QUERY_STATUS,
+                                advancedViewOptions: false,
+                                templateGeneratorConfig: [
+                                    {
+                                        key: 'status',
+                                        templateGenerator: 'TextGenerator'
+                                    },
+                                    {
+                                        key: 'count',
+                                        templateGenerator: 'TextGenerator'
+                                    },
+                                    {
+                                        key: 'timeTaken',
+                                        templateGenerator: 'TextGenerator',
+                                        templateGeneratorConfig: {
+                                            formatter: 'time-period'
+                                        }
+                                    },
+                                    {
+                                        key: 'progress',
+                                        templateGenerator: 'TextGenerator',
+                                        templateGeneratorConfig: {
+                                            formatter: 'percentage'
+                                        }
+                                    },
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
 
     function getQueueActionColumn(queryQueueType, queryQueueItem, queryQueueView, queueColorMap) {
         var queryQueueListModel = queryQueueView.model,
