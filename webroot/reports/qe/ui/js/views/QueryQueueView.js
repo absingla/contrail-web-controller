@@ -512,8 +512,6 @@ define([
                                 title: cowl.TITLE_CHART,
                                 iconClass: 'icon-bar-chart',
                                 view: "QueryResultLineChartView",
-                                viewPathPrefix: "reports/qe/ui/js/views/",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {
                                     queryId: queryId,
                                     queryFormAttributes: queryFormAttributes.formModelAttrs,
