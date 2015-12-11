@@ -491,7 +491,10 @@ define([
                                 elementId: queryResultGridId,
                                 view: 'QueryResultGridView',
                                 viewConfig: {
-                                    queryResultPostData: { queryId: queryId },
+                                    queryResultPostData: {
+                                        queryId: queryId, chunk: 1, autoSort: true,
+                                        chunkSize: cowc.QE_RESULT_CHUNK_SIZE_10K, async: true
+                                    },
                                     queryFormAttributes: queryFormAttributes,
                                     gridOptions: getQueryQueueResultGridOptions(self, queryFormAttributes)
                                 }
