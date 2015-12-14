@@ -224,7 +224,7 @@ define([
                                         templateGenerator: 'TextGenerator'
                                     },
                                     {
-                                        key: 'queryReqObj.formModelAttrs.filter',
+                                        key: 'queryReqObj.formModelAttrs.filters',
                                         templateGenerator: 'TextGenerator'
                                     },
                                     {
