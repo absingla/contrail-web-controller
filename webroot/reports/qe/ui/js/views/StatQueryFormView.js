@@ -175,7 +175,7 @@ define([
                                     viewConfig: {
                                         path: 'table_name',
                                         dataBindValue: 'table_name',
-                                        class: "span3",
+                                        class: "span6",
                                         elementConfig: {
                                             defaultValueId: 0, allowClear: false, placeholder: cowl.QE_SELECT_STAT_TABLE,
                                             dataTextField: "name", dataValueField: "name",
@@ -297,6 +297,7 @@ define([
                                     elementId: 'filters', view: "FormTextAreaView",
                                     viewConfig: {
                                         path: 'filters', dataBindValue: 'filters', class: "span9",
+                                        label: cowl.TITLE_QE_FILTER,
                                         visible: 'isTableNameAvailable()',
                                         editPopupConfig: {
                                             renderEditFn: function() {

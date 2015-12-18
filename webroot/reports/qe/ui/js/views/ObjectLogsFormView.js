@@ -190,7 +190,7 @@ define([
                                 {
                                     elementId: 'filters', view: "FormTextAreaView",
                                     viewConfig: {
-                                        path: 'filters', dataBindValue: 'filters', class: "span9",
+                                        path: 'filters', dataBindValue: 'filters', class: "span9", label: cowl.TITLE_QE_FILTER,
                                         visible: 'isTableNameAvailable()',
                                         editPopupConfig: {
                                             renderEditFn: function() {

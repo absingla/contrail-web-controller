@@ -219,7 +219,8 @@ define([
                             columns: [
                                 {
                                     elementId: 'filters', view: "FormTextAreaView",
-                                    viewConfig: {path: 'filters', dataBindValue: 'filters', class: "span9", editPopupConfig: {
+                                    viewConfig: {
+                                        path: 'filters', dataBindValue: 'filters', class: "span9", label: cowl.TITLE_QE_FILTER, editPopupConfig: {
                                         renderEditFn: function() {
                                             self.renderFilters({className: cowc.QE_MODAL_CLASS_700});
                                         }

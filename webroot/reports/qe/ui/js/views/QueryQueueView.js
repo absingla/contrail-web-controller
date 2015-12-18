@@ -244,6 +244,13 @@ define([
                                 advancedViewOptions: false,
                                 templateGeneratorConfig: [
                                     {
+                                        key: 'startTime',
+                                        templateGenerator: 'TextGenerator',
+                                        templateGeneratorConfig: {
+                                            formatter: 'date-time'
+                                        }
+                                    },
+                                    {
                                         key: 'status',
                                         templateGenerator: 'TextGenerator'
                                     },
