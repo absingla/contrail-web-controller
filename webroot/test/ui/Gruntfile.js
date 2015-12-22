@@ -13,6 +13,7 @@ module.exports = function (grunt) {
 
     var commonFiles = [
         {pattern: 'contrail-web-core/webroot/assets/**/!(tests)/*.js', included: false},
+        {pattern: 'contrail-web-core/webroot/built/assets/**/!(tests)/*.js', included: false},
 
         {pattern: 'contrail-web-core/webroot/assets/**/*.css', included: false},
         {pattern: 'contrail-web-core/webroot/css/**/*.css', included: false},
@@ -39,14 +40,22 @@ module.exports = function (grunt) {
         {pattern: 'contrail-web-controller/webroot/common/ui/templates/*.tmpl', included: false},
         {pattern: 'contrail-web-controller/webroot/common/**/{!(*.test.js), !(*.unit.test.js)}', included: false},
 
-        {pattern: 'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js', included: false},
+        //For built dir
+        {pattern: 'contrail-web-controller/webroot/built/monitor/**/*.tmpl', included: false},
+        {pattern: 'contrail-web-controller/webroot/built/common/ui/templates/*.tmpl', included: false},
+        {pattern: 'contrail-web-controller/webroot/built/common/**/{!(*.test.js), !(*.unit.test.js)}', included: false},
+
+        {pattern: 'contrail-web-controller/webroot/monitor/**/ui/js/**/*.js', included: false},
         {pattern: 'contrail-web-controller/webroot/*.xml', included: false},
+        {pattern: 'contrail-web-controller/webroot/built/**/ui/js/**/*.js', included: false},
+
 
         {pattern: 'contrail-web-core/webroot/js/**/*.js', included: false},
+        {pattern: 'contrail-web-core/webroot/built/js/**/*.js', included: false},
         {pattern: 'contrail-web-core/webroot/templates/*.tmpl', included: false},
 
-        {pattern: 'contrail-web-controller/webroot/monitor/networking/test/**/*.mock.data.js', included: false},
-        {pattern: 'contrail-web-controller/webroot/monitor/networking/test/**/*.unit.test.suite.js', included: false}
+        {pattern: 'contrail-web-controller/webroot/**/test/**/*.mock.data.js', included: false},
+        {pattern: 'contrail-web-controller/webroot/**/test/**/*.unit.test.suite.js', included: false}
     ];
 
     function browserSubdirFn(browser, platform) {
