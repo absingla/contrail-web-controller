@@ -171,7 +171,9 @@ define([
                 }
             },
             columnHeader: {
-                columns: qewgc.getQueueColumnDisplay()
+                columns: qewgc.getQueueColumnDisplay(function(queryQueueItem) {
+                    viewQueryResultAction (queryQueueItem, queryQueueView, queueColorMap, 'queue');
+                })
             },
             footer: {
                 pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 25, pageSizeSelect: [25, 50, 100] } })
@@ -413,13 +415,15 @@ define([
     }
 
     function showDeleteQueueModal(queryQueueView, queryQueueType, queryIds, queueColorMap) {
-        var modalId = queryQueueType + cowl.QE_WHERE_MODAL_SUFFIX;
+        var modalId = queryQueueType + cowl.QE_WHERE_MODAL_SUFFIX,
+            deleteQueryMessage = (queryIds.length === 1) ? cowm.QE_DELETE_SINGLE_QUERY_CONFIRM : cowm.QE_DELETE_MULTIPLE_QUERY_CONFIRM;
+
         cowu.createModal({
             modalId: modalId,
             className: 'modal-700',
             title: cowl.TITLE_DELETE_QUERY,
             btnName: 'Confirm',
-            body: cowm.QE_DELETE_QUERY_CONFIRM,
+            body: deleteQueryMessage,
             onSave: function () {
                 var postDataJSON = {queryQueue: queryQueueType, queryIds: queryIds},
                     ajaxConfig = {
