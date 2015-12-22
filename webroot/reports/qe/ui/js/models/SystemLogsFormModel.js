@@ -23,19 +23,6 @@ define([
             QueryFormModel.prototype.constructor.call(this, modelData, $.extend(true, queryReqConfig, {chunkSize: cowc.QE_RESULT_CHUNK_SIZE_10K}));
 
             return this;
-        },
-
-        validations: {
-            runQueryValidation: {
-                'table_name': {
-                    required: true,
-                    msg: ctwm.getRequiredMessage('table name')
-                },
-                'select': {
-                    required: true,
-                    msg: ctwm.getRequiredMessage('select')
-                }
-            }
         }
     });
 
