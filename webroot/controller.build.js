@@ -50,5 +50,5 @@
         //    ]
         //}
     ],
-    fileExclusionRegExp: /.*node_modules/
+    fileExclusionRegExp: /(.*node_modules|.*api|.*jobs|.*test)/
 })
