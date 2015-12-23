@@ -47,7 +47,7 @@ define([
                 title: cowl.TITLE_QUERY_QUEUE,
                 view: "GridView",
                 viewConfig: {
-                    elementConfig: getQueryQueueGridConfig(queryQueueType, queueRemoteConfig, pagerOptions, self, queueColorMap)
+                    elementConfig: getQueryQueueGridConfig(self, queryQueueType, queueRemoteConfig, pagerOptions, queueColorMap)
                 }
             };
 
@@ -111,7 +111,7 @@ define([
 
     });
 
-    function getQueryQueueGridConfig(queryQueueType, queueRemoteConfig, pagerOptions, queryQueueView, queueColorMap) {
+    function getQueryQueueGridConfig(queryQueueView, queryQueueType, queueRemoteConfig, pagerOptions, queueColorMap) {
         return {
             header: {
                 title: {
@@ -138,7 +138,7 @@ define([
                                         return rowValue.queryReqObj.queryId;
                                     });
 
-                                showDeleteQueueModal(queryQueueType, queryIds, queueColorMap);
+                                showDeleteQueueModal(queryQueueView, queryQueueType, queryIds, queueColorMap);
                             }
                         }
                     }
@@ -163,7 +163,7 @@ define([
                         }
                     },
                     actionCell: function(dc){
-                        return getQueueActionColumn(queryQueueType, dc, queryQueueView, queueColorMap);
+                        return getQueueActionColumn(queryQueueView, queryQueueType, dc, queueColorMap);
                     }
                 },
                 dataSource: {
@@ -171,7 +171,9 @@ define([
                 }
             },
             columnHeader: {
-                columns: qewgc.getQueueColumnDisplay()
+                columns: qewgc.getQueueColumnDisplay(function(queryQueueItem) {
+                    viewQueryResultAction (queryQueueItem, queryQueueView, queueColorMap, 'queue');
+                })
             },
             footer: {
                 pager: contrail.handleIfNull(pagerOptions, { options: { pageSize: 25, pageSizeSelect: [25, 50, 100] } })
@@ -281,7 +283,7 @@ define([
         }
     }
 
-    function getQueueActionColumn(queryQueueType, queryQueueItem, queryQueueView, queueColorMap) {
+    function getQueueActionColumn(queryQueueView, queryQueueType, queryQueueItem, queueColorMap) {
         var queryQueueListModel = queryQueueView.model,
             queryFormModelData = queryQueueItem.queryReqObj.formModelAttrs,
             status = queryQueueItem.status,
@@ -343,7 +345,7 @@ define([
             title: cowl.TITLE_DELETE_QUERY,
             iconClass: 'icon-trash',
             onClick: function(rowIndex){
-                showDeleteQueueModal(queryQueueType, [queryId], queueColorMap)
+                showDeleteQueueModal(queryQueueView, queryQueueType, [queryId], queueColorMap)
             }
         });
 
@@ -412,14 +414,16 @@ define([
         });
     }
 
-    function showDeleteQueueModal(queryQueueType, queryIds, queueColorMap) {
-        var modalId = queryQueueType + cowl.QE_WHERE_MODAL_SUFFIX;
+    function showDeleteQueueModal(queryQueueView, queryQueueType, queryIds, queueColorMap) {
+        var modalId = queryQueueType + cowl.QE_WHERE_MODAL_SUFFIX,
+            deleteQueryMessage = (queryIds.length === 1) ? cowm.QE_DELETE_SINGLE_QUERY_CONFIRM : cowm.QE_DELETE_MULTIPLE_QUERY_CONFIRM;
+
         cowu.createModal({
             modalId: modalId,
             className: 'modal-700',
             title: cowl.TITLE_DELETE_QUERY,
             btnName: 'Confirm',
-            body: cowm.QE_DELETE_QUERY_CONFIRM,
+            body: deleteQueryMessage,
             onSave: function () {
                 var postDataJSON = {queryQueue: queryQueueType, queryIds: queryIds},
                     ajaxConfig = {
@@ -428,12 +432,29 @@ define([
                         data: JSON.stringify(postDataJSON)
                     };
                 contrail.ajaxHandler(ajaxConfig, null, function() {
-                    var queryQueueGridId = cowc.QE_HASH_ELEMENT_PREFIX + queryQueueType + cowc.QE_QUEUE_GRID_SUFFIX;
+                    var queryQueueGridId = cowc.QE_HASH_ELEMENT_PREFIX + queryQueueType + cowc.QE_QUEUE_GRID_SUFFIX,
+                        gridTabIndex = null, chartTabIndex = null,
+                        childViewMap = queryQueueView.childViewMap,
+                        queryQueueResultTabView = contrail.checkIfExist(childViewMap[cowl.QE_QUERY_QUEUE_TABS_ID]) ? childViewMap[cowl.QE_QUERY_QUEUE_TABS_ID] : null;
+
                     $(queryQueueGridId).data('contrailGrid').refreshData();
 
-                    $.each(queryIds, function(queryIdKey, queryIdValue) {
-                        removeBadgeColorFromQueryQueue(queueColorMap, queryIdValue.queryId);
-                    });
+                    if (queryQueueResultTabView !== null) {
+                        $.each(queryIds, function(queryIdKey, queryIdValue) {
+                            removeBadgeColorFromQueryQueue(queueColorMap, queryIdValue);
+
+                            gridTabIndex = queryQueueResultTabView.tabsIdMap[cowl.QE_QUERY_QUEUE_RESULT_GRID_TAB_ID + '-' + queryIdValue + '-tab'];
+                            if (contrail.checkIfExist(gridTabIndex)) {
+                                queryQueueResultTabView.removeTab(gridTabIndex)
+                            }
+
+                            chartTabIndex = queryQueueResultTabView.tabsIdMap[cowl.QE_QUERY_QUEUE_RESULT_CHART_TAB_ID + '-' + queryIdValue + '-tab'];
+                            if (contrail.checkIfExist(chartTabIndex)) {
+                                queryQueueResultTabView.removeTab(chartTabIndex)
+                            }
+
+                        });
+                    }
                 });
                 $("#" + modalId).modal('hide');
             }, onCancel: function () {
