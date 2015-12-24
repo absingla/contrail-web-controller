@@ -134,7 +134,7 @@ define([
                                 },
                                 {
                                     elementId: 'keywords', view: "FormInputView",
-                                    viewConfig: { path: 'keywords', dataBindValue: 'keywords', class: "span3" }
+                                    viewConfig: { path: 'keywords', dataBindValue: 'keywords', class: "span3", placeholder: "Enter comma separated keywords" }
                                 }
                             ]
                         },

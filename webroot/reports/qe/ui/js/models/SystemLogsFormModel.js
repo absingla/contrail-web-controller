@@ -13,7 +13,7 @@ define([
 
         disableSelectFields: ['SequenceNum', 'Context', 'Keyword'],
 
-        disableWhereFields: ['Level'],
+        disableWhereFields: ['Level', 'Keyword'],
 
         constructor: function (modelData, queryReqConfig) {
             var defaultConfig = qewmc.getQueryModelConfig({table_name: cowc.MESSAGE_TABLE, table_type: cowc.QE_LOG_TABLE_TYPE, query_prefix: cowc.SYSTEM_LOGS_PREFIX, keywords: "",
