@@ -3,7 +3,7 @@
  */
 
 var ctwu, ctwc, cowch, ctwgc, ctwgrc, ctwl, ctwm, ctwp, ctwvc,
-    nmwu, nmwgc, nmwgrc, nmwp, nmwvc;
+    nmwu, nmwgc, nmwgrc, nmwp, nmwvc, ctBuildDir, ctWebDir;
 
 /**
  * ctBaseDir: Apps Root directory.
@@ -14,14 +14,25 @@ var ctwu, ctwc, cowch, ctwgc, ctwgrc, ctwl, ctwm, ctwp, ctwvc,
  * eg: use 'controller-srcdir/monitor/infrastructure/dashboard/ui/js/views/VRouterDashboardView' as path
  * to access VRouterDashboardView source instead of minified js file.
  */
-var ctWebDir = ctBaseDir;
-if (contrail.checkIfExist(globalObj['buildBaseDir'])) {
-    ctWebDir = ctBaseDir + globalObj['buildBaseDir'];
+if (typeof ctBaseDir !== 'undefined') {
+    ctBuildDir = '';
+    ctWebDir = ctBaseDir; // will initialize the webDir with baseDir
+    if ((typeof globalObj !== 'undefined') && globalObj.hasOwnProperty('buildBaseDir')) {
+        ctBuildDir = globalObj['buildBaseDir'];
+    }
+
+    require.config({
+        baseUrl: ctBaseDir,
+        paths: getControllerAppPaths(ctBaseDir, ctBuildDir),
+        waitSeconds: 0
+    });
+
+    require(['controller-init'], function () {});
 }
 
-require.config({
-    baseUrl: ctBaseDir,
-    paths: {
+function getControllerAppPaths (ctBaseDir, ctBuildDir) {
+    ctWebDir = ctBaseDir + ctBuildDir;
+    return {
         'controller-srcdir': ctBaseDir,
         'controller-basedir': ctWebDir,
         'controller-constants': ctWebDir + '/common/ui/js/controller.constants',
@@ -58,9 +69,10 @@ require.config({
         'monitor-infra-utils': ctWebDir + '/monitor/infrastructure/common/ui/js/utils/monitor.infra.utils',
         'monitor-infra-constants': ctWebDir + '/monitor/infrastructure/common/ui/js/utils/monitor.infra.constants',
         'mon-infra-controller-dashboard': ctWebDir + '/monitor/infrastructure/dashboard/ui/js/views/ControllerDashboardView'
-    },
-    waitSeconds: 0
-});
+    }
+};
 
-require(['controller-init'], function () {});
-
+if (typeof exports !== 'undefined' && module.exports) {
+    exports = module.exports;
+    exports.getControllerAppPaths = getControllerAppPaths;
+}
