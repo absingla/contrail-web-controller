@@ -7,7 +7,7 @@ define([
     'monitor-infra-utils',
     'monitor-infra-constants',
     'monitor-infra-parsers',
-    'text!monitor/infrastructure/common/ui/templates/monitor.infra.tmpl'
+    'text!controller-basedir/monitor/infrastructure/common/ui/templates/monitor.infra.tmpl'
 ], function (_, MonitorInfraUtils, MonitorInfraConstants, MonitorInfraParsers, MonitorInfraTmpls) {
     monitorInfraConstants = new MonitorInfraConstants;
     monitorInfraUtils = new MonitorInfraUtils;
