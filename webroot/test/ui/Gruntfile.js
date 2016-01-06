@@ -30,6 +30,7 @@ module.exports = function (grunt) {
         {pattern: 'contrail-web-core/webroot/css/**/*.png', included: false},
         {pattern: 'contrail-web-core/webroot/assets/**/*.png', included: false},
         {pattern: 'contrail-web-core/webroot/css/**/*.gif', included: false},
+        {pattern: 'contrail-web-core/webroot/assets/**/*.map', included: false},
 
         //Everything except library test suites and test files.
         {pattern: 'contrail-web-core/webroot/test/ui/js/**/{!(*.test.js), !(*.lib.test.suite.js)}', included: false},
@@ -464,6 +465,10 @@ module.exports = function (grunt) {
                     },
                     {
                         pattern : 'contrail-web-controller/webroot/config/infra/bgp/ui/js/**/*.js',
+                        included : false
+                    },
+                    {
+                        pattern : 'contrail-web-controller/webroot/config/infra/bgp/ui/templates/*.tmpl',
                         included : false
                     },
                     {
