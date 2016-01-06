@@ -1386,6 +1386,67 @@ define([
                 });
             }
         }
+        //Default tooltip render function for buckets
+        self.getNodeTooltipContentsForBucket = function(currObj,formatType) {
+            var nodes = currObj['children'];
+            //var avgCpu = d3.mean(nodes,function(d){return d.x});
+            //var avgMem = d3.mean(nodes,function(d){return d.y});
+            var tooltipContents = [
+                {label:'', value: 'No. of Nodes: ' + nodes.length},
+                {label:'Avg. CPU', value:$.isNumeric(currObj['x']) ? currObj['x'].toFixed(2)  + '%' : currObj['x']},
+                {label:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024* 1024) : currObj['y']}
+            ];
+            if(formatType == 'simple') {
+                return tooltipContents;
+            } else {
+                return {
+                    content: {
+                        info: tooltipContents.slice(1),
+                        actions: [
+                            {
+                                type: 'link',
+                                text: 'View',
+                                iconClass: 'icon-external-link',
+                                // callback: onScatterChartClick
+                            }
+                        ]
+                    },
+                    title: {
+                        name: tooltipContents[0]['value'],
+                        type: 'virtual router'
+                    }
+                }
+            }
+        }
+        //Default tooltip contents to show for infra nodes
+        self.getNodeTooltipContents = function(currObj,formatType) {
+            var tooltipContents = [
+                {label:'Host Name', value: currObj['name']},
+                {label:'Version', value:currObj['version']},
+                {label:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  + '%' : '-'},
+                {label:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
+            ];
+            if(formatType == 'simple') {
+                return tooltipContents;
+            } else {
+                return {
+                    content: {
+                        info: tooltipContents.slice(1),
+                        actions: [
+                            {
+                                type: 'link',
+                                text: 'View',
+                                iconClass: 'icon-external-link',
+                                // callback: onScatterChartClick
+                            }
+                        ]
+                    },title : {
+                        name: tooltipContents[0]['value'],
+                        type: currObj['display_type']
+                    }
+                }
+            }
+        }
 
         self.getControlIpAddresses = function (data,pageType) {
             var ips;
@@ -1635,15 +1696,15 @@ define([
         },
         self.vRouterTooltipFn = function(currObj,formatType) {
             if(currObj['children'] != null && currObj['children'].length == 1)
-                return getNodeTooltipContents(currObj['children'][0],formatType);
+                return self.getNodeTooltipContents(currObj['children'][0],formatType);
             else
-                return getNodeTooltipContents(currObj,formatType);
+                return self.getNodeTooltipContents(currObj,formatType);
         },
         self.vRouterBucketTooltipFn = function(currObj,formatType) {
-            return getNodeTooltipContentsForBucket(currObj,formatType);
+            return self.getNodeTooltipContentsForBucket(currObj,formatType);
         },
         self.controlNodetooltipFn = function(currObj,formatType) {
-            return getNodeTooltipContents(currObj,formatType);
+            return self.getNodeTooltipContents(currObj,formatType);
         },
         self.analyticNodeTooltipFn = function(currObj,formatType) {
             var tooltipContents = [];
@@ -1863,13 +1924,13 @@ define([
                 viewConfig: {
                     data: viewConfig.data,
                     templateConfig: monitorInfraUtils.
-                        getUnderlayDetailsTabTemplateConfig(),
+                        getUnderlayDetailsTabTemplateConfig(viewConfig.data),
                     app: cowc.APP_CONTRAIL_CONTROLLER,
                 },
             }
         };
 
-        self.getUnderlayDetailsTabTemplateConfig = function() {
+        self.getUnderlayDetailsTabTemplateConfig = function(data) {
             return {
                 advancedViewOptions: false,
                 templateGenerator: 'RowSectionTemplateGenerator',
@@ -1883,12 +1944,15 @@ define([
                                         class: 'span6',
                                         rows: [
                                             {
-                                                title: ctwl.UNDERLAY_PROUTER_DETAILS,
+                                                title: contrail.format('{0} ( {1} )',
+                                                   ctwl.UNDERLAY_PROUTER_DETAILS,
+                                                   data.hostName),
                                                 templateGenerator:
                                                     'BlockListTemplateGenerator',
                                                 templateGeneratorConfig: [
                                                     {
                                                         key: 'hostName',
+                                                        label: 'Hostname',
                                                         templateGenerator:
                                                             'TextGenerator'
                                                     },{
@@ -1906,6 +1970,7 @@ define([
                                                         }
                                                     },{
                                                         key: 'managementIP',
+                                                        label: 'Management IP',
                                                         templateGenerator:
                                                             'TextGenerator',
                                                     }
@@ -1924,10 +1989,8 @@ define([
         self.getTrafficStatisticsTabViewConfig = function (data) {
             var ajaxConfig = {};
             var endpoints = ifNull(data['endpoints'],[]);
-            var sourceType = getValueByJsonPath(data,
-                'sourceElement;attributes;nodeDetails;node_type','-');
-            var targetType = getValueByJsonPath(data,
-                'targetElement;attributes;nodeDetails;node_type','-');
+            var sourceType = getValueByJsonPath(data,'sourceElement;node_type','-');
+            var targetType = getValueByJsonPath(data,'targetElement;node_type','-');
             var view = 'LineWithFocusChartView', modelMap = null;
             var viewConfig = {}, viewPathPrefix;
             if(sourceType == ctwc.PROUTER && targetType == ctwc.PROUTER) {
@@ -1951,8 +2014,7 @@ define([
                 };
             } else if(sourceType == ctwc.PROUTER && targetType == ctwc.VROUTER) {
                 var vrouter = (sourceType == ctwc.VROUTER) ?
-                    data['sourceElement']['attributes']['nodeDetails']['name']:
-                    data['targetElement']['attributes']['nodeDetails']['name'];
+                    data['sourceElement']['name']: data['targetElement']['name'];
                 var params = {
                     minsSince: 60,
                     sampleCnt: 120,
@@ -1991,10 +2053,9 @@ define([
                     }
             } else if(sourceType == ctwc.VIRTUALMACHINE ||
                     targetType == ctwc.VIRTUALMACHINE) {
-                var instanceUUID = getValueByJsonPath(data,
-                    'targetElement;attributes;nodeDetails;name','-');
+                var instanceUUID = getValueByJsonPath(data, 'targetElement;name','-');
                 var vmName = getValueByJsonPath(data,
-                    'targetElement;attributes;nodeDetails;more_attributes;vm_name','-');
+                    'targetElement;more_attributes;vm_name','-');
                 var modelKey = ctwc.get(ctwc.UMID_INSTANCE_UVE, instanceUUID);
                 view = 'InstanceTrafficStatsView';
                 viewPathPrefix = 'monitor/networking/ui/js/views/';
@@ -2094,8 +2155,8 @@ define([
         },
 
         self.getTraceFlowVrouterGridColumns = function () {
-            var graphView = $("#"+ctwl.UNDERLAY_GRAPH_ID).data('graphView');
-            computeNodes = graphView.model.vRouters;
+            var graphModel = monitorInfraUtils.getUnderlayGraphModel();
+            computeNodes = graphModel.vRouters;
             return [
                 {
                     field:'peer_vrouter',
@@ -2358,8 +2419,8 @@ define([
                 }
             ];
         };
-        self.getUnderlayGraphInstance = function () {
-            return $("#"+ctwl.UNDERLAY_GRAPH_ID).data('graphView');
+        self.getUnderlayGraphModel = function () {
+            return $("#"+ctwl.UNDERLAY_GRAPH_ID).data('graphModel');
         };
 
         self.showFlowPath = function (connectionWrapIds, offsetWidth, graphView) {
@@ -2619,7 +2680,7 @@ define([
         };
 
         self.showUnderlayPaths = function (data) {
-            var graphModel = monitorInfraUtils.getUnderlayGraphInstance().model;
+            var graphModel = monitorInfraUtils.getUnderlayGraphModel();
             var currentUrlHashObj = layoutHandler.getURLHashObj(),
                 currentPage = currentUrlHashObj.p,
                 currentParams = currentUrlHashObj.q;
