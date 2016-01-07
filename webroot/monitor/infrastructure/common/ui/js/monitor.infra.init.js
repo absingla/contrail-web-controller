@@ -4,11 +4,11 @@
 
 define([
     'underscore',
+    'text!controller-basedir/monitor/infrastructure/common/ui/templates/monitor.infra.tmpl',
     'monitor-infra-utils',
     'monitor-infra-constants',
-    'monitor-infra-parsers',
-    'text!controller-basedir/monitor/infrastructure/common/ui/templates/monitor.infra.tmpl'
-], function (_, MonitorInfraUtils, MonitorInfraConstants, MonitorInfraParsers, MonitorInfraTmpls) {
+    'monitor-infra-parsers'
+], function (_, MonitorInfraUtils, MonitorInfraConstants, MonitorInfraParsers, MonitorInfraTmpls, MonitorInfraAlarmsUtils) {
     monitorInfraConstants = new MonitorInfraConstants;
     monitorInfraUtils = new MonitorInfraUtils;
     monitorInfraParsers = new MonitorInfraParsers;
