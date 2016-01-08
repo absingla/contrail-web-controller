@@ -8,7 +8,7 @@ define([
     'monitor-infra-utils',
     'monitor-infra-constants',
     'monitor-infra-parsers'
-], function (_, MonitorInfraTmpls, MonitorInfraUtils, MonitorInfraConstants, MonitorInfraParsers, MonitorInfraAlarmsUtils) {
+], function (_, MonitorInfraTmpls, MonitorInfraUtils, MonitorInfraConstants, MonitorInfraParsers) {
     monitorInfraConstants = new MonitorInfraConstants;
     monitorInfraUtils = new MonitorInfraUtils;
     monitorInfraParsers = new MonitorInfraParsers;
