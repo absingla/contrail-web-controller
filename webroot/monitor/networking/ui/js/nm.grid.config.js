@@ -11,7 +11,7 @@ define([
                 field: 'name',
                 name: 'Network',
                 formatter: function (r, c, v, cd, dc) {
-                    return cellTemplateLinks({cellText: 'name', name: 'network', rowData: dc});
+                    return cowf.formatElementName({name: 'network', value: dc['name'], cssClass: 'cell-hyperlink-blue'});
                 },
                 events: {
                     onClick: ctwu.onClickNetworkMonitorGrid
@@ -21,7 +21,6 @@ define([
                     return d['name'];
                 },
                 searchable: true,
-                cssClass: 'cell-hyperlink-blue',
                 exportConfig: {
                     allow: true,
                     stdFormatter: false
@@ -60,14 +59,13 @@ define([
                 field: 'name',
                 name: 'Project',
                 formatter: function (r, c, v, cd, dc) {
-                    return cellTemplateLinks({cellText: 'name', tooltip: true, name: 'project', rowData: dc});
+                    return cowf.formatElementName({name: 'project', value: dc['name'], cssClass: 'cell-hyperlink-blue'});
                 },
                 minWidth: 300,
                 searchable: true,
                 events: {
                     onClick: ctwu.onClickNetworkMonitorGrid
                 },
-                cssClass: 'cell-hyperlink-blue',
                 exportConfig: {
                     allow: true,
                     stdFormatter: false
