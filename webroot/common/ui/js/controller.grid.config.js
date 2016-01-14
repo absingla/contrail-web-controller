@@ -143,13 +143,13 @@ define([
              {
                  field: 'ip',
                  name: 'IP Address',
-                 minWidth: 150,
+                 minWidth: 100,
                  searchable: true
              },
              {
                  field: 'vm_name',
                  name: 'Instance Name',
-                 minWidth: 200,
+                 minWidth: 250,
                  searchable: true
              },
              {

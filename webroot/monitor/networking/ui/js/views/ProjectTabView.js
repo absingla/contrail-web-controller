@@ -72,6 +72,24 @@ define([
                                             }
                                         },
                                         {
+                                            elementId: ctwl.PROJECT_INTERFACES_ID,
+                                            title: ctwl.TITLE_INTERFACES,
+                                            view: "InterfaceGridView",
+                                            viewPathPrefix: "monitor/networking/ui/js/views/",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            tabConfig: {
+                                                activate: function(event, ui) {
+                                                    if ($('#' + ctwl.PROJECT_INTERFACE_GRID_ID).data('contrailGrid')) {
+                                                        $('#' + ctwl.PROJECT_INTERFACE_GRID_ID).data('contrailGrid').refreshView();
+                                                    }
+                                                }
+                                            },
+                                            viewConfig: {
+                                                projectFQN: projectFQN,
+                                                elementId: ctwl.PROJECT_INTERFACE_GRID_ID
+                                            }
+                                        },
+                                        {
                                             elementId: ctwl.PROJECT_PORTS_SCATTER_CHART_ID,
                                             title: ctwl.TITLE_PORT_DISTRIBUTION,
                                             view: "ZoomScatterChartView",
