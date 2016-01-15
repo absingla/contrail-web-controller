@@ -82,7 +82,8 @@ define([
                                                     if ($('#' + ctwl.PROJECT_INTERFACE_GRID_ID).data('contrailGrid')) {
                                                         $('#' + ctwl.PROJECT_INTERFACE_GRID_ID).data('contrailGrid').refreshView();
                                                     }
-                                                }
+                                                },
+                                                renderOnActivate: true
                                             },
                                             viewConfig: {
                                                 projectFQN: projectFQN,
