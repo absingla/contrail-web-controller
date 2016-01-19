@@ -67,7 +67,8 @@ var configJsonModifyObj = {
         'isConfig': true,
         'optFields': ['forwarding_mode', 'vxlan_network_identifier_mode',
                       'encapsulation_priorities', 'linklocal_services',
-                      'flow_export_rate', 'flow_aging_timeout_list'],
+                      'flow_export_rate', 'flow_aging_timeout_list',
+                      'ecmp_hashing_include_fields'],
         'mandateFields': ['fq_name', 'uuid', 'display_name']
     },
     'service-appliance': {
@@ -81,6 +82,16 @@ var configJsonModifyObj = {
         'isConfig': true,
         'optFields': ['service_appliance_ha_mode', 'service_appliance_driver',
             'service_appliance_set_properties'],
+        'mandateFields': ['fq_name', 'uuid', 'display_name']
+    },
+    'route-table': {
+        'isConfig': true,
+        'optFields': ['routes'],
+        'mandateFields': ['fq_name', 'uuid', 'display_name']
+    },
+    'interface-route-table': {
+        'isConfig': true,
+        'optFields': ['interface_route_table_routes'],
         'mandateFields': ['fq_name', 'uuid', 'display_name']
     },
     'physical-topology': {
