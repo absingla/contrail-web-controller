@@ -12,8 +12,9 @@ define([
         renderFQTableNamesList: function (viewConfig) {
             var self = this,
                 hashParams = viewConfig['hashParams'],
-                key = hashParams['key'];
-            table = hashParams['table'];
+                key = hashParams['key'],
+                table = hashParams['table'];
+
             if (contrail.checkIfExist(key) && contrail.checkIfExist(table)) {
                 this.renderView4Config(self.$el, null, getFQKeyTableNamesListConfig(hashParams));
             } else {
@@ -24,8 +25,9 @@ define([
         renderUUIDTableNamesList: function (viewConfig) {
             var self = this,
                 hashParams = viewConfig['hashParams'],
-                key = hashParams['key'];
-            table = hashParams['table'];
+                key = hashParams['key'],
+                table = hashParams['table'];
+
             if (contrail.checkIfExist(key) && contrail.checkIfExist(table)) {
                 this.renderView4Config(this.$el, null, getUUIDKeyTableNamesListConfig(hashParams));
             } else {
@@ -119,7 +121,7 @@ define([
         };
     };
 
-    function getFQTableNamesListConfig (hashParams) {
+    function getFQTableNamesListConfig () {
         var gridConfig = {
             url        : "/api/query/cassandra/keys/obj_fq_name_table",
             table      : "obj_fq_name_table",
@@ -139,7 +141,7 @@ define([
                             loadFeature({p: currentHashObj['p'], q: {'key': dc['key'], 'table': dc['table']}});
                         }
                     }
-                }
+                },
             ]
         };
 
@@ -195,8 +197,7 @@ define([
                     },
                     events: {
                         onClick: function (e, dc) {
-                            var currentHashObj = layoutHandler.getURLHashObj(),
-                                uuid = dc.keyvalue.split(":")[dc.keyvalue.split(":").length - 1]
+                            var uuid = dc.keyvalue.split(":")[dc.keyvalue.split(":").length - 1]
                             loadFeature({p: "setting_configdb_uuid", q: {'key': uuid, 'table': "obj_uuid_table"}});
                         }
                     }
@@ -227,7 +228,6 @@ define([
     };
 
     function getConfigDBTableNamesGridConfig (gridConfig, gridId) {
-        var disableBackButton = "true";
         return {
             header: {
                 title: {
@@ -267,9 +267,9 @@ define([
                 },
                 statusMessages: {
                     empty: {
-                        text: ctwm.NO_RECORDS_IN_DB,
+                        text: ctwm.NO_RECORDS_IN_DB
                     },
-                    errorGettingData: {
+                    error: {
                         type       : 'error',
                         iconClasses: 'icon-warning',
                         text       : ctwm.CASSANDRA_ERROR
