@@ -36,8 +36,11 @@ define([
                     ruleModels.push(routingPolicyTermModel)
                 }
             }
-            var termCollectionModel =
-                                     new Backbone.Collection(ruleModels);
+
+            ruleModels.push(new
+                RoutingPolicyTermModel([]))
+
+            var termCollectionModel = new Backbone.Collection(ruleModels);
             modelConfig['termCollection'] = termCollectionModel;
             modelConfig["routing_policy_entries"]["term"] =
                                                      termCollectionModel;
