@@ -33,6 +33,19 @@ define([
             } else {
                 this.renderView4Config(this.$el, null, getUUIDTableNamesListConfig(viewConfig));
             }
+        },
+
+        renderSharedTableNamesList: function (viewConfig) {
+            var self = this,
+                hashParams = viewConfig['hashParams'],
+                key = hashParams['key'],
+                table = hashParams['table'];
+
+            if (contrail.checkIfExist(key) && contrail.checkIfExist(table)) {
+                this.renderView4Config(this.$el, null, getSharedKeyTableNamesListConfig(hashParams));
+            } else {
+                this.renderView4Config(this.$el, null, getSharedTableNamesListConfig(viewConfig));
+            }
         }
     });
 
@@ -82,13 +95,59 @@ define([
         };
     };
 
+    function getSharedTableNamesListConfig (hashParams) {
+        var gridConfig = {
+            url       : "/api/query/cassandra/keys/obj_shared_table",
+            table     : "obj_shared_table",
+            gridTitle : ctwl.CDB_TITLE_SHARED_TABLE,
+            columnName: 'keys',
+            actionCell: true,
+            columns: [
+                {
+                    id         : "key",
+                    field      : "key",
+                    name       : "Key",
+                    cssClass   : 'cell-hyperlink-blue',
+                    searchable : true,
+                    events     : {
+                        onClick: function (e, dc) {
+                            var currentHashObj = layoutHandler.getURLHashObj();
+                            loadFeature({p: currentHashObj['p'], q: {'key': dc['key'], 'table': dc['table']}});
+                        }
+                    }
+                }
+            ]
+        };
+
+        return {
+            elementId: ctwl.CDB_SHARED_TABLE_NAMES_SECTION_ID,
+            view: "SectionView",
+            viewConfig: {
+                rows: [
+                    {
+                        columns: [
+                            {
+                                elementId : ctwl.CDB_SHARED_TABLE_GRID_ID,
+                                title     : ctwl.CDB_TITLE_SHARED_KEY_TABLE,
+                                view      : "GridView",
+                                viewConfig: {
+                                    elementConfig: getConfigDBTableNamesGridConfig(gridConfig, ctwl.CDB_SHARED_TABLE_GRID_ID)
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+    };
+
     function getUUIDKeyTableNamesListConfig (hashParams) {
         var gridConfig = {
             url        : '/api/query/cassandra/values/' + hashParams['table'] + '/' + hashParams['key'],
             table      : hashParams['table'],
             gridTitle  : 'UUID Details: ' + hashParams['key'],
             columnName : 'keyvalues',
-            actionCell: false,
+            actionCell: true,
             columns: [
                 {
                     id        : "keyvalue",
@@ -112,6 +171,45 @@ define([
                                 view      : "GridView",
                                 viewConfig: {
                                     elementConfig: getConfigDBTableNamesGridConfig(gridConfig, ctwl.CDB_UUID_KEY_TABLE_GRID_ID)
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+    };
+
+    function getSharedKeyTableNamesListConfig (hashParams) {
+        var gridConfig = {
+            url        : '/api/query/cassandra/values/' + hashParams['table'] + '/' + hashParams['key'],
+            table      : hashParams['table'],
+            gridTitle  : 'Key Details: ' + hashParams['key'],
+            columnName : 'keyvalues',
+            actionCell: true,
+            columns: [
+                {
+                    id        : "keyvalue",
+                    field     : "keyvalue",
+                    name      : "Details",
+                    searchable: true
+                }
+            ]
+        };
+
+        return {
+            elementId: ctwl.CDB_SHARED_KEY_TABLE_NAMES_SECTION_ID,
+            view: "SectionView",
+            viewConfig: {
+                rows: [
+                    {
+                        columns: [
+                            {
+                                elementId : ctwl.CDB_SHARED_KEY_TABLE_GRID_ID,
+                                title     : ctwl.CDB_TITLE_SHARED_KEY_TABLE_NAMES,
+                                view      : "GridView",
+                                viewConfig: {
+                                    elementConfig: getConfigDBTableNamesGridConfig(gridConfig, ctwl.CDB_SHARED_KEY_TABLE_GRID_ID)
                                 }
                             }
                         ]
@@ -173,7 +271,7 @@ define([
             table     : hashParams['table'],
             gridTitle : 'FQ Name Details: ' + hashParams['key'],
             columnName: 'keyvalues',
-            actionCell: false,
+            actionCell: true,
             columns : [
                 {
                     field     : "keyvalue",
@@ -246,7 +344,7 @@ define([
                     checkboxSelectable: false,
                     forceFitColumns: true,
                     actionCell: function (dc) {
-                        if (gridConfig.actionCell && editEnabled) {
+                        if (gridConfig.actionCell && globalObj['configDBEditEnabled']) {
                             return getActionCog(gridConfig.columnName, gridId);
                         } else {
                             return [];
@@ -259,7 +357,7 @@ define([
                             url: gridConfig.url
                         },
                         dataParser: function (response) {
-                            editEnabled = response.editEnabled;
+                            globalObj['configDBEditEnabled'] = response.editEnabled;
                             return response[gridConfig.columnName];
                         },
                         serverSidePagination: false
@@ -307,13 +405,14 @@ define([
             modalId = "delete-cdb";
 
         cowu.createModal({'modalId': modalId , 'className': 'modal-700', 'title': "Delete ", 'btnName': 'Confirm', 'body': textTemplate, 'onSave': function () {
-            var url;
+            var url, ajaxConfig = {};
+
             if (type = "delete-key"){
                 url = "/api/query/cassandra/key/" + selectedRow.table + "/" + selectedRow.key;
             } else if (type = "delete-key-value") {
-                url = "/api/query/cassandra/value/" + selectedRow.table + "/" + selectedRow.key + "/" + selectedRow.keyvalue;;
+                url = "/api/query/cassandra/value/" + selectedRow.table + "/" + selectedRow.key + "/" + selectedRow.keyvalue;
             }
-            var ajaxConfig = {};
+
             ajaxConfig.type = "DELETE";
             ajaxConfig.url = url;
 

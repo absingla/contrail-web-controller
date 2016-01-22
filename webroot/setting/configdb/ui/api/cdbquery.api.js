@@ -110,14 +110,14 @@ cdbqueryapi.deleteValue4Key = function (req, res) {
 
 cdbqueryapi.deleteKeyFromTable = function (req, res) {
     var table = req.param('table'),
-        key = req.param('key'),
-        hexKey = new Buffer(key).toString('hex');
+        key = req.param('key');
+
     defaultConPool.connect(function (err, keyspace) {
         if (err) {
             logutils.logger.error(err.stack);
             commonUtils.handleJSONResponse(err, res, null);
         } else {
-            defaultConPool.cql("DELETE FROM " + table + " WHERE KEY = ?", [hexKey], function (err, results) {
+            defaultConPool.cql("DELETE FROM " + table + " WHERE KEY = asciiAsBlob('" + key + "')", [], function (err, results) {
                 if (err) {
                     logutils.logger.error(err.stack);
                     commonUtils.handleJSONResponse(err, res, null);
