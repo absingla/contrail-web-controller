@@ -31,7 +31,7 @@ define([
                 routingPolicyTermFromCollectionModel, routingPolicyTermThenCollectionModel;
 
             routingPolicyTermFromModels.push(new routingPolicyTermFromModel(self, {name: 'community'}));
-            routingPolicyTermThenModels.push(new routingPolicyTermThenModel(self, {}));
+            routingPolicyTermThenModels.push(new routingPolicyTermThenModel(self, {name: 'add community'}));
 
             routingPolicyTermFromCollectionModel = new Backbone.Collection(routingPolicyTermFromModels);
             routingPolicyTermThenCollectionModel = new Backbone.Collection(routingPolicyTermThenModels);
@@ -103,10 +103,9 @@ define([
 
                 if (value != '') {
                     thenTermStr = name + ' ' + value;
-                    if (name == 'action') {
-                        thenTermStr += ' ' + actionCondition;
-                    }
-
+                    thenTermArray.push(thenTermStr);
+                } else if (name == 'action') {
+                    thenTermStr = 'action ' + actionCondition;
                     thenTermArray.push(thenTermStr);
                 }
             });
