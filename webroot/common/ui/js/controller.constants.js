@@ -231,6 +231,7 @@ define([
         this.UNDERLAY_LINK = 'link';
         this.TRACEFLOW_MAXATTEMPTS = 3;
         this.TRACEFLOW_INTERVAL = 5;
+        this.UNDERLAY_FLOW_INFO_TEMPLATE = "flow-info-template";
 
         this.getProjectsURL = function (domainObj, dropdownOptions) {
             /* Default: get projects from keystone or API Server as specified in
@@ -635,6 +636,12 @@ define([
                 locked: true
             }
         ];
+
+        // Virtual Network Config Constants
+        this.URL_CFG_VN_DETAILS =
+                        '/api/tenants/config/virtual-network-details';
+        //Dns constants
+        this.ACTIVE_DNS_DATA = "/api/tenants/config/sandesh/virtual-DNS/";
     };
 
     //str will be [0-9]+(m|h|s|d)

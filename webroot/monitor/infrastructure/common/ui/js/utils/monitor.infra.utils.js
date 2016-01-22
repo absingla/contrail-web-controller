@@ -1509,17 +1509,28 @@ define([
             return ipString;
         }
 
-        self.getDisplayNameForVRouterType = function (type){
+        self.getDisplayNameForVRouterType = function (d){
+            var retType = '';
+            var type = getValueByJsonPath(d,'vRouterType','hypervisor');
+            var platform = getValueByJsonPath(d,'vRouterPlatform','');
             switch (type){
-            case 'tor-agent':
-                return 'TOR Agent';
-            case 'tor-service-node':
-                return 'TOR Service Node';
-            case 'embedded':
-                return 'Embedded';
-            case 'hypervisor':
-                return 'Hypervisor';
+                case 'tor-agent':
+                    retType = 'TOR Agent';
+                    break;
+                case 'tor-service-node':
+                    retType = 'TOR Service Node';
+                    break;
+                case 'embedded':
+                    retType = 'Embedded';
+                    break;
+                case 'hypervisor':
+                    retType = 'Hypervisor';
+                    break;
             }
+            if(platform == monitorInfraConstants.HOST_DPDK) {
+                retType += ' (DPDK)'
+            }
+            return retType;
         }
 
         function onPrevNextClick(obj,cfg) {
@@ -2762,10 +2773,18 @@ define([
                             graphModel.flowPath.set({
                                 'nodes': ifNull(response['nodes'], []),
                                 'links': ifNull(response['links'], [])
-                            });
+                            }, {silent:true});
+                            graphModel.flowPath.trigger('change:nodes');
                             if (ifNull(response['nodes'], []).length == 0 ||
                                 ifNull(response['links'], []).length == 0) {
-                                graphModel.flowPath.trigger('change:nodes');
+                            } else {
+                                monitorInfraUtils.addUnderlayFlowInfoToBreadCrumb({
+                                    action: 'Map Flow',
+                                    sourceip: params['srcIP'],
+                                    destip: params['destIP'],
+                                    sport: params['sport'],
+                                    dport: params['dport']
+                                });
                             }
                             $('html,body').animate({scrollTop:0}, 500);
                         }).fail (function () {
@@ -2792,6 +2811,20 @@ define([
                 }
         };
 
+        self.addUnderlayFlowInfoToBreadCrumb = function (data) {
+            // Removing the last flow info in the breadcrumb
+            self.removeUndelrayFlowInfoFromBreadCrumb();
+            // Adding the current flow info to the breadcrumb
+            pushBreadcrumb([
+                 contrail.getTemplate4Id(ctwc.UNDERLAY_FLOW_INFO_TEMPLATE)(data)
+            ]);
+        };
+        self.removeUndelrayFlowInfoFromBreadCrumb = function () {
+            if ($("#breadcrumb li").last().find('div#flow-info').length > 0) {
+                $("#breadcrumb li").last().remove();
+                $('#breadcrumb li').last().children('span').remove();
+            }
+        };
         self.getPostDataForGeneratorType = function (options){
             var type,moduleType="",kfilt="";
             var nodeType = options.nodeType;
