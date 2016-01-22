@@ -69,8 +69,15 @@ define([
                 {id: 'orlonger', text: 'orlonger'}
             ]
         },
-
-        validations: {}
+        //TODO: Add appropriate validations.
+        validations: {
+            fromTermValidation: {
+                'value': {
+                    required: true,
+                    msg: 'Enter a valid value for community or prefix in From clause'
+                }
+            }
+        }
     });
 
 

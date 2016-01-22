@@ -74,17 +74,18 @@ define([
                 disableElement = true;
             }
             self.renderView4Config(
-                $("#" + modalId).find("#" + modalId + "-form"),
-                self.model, getConfigureViewConfig
-                (disableElement),
-                'routingPolicyValidations', null, null, function () {
-                    self.model.showErrorAttr(prefixId +
-                        cowc.FORM_SUFFIX_ID, false);
-                    Knockback.applyBindings(self.model,
-                        document.getElementById(modalId));
-                    kbValidation.bind(self, {
-                        collection: self.model.model().attributes.termCollection
-                    });
+                $("#" + modalId).find("#" + modalId + "-form"), self.model, getConfigureViewConfig(disableElement), 'routingPolicyValidations', null, null, function () {
+                    self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
+                    Knockback.applyBindings(self.model, document.getElementById(modalId));
+                    var termCollection = self.model.model().attributes.termCollection,
+                        termModels = termCollection.toJSON();
+
+                    kbValidation.bind(self, {collection: termCollection});
+                    for (var i = 0; i < termModels.length; i++) {
+                        kbValidation.bind(self, {collection: termModels[i].model().attributes['from_terms']});
+                        kbValidation.bind(self, {collection: termModels[i].model().attributes['then_terms']});
+                    }
+
                 });
             return;
         },
@@ -342,79 +343,6 @@ define([
                             ]
 
                         }
-                        //viewConfig: {
-                        //    width: "100%",
-                        //    class: "",
-                        //     verticalAlign :"top",
-                        //    label:"Terms",
-                        //    path: "termCollection",
-                        //    validation: 'termValidation',
-                        //    collection: "termCollection",
-                        //    columns: [{
-                        //        elementId: 'fromValue',
-                        //        name: 'From',
-                        //        view: "FormTextAreaView",
-                        //        showEditIcon: false,
-                        //        viewConfig: {
-                        //            width: 300,
-                        //            rows:2,
-                        //            verticalAlign :"top",
-                        //            placeHolder:
-                        //            "[community <value>]<enter>\n[prefix <value> [exact|longer|orlonger]]",
-                        //            templateId:
-                        //                cowc.TMPL_EDITABLE_GRID_TEXTAREA_VIEW,
-                        //            path: "fromValue",
-                        //            dataBindValue: "fromValue()"
-                        //        }
-                        //    },
-                        //    {
-                        //        elementId: 'thenValue',
-                        //        view: "FormTextAreaView",
-                        //        name: "Then",
-                        //        class: "",
-                        //        showEditIcon: false,
-                        //        viewConfig: {
-                        //            width: 400,
-                        //            rows:2,
-                        //            verticalAlign :"top",
-                        //            placeHolder:
-                        //                "[add|set|remove community <value1>[,value2,valuen]]<enter>\n[local-pref <value>]",
-                        //            templateId:
-                        //                cowc.TMPL_EDITABLE_GRID_TEXTAREA_VIEW,
-                        //            path: "thenValue",
-                        //            dataBindValue: "thenValue()"
-                        //        }
-                        //    },
-                        //    {
-                        //        elementId: 'action',
-                        //        name: 'Action',
-                        //        view: "FormDropdownView",
-                        //        class: "",
-                        //        viewConfig: {
-                        //            width: 100,
-                        //            verticalAlign :"top",
-                        //            templateId:
-                        //                cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
-                        //            path: "action",
-                        //            placeHolder:"Action",
-                        //            dataBindValue: "action()",
-                        //            elementConfig:{
-                        //                data:['Default','Reject','Accept','Next']
-                        //            }
-                        //        }
-                        //    }],
-                        //    rowActions: [
-                        //        {onClick:
-                        //        "function() { $root.deleteRules($data, this); }",
-                        //         verticalAlign :"top",
-                        //         iconClass: 'icon-minus'
-                        //        }
-                        //    ],
-                        //    gridActions: [
-                        //        {onClick: "function() { addRule(); }",
-                        //         buttonTitle: "Add Term"}
-                        //    ]
-                        //}
                     }]
                 }]
             }

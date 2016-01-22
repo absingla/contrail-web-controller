@@ -13,24 +13,9 @@ define([
     var routingPolicyFormatter = new RoutingPolicyFormatter();
     var RoutingPolicyTermModel = ContrailModel.extend({
         defaultConfig: {
-            //"from":{
-            //    "community":"",
-            //    "prefix":{
-            //        "prefix":"",
-            //        "type":""
-            //    }
-            //},
-            //"then":{
-            //    "update": {
-            //        "community":{},
-            //        "local-pref" : "",
-            //    },
-            //    "action": ""
-            //},
-            "fromValue":"",
-            "thenValue":"",
-            disabled_from_names: {}
-            //"action":"Default"
+            "fromValue": "",
+            "thenValue": "",
+            "disabled_from_names": {}
         },
 
         constructor: function (parentModel, modelData) {
@@ -41,7 +26,7 @@ define([
 
         formatModelConfig: function (config) {
             var self = this,
-                modelConfig = $.extend({},true,config),
+                modelConfig = $.extend({}, true, config),
                 routingPolicyTermFromModels = [], routingPolicyTermThenModels = [],
                 routingPolicyTermFromCollectionModel, routingPolicyTermThenCollectionModel;
 
@@ -54,46 +39,19 @@ define([
             modelConfig['from_terms'] = routingPolicyTermFromCollectionModel;
             modelConfig['then_terms'] = routingPolicyTermThenCollectionModel;
 
-            var community =
-                getValueByJsonPath(modelConfig, "from;community", "");
-            var prefix =
-                getValueByJsonPath(modelConfig, "from;prefix;prefix", "");
-            if(community != "" || prefix != "") {
-                modelConfig["fromValue"] =
-                    routingPolicyFormatter.fromObjToStr(modelConfig["from"]);
+            var community = getValueByJsonPath(modelConfig, "from;community", ""),
+                prefix = getValueByJsonPath(modelConfig, "from;prefix;prefix", "");
+
+            if (community != "" || prefix != "") {
+                modelConfig["fromValue"] = routingPolicyFormatter.fromObjToStr(modelConfig["from"]);
             }
-            var thenComm =
-                getValueByJsonPath(modelConfig, "then;update;community", "");
-            var localpref =
-                getValueByJsonPath(modelConfig, "then;update;local-pref", "");
-            if(thenComm != "" || localpref != "") {
-                modelConfig["thenValue"] =
-                  routingPolicyFormatter.thenObjToStr(modelConfig["then"]["update"]);
+
+            var thenComm = getValueByJsonPath(modelConfig, "then;update;community", ""),
+                localpref = getValueByJsonPath(modelConfig, "then;update;local-pref", "");
+
+            if (thenComm != "" || localpref != "") {
+                modelConfig["thenValue"] = routingPolicyFormatter.thenObjToStr(modelConfig["then"]["update"]);
             }
-            //switch(modelConfig["then"]["action"]) {
-            //    case "accept":
-            //    {
-            //        modelConfig["action"] = "Accept";
-            //        break;
-            //    }
-            //    case "next":
-            //    {
-            //        modelConfig["action"] = "Next";
-            //        break;
-            //    }
-            //    case "reject":
-            //    {
-            //        modelConfig["action"] = "Reject";
-            //        break;
-            //    }
-            //    case "":
-            //    case "Default":
-            //    case "default":
-            //    {
-            //        modelConfig["action"] = "Default";
-            //        break;
-            //    }
-            //}
             return modelConfig;
         },
         validateAttr: function (attributePath, validation, data) {
@@ -104,17 +62,16 @@ define([
 
             isValid = model.isValid(attributePath, validation);
 
-            attrErrorObj[attr + cowc.ERROR_SUFFIX_ID] =
-                        (isValid == true) ? false : isValid;
+            attrErrorObj[attr + cowc.ERROR_SUFFIX_ID] = (isValid == true) ? false : isValid;
             errors.set(attrErrorObj);
         },
 
-        getOrClauseText: function(data) {
+        getOrClauseText: function (data) {
             var fromTerms = data.from_terms()(),
                 thenTerms = data.then_terms()(),
                 fromTermArray = [], thenTermArray = [], termsText = '';
 
-            $.each(fromTerms, function(fromTermKey, fromTermValue) {
+            $.each(fromTerms, function (fromTermKey, fromTermValue) {
                 var name = fromTermValue.name(),
                     value = fromTermValue.value(),
                     prefixCondition = fromTermValue.prefix_condition(),
@@ -134,7 +91,7 @@ define([
                 }
             });
 
-            $.each(thenTerms, function(thenTermKey, thenTermValue) {
+            $.each(thenTerms, function (thenTermKey, thenTermValue) {
                 var name = thenTermValue.name(),
                     value = thenTermValue.value(),
                     actionCondition = thenTermValue.action_condition(),
@@ -160,7 +117,7 @@ define([
             return (termsText !== '') ? termsText : '...';
         },
 
-        addTermAtIndex: function(data, event) {
+        addTermAtIndex: function (data, event) {
             var self = this,
                 orClauses = this.model().collection,
                 orClause = this.model(),
@@ -175,7 +132,7 @@ define([
             event.stopImmediatePropagation();
         },
 
-        deleteTerm: function() {
+        deleteTerm: function () {
             var orClauses = this.model().collection,
                 orClause = this.model();
 
@@ -186,24 +143,27 @@ define([
 
         validations: {
             termValidation: {
-                'fromValue': function(value, attr, finalObj) {
-                    if(value.trim() != ""){
+                //TODO: Add appropriate validations.
+                /*
+                'fromValue': function (value, attr, finalObj) {
+                    if (value.trim() != "") {
                         var result =
                             routingPolicyFormatter.buildFromStructure(value);
-                        if(result.error.available == true) {
+                        if (result.error.available == true) {
                             return result.error.message;
                         }
                     }
                 },
-                'thenValue': function(value, attr, finalObj) {
-                    if(value.trim() != ""){
+                'thenValue': function (value, attr, finalObj) {
+                    if (value.trim() != "") {
                         var result =
                             routingPolicyFormatter.buildThenStructure(value);
-                        if(result.error.available == true) {
+                        if (result.error.available == true) {
                             return result.error.message;
                         }
                     }
                 }
+                */
             }
         }
     });

@@ -74,7 +74,15 @@ define([
             ]
         },
 
-        validations: {}
+        validations: {
+            thenTermValidation: {
+                //TODO: Add appropriate validations.
+                'name': {
+                    required: true,
+                    msg: 'Select a valid value for action in Then clause.'
+                }
+            }
+        }
     });
 
 
