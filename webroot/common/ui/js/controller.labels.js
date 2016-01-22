@@ -946,18 +946,25 @@ define([
         this.CDB_FQ_TABLE_NAMES_SECTION_ID = "cdb-fq-table-names-section";
         this.CDB_UUID_TABLE_NAMES_SECTION_ID = "cdb-uuid-table-names-section";
         this.CDB_UUID_KEY_TABLE_NAMES_SECTION_ID = "cdb-uuid-key-table-names-section";
+        this.CDB_SHARED_TABLE_NAMES_SECTION_ID = "cdb-shared-table-names-section";
+        this.CDB_SHARED_KEY_TABLE_NAMES_SECTION_ID = "cdb-shared-key-table-names-section";
 
         this.CDB_FQ_KEY_TABLE_NAMES_GRID_ID = "cdb-fq-key-table-names-grid";
         this.CDB_TITLE_FQ_KEY_TABLE_NAMES = "Key Values";
 
         this.CDB_UUID_TABLE_GRID_ID = "cdb-uuid-table-grid";
         this.CDB_TITLE_UUID_KEY_TABLE = "UUID Table Keys";
-
         this.CDB_UUID_KEY_TABLE_GRID_ID = "cdb-uuid-key-table-grid";
         this.CDB_TITLE_UUID_KEY_TABLE_NAMES = "UUID Key Values";
 
+        this.CDB_SHARED_TABLE_GRID_ID = "cdb-shared-table-grid";
+        this.CDB_TITLE_SHARED_KEY_TABLE = "Shared Table Keys";
+        this.CDB_SHARED_KEY_TABLE_GRID_ID = "cdb-shared-key-table-grid";
+        this.CDB_TITLE_SHARED_KEY_TABLE_NAMES = "Shared Key Values";
+
         this.CDB_TITLE_FQ_TABLE = "FQ Name Table";
         this.CDB_TITLE_UUID_TABLE = "UUID Name Table";
+        this.CDB_TITLE_SHARED_TABLE = "Shared Name Table";
         //Config DB Labels - End
 
         /* Service Appliance */
@@ -1000,6 +1007,13 @@ define([
         this.TITLE_EDIT_RT_TABLE = 'Edit Route Table';
         this.RT_TABLE_DETAILS = 'Route Table Details';
  
+        /* BGP as a Service */
+        this.TITLE_BGP_AS_A_SERVICE = 'BGP as a Service';
+        this.TITLE_EDIT_BGP_AS_A_SERVICE = 'Edit BGP as a Service';
+        this.TITLE_BGP_AS_A_SERVICE_DELETE = 'Delete BGP as a Service';
+        this.TITLE_BGP_AS_A_SERVICE_MULTI_DELETE = 'Delete BGP as a Service(s)';
+        this.TITLE_ADD_BGP_AS_A_SERVICE = 'Create BGP as a Service';
+
     };
     return CTLabels;
 });
