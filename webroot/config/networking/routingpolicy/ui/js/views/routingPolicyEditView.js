@@ -217,7 +217,10 @@ define([
                                                                     dataBindValue: "name",
                                                                     dataBindOptionList: 'getNameOptionList',
                                                                     width: 145,
-                                                                    placeholder: 'Select Name'
+                                                                    placeholder: 'Select Name',
+                                                                    elementConfig: {
+                                                                        defaultValueId: 0
+                                                                    }
                                                                 }
                                                             },
                                                             {
@@ -230,7 +233,7 @@ define([
                                                                     path: "value",
                                                                     dataBindValue: "value()",
                                                                     width: 285,
-                                                                    placeholder: 'Value'
+                                                                    placeholder: 'Enter Value'
                                                                 }
                                                             },
                                                             {
@@ -244,8 +247,8 @@ define([
                                                                     dataBindValue: "prefix_condition",
                                                                     dataBindOptionList: 'getPrefixConditionOptionList',
                                                                     width: 80,
+                                                                    placeholder: 'Select Prefix',
                                                                     elementConfig: {
-                                                                        placeholder: 'Select prefix_condition',
                                                                         defaultValueId: 0
                                                                     }
                                                                 }
@@ -290,7 +293,9 @@ define([
                                                                     dataBindOptionList: 'getNameOptionList',
                                                                     width: 145,
                                                                     placeholder: 'Select Name',
-                                                                    elementConfig: {}
+                                                                    elementConfig: {
+                                                                        defaultValueId: 0
+                                                                    }
                                                                 }
                                                             },
                                                             {
@@ -304,7 +309,7 @@ define([
                                                                     disabled: 'name() == "action"',
                                                                     dataBindValue: "value()",
                                                                     width: 285,
-                                                                    placeholder: 'Value'
+                                                                    placeholder: 'Enter Value'
 
                                                                 }
                                                             },
@@ -319,6 +324,7 @@ define([
                                                                     dataBindValue: "action_condition",
                                                                     dataBindOptionList: 'getActionConditionOptionList',
                                                                     width: 80,
+                                                                    placeholder: 'Select Action',
                                                                     elementConfig: {
                                                                         defaultValueId: 0
                                                                     }
