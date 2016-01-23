@@ -629,7 +629,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Floating IPs, Floating IP, FIP</searchStrings>
                         </item>
                         <item>
-                            <label>Routing Policy</label>
+                            <label>Routing Policies</label>
                             <hash>config_net_rpolicies</hash>
                             <resources>
                                 <resource>
@@ -642,10 +642,10 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <function>renderRoutingPolicy</function>
                                 </resource>
                             </resources>
-                            <searchStrings>Routing Policy</searchStrings>
+                            <searchStrings>Routing Policies</searchStrings>
                         </item>
                         <item>
-                            <label>Route Table</label>
+                            <label>Route Tables</label>
                             <hash>config_net_rttable</hash>
                             <resources>
                             <resource>
@@ -658,7 +658,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <function>renderRtTable</function>
                                 </resource>
                             </resources>
-                            <searchStrings>Route Table</searchStrings>
+                            <searchStrings>Route Tables</searchStrings>
                         </item>
                     </items>
                 </item>

@@ -217,10 +217,7 @@ define([
                                                                     dataBindValue: "name",
                                                                     dataBindOptionList: 'getNameOptionList',
                                                                     width: 145,
-                                                                    elementConfig: {
-                                                                        placeholder: 'Select Name',
-                                                                        defaultValueId: 0
-                                                                    }
+                                                                    placeholder: 'Select Name'
                                                                 }
                                                             },
                                                             {
@@ -233,9 +230,7 @@ define([
                                                                     path: "value",
                                                                     dataBindValue: "value()",
                                                                     width: 285,
-                                                                    elementConfig: {
-                                                                        placeholder: 'Select Value'
-                                                                    }
+                                                                    placeholder: 'Value'
                                                                 }
                                                             },
                                                             {
@@ -294,10 +289,8 @@ define([
                                                                     dataBindValue: "name",
                                                                     dataBindOptionList: 'getNameOptionList',
                                                                     width: 145,
-                                                                    elementConfig: {
-                                                                        placeholder: 'Select Name',
-                                                                        //defaultValueId: 0
-                                                                    }
+                                                                    placeholder: 'Select Name',
+                                                                    elementConfig: {}
                                                                 }
                                                             },
                                                             {
@@ -311,9 +304,8 @@ define([
                                                                     disabled: 'name() == "action"',
                                                                     dataBindValue: "value()",
                                                                     width: 285,
-                                                                    elementConfig: {
-                                                                        placeholder: 'Select Value'
-                                                                    }
+                                                                    placeholder: 'Value'
+
                                                                 }
                                                             },
                                                             {
@@ -328,7 +320,6 @@ define([
                                                                     dataBindOptionList: 'getActionConditionOptionList',
                                                                     width: 80,
                                                                     elementConfig: {
-                                                                        placeholder: 'Select action_condition',
                                                                         defaultValueId: 0
                                                                     }
                                                                 }

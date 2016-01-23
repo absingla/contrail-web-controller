@@ -58,7 +58,7 @@ define([
         },
 
         getNameOptionList: function(viewModel) {
-            var namesOption = ['add community','set community', 'remove community', 'local-perf', 'action'];
+            var namesOption = ['add community','set community', 'remove community', 'local-preference', 'action'];
 
             return $.map(namesOption, function(optionValue, optionKey) {
                 return {id: optionValue, text: optionValue}
