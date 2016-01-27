@@ -6,11 +6,12 @@ define([
     'underscore',
     'contrail-model'
 ], function (_, ContrailModel) {
-    var SvcApplInterfaceModel = ContrailModel.extend({
+    var portBindingModel = ContrailModel.extend({
 
         defaultConfig: {
-            interface_type: "",
-            interface_name: ""
+            'key': '',
+            'value':'',
+            'disablePortBindKey':false
         },
 
         validateAttr: function (attributePath, validation, data) {
@@ -21,24 +22,23 @@ define([
 
             isValid = model.isValid(attributePath, validation);
 
-            attrErrorObj[attr + cowc.ERROR_SUFFIX_ID] = (isValid == true) ? false : isValid;
+            attrErrorObj[attr + cowc.ERROR_SUFFIX_ID] =
+                        (isValid == true) ? false : isValid;
             errors.set(attrErrorObj);
         },
 
         validations: {
-            svcApplInterfaceValidation: {
-                'interface_type': {
-                    required: true
+            portBindingValidations: {
+                'key': {
+                    required: true,
+                    msg: 'Select or enter a key.'
                 },
-                'interface_name': function(val, attr, fieldObj) {
-                    if ((null == val) || (!val.trim().length)) {
-                        return 'Interface is required';
-                    }
+                'value': {
+                    required: true,
+                    msg: 'Enter a value.'
                 }
             }
         }
     });
-
-    return SvcApplInterfaceModel;
+    return portBindingModel;
 });
-

@@ -1273,8 +1273,8 @@ define(
                         } else {
                             $.each(response,function(idx,obj) {
                                 var rawJson = obj;
-                                ret.push({src_vn:ifNullOrEmptyObject(obj['src_vn'],noDataStr),
-                                    dst_vn:ifNullOrEmptyObject(obj['dst_vn'],noDataStr),
+                                ret.push({src_vn:ifNullOrEmptyObject(obj['src_vn_match'],noDataStr),
+                                    dst_vn:ifNullOrEmptyObject(obj['dst_vn_match'],noDataStr),
                                     protocol:ifNullOrEmptyObject(obj['protocol'],noDataStr),
                                     sip:ifNullOrEmptyObject(obj['sip'],noDataStr),
                                     src_port:ifNullOrEmptyObject(obj['src_port'],noDataStr),
@@ -1815,7 +1815,18 @@ define(
                        obj['formattedSrcVN'] = formattedSrcVN[0];
                        obj['formattedDestVN'] = formattedDestVN[0];
                     });
-
+                    response['data'].sort(function(dataItem1,dataItem2){
+                        if(dataItem1['vrouter_ip'] != null  && dataItem1['other_vrouter_ip']!= null)
+                            return -1;
+                        else if (dataItem1['vrouter_ip'] != null || dataItem1['other_vrouter_ip'] != null)
+                            return -1;
+                        else if (dataItem2['vrouter_ip'] != null  && dataItem2['other_vrouter_ip']!= null)
+                            return 1;
+                        else if (dataItem2['vrouter_ip'] != null || dataItem2['other_vrouter_ip'] != null)
+                            return 1;
+                        else 
+                            return 0;
+                    });
                     return response['data'];
                 }
 
