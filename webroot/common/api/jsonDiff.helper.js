@@ -12,9 +12,12 @@ var configJsonModifyObj = {
         },
         'optFields': ['virtual_network_properties',
             'network_ipam_refs', 'network_policy_refs',
-            'route_target_list', 'is_shared',
+            'route_target_list', 'export_route_target_list',
+            'import_route_target_list', 'is_shared',
             'router_external', 'id_perms:enable',
-            'flood_unknown_unicast' ],
+            'flood_unknown_unicast', 'multi_policy_service_chains_enabled',
+            'route_table_refs', 'provider_properties',
+            'ecmp_hashing_include_fields'],
         'mandateFields': ['fq_name', 'uuid', 'display_name'],
         'subType': {
             'project': {
