@@ -539,6 +539,32 @@ define([
                                                value : 'erm-vpn',
                                           }
                                       ];
+        this.FAMILY_ATTR_ADDRESS_FAMILY_DATA = [
+                                          {
+                                              text: "inet",
+                                              value: "inet"
+                                          },
+                                          {
+                                              text: "inet-vpn",
+                                              value: "inet-vpn"
+                                          },
+                                          {
+                                              text: "e-vpn",
+                                              value: "e-vpn"
+                                          },
+                                          {
+                                              text: "erm-vpn",
+                                              value: "erm-vpn"
+                                          },
+                                          {
+                                              text: "route-target",
+                                              value: "route-target"
+                                          },
+                                          {
+                                              text: "inet6-vpn",
+                                              value: "inet6-vpn"
+                                          }
+                                      ];
          this.AUTHENTICATION_DATA = [
                                         {
                                             text : 'None',
@@ -628,12 +654,10 @@ define([
             {
                 text: "inet",
                 value: "inet",
-                locked: true
             },
             {
                 text: "inet6",
                 value: "inet6",
-                locked: true
             }
         ];
 

@@ -7,8 +7,8 @@ define([
     'contrail-model',
     'config/networking/policy/ui/js/views/policyFormatters'
 ], function (_, ContrailModel, PolicyFormatters) {
-    var policyFormatters = new PolicyFormatters();
-    var self;
+    var policyFormatters = new PolicyFormatters(),
+        self;
     var RuleModel = ContrailModel.extend({
         defaultConfig: {
             'action_list':{'simple_action':'pass',
@@ -151,11 +151,6 @@ define([
                     }
                     var valArr = val.split(",");
                     var valArrLen = valArr.length;
-                    var SIValue = valArr[valArrLen-1].split(" ");
-                    if (SIValue.length >= 2 && SIValue[1] != "in-network-nat") {
-                        return "Last instance should be of 'in-network-nat'\
-                                service mode while applying services."
-                    }
                     var inNetworkTypeCount = 0;
                     for (var i = 0; i < valArrLen; i++) {
                         var SIValue = valArr[i].split(" ");
@@ -166,6 +161,11 @@ define([
                                         services."
                             }
                         }
+                    }
+                    var SIValue = valArr[valArrLen-1].split(" ");
+                    if (inNetworkTypeCount >= 1 && SIValue[1] != "in-network-nat") {
+                        return "Last instance should be of 'in-network-nat'\
+                                service mode while applying services."
                     }
                     var error = self.isBothSrcDscCIDR(data);
                     if (error != "") {
@@ -226,6 +226,14 @@ define([
                     var error = self.isBothSrcDscCIDR(data);
                     if (error != "") {
                         return error;
+                    }
+                    var srcProt = getValueByJsonPath(data, "src_ports_text", "");
+                    if(srcProt.toUpperCase() != "ANY") {
+                        return "Only 'ANY' protocol allowed while mirroring services."
+                    }
+                    var dscProt = getValueByJsonPath(data, "dst_ports_text", "");
+                    if(dscProt.toUpperCase() != "ANY") {
+                        return "Only 'ANY' protocol allowed while mirroring services."
                     }
                 }
             }
