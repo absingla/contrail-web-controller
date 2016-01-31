@@ -518,9 +518,6 @@ define([
                 getValueByJsonPath(rowData['svcTmplDetails'][0],
                                    'service_template_properties;version',
                                    1);
-            if (true == isExpand) {
-                return "-";
-            }
             if (2 == tmplVer) {
                 return portTuplesFormatter(row, col, rowData['port_tuples'], d,
                                        rowData, isExpand);
@@ -530,60 +527,46 @@ define([
             return portTuplesFormatter(row, col, rowData['port_tuples'], d,
                                        rowData, isExpand);
         }
-        if (null != rowData['service_instance_properties']) {
-            var svcInstProp = rowData['service_instance_properties'];
-            if (null != svcInstProp['management_virtual_network']) {
-                dispStr += '<span class="gridLabel">Management: </span>';
+        if ((null == rowData['svcTmplDetails']) ||
+            (null == rowData['svcTmplDetails'][0])) {
+            return "-";
+        }
+        var tmplObj = rowData['svcTmplDetails'][0];
+        var intfList =
+            getValueByJsonPath(rowData,
+                               'service_instance_properties;interface_list',
+                               []);
+        if (!intfList.length) {
+            return "-";
+        }
+        var intfTypes =
+            getValueByJsonPath(tmplObj,
+                               'service_template_properties;interface_type',
+                               []);
+        if (!intfTypes.length) {
+            return "-";
+        }
+        var intfCnt = intfTypes.length;
+        var len = intfCnt;
+        if (false == isExpand) {
+            len = (intfCnt > 2) ? 2 : intfCnt;
+        }
+        for (var i = 0; i < len; i++) {
+            var intfType = intfTypes[i]['service_interface_type'];
+            dispStr += '<span class="gridLabel">' +
+                intfType.replace(intfType[0], intfType[0].toUpperCase()) +
+                ': </span>';
+            if ((null == intfList[i]) ||
+                (null == intfList[i]['virtual_network'])) {
+                dispStr += '-';
+            } else {
                 dispStr +=
-                    getVirtualNetworkDisplay(svcInstProp['management_virtual_network']);
-                if (isExpand) {
-                    dispStr += '<br>';
-                } else {
-                    dispStr += ',<br> ';
-                }
+                    getVirtualNetworkDisplay(intfList[i]['virtual_network']);
             }
-            if (null != svcInstProp['left_virtual_network']) {
-                dispStr += '<span class="gridLabel">Left: </span>';
-                dispStr +=
-                    getVirtualNetworkDisplay(svcInstProp['left_virtual_network']);
-                if (isExpand) {
-                    dispStr += '<br>';
-                } else {
-                    dispStr += ',<br> ';
-                }
-            }
-            if (null != svcInstProp['right_virtual_network']) {
-                dispStr += '<span class="gridLabel">Right: </span>';
-                dispStr +=
-                    getVirtualNetworkDisplay(svcInstProp['right_virtual_network']);
-                if (isExpand) {
-                    dispStr += '<br>';
-                } else {
-                    dispStr += ',<br> ';
-                }
-            }
-            /* Now check if we have other network */
-            var intfList = svcInstProp['interface_list'];
-            var intfListLen = intfList.length;
-            var otherNetAdded = false;
-            for (var i = 0; i < intfListLen; i++) {
-                if ((intfList[i]['virtual_network'] !=
-                     svcInstProp['management_virtual_network']) &&
-                    (intfList[i]['virtual_network'] !=
-                     svcInstProp['left_virtual_network']) &&
-                    (intfList[i]['virtual_network'] !=
-                     svcInstProp['right_virtual_network'])) {
-                    if (false == otherNetAdded) {
-                        dispStr += '<span class="gridLabel">Other: </span>';
-                        otherNetAdded = true;
-                    }
-                    dispStr +=
-                        getVirtualNetworkDisplay(intfList[i]['virtual_network']);
-                    if (i < intfListLen -1) {
-                        dispStr += ', ';
-                    }
-                }
-            }
+            dispStr += '<br>';
+        }
+        if ((false == isExpand) && (intfCnt > 2)) {
+            dispStr += '(' + (intfCnt - 2).toString() + ' more)';
         }
         return dispStr;
     }
@@ -974,6 +957,9 @@ define([
             width: 55,
             formatter: function(row, col, val, d, rowData) {
                 return svcTmplFormatter(row, col, val, d, rowData);
+            },
+            sortable: {
+                sortBy: 'formattedValue'
             }
         },
         {
@@ -981,6 +967,9 @@ define([
             width: 30,
             formatter: function(row, col, val, d, rowData) {
                 return statusFormatter(row, col, val, d, rowData);
+            },
+            sortable: {
+                sortBy: 'formattedValue'
             }
         },
         {
@@ -988,12 +977,18 @@ define([
             width: 35,
             formatter: function(row, col, val, d, rowData) {
                 return instCountFormatter(row, col, val, d, rowData);
+            },
+            sortable: {
+                sortBy: 'formattedValue'
             }
         },
         {
             name: 'Networks / Port Tuples',
             formatter: function(row, col, val, d, rowData) {
                 return networksFormatter(row, col, val, d, rowData, false);
+            },
+            sortable: {
+                sortBy: 'formattedValue'
             }
         }
     ];
