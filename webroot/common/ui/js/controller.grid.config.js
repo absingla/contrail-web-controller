@@ -364,6 +364,7 @@ define([
                             url: ctwc.URL_VM_INTERFACES,
                             type: 'POST',
                             data: JSON.stringify({
+                                parentType: ctwc.TYPE_VIRTUAL_MACHINE,
                                 kfilt: interfaceList.join(','),
                                 cfilt: ctwc.FILTERS_INSTANCE_LIST_INTERFACES.join(',')
                             })
