@@ -23,7 +23,24 @@ define([
                     dataParser: ctwp.vnCfgDataParser
                 },
                 vlRemoteConfig:{
-                    vlRemoteList: [ {
+                    vlRemoteList: [
+                    {
+                        getAjaxConfig  : function () {
+                            return {
+                                url: '/api/tenants/config/get-config-details',
+                                type: 'POST',
+                                data: JSON.stringify({
+                                        'data': [
+                                        {type: 'floating-ip-pools',
+                                        fields: ['project_back_refs']}]
+                                        }),
+                            }
+                        }, 
+                        successCallback: function (response, contrailListModel) {
+                            setFIPEnabledNets(response, contrailListModel);
+                        }
+                    },
+                    {
                         getAjaxConfig  : function () {
                             return {
                                 url: ctwc.get(ctwc.URL_CFG_VN_DETAILS) +
@@ -56,6 +73,38 @@ define([
                      contrailListModel, getVNCfgListViewConfig());
         }
     });
+
+    var setFIPEnabledNets = function (response, contrailListModel) {
+        var nets = contrailListModel.getItems();
+
+        if (response == null || response.length != 1) {
+            return;
+        }
+        var poolProjByUUID = [],
+            poolList = getValueByJsonPath(response, '0;floating-ip-pools', []);
+        if (!poolList.length) {
+            return;
+        }
+
+        $.each(poolList, function(idx, pool) {
+            poolProjByUUID[pool['floating-ip-pool'].uuid] =
+                    pool['floating-ip-pool'];
+        });
+
+        $.each(nets, function (netIdx, net) {
+            var fipPools = getValueByJsonPath(net, 'floating_ip_pools', []);
+            $.each(fipPools, function (poolIdx, fipPool) {
+                var uuid = fipPool.uuid;
+                var projs = getValueByJsonPath(poolProjByUUID[uuid],
+                                    'project_back_refs', []);
+                if (projs.length) {
+                    nets[netIdx].floating_ip_pools[poolIdx]['projects'] =
+                            projs;
+                    contrailListModel.updateData([nets[netIdx]]);
+                }
+            });
+        });
+    };
 
     var getVNCfgListViewConfig = function () {
         return {
