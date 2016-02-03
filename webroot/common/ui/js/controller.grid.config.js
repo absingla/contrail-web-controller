@@ -134,13 +134,12 @@ define([
                 {
                     getAjaxConfig: function (responseJSON) {
                         var lazyAjaxConfig,
-                            interfaceList = getValueByJsonPath(responseJSON, 
-                                'value;UveVirtualMachineAgent;interface_list', []);
+                            interfaceList = getValueByJsonPath(responseJSON, 'value;UveVirtualMachineAgent;interface_list', []);
 
                         lazyAjaxConfig = {
                             url: ctwc.URL_VM_INTERFACES,
                             type: 'POST',
-                            data: JSON.stringify({kfilt: interfaceList.join(',')})
+                            data: JSON.stringify({kfilt: interfaceList.join(','), parentType: ctwc.TYPE_VIRTUAL_MACHINE})
                         };
 
                         return lazyAjaxConfig;

@@ -41,9 +41,6 @@ define([
                 ucid = ctwc.get(ctwc.UCID_PROJECT_INTERFACE_LIST, projectFQN);
                 interfacesAjaxConfig = getInterfacesAjaxConfig(parentType, {domain: domain, projectFQN: projectFQN, networkFQN: networkFQN});
                 self.renderView4Config(self.$el, this.model, getInterfaceGridViewConfig(interfacesAjaxConfig, ucid, elementId));
-            } else if (parentType == ctwc.TYPE_DOMAIN) {
-                ucid = ctwc.UCID_ALL_INTERFACE_LIST;
-                //TODO: Implement All Interfaces
             }
         }
     });
