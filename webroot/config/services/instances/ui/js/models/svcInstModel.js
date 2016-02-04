@@ -323,7 +323,7 @@ define([
                 portTuples.models[i].attributes.portTupleName(splitArr.join(''));
             }
         },
-        formRoutingPolicyToDisplay (rtList, intfType) {
+        formRoutingPolicyToDisplay: function(rtList, intfType) {
             if (!rtList.length) {
                 return null;
             }
@@ -1032,6 +1032,7 @@ define([
                 var portTuples =
                     svcInstUtils.getPortTuples(newSvcInst['display_name'],
                                                this.model().get('portTuples'));
+                newSvcInst['port_tuples'] = [];
                 if (portTuples.length > 0) {
                     newSvcInst['port_tuples'] = portTuples;
                 }
