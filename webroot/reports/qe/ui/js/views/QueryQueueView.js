@@ -81,7 +81,8 @@ define([
         },
 
         renderQueryResultChart: function(queryQueueResultTabView, queryQueueItem, modelMap, renderCompleteCB) {
-            var queryId = queryQueueItem.queryReqObj.queryId,
+            var self = this,
+                queryId = queryQueueItem.queryReqObj.queryId,
                 selectStr = queryQueueItem.queryReqObj.formModelAttrs.select,
                 formQueryIdSuffix = '-' + queryId,
                 queryResultChartId = cowl.QE_QUERY_RESULT_CHART_ID + formQueryIdSuffix,
@@ -97,7 +98,7 @@ define([
                 } else {
                     queryResultListModel.onAllRequestsComplete.subscribe(function () {
                         if (queryResultListModel.getItems().length > 0) {
-                            queryQueueResultTabView.renderNewTab(queryQueueTabId, getQueryResultChartTabViewConfig(queryQueueItem), false, modelMap, function() {
+                            queryQueueResultTabView.renderNewTab(queryQueueTabId, getQueryResultChartTabViewConfig(queryQueueItem, self.el.id), false, modelMap, function() {
                                 renderCompleteCB();
                             });
                         }
@@ -107,7 +108,19 @@ define([
 
             renderCompleteCB();
 
-        }
+        },
+
+        renderSessionAnalyzer: function (elementId, sessionAnalyzerViewConfig) {
+            var self = this,
+                childViewMap = self.childViewMap,
+                modelMap = contrail.handleIfNull(self.modelMap, {}),
+                queryQueueTabId = cowl.QE_QUERY_QUEUE_TABS_ID,
+                queryQueueTabsView = contrail.checkIfExist(childViewMap[queryQueueTabId]) ? childViewMap[queryQueueTabId] : null;
+
+            if (queryQueueTabsView != null) {
+                queryQueueTabsView.renderNewTab(queryQueueTabId, [sessionAnalyzerViewConfig], true, modelMap, null);
+            }
+        },
 
     });
 
@@ -538,7 +551,7 @@ define([
                                 elementId: queryResultGridId,
                                 view: 'QueryResultGridView',
                                 viewConfig: {
-                                    queryResultPostData: {
+                                    queryRequestPostData: {
                                         queryId: queryId, chunk: 1, autoSort: true,
                                         chunkSize: cowc.QE_RESULT_CHUNK_SIZE_10K, async: true
                                     },
@@ -574,12 +587,10 @@ define([
                     gridColumns: [{
                         id: 'fr-details', field: "", name: "", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: {allow: false},
                         allowColumnPickable: false,
-                        formatter: function (r, c, v, cd, dc) {
-                            return '<i class="icon-external-link-sign" title="Analyze Session"></i>';
-                        },
+                        formatter: qewgc.setAnalyzerIconFormatter,
                         cssClass: 'cell-hyperlink-blue',
                         events: {
-                            onClick: qewgc.getOnClickFlowRecord(self, queryFormAttributes.formModelAttrs)
+                            onClick: qewgc.getOnClickSessionAnalyzer(self, queryFormAttributes.formModelAttrs)
                         }
                     }]
                 };
@@ -614,7 +625,7 @@ define([
         return gridOptions
     }
 
-    function getQueryResultChartTabViewConfig(queryQueueItem) {
+    function getQueryResultChartTabViewConfig(queryQueueItem, clickOutElementId) {
         var queryId = queryQueueItem.queryReqObj.queryId,
             queryFormAttributes = queryQueueItem.queryReqObj,
             queryIdSuffix = '-' + queryId,
@@ -664,7 +675,8 @@ define([
                                     queryId: queryId,
                                     queryFormAttributes: queryFormAttributes.formModelAttrs,
                                     queryResultChartId: queryResultChartId,
-                                    queryResultChartGridId: queryResultChartGridId
+                                    queryResultChartGridId: queryResultChartGridId,
+                                    clickOutElementId: clickOutElementId
                                 }
                             }
                         ]

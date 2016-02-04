@@ -35,3 +35,18 @@
     </form>
 </script>
 
+<script type="text/x-handlebars-template" id="session-analyzer-view-template">
+    <div id="qe-{{queryPrefix}}-container">
+        {{#if text}}
+        <div id='qe-{{queryPrefix}}-text-container'>
+            <div id='qe-{{queryPrefix}}-text{{saQueryIdSuffix}}'></div>
+        </div>
+        {{/if}}
+        <div id='qe-{{queryPrefix}}-chart-container'>
+            <div id='qe-{{queryPrefix}}-chart{{saQueryIdSuffix}}'></div>
+        </div>
+        <div id="qe-{{queryPrefix}}-tab-container" class="margin-10-0-0">
+            <div id='qe-{{queryPrefix}}-tab{{saQueryIdSuffix}}'></div>
+        </div>
+    </div>
+</script>
