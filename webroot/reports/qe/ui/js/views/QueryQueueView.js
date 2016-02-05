@@ -646,7 +646,7 @@ define([
         queryResultChartTabViewConfig.push({
             elementId: queryQueueResultChartTabId,
             title: 'Chart',
-            iconClass: 'icon-table',
+            iconClass: 'icon-bar-chart',
             view: "SectionView",
             tabConfig: {
                 activate: function (event, ui) {

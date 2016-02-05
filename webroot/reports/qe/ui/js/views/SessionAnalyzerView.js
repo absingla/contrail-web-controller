@@ -62,6 +62,11 @@ define([
 
                 self.model.onAllRequestsComplete.subscribe(function () {
                     lineChartModel.setData(getChartData());
+
+                    if (self.model.error) {
+                        lineChartModel.error = true;
+                        lineChartModel.errorList.concat(self.model.errorList);
+                    }
                 });
 
                 self.model.onDataUpdate.subscribe(function () {
@@ -198,7 +203,7 @@ define([
                                 elementConfig: getSummaryGridConfig(modelMap,
                                     saDataMap[cowc.SESSION_ANALYZER_KEY].queryRequestPostData.formModelAttrs,
                                     gridSummaryRowOnClick, {
-                                        titleText: cowl.TITLE_FLOW_SERIES,
+                                        titleText: cowl.TITLE_FLOW_RECORD,
                                         queryQueueUrl: cowc.URL_QUERY_FLOW_QUEUE,
                                         queryQueueTitle: cowl.TITLE_FLOW,
                                     }),

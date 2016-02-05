@@ -13,6 +13,8 @@ define([
             var self = this;
             $.extend(true, self.modelConfig, modelConfig, {childModelConfig: []});
             self.data = [];
+            self.error = false;
+            self.errorList = [];
             self.childModelObjs = [];
             self.onAllRequestsCompleteCB = [];
             self.initDefObj = $.Deferred();
@@ -24,6 +26,10 @@ define([
             //Default subscription to update the dataView.
             self.onAllRequestsComplete.subscribe(function() {
                 self.primaryListModel.setData(self.getItems());
+                if (self.error) {
+                    self.primaryListModel.error = true;
+                    self.primaryListModel.errorList.concat(self.errorList);
+                }
                 self.primaryListModel.onAllRequestsComplete.notify();
             });
 
@@ -106,12 +112,25 @@ define([
             });
         },
 
-        createChildModelObj: function(listModelConfig, updateDataCB) {
+        errorHandler: function(errorObj) {
+            var self = this;
+            self.error = true;
+            self.errorList.concat(errorObj.errorList);
+        },
+
+        createChildModelObj: function(listModelConfig, updateDataCB, errorHandler) {
             var status = $.Deferred(),
                 model = new ContrailListModel(listModelConfig);
 
             model.onAllRequestsComplete.subscribe(function() {
                 status.resolve(listModelConfig.id);
+
+                if (model.error) {
+                    return errorHandler({
+                        key: listModelConfig.id,
+                        errorList: model.errorList
+                    });
+                }
             });
 
             model.onDataUpdate.subscribe(function() {
@@ -128,12 +147,12 @@ define([
             };
         },
 
-        createAllChildModels: function(listModelConfigArray, updateDataFn) {
+        createAllChildModels: function(listModelConfigArray, updateDataFn, errorHandler) {
             var self = this,
                 childModelCollection = [];
 
             _.each(listModelConfigArray, function(listModelConfig) {
-                childModelCollection.push(self.createChildModelObj(listModelConfig, updateDataFn))
+                childModelCollection.push(self.createChildModelObj(listModelConfig, updateDataFn, errorHandler))
             });
             self.childModelObjs = childModelCollection;
         }
