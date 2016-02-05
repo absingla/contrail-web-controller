@@ -24,9 +24,10 @@ define([
                 queryFormAttributes: self.queryFormAttributes,
                 selectedFlowRecord: self.selectedFlowRecord,
                 parseFn: function (response) {
-                    return sessionAnalyzerDataParser(response);
+                    return sessionAnalyzerDataParser(response, saDataMap);
                 }
             });
+            modelMap[cowc.UMID_SA_SUMMARY_MODEL] = self.model;
 
             var lineChartModel = new ContrailListModel({data: []});
             modelMap[cowc.UMID_SA_SUMMARY_LINE_CHART_MODEL] = lineChartModel;
@@ -54,8 +55,9 @@ define([
                     self.getSessionAnalyzerChartViewConfig(saDataMap), null, null, modelMap, null);
 
                 function getChartData() {
+                    var chartEnableKeys = _.clone(cowc.SESSION_ANALYZER_CHART_DATA_KEY);
                     return formatChartData(modelMap, saDataMap[cowc.SESSION_ANALYZER_KEY].queryRequestPostData.formModelAttrs,
-                        cowc.SESSION_ANALYZER_CHART_DATA_KEY);
+                        chartEnableKeys);
                 };
 
                 self.model.onAllRequestsComplete.subscribe(function () {
@@ -163,6 +165,18 @@ define([
                 saGridReverseIngressTabId = saGridTabPrefix + '-' + saDataMap[cowc.SESSION_ANALYZER_REVERSE_INGRESS_KEY].queryRequestPostData.queryId + cowl.QE_REVERSE_INGRESS_SUFFIX_ID,
                 saGridReverseEgressTabId = saGridTabPrefix + '-' + saDataMap[cowc.SESSION_ANALYZER_REVERSE_EGRESS_KEY].queryRequestPostData.queryId + cowl.QE_REVERSE_EGRESS_SUFFIX_ID;
 
+            function onActivateGridTab(gridId, event, ui) {
+                var queryGrid = $("#" + gridId).data('contrailGrid');
+                if (queryGrid) {
+                    queryGrid.refreshView();
+                    if (queryGrid._dataView.getItems().length == 0) {
+                        setTimeout(function(){
+                            queryGrid.showGridMessage('empty')
+                        }, 1000);
+                    }
+                }
+            }
+
             return {
                 elementId: saGridTabPrefix,
                 view: "TabsView",
@@ -172,7 +186,7 @@ define([
                         {
                             elementId: saGridSummaryTabId,
                             title: cowl.TITLE_SESSION_ANALYZER_SUMMARY,
-                            view: "QueryResultGridView",
+                            view: "GridView",
                             tabConfig: {
                                 activate: function (event, ui) {
                                     if ($("#" + saGridSummaryTabId).data('contrailGrid')) {
@@ -181,14 +195,15 @@ define([
                                 }
                             },
                             viewConfig: {
-                                queryRequestPostData: saDataMap[cowc.SESSION_ANALYZER_KEY].queryRequestPostData,
-                                gridOptions: {
-                                    titleText: cowl.TITLE_FLOW_SERIES,
-                                    queryQueueUrl: cowc.URL_QUERY_FLOW_QUEUE,
-                                    queryQueueTitle: cowl.TITLE_FLOW,
-                                    gridColumns: getSummaryGridColumnConfig(modelMap,
-                                        saDataMap[cowc.SESSION_ANALYZER_KEY].queryRequestPostData.formModelAttrs,
-                                        gridSummaryRowOnClick),
+                                elementConfig: getSummaryGridConfig(modelMap,
+                                    saDataMap[cowc.SESSION_ANALYZER_KEY].queryRequestPostData.formModelAttrs,
+                                    gridSummaryRowOnClick, {
+                                        titleText: cowl.TITLE_FLOW_SERIES,
+                                        queryQueueUrl: cowc.URL_QUERY_FLOW_QUEUE,
+                                        queryQueueTitle: cowl.TITLE_FLOW,
+                                    }),
+                                modelConfig: {
+                                    data: []
                                 },
                                 modelKey: cowc.UMID_SA_SUMMARY_LIST_MODEL
                             }
@@ -199,9 +214,7 @@ define([
                             view: "QueryResultGridView",
                             tabConfig: {
                                 activate: function (event, ui) {
-                                    if ($("#" + saGridIngressTabId).data('contrailGrid')) {
-                                        $("#" + saGridIngressTabId).data('contrailGrid').refreshView();
-                                    }
+                                    onActivateGridTab(saGridIngressTabId, event, ui);
                                 }
                             },
                             viewConfig: {
@@ -220,9 +233,7 @@ define([
                             view: "QueryResultGridView",
                             tabConfig: {
                                 activate: function (event, ui) {
-                                    if ($("#" + saGridEgressTabId).data('contrailGrid')) {
-                                        $("#" + saGridEgressTabId).data('contrailGrid').refreshView();
-                                    }
+                                    onActivateGridTab(saGridEgressTabId, event, ui);
                                 }
                             },
                             viewConfig: {
@@ -241,9 +252,7 @@ define([
                             view: "QueryResultGridView",
                             tabConfig: {
                                 activate: function (event, ui) {
-                                    if ($("#" + saGridReverseIngressTabId).data('contrailGrid')) {
-                                        $("#" + saGridReverseIngressTabId).data('contrailGrid').refreshView();
-                                    }
+                                    onActivateGridTab(saGridReverseIngressTabId, event, ui);
                                 }
                             },
                             viewConfig: {
@@ -262,9 +271,7 @@ define([
                             view: "QueryResultGridView",
                             tabConfig: {
                                 activate: function (event, ui) {
-                                    if ($("#" + saGridReverseEgressTabId).data('contrailGrid')) {
-                                        $("#" + saGridReverseEgressTabId).data('contrailGrid').refreshView();
-                                    }
+                                    onActivateGridTab(saGridReverseEgressTabId, event, ui);
                                 }
                             },
                             viewConfig: {
@@ -284,28 +291,20 @@ define([
 
     });
 
-    function sessionAnalyzerDataParser(response) {
+    function sessionAnalyzerDataParser(response, saDataMap) {
         var dataSeries = [],
             keyMap = cowc.MAP_SESSION_ANALYZER_DATA_KEY;
 
         _.each(response, function (data, idx) {
-            if (data.values.length != 0) {
-                var gridData = {},
-                    valueItem0 = data.values[0];
-
-                gridData = _.extend(gridData, valueItem0); //we will use the first item to make the summary row item
-                gridData.cgrid = "id_" + idx;
-                gridData.key = data.key;
-                gridData.name = keyMap[data.key].label;
-                gridData.start_time = gridData.T;
-                delete gridData.T;
-                delete gridData['sum(bytes)'];
-                delete gridData['sum(packets)'];
-                gridData.end_time = data.values[(data.values.length - 1)].T; //Timestamp from last entry
-                gridData.values = data.values;
-
-                dataSeries.push(gridData);
+            var gridData = {};
+            if (contrail.checkIfExist(saDataMap[data.key].queryRequestPostData)) {
+                gridData = getSummaryGridColumnValuesFromWhereClause(saDataMap[data.key].queryRequestPostData.formModelAttrs);
             }
+            gridData['cgrid'] = "id_" + idx;
+            gridData['key'] = data.key;
+            gridData['name'] = keyMap[data.key].label;
+            gridData['values'] = data.values;
+            dataSeries.push(gridData);
         });
         return dataSeries;
     };
@@ -322,6 +321,19 @@ define([
 
         return summaryQueryRequestPostData
     };
+
+    function getSummaryGridColumnValuesFromWhereClause(formModelAttrs) {
+        var gridColumns = {},
+            whereClause = formModelAttrs.where;
+
+        var whereClauseArray = whereClause.slice(1, -1).split(" AND ");
+
+        _.each(whereClauseArray, function(whereClause) {
+            var keyValArray = whereClause.replace(/ /g, "").split("=");
+            gridColumns[keyValArray[0]] = keyValArray[1];
+        });
+        return gridColumns;
+    }
 
     function getLineChartFilterConfig(queryId, aggregateSelectFields, saLineChartId) {
         var filterConfig = {
@@ -361,9 +373,9 @@ define([
         return filterConfig
     };
 
-    function getBadgeColorkey(chartColorAvailableKeys) {
+    function getBadgeColorkey(chartEnableKeys) {
         var badgeColorKey = null;
-        $.each(chartColorAvailableKeys, function (colorKey, colorValue) {
+        $.each(chartEnableKeys, function (colorKey, colorValue) {
             if (colorValue === null) {
                 badgeColorKey = colorKey;
                 return false;
@@ -372,7 +384,7 @@ define([
         return badgeColorKey
     };
 
-    function formatChartData(modelMap, formModelAttrs, chartColorAvailableKeys) {
+    function formatChartData(modelMap, formModelAttrs, chartEnableKeys) {
         var chartListModel = modelMap[cowc.UMID_SA_SUMMARY_LIST_MODEL],
             selectArray = formModelAttrs.select.replace(/ /g, "").split(","),
             aggregateSelectFields = qewu.getAggregateSelectFields(selectArray),
@@ -392,7 +404,7 @@ define([
             qewu.addChartMissingPoints(item, formModelAttrs, aggregateSelectFields);
         });
 
-        $.each(chartColorAvailableKeys, function (colorKey, colorValue) {
+        $.each(chartEnableKeys, function (colorKey, colorValue) {
             if (colorValue !== null) {
 
                 $.each(chartModelItems, function (idx, item) {
@@ -422,31 +434,44 @@ define([
         return chartData
     };
 
-    function gridSummaryRowOnClick(e, dc, modelMap, formModelAttrs) {
-        var chartColorAvailableKeys = cowc.SESSION_ANALYZER_CHART_DATA_KEY; //will show all data in chart by default.
+    function gridSummaryRowOnClick(e, dc, modelMap, formModelAttrs, chartEnableKeys) {
         var lineChartModel = modelMap[cowc.UMID_SA_SUMMARY_LINE_CHART_MODEL],
             badgeElement = $(e.target).parent(),
             badgeColorKey = badgeElement.data('color_key');
 
-        if (badgeColorKey >= 0 && _.compact(chartColorAvailableKeys).length > 1) {
+        if (badgeColorKey >= 0 && _.compact(chartEnableKeys).length > 1) {
             badgeElement.data('color_key', -1);
             badgeElement.removeClass('icon-badge-color-' + badgeColorKey);
-            chartColorAvailableKeys[badgeColorKey] = null;
-            lineChartModel.setData(formatChartData(modelMap, formModelAttrs, chartColorAvailableKeys));
+            chartEnableKeys[badgeColorKey] = null;
+            lineChartModel.setData(formatChartData(modelMap, formModelAttrs, chartEnableKeys));
         } else if (badgeColorKey < 0) {
-            badgeColorKey = getBadgeColorkey(chartColorAvailableKeys);
+            badgeColorKey = getBadgeColorkey(chartEnableKeys);
 
             if (badgeColorKey !== null) {
                 badgeElement.data('color_key', badgeColorKey);
                 badgeElement.addClass('icon-badge-color-' + badgeColorKey);
-                chartColorAvailableKeys[badgeColorKey] = dc.key;
-                lineChartModel.setData(formatChartData(modelMap, formModelAttrs, chartColorAvailableKeys));
+                chartEnableKeys[badgeColorKey] = dc.key;
+                lineChartModel.setData(formatChartData(modelMap, formModelAttrs, chartEnableKeys));
             }
         }
     };
 
-    function getSummaryGridColumnConfig(modelMap, formModelAttrs, summaryRowOnClickFn) {
-        return [
+    function getSummaryGridConfig(modelMap, formModelAttrs, summaryRowOnClickFn, gridOptions) {
+        var chartEnableKeys = _.clone(cowc.SESSION_ANALYZER_CHART_DATA_KEY), //will show all data in chart by default.
+            selectArray = formModelAttrs.select.replace(/ /g, "").split(","),
+            saDefaultGridColumns = qewgc.getColumnDisplay4Grid(formModelAttrs.table_name, formModelAttrs.table_type, selectArray),
+            saDefaultGridIds = ['vrouter', 'sourcevn', 'destvn', 'sourceip', 'destip', 'sport', 'dport', 'protocol', 'direction_ing'],
+            saSummaryGridColumns = [];
+
+        _.each(saDefaultGridIds, function(gridId) {
+            _.each(saDefaultGridColumns, function(gridCol) {
+                if (gridId == gridCol.id) {
+                    saSummaryGridColumns.push(gridCol);
+                }
+            });
+        });
+
+        var summaryAddColumns = [
             {
                 id: 'fc-badge', field:"", name:"", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: { allow: false },
                 formatter: function(r, c, v, cd, dc){
@@ -455,12 +480,16 @@ define([
                 },
                 events: {
                     onClick: function(e, dc) {
-                        summaryRowOnClickFn(e, dc, modelMap, formModelAttrs);
+                        summaryRowOnClickFn(e, dc, modelMap, formModelAttrs, chartEnableKeys);
                     }
                 }
             },
             {id:"name",field:"name", width:150, name:"Type", groupable:false, formatter: function(r, c, v, cd, dc){ return cowu.handleNull4Grid(dc.name);}}
         ];
+
+        saSummaryGridColumns = summaryAddColumns.concat(saSummaryGridColumns)
+
+        return qewgc.getQueryGridConfig(null, saSummaryGridColumns, gridOptions);
     };
 
     return SessionAnalyzerView;

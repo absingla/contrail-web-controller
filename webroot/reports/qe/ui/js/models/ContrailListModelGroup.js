@@ -117,7 +117,7 @@ define([
             model.onDataUpdate.subscribe(function() {
                return updateDataCB({
                    key: listModelConfig.id,
-                   data: model.getItems()
+                   values: model.getItems()
                });
             });
 
