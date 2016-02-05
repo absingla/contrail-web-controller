@@ -61,61 +61,68 @@ define([
 
         this.termFormatting = function(term) {
             var formattedTerm = "";
-            var from = getValueByJsonPath(term, "from", "")
+            var from = getValueByJsonPath(term, "term_match_condition", "")
             formattedTerm += "from ";
-            if(from != ""){
-                var community = getValueByJsonPath(term, "from;community", "");
+            if (from != "") {
+                var community = getValueByJsonPath(term, "term_match_condition;community", "");
                 if(community != "") {
                     formattedTerm +=  "community " + self.termFormat(community) + " ";
                 }
-                var type = getValueByJsonPath(term,
-                                             "from;prefix;type", "");
-                var prefix = getValueByJsonPath(term, "from;prefix;prefix", "");
-                if(prefix != "") {
-                    formattedTerm +=  "prefix " + self.termFormat(prefix) + " ";
-                }
-                if(type != "") {
-                    formattedTerm += self.termFormat(type) + " ";
+                var termPrefix = getValueByJsonPath(term,
+                                             "term_match_condition;prefix", []);
+                if (termPrefix.length > 0) {
+                    var prefixLen = termPrefix.length;
+                    for (var i = 0; i < prefixLen; i++) {
+                        var perPrefix = termPrefix[i],
+                            type = getValueByJsonPath(perPrefix, "prefix_type", ""),
+                            prefix = getValueByJsonPath(perPrefix, "prefix", "");
+                        if(prefix != "") {
+                            formattedTerm +=  "prefix " + self.termFormat(prefix) + " ";
+                        }
+                        if(type != "") {
+                            formattedTerm += self.termFormat(type) + " ";
+                        }
+                    }
                 }
             } else {
                 formattedTerm += self.termFormat("any ");
             }
             var thenValue = "";
             var then =
-                getValueByJsonPath(term, "then;update;community;add", "");
+                getValueByJsonPath(term, "term_action_list;update;community;add", "");
             var thenCommunity = [];
             if(then != "") {
                 thenValue +=  "add ";
                 var thenCommunity = getValueByJsonPath(term,
-                                       "then;update;community;add;community",
+                                       "term_action_list;update;community;add;community",
                                        []);
             } else {
                 then =
-                   getValueByJsonPath(term, "then;update;community;remove", "");
+                   getValueByJsonPath(term, "term_action_list;update;community;remove", "");
                 if(then != "") {
                     thenValue +=  "remove ";
                     thenCommunity = getValueByJsonPath(term,
-                                       "then;update;community;remove;community",
+                                       "term_action_list;update;community;remove;community",
                                        []);
                 } else {
                     then = getValueByJsonPath(term,
-                                       "then;update;community;set", "");
+                                       "term_action_list;update;community;set", "");
                     if(then != "") {
                         thenValue +=  "set ";
                         thenCommunity = getValueByJsonPath(term,
-                                       "then;update;community;set;community",
+                                       "term_action_list;update;community;set;community",
                                        []);
                     }
                 }
             }
-            if(thenCommunity.length > 0) {
+            if((typeof(thenCommunity) != "string") && thenCommunity.length > 0) {
                 var thenCommunityVal = thenCommunity.join(", ");
                 thenValue += "communities "
                               + self.termFormat(thenCommunityVal) + " ";
             }
 
             var localPref = getValueByJsonPath(term,
-                                       "then;update;local-pref", "")
+                                       "term_action_list;update;local_pref", "")
             if(localPref != "") {
                 thenValue +=  "local-preference "
                               + self.termFormat(localPref) + " ";
@@ -127,7 +134,7 @@ define([
                 formattedTerm += " then ";
                 formattedTerm += thenValue;
             }
-            var action = getValueByJsonPath(term, "then;action", "")
+            var action = getValueByJsonPath(term, "term_action_list;action", "")
             if(action != "") {
                 formattedTerm +=  " action " + self.termFormat(action) + " ";
             } else {
@@ -191,8 +198,9 @@ define([
                                 }
                                 if(fromArraySplit.length == 2 ||
                                    fromArraySplit.length == 3) {
-                                    returnObject.prefix = {};
-                                    returnObject.prefix.prefix =
+                                    returnObject.prefix = [];
+                                    returnObject.prefix[0] = {};
+                                    returnObject.prefix[0].prefix =
                                                  fromArraySplit[1];
                                     if(fromArraySplit.length == 2) {
                                         if(fromArraySplit[1] == "exact" ||
@@ -203,7 +211,7 @@ define([
                                             returnObject.error.available = true;
                                             return returnObject;
                                         }
-                                        returnObject.prefix.type =
+                                        returnObject.prefix[0].prefix_type =
                                                             "exact";
                                     } else {
                                         var prefixType =
@@ -211,7 +219,7 @@ define([
                                         if(prefixType == "orlonger" ||
                                            prefixType == "longer" ||
                                            prefixType == "exact") {
-                                        returnObject.prefix.type =
+                                        returnObject.prefix[0].prefix_type =
                                                             fromArraySplit[2];
                                         } else {
                                             returnObject.error.message =
@@ -374,7 +382,7 @@ define([
                                             returnObject.error.available = true;
                                             return returnObject;
                                         }
-                                        returnObject["local-pref"]
+                                        returnObject["local_pref"]
                                             = Number(thenArraySplit[1]);
                                     }
                                 } else {
@@ -413,11 +421,19 @@ define([
             if(fromObj.community != "") {
                 returnStr += "community " + fromObj.community;
             }
-            var prefixVal = getValueByJsonPath(fromObj, "prefix;prefix", "");
-            if(prefixVal != "") {
-                if(returnStr != "") returnStr += "\n"
-                returnStr += "prefix " + fromObj.prefix.prefix;
-                returnStr += " " + fromObj.prefix.type;
+
+            var prefixVal = getValueByJsonPath(fromObj, "prefix", []),
+                prefixLen = prefixVal.length;
+            if (returnStr != "" && prefixLen > 0) {
+                returnStr += "\n"
+            }
+            for (var i = 0; i < prefixLen; i++) {
+                var prefixIP = getValueByJsonPath(prefixVal[i], "prefix", "");
+                    prefixType = getValueByJsonPath(prefixVal[i], "prefix_type", "");
+                if(prefixIP != "") {
+                    returnStr += "prefix " + prefixIP;
+                    returnStr += " " + prefixType;
+                }
             }
             return returnStr;
         };
@@ -441,13 +457,161 @@ define([
                     returnStr += "community " + communityObj.remove.community;
                 }
             }
-            if("local-pref" in thenObj &&
-               thenObj["local-pref"] != "") {
+            if("local_pref" in thenObj &&
+               thenObj["local_pref"] != "") {
                 if(returnStr != "") returnStr += "\n"
-                returnStr += "local-pref " + thenObj["local-pref"];
+                returnStr += "local-pref " + thenObj["local_pref"];
             }
             return returnStr;
         };
+
+        // To build the post Object for From in each term
+        this.buildPostObjectTermFrom = function(fromObj) {
+            var fromObjCount = fromObj.length;
+            var returnFromObj = {};
+          //  var ObjCount = 
+            for (var i = 0; i < fromObjCount; i++) {
+                var key = fromObj[i].model().attributes["name"],
+                    val = fromObj[i].model().attributes["value"]();
+                if (val != "") {
+                    switch (key) {
+                        case "community": {
+                            returnFromObj["community"] = val;
+                            break;
+                        }
+                        case "prefix": {
+                            var prefixType = fromObj[i].model().attributes["prefix_type"];
+                            returnFromObj["prefix"] = [];
+                            returnFromObj["prefix"][0] = {};
+                            returnFromObj["prefix"][0]["prefix"] = val;
+                            returnFromObj["prefix"][0]["prefix_type"] = {};
+                            returnFromObj["prefix"][0]["prefix_type"] = prefixType;
+                            break;
+                        }
+                    }
+                }
+            }
+            return returnFromObj;
+        };
+        // To build the post Object for Then in each term
+        this.buildPostObjectTermThen = function(thenObj) {
+            var thenObjCount = thenObj.length;
+            var returnThenObj = {};
+            //var ObjCount = 
+            returnThenObj.update = {};
+            for (var i = 0; i < thenObjCount; i++) {
+                var key = thenObj[i].model().attributes["name"],
+                    val = thenObj[i].model().attributes["value"]();
+                var action = thenObj[i].model().attributes["action_condition"];
+                if (val != "" || action != "") {
+                    switch (key) {
+                        case "add community": {
+                            returnThenObj["update"]["community"] = {};
+                            returnThenObj["update"]["community"]["add"] = {};
+                            returnThenObj["update"]["community"]["add"]["community"] = [val];
+                            break;
+                        }
+                        case "set community": {
+                            returnThenObj["update"]["community"] = {};
+                            returnThenObj["update"]["community"]["set"] = {};
+                            returnThenObj["update"]["community"]["set"]["community"] = [val];
+                            break;
+                        }
+                        case "remove community": {
+                            returnThenObj["update"]["community"] = {};
+                            returnThenObj["update"]["community"]["remove"] = {};
+                            returnThenObj["update"]["community"]["remove"]["community"] = [val];
+                            break;
+                        }
+                        case "local-preference": {
+                            returnThenObj["update"]["local_pref"] = parseInt(val);
+                            break;
+                        }
+                        case "action": {
+                             if (action != "default") {
+                                returnThenObj["action"] = {};
+                                returnThenObj["action"] = action;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            return returnThenObj;
+        };
+        // To build the from/match object for Edit Pop-up
+        this.buildTermMatchObject = function(matchObj) {
+            if(matchObj == null) {
+                return [];
+            }
+            var returnMatchArr = [],
+                val = getValueByJsonPath(matchObj, "community", "");
+            if (val != "") {
+                returnMatchArr.push({name: 'community', value: val});
+            }
+            var prefixVal = getValueByJsonPath(matchObj, "prefix", []),
+                prefixLen = prefixVal.length;
+            for (var i = 0; i < prefixLen; i++) {
+                var prefixIP = getValueByJsonPath(prefixVal[i], "prefix", "");
+                    prefixType = getValueByJsonPath(prefixVal[i], "prefix_type", "");
+                if(prefixIP != "") {
+                    returnMatchArr.push({
+                                         name: 'prefix',
+                                         value: prefixIP,
+                                         prefix_type:prefixType
+                                        });
+                }
+            }
+
+            return returnMatchArr;
+        };
+        // To build the then/Action object for Edit Pop-up
+        this.buildTermActionObject = function(actionObject) {
+            if(actionObject == null) {
+                return "";
+            }
+            var returnActionArr = [];
+            var community = getValueByJsonPath(actionObject, "update;community", "");
+            if (community != "") {
+                var communietyObj = this.getActionCommunietyObj(community);
+                if (communietyObj != null) {
+                    returnActionArr.push(communietyObj);
+                }
+            }
+            var localPref = getValueByJsonPath(actionObject, "update;local_pref", "");
+            if (localPref != "") {
+                returnActionArr.push({name:'local-preference', value: localPref});
+            }
+            var action = getValueByJsonPath(actionObject, "action", "");
+            if (action != "") {
+                returnActionArr.push({name:'action', action_condition: action});
+            }
+            return returnActionArr;
+        };
+        
+        this.getActionCommunietyObj = function(community) {
+            var returnObj = {}
+            var val = getValueByJsonPath(community, "add;community", "");
+            if (val != "") {
+                returnObj.name = "add community";
+                returnObj.value = val.join(", ");
+                return returnObj;
+            }
+            val = getValueByJsonPath(community, "set;community", "");
+            if (val != "") {
+                returnObj.name = "set community";
+                returnObj.value = val.join(", ");
+                return returnObj;
+            }
+            val = getValueByJsonPath(community, "remove;community", "");
+            if (val != "") {
+                returnObj.name = "remove community";
+                returnObj.value = val.join(", ");
+                return returnObj;
+            }
+            return null;
+        };
+        this.formatRoutingPolicyTermFromModel
     }
     return RoutingPolicyFormatter;
 });

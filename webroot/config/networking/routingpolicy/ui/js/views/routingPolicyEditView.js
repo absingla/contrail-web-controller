@@ -74,7 +74,8 @@ define([
                 disableElement = true;
             }
             self.renderView4Config(
-                $("#" + modalId).find("#" + modalId + "-form"), self.model, getConfigureViewConfig(disableElement), 'routingPolicyValidations', null, null, function () {
+                $("#" + modalId).find("#" + modalId + "-form"), self.model,
+                    getConfigureViewConfig(disableElement), 'routingPolicyValidations', null, null, function () {
                     self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
                     Knockback.applyBindings(self.model, document.getElementById(modalId));
                     var termCollection = self.model.model().attributes.termCollection,
@@ -166,10 +167,9 @@ define([
                         view: "FormCollectionView",
                         viewConfig: {
                             collection: 'termCollection()',
+                            validation: 'termValidation',
                             templateId: 'query-routing-policy-terms-template',
                             label: "Terms",
-                            //path: "termCollection",
-                            //validation: 'termValidation',
                             accordionable: true,
                             accordionConfig: {
                                 header: '.or-clause-header'
@@ -193,6 +193,7 @@ define([
                                             viewConfig: {
                                                 label: 'From',
                                                 collection: 'from_terms()',
+                                                validation: 'fromTermValidation',
                                                 rows: [
                                                     {
                                                         rowActions: [
@@ -237,14 +238,14 @@ define([
                                                                 }
                                                             },
                                                             {
-                                                                elementId: 'prefix_condition',
+                                                                elementId: 'prefix_type',
                                                                 view: "FormDropdownView",
                                                                 class: "",
                                                                 viewConfig: {
                                                                     templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
-                                                                    path: "prefix_condition",
+                                                                    path: "prefix_type",
                                                                     visible: 'name() == "prefix"',
-                                                                    dataBindValue: "prefix_condition",
+                                                                    dataBindValue: "prefix_type",
                                                                     dataBindOptionList: 'getPrefixConditionOptionList',
                                                                     width: 80,
                                                                     placeholder: 'Select Prefix',
@@ -268,6 +269,7 @@ define([
                                             viewConfig: {
                                                 label: 'Then',
                                                 collection: 'then_terms()',
+                                                validation: 'thenTermValidation',
                                                 rows: [
                                                     {
                                                         rowActions: [
@@ -346,4 +348,4 @@ define([
         }
     }
     return RoutingPolicyEditView;
-});
+}); 

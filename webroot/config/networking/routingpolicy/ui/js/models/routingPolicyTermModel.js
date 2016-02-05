@@ -13,8 +13,22 @@ define([
     var routingPolicyFormatter = new RoutingPolicyFormatter();
     var RoutingPolicyTermModel = ContrailModel.extend({
         defaultConfig: {
+           "term_match_condition":{
+                "community":"",
+                "prefix":[]
+            },
+            "term_action_list":{
+                "update": {
+                    "community":{},
+                    "local_pref" : "",
+                },
+                "action": ""
+            },
+            "action":"Default",
             "fromValue": "",
             "thenValue": "",
+            "from_term": "",
+            "then_term": "",
             "disabled_from_names": {}
         },
 
@@ -29,29 +43,31 @@ define([
                 modelConfig = $.extend({}, true, config),
                 routingPolicyTermFromModels = [], routingPolicyTermThenModels = [],
                 routingPolicyTermFromCollectionModel, routingPolicyTermThenCollectionModel;
-
-            routingPolicyTermFromModels.push(new routingPolicyTermFromModel(self, {name: 'community'}));
-            routingPolicyTermThenModels.push(new routingPolicyTermThenModel(self, {name: 'add community'}));
-
+                
+            var termMatchArray = routingPolicyFormatter.buildTermMatchObject (self.parentModel.term_match_condition);
+            var termMatchArrayLen = termMatchArray.length;
+            for (var i = 0; i < termMatchArrayLen; i++) {
+                var termMatch = new routingPolicyTermFromModel(self.parentModel, termMatchArray[i]);
+                routingPolicyTermFromModels.push(termMatch);
+            }
+            var termActionArray = routingPolicyFormatter.buildTermActionObject (self.parentModel.term_action_list);
+            var termActionArrayLen = termActionArray.length;
+            for (var i = 0; i < termActionArrayLen; i++) {
+                var termAction = new routingPolicyTermThenModel(self.parentModel, termActionArray[i]);
+                routingPolicyTermThenModels.push(termAction);
+            }
+            //This need to be fixed
+            if (termMatchArrayLen == 0) {
+                routingPolicyTermFromModels.push(new routingPolicyTermFromModel(self, {name: 'community', value: ''}));
+            }
+            if (termActionArrayLen == 0) {
+                routingPolicyTermThenModels.push(new routingPolicyTermThenModel(self, {name: 'add community'}));
+            }
             routingPolicyTermFromCollectionModel = new Backbone.Collection(routingPolicyTermFromModels);
             routingPolicyTermThenCollectionModel = new Backbone.Collection(routingPolicyTermThenModels);
 
             modelConfig['from_terms'] = routingPolicyTermFromCollectionModel;
             modelConfig['then_terms'] = routingPolicyTermThenCollectionModel;
-
-            var community = getValueByJsonPath(modelConfig, "from;community", ""),
-                prefix = getValueByJsonPath(modelConfig, "from;prefix;prefix", "");
-
-            if (community != "" || prefix != "") {
-                modelConfig["fromValue"] = routingPolicyFormatter.fromObjToStr(modelConfig["from"]);
-            }
-
-            var thenComm = getValueByJsonPath(modelConfig, "then;update;community", ""),
-                localpref = getValueByJsonPath(modelConfig, "then;update;local-pref", "");
-
-            if (thenComm != "" || localpref != "") {
-                modelConfig["thenValue"] = routingPolicyFormatter.thenObjToStr(modelConfig["then"]["update"]);
-            }
             return modelConfig;
         },
         validateAttr: function (attributePath, validation, data) {
@@ -74,17 +90,17 @@ define([
             $.each(fromTerms, function (fromTermKey, fromTermValue) {
                 var name = fromTermValue.name(),
                     value = fromTermValue.value(),
-                    prefixCondition = fromTermValue.prefix_condition(),
+                    prefixType = fromTermValue.prefix_type(),
                     fromTermStr = '';
 
                 name = contrail.checkIfFunction(name) ? name() : name;
                 value = contrail.checkIfFunction(value) ? value() : value;
-                prefixCondition = contrail.checkIfFunction(prefixCondition) ? prefixCondition() : prefixCondition;
+                prefixType = contrail.checkIfFunction(prefixType) ? prefixType() : prefixType;
 
                 if (value != '') {
                     fromTermStr = name + ' ' + value;
                     if (name == 'prefix') {
-                        fromTermStr += ' ' + prefixCondition;
+                        fromTermStr += ' ' + prefixType;
                     }
 
                     fromTermArray.push(fromTermStr)
@@ -143,7 +159,7 @@ define([
         validations: {
             termValidation: {
                 //TODO: Add appropriate validations.
-                /*
+                
                 'fromValue': function (value, attr, finalObj) {
                     if (value.trim() != "") {
                         var result =
@@ -162,7 +178,7 @@ define([
                         }
                     }
                 }
-                */
+                
             }
         }
     });

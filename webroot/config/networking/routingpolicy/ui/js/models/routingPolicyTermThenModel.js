@@ -67,19 +67,27 @@ define([
 
         getActionConditionOptionList: function(viewModel) {
             return [
-                {id: 'Default', text: 'Default'},
-                {id: 'Reject', text: 'Reject'},
-                {id: 'Accept', text: 'Accept'},
-                {id: 'Next', text: 'Next'}
+                {id: 'default', text: 'Default'},
+                {id: 'reject', text: 'Reject'},
+                {id: 'accept', text: 'Accept'},
+                {id: 'next', text: 'Next'}
             ]
         },
 
         validations: {
             thenTermValidation: {
                 //TODO: Add appropriate validations.
-                'name': {
-                    required: true,
-                    msg: 'Select a valid value for action in Then clause.'
+                //'name': {
+                //    required: true,
+                //    msg: 'Select a valid value for action in Then clause.'
+                //},
+                'value': 
+                function(value, attr, finalObj) {
+                    if (finalObj.name == "local-preference") {
+                        if (!isNumber(String(value).trim())){
+                            return "Local preference has to be a number.";
+                        }
+                    }
                 }
             }
         }

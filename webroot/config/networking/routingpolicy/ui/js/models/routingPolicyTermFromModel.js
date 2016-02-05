@@ -6,14 +6,16 @@ define([
     'underscore',
     'backbone',
     'knockout',
-    'contrail-model'
-], function (_, Backbone, Knockout, ContrailModel) {
+    'contrail-model',
+    'config/networking/routingpolicy/ui/js/views/routingPolicyFormatter',
+], function (_, Backbone, Knockout, ContrailModel, RoutingPolicyFormatter) {
+    var routingPolicyFormatter = new RoutingPolicyFormatter();
     var RoutingPolicyTermFromModel = ContrailModel.extend({
 
         defaultConfig: {
             name: '',
             value : '',
-            prefix_condition: ''
+            prefix_type: ''
         },
 
         constructor: function (parentModel, modelData) {
@@ -49,7 +51,6 @@ define([
         deleteFromTerm: function() {
             var fromTerms = this.model().collection,
                 fromTerm = this.model();
-
             if (fromTerms.length > 1) {
                 fromTerms.remove(fromTerm);
             }
@@ -72,10 +73,10 @@ define([
         //TODO: Add appropriate validations.
         validations: {
             fromTermValidation: {
-                'value': {
-                    required: true,
-                    msg: 'Enter a valid value for community or prefix in From clause'
-                }
+                //'value': {
+                //    required: true,
+                //    msg: 'Enter a valid value for community or prefix in From clause'
+                //}
             }
         }
     });

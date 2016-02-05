@@ -32,13 +32,14 @@ define([
                     termList[i].fromValue = "";
                     termList[i].thenValue = "";
                     var routingPolicyTermModel = new
-                        RoutingPolicyTermModel(rule_obj);
+                        RoutingPolicyTermModel(termList[i]);
                     ruleModels.push(routingPolicyTermModel)
                 }
+            } else {
+                ruleModels.push(new
+                    RoutingPolicyTermModel(termList));
             }
 
-            ruleModels.push(new
-                RoutingPolicyTermModel([]))
 
             var termCollectionModel = new Backbone.Collection(ruleModels);
             modelConfig['termCollection'] = termCollectionModel;
@@ -95,45 +96,12 @@ define([
 
                 for (var i = 0; i < routingPoliceyTermLen; i++) {
                     newPolicyRule[i] = {};
-                    var from = routingPolicyTerm[i].fromValue();
-                    if (from != "" && from.trim != "") {
-                        var fromStructured =
-                            routingPolicyFormatter.buildFromStructure(from);
-                        if (fromStructured.error.available == false) {
-                            newPolicyRule[i].from = {};
-                            delete fromStructured.error;
-                            newPolicyRule[i].from = fromStructured;
-                        } else {
-                            if (contrail.checkIfFunction(callbackObj.error)) {
-                                callbackObj.error(this.getFormErrorText
-                                (ctwl.ROUTING_POLICY_PREFIX_ID));
-                            }
-                        }
-                    }
-                    var then = routingPolicyTerm[i].thenValue();
-                    if (then != "" && then.trim != "") {
-                        var thenStructured =
-                            routingPolicyFormatter.buildThenStructure(then);
-                        if (thenStructured.error.available == false) {
-                            newPolicyRule[i].then = {};
-                            newPolicyRule[i].then.update = {};
-                            delete thenStructured.error;
-                            newPolicyRule[i].then.update = thenStructured;
-                        } else {
-                            if (contrail.checkIfFunction(callbackObj.error)) {
-                                callbackObj.error(this.getFormErrorText
-                                (ctwl.ROUTING_POLICY_PREFIX_ID));
-                            }
-                        }
-                    }
-                    if (routingPolicyTerm[i].action().trim() != "" &&
-                        routingPolicyTerm[i].action().trim() != "Default") {
-                        if (newPolicyRule[i].then == undefined) {
-                            newPolicyRule[i].then = {};
-                        }
-                        newPolicyRule[i].then.action =
-                            routingPolicyTerm[i].action().toLowerCase();
-                    }
+                    var fromObj = routingPolicyFormatter.buildPostObjectTermFrom(routingPolicyTerm[i].from_terms());
+                    var thenObj = routingPolicyFormatter.buildPostObjectTermThen(routingPolicyTerm[i].then_terms());
+                    newPolicyRule[i].term_match_condition = {};
+                    newPolicyRule[i].term_match_condition = fromObj;
+                    newPolicyRule[i].term_action_list = {};
+                    newPolicyRule[i].term_action_list = thenObj;
                     delete(routingPolicyTerm[i])
                 }
                 newRoutingPolicyData["routing_policy_entries"]["term"] = newPolicyRule;
