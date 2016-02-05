@@ -295,8 +295,12 @@ define([
                        = getValueByJsonPath(mirrorObj, "analyzer_ip_address", null);
                 modelConfig['mirrorToUdpPort']
                        = getValueByJsonPath(mirrorObj, "udp_port", null);
-                modelConfig['mirrorToRoutingInstance']
-                       = getValueByJsonPath(mirrorObj, "routing_instance", null);
+                var routingInst = getValueByJsonPath(mirrorObj, "routing_instance", []);
+                if (routingInst.length > 0) {
+                    modelConfig['mirrorToRoutingInstance'] = routingInst.join(":");
+                } else {
+                    modelConfig['mirrorToRoutingInstance'] = null;
+                }
                 modelConfig['is_mirror'] = true;
             }
 
@@ -569,6 +573,12 @@ define([
                     }
                 }
             }
+        },
+        // Function to update the routing Instance when the network is changed
+        updateMirrorRoutingInterface(portModel, newValue) {
+            var vnName = newValue.split(":");
+            vnName = getValueByJsonPath(vnName, "2");
+            portModel.mirrorToRoutingInstance(newValue+":"+vnName);
         },
         // fixed IP collection Adding
         addFixedIP: function() {
@@ -1101,7 +1111,8 @@ define([
                     mirror.mirror_to = {};
                     mirror.mirror_to.analyzer_name = newPortData.mirrorToAnalyzerName;
                     mirror.mirror_to.analyzer_ip_address = newPortData.mirrorToAnalyzerIpAddress;
-                    mirror.mirror_to.routing_instance = newPortData.mirrorToRoutingInstance;
+                    var ri = getValueByJsonPath(newPortData, 'mirrorToRoutingInstance', '');
+                    mirror.mirror_to.routing_instance = ri.split(':');
                     mirror.mirror_to.udp_port = Number(newPortData.mirrorToUdpPort);
                     newPortData.virtual_machine_interface_properties.interface_mirror = mirror;
                 }
