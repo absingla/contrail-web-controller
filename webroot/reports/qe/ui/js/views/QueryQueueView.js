@@ -92,7 +92,7 @@ define([
 
             if (selectArray.indexOf("T=") !== -1 && $('#' + queryResultChartId).length === 0) {
                 if (!(queryResultListModel.isRequestInProgress()) && queryResultListModel.getItems().length > 0) {
-                    queryQueueResultTabView.renderNewTab(queryQueueTabId, getQueryResultChartTabViewConfig(queryQueueItem), false, modelMap, function() {
+                    queryQueueResultTabView.renderNewTab(queryQueueTabId, getQueryResultChartTabViewConfig(queryQueueItem, self.el.id), false, modelMap, function() {
                         renderCompleteCB();
                     });
                 } else {
@@ -119,7 +119,12 @@ define([
 
             if (queryQueueTabsView != null) {
                 queryQueueTabsView.renderNewTab(queryQueueTabId, [sessionAnalyzerViewConfig], true, modelMap, null);
+                //Update the tab color
+                var queryQueueResultGridTabLinkId = cowl.QE_QUERY_QUEUE_RESULT_GRID_TAB_ID + '-' + sessionAnalyzerViewConfig.viewConfig.flowRecordQueryId + '-tab-link';
+                var badgeColorKey = $("#" + queryQueueResultGridTabLinkId).data('badge_color_key');
+                $('#' + sessionAnalyzerViewConfig.elementId + '-tab-link').find('.contrail-tab-link-icon').addClass('icon-queue-badge-color-' + badgeColorKey);
             }
+
         },
 
     });
@@ -598,7 +603,7 @@ define([
                         formatter: qewgc.setAnalyzerIconFormatter,
                         cssClass: 'cell-hyperlink-blue',
                         events: {
-                            onClick: qewgc.getOnClickSessionAnalyzer(self, queryFormAttributes.formModelAttrs)
+                            onClick: qewgc.getOnClickSessionAnalyzer(self, queryFormAttributes.queryId, queryFormAttributes.formModelAttrs)
                         }
                     }]
                 };

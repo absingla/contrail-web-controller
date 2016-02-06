@@ -45,8 +45,8 @@ define([
                 var queryPrefix = cowc.SA_QUERY_PREFIX,
                     saQueryIdSuffix = '-' + saQueryId,
                     sessionAnalyzerTmpl = contrail.getTemplate4Id(ctwc.TMPL_SESSION_ANALYZER),
-                    sessionAnalyzerChartId = 'qe-' + queryPrefix + '-chart' + saQueryIdSuffix,
-                    sessionAnalyzerResultTabId = 'qe-' + queryPrefix + '-tab' + saQueryIdSuffix;
+                    sessionAnalyzerChartId = 'qe-' + queryPrefix + '-result-chart' + saQueryIdSuffix,
+                    sessionAnalyzerResultTabId = 'qe-' + queryPrefix + '-result-tab' + saQueryIdSuffix;
 
                 self.$el.html(sessionAnalyzerTmpl({queryPrefix: queryPrefix, saQueryIdSuffix: saQueryIdSuffix}));
 
@@ -129,17 +129,17 @@ define([
                         view: "WidgetView",
                         viewConfig: {
                             header: false,
-                            //controls: {
-                            //    top: false,
-                            //    right: {
-                            //        custom: {
-                            //            filterChart: {
-                            //                enable: true,
-                            //                viewConfig: getLineChartFilterConfig(queryId, aggregateSelectFields, saResultChartId)
-                            //            }
-                            //        }
-                            //    }
-                            //},
+                            controls: {
+                                top: false,
+                                right: {
+                                    custom: {
+                                        filterChart: {
+                                            enable: true,
+                                            viewConfig: getLineChartFilterConfig(queryId, aggregateSelectFields, saResultChartId)
+                                        }
+                                    }
+                                }
+                            },
                         }
                     },
                     chartOptions: {
@@ -344,7 +344,7 @@ define([
         var filterConfig = {
             groups: [
                 {
-                    id: 'by-node-color-' + queryId,
+                    id: 'by-node-color-sa-' + queryId,
                     title: false,
                     type: 'radio',
                     items: []

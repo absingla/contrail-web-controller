@@ -331,12 +331,55 @@ define([
                         events: {
                             onClick: onClickEventFn
                         }
-                    }]
-
+                    }],
+                    //actionCellCB: function(gridModelMap, gridItem) {
+                    //    return getFlowRecordActionItems(self, gridModelMap, queryRequestPostData, gridItem);
+                    //}
                 }
             }
         }
     };
+
+    //function getFlowRecordActionItems(flowRecordFormView, gridModelMap, queryRequestPostData, queryResultItem) {
+    //    var resultGridListModel = gridModelMap[cowc.UMID_QUERY_RESULT_LIST_MODEL],
+    //        //queryFormModelData = queryResultItem.queryReqObj.formModelAttrs,
+    //        status = queryResultItem.status,
+    //        //queryId = queryResultItem.queryReqObj.queryId,
+    //        errorMessage = queryResultItem.errorMessage,
+    //        //queryFormTimeRange = queryFormModelData.time_range,
+    //        actionCell = [];
+    //
+    //    if(status == 'queued'){
+    //        return actionCell;
+    //    }
+    //
+    //    if(status != "error") {
+    //        if (qewu.enableSessionAnalyzer(null, queryRequestPostData.formModelAttrs)) {
+    //            actionCell.push({
+    //                title: cowl.TITLE_ACTION_SESSION_ANALYZER,
+    //                iconClass: 'icon-bar-chart',
+    //                onClick: function(rowIndex){
+    //                    var selectedFlowRecord = resultGridListModel.getItem(rowIndex);
+    //                    flowRecordFormView.renderSessionAnalyzer(selectedFlowRecord);
+    //                }
+    //            });
+    //        }
+    //
+    //    } else if(errorMessage != null) {
+    //        if(errorMessage.message != null && errorMessage.message != '') {
+    //            errorMessage = errorMessage.message;
+    //        }
+    //        actionCell.push({
+    //            title: cowl.TITLE_VIEW_QUERY_ERROR,
+    //            iconClass: 'icon-exclamation-sign',
+    //            onClick: function(rowIndex){
+    //                //TODO - create info modal
+    //                showInfoWindow(errorMessage, cowl.TITLE_ERROR);
+    //            }
+    //        });
+    //    }
+    //    return actionCell;
+    //};
 
     function getSessionAnalyzerTabsViewConfig(queryResultTabsId, queryFormAttributes, selectedFlowRecord) {
         return {
