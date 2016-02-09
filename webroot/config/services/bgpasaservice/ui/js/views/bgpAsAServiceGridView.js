@@ -20,6 +20,8 @@ define([
             var self = this,
                 viewConfig = this.attributes.viewConfig,
                 pagerOptions = viewConfig['pagerOptions'];
+            bgpAsAServiceEditView.currentProjectUUID =
+                viewConfig.currentProjectUUID;
             self.renderView4Config(self.$el, self.model,
                 getBGPAsAServiceGridViewConfig(pagerOptions));
         }
@@ -128,7 +130,7 @@ define([
                     formatter: bgpAsAServiceFormatter.ipAddressFormatter
                 },                {
                     field: "virtual_machine_interface_refs",
-                    name: "Ports",
+                    name: "Virtual Machine Interface(s)",
                     sortable: true,
                     formatter: bgpAsAServiceFormatter.vmiFormatter
                 }]
@@ -272,7 +274,7 @@ define([
                                 },{
                                     key: "virtual_machine_interface_refs",
                                     templateGenerator: "TextGenerator",
-                                    label: "Interfaces",
+                                    label: "Virtual Machine Interface(s)",
                                     templateGeneratorConfig: {
                                         formatter: "VMIFormatter"
                                     }
