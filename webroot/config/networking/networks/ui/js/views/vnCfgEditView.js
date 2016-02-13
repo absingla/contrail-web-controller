@@ -230,17 +230,11 @@ define([
                                     path: 'network_policy_refs',
                                     class: 'span12',
                                     dataBindValue: 'network_policy_refs',
+                                    dataBindOptionList: 'ui_added_parameters().networkPolicyList()',
                                     elementConfig: {
                                         placeholder: 'Select Network Policies',
                                         dataTextField: "text",
-                                        dataValueField: "id",
-                                        dataSource : {
-                                            type: 'remote',
-                                            url:
-                                            '/api/tenants/config/policys',
-                                            parse:
-                                            formatVNCfg.polMSFormatter,
-                                    }
+                                        dataValueField: "id"
                                 }
                             }
                         }
@@ -701,17 +695,11 @@ define([
                                                     path: 'physical_router_back_refs',
                                                     class: 'span6',
                                                     dataBindValue: 'physical_router_back_refs',
+                                                    dataBindOptionList: 'ui_added_parameters().physicalRouterList()',
                                                     elementConfig: {
                                                         placeholder: 'Select Physical Router(s)',
                                                         dataTextField: "text",
-                                                        dataValueField: "id",
-                                                        dataSource : {
-                                                            type: 'remote',
-                                                            url:
-                                                            '/api/tenants/config/physical-routers-list',
-                                                            parse:
-                                                            formatVNCfg.phyRouterMSFormatter,
-                                                    }
+                                                        dataValueField: "id"
                                                 }
                                             }
                                         },
@@ -723,23 +711,14 @@ define([
                                                     path: 'route_table_refs',
                                                     class: 'span6',
                                                     dataBindValue: 'route_table_refs',
+                                                    dataBindOptionList: 'ui_added_parameters().routeTableList()',
                                                     elementConfig: {
                                                         placeholder: 'Select Static Route(s)',
                                                         dataTextField: "text",
-                                                        dataValueField: "id",
-                                                        dataSource : {
-                                                            type: 'remote',
-                                                            requestType: 'POST',
-                                                            postData: JSON.stringify({'data':
-                                                                [{'type':'route-tables'}]}),
-                                                            url:
-                                                            '/api/tenants/config/get-config-list',
-                                                            parse:
-                                                            formatVNCfg.staticRouteMSFormatter,
-                                                    }
+                                                        dataValueField: "id"
                                                 }
                                             }
-                                        },
+                                        }
                                         ]
                                     },
                                     {

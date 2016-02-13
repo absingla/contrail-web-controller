@@ -5,17 +5,23 @@
 define([
     'underscore',
     'contrail-model',
+    'knockout',
     'config/networking/networks/ui/js/models/subnetModel',
     'config/networking/networks/ui/js/models/hostRouteModel',
     'config/networking/networks/ui/js/models/routeTargetModel',
     'config/networking/networks/ui/js/models/fipPoolModel',
     'config/networking/networks/ui/js/models/subnetDNSModel',
     'config/networking/networks/ui/js/views/vnCfgFormatters'
-], function (_, ContrailModel, SubnetModel, HostRouteModel,
-            RouteTargetModel, FipPoolModel,SubnetDNSModel, VNCfgFormatters) {
+], function (_, ContrailModel, Knockout, SubnetModel, HostRouteModel, RouteTargetModel, FipPoolModel,SubnetDNSModel, VNCfgFormatters) {
     var formatVNCfg = new VNCfgFormatters();
 
     var vnCfgModel = ContrailModel.extend({
+
+        constructor: function (modelData) {
+            this.initModel();
+            ContrailModel.prototype.constructor.call(this, modelData);
+            return this;
+        },
 
         defaultConfig: {
             'name': '',
@@ -74,6 +80,11 @@ define([
             'sVlanId': null, //fake created for vcenter sec pvlan
             'user_created_vxlan_mode': false,
             'disable': false,
+            'ui_added_parameters': {
+                networkPolicyList: ko.observableArray([]),
+                physicalRouterList: ko.observableArray([]),
+                routeTableList: ko.observableArray([])
+            }
         },
 
         formatModelConfig: function (modelConfig) {
@@ -112,6 +123,25 @@ define([
             this.readProperties(modelConfig);
 
             return modelConfig;
+        },
+
+        initModel: function () {
+            var self = this;
+
+            $.ajax('/api/tenants/config/policys').success(function (response) {
+                self.ui_added_parameters().networkPolicyList(formatVNCfg.polMSFormatter(response));
+            });
+            $.ajax('/api/tenants/config/physical-routers-list').success(function (response) {
+                self.ui_added_parameters().physicalRouterList(formatVNCfg.phyRouterMSFormatter(response));
+            });
+
+            $.ajax({
+                url: '/api/tenants/config/get-config-list',
+                type: "POST",
+                data: {'data': [{'type': 'route-tables'}]}
+            }).success(function (response) {
+                self.ui_added_parameters().routeTableList(formatVNCfg.staticRouteMSFormatter(response));
+            });
         },
 
         readSubnetHostRoutes: function (modelConfig) {
