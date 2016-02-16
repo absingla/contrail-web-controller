@@ -15,7 +15,8 @@ define([
             'routing_policy_entries': {
                 'term': []
             },
-            'routingPolicyname': ''
+            'routingPolicyname': '',
+            'termCollection': ''
         },
         formatModelConfig: function (config) {
             var modelConfig = $.extend({}, true, config);
@@ -29,15 +30,13 @@ define([
             if (termList != null && termList.length > 0) {
                 for (var i = 0; i < termList.length; i++) {
                     var rule_obj = termList[i];
-                    termList[i].fromValue = "";
-                    termList[i].thenValue = "";
                     var routingPolicyTermModel = new
-                        RoutingPolicyTermModel(termList[i]);
+                        RoutingPolicyTermModel(this, termList[i]);
                     ruleModels.push(routingPolicyTermModel)
                 }
             } else {
                 ruleModels.push(new
-                    RoutingPolicyTermModel(termList));
+                    RoutingPolicyTermModel(this, termList));
             }
 
 

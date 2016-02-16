@@ -215,7 +215,7 @@ define([
                                                                 viewConfig: {
                                                                     templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
                                                                     path: "name",
-                                                                    dataBindValue: "name",
+                                                                    dataBindValue: "name()",
                                                                     dataBindOptionList: 'getNameOptionList',
                                                                     width: 145,
                                                                     placeholder: 'Select Name',
@@ -232,23 +232,24 @@ define([
                                                                 viewConfig: {
                                                                     templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                                                                     path: "value",
+                                                                    disabled: 'name()() == "protocol"',
                                                                     dataBindValue: "value()",
                                                                     width: 285,
                                                                     placeholder: 'Enter Value'
                                                                 }
                                                             },
                                                             {
-                                                                elementId: 'prefix_type',
+                                                                elementId: 'additionalValue',
                                                                 view: "FormDropdownView",
                                                                 class: "",
                                                                 viewConfig: {
                                                                     templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
-                                                                    path: "prefix_type",
-                                                                    visible: 'name() == "prefix"',
-                                                                    dataBindValue: "prefix_type",
-                                                                    dataBindOptionList: 'getPrefixConditionOptionList',
+                                                                    path: "additionalValue",
+                                                                    visible: 'name()() == "prefix" || name()() == "protocol"',
+                                                                    dataBindValue: "additionalValue()",
+                                                                    dataBindOptionList: 'additionalValueDS()',
+                                                                    placeholder: '',
                                                                     width: 80,
-                                                                    placeholder: 'Select Prefix',
                                                                     elementConfig: {
                                                                         defaultValueId: 0
                                                                     }
@@ -291,7 +292,7 @@ define([
                                                                 viewConfig: {
                                                                     templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
                                                                     path: "name",
-                                                                    dataBindValue: "name",
+                                                                    dataBindValue: "name()",
                                                                     dataBindOptionList: 'getNameOptionList',
                                                                     width: 145,
                                                                     placeholder: 'Select Name',
@@ -308,7 +309,7 @@ define([
                                                                 viewConfig: {
                                                                     templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                                                                     path: "value",
-                                                                    disabled: 'name() == "action"',
+                                                                    disabled: 'name()() == "action"',
                                                                     dataBindValue: "value()",
                                                                     width: 285,
                                                                     placeholder: 'Enter Value'
@@ -322,8 +323,8 @@ define([
                                                                 viewConfig: {
                                                                     templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
                                                                     path: "action_condition",
-                                                                    visible: 'name() == "action"',
-                                                                    dataBindValue: "action_condition",
+                                                                    visible: 'name()() == "action"',
+                                                                    dataBindValue: "action_condition()",
                                                                     dataBindOptionList: 'getActionConditionOptionList',
                                                                     width: 80,
                                                                     placeholder: 'Select Action',
@@ -348,4 +349,4 @@ define([
         }
     }
     return RoutingPolicyEditView;
-}); 
+});

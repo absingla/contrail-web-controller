@@ -2637,25 +2637,27 @@ define([
             return offsetCurvePath;
         };
 
-        self.getUnderlayVRouterParams = function (nodeDetails) {
-            var vRouterType = JSON.parse(getValueByJsonPath(nodeDetails,
-                'more_attributes;ContrailConfig;elements;virtual_router_type',
-                []));
-            //Default type is hypervisor, so we are inserting hypervisor
-            if (vRouterType.length == 0) {
-                vRouterType.push('hypervisor');
+        /*
+         * Function, checks the flag isUnderlayPage in viewConfig
+         * In case of true
+         *      Appends the hostName in the widget header title
+         */
+
+        self.appendHostNameInWidgetTitleForUnderlayPage = function (viewConfig) {
+            var isUnderlayPage = viewConfig['isUnderlayPage'];
+            var widgetTitle = null;
+            if (isUnderlayPage == true) {
+                widgetTitle = getValueByJsonPath(viewConfig,
+                    'widgetConfig;viewConfig;header;title', null);
+                if (widgetTitle != null ) {
+                    widgetTitle =
+                        contrail.format('{0} ({1})', widgetTitle,
+                                ifNull(viewConfig['hostname'], '-'));
+                    viewConfig['widgetConfig']['viewConfig']['header']['title'] =
+                        widgetTitle;
+                }
             }
-            return {
-              hostname: nodeDetails['name'],
-              ip: getValueByJsonPath(nodeDetails,
-                  'more_attributes;VrouterAgent;self_ip_list;0',
-                  '-'),
-              introspectPort:
-                  getValueByJsonPath(nodeDetails,
-                  'more_attributes;VrouterAgent;sandesh_http_port',
-                  ctwc.DEFAULT_INTROSPECTPORT),
-              vRouterType: vRouterType.toString()
-            };
+            return viewConfig;
         };
 
         self.getMarkersForUnderlay = function () {
@@ -3011,6 +3013,26 @@ define([
                     }
                 ]
             };
+        };
+
+        self.purgeAnalyticsDB = function (purgePercentage) {
+            var ajaxConfig = {
+                type: "GET",
+                url: "/api/analytics/db/purge?purge_input=" + purgePercentage
+            };
+
+            contrail.ajaxHandler(ajaxConfig, null, function(response) {
+                if(response != null && response['status'] == 'started') {
+                    showInfoWindow("Analytics DB purge has been started.", "Success");
+                } else if (response != null && response['status'] == 'running') {
+                    showInfoWindow ("Analytics DB purge already running.", "Success");
+                } else {
+                    showInfoWindow(contrail.parseErrorMsgFromXHR(response), "Purge Response");
+                }
+            }, function(response){
+                var errorMsg = contrail.parseErrorMsgFromXHR(response);
+                showInfoWindow(errorMsg, "Error");
+            });
         };
     };
     return MonitorInfraUtils;

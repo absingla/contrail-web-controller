@@ -81,7 +81,7 @@ define([
                 //    required: true,
                 //    msg: 'Select a valid value for action in Then clause.'
                 //},
-                'value': 
+                'value':
                 function(value, attr, finalObj) {
                     if (finalObj.name == "local-preference") {
                         if (!isNumber(String(value).trim())){

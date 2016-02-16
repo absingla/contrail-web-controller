@@ -10,17 +10,20 @@ define([
     'config/networking/routingpolicy/ui/js/views/routingPolicyFormatter',
 ], function (_, Backbone, Knockout, ContrailModel, RoutingPolicyFormatter) {
     var routingPolicyFormatter = new RoutingPolicyFormatter();
+    var self;
     var RoutingPolicyTermFromModel = ContrailModel.extend({
 
         defaultConfig: {
             name: '',
             value : '',
-            prefix_type: ''
+            additionalValue: '',
+            additionalValueDS: [],
         },
 
         constructor: function (parentModel, modelData) {
             this.parentModel = parentModel;
             ContrailModel.prototype.constructor.call(this, modelData);
+            self = this;
             return this;
         },
 
@@ -42,10 +45,7 @@ define([
                 fromTerm = self.model(),
                 fromTermIndex = _.indexOf(fromTerms.models, fromTerm),
                 newFromTerm = new RoutingPolicyTermFromModel(self.parentModel(), {});
-
-            if (fromTerms.length < 2) {
-                fromTerms.add(newFromTerm, {at: fromTermIndex + 1});
-            }
+            fromTerms.add(newFromTerm, {at: fromTermIndex + 1});
         },
 
         deleteFromTerm: function() {
@@ -55,10 +55,15 @@ define([
                 fromTerms.remove(fromTerm);
             }
         },
-
         getNameOptionList: function(viewModel) {
-            var namesOption = ['community','prefix'];
+            var namesOption = ['community', 'prefix', 'protocol'];
+            var termFromName = viewModel.model().attributes.name();
 
+            if (termFromName == "prefix") {
+                viewModel.model().attributes.additionalValueDS(self.getPrefixConditionOptionList(viewModel));
+            } else if(termFromName == "protocol") {
+                viewModel.model().attributes.additionalValueDS(self.getProtocolConditionOptionList(viewModel));
+            }
             return $.map(namesOption, function(optionValue, optionKey) {
                 return {id: optionValue, text: optionValue}
             });
@@ -68,6 +73,14 @@ define([
             return [{id: 'exact', text: 'exact'},
                 {id: 'longer', text: 'longer'},
                 {id: 'orlonger', text: 'orlonger'}
+            ]
+        },
+        getProtocolConditionOptionList: function(viewModel) {
+            return [{id: 'bgp', text: 'bgp'},
+                {id: 'xmpp', text: 'xmpp'},
+                {id: 'static', text: 'static'},
+                {id: 'service-chain', text: 'service-chain'},
+                {id: 'aggregate', text: 'aggregate'}
             ]
         },
         //TODO: Add appropriate validations.

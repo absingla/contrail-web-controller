@@ -25,10 +25,8 @@ define([
                 "action": ""
             },
             "action":"Default",
-            "fromValue": "",
-            "thenValue": "",
-            "from_term": "",
-            "then_term": "",
+            "from_terms": "",
+            "then_terms": "",
             "disabled_from_names": {}
         },
 
@@ -43,25 +41,24 @@ define([
                 modelConfig = $.extend({}, true, config),
                 routingPolicyTermFromModels = [], routingPolicyTermThenModels = [],
                 routingPolicyTermFromCollectionModel, routingPolicyTermThenCollectionModel;
-                
-            var termMatchArray = routingPolicyFormatter.buildTermMatchObject (self.parentModel.term_match_condition);
+            var termMatchArray = routingPolicyFormatter.buildTermMatchObject (modelConfig.term_match_condition);
             var termMatchArrayLen = termMatchArray.length;
             for (var i = 0; i < termMatchArrayLen; i++) {
-                var termMatch = new routingPolicyTermFromModel(self.parentModel, termMatchArray[i]);
+                var termMatch = new routingPolicyTermFromModel(modelConfig, termMatchArray[i]);
                 routingPolicyTermFromModels.push(termMatch);
             }
-            var termActionArray = routingPolicyFormatter.buildTermActionObject (self.parentModel.term_action_list);
+            var termActionArray = routingPolicyFormatter.buildTermActionObject (modelConfig.term_action_list);
             var termActionArrayLen = termActionArray.length;
             for (var i = 0; i < termActionArrayLen; i++) {
-                var termAction = new routingPolicyTermThenModel(self.parentModel, termActionArray[i]);
+                var termAction = new routingPolicyTermThenModel(modelConfig, termActionArray[i]);
                 routingPolicyTermThenModels.push(termAction);
             }
             //This need to be fixed
             if (termMatchArrayLen == 0) {
-                routingPolicyTermFromModels.push(new routingPolicyTermFromModel(self, {name: 'community', value: ''}));
+                routingPolicyTermFromModels.push(new routingPolicyTermFromModel(modelConfig, {name: 'community', value: ''}));
             }
             if (termActionArrayLen == 0) {
-                routingPolicyTermThenModels.push(new routingPolicyTermThenModel(self, {name: 'add community'}));
+                routingPolicyTermThenModels.push(new routingPolicyTermThenModel(modelConfig, {name: 'add community'}));
             }
             routingPolicyTermFromCollectionModel = new Backbone.Collection(routingPolicyTermFromModels);
             routingPolicyTermThenCollectionModel = new Backbone.Collection(routingPolicyTermThenModels);
@@ -90,17 +87,21 @@ define([
             $.each(fromTerms, function (fromTermKey, fromTermValue) {
                 var name = fromTermValue.name(),
                     value = fromTermValue.value(),
-                    prefixType = fromTermValue.prefix_type(),
+                    additionalValue = fromTermValue.additionalValue(),
                     fromTermStr = '';
 
                 name = contrail.checkIfFunction(name) ? name() : name;
                 value = contrail.checkIfFunction(value) ? value() : value;
-                prefixType = contrail.checkIfFunction(prefixType) ? prefixType() : prefixType;
+                additionalValue = contrail.checkIfFunction(additionalValue) ? additionalValue() : additionalValue;
 
+                if (name == 'protocol') {
+                    fromTermStr += name + ' ' + additionalValue;
+                    fromTermArray.push(fromTermStr);
+                }
                 if (value != '') {
                     fromTermStr = name + ' ' + value;
                     if (name == 'prefix') {
-                        fromTermStr += ' ' + prefixType;
+                        fromTermStr += ' ' + additionalValue;
                     }
 
                     fromTermArray.push(fromTermStr)
@@ -138,7 +139,6 @@ define([
                 orClause = this.model(),
                 orClauseIndex = _.indexOf(orClauses.models, orClause),
                 newOrClause = new RoutingPolicyTermModel(self.parentModel(), {});
-
             orClauses.add(newOrClause, {at: orClauseIndex + 1});
 
             $(event.target).parents('.collection').accordion('refresh');
@@ -158,27 +158,49 @@ define([
 
         validations: {
             termValidation: {
-                //TODO: Add appropriate validations.
-                
-                'fromValue': function (value, attr, finalObj) {
-                    if (value.trim() != "") {
-                        var result =
-                            routingPolicyFormatter.buildFromStructure(value);
-                        if (result.error.available == true) {
-                            return result.error.message;
+                'from_terms': function (value, attr, finalObj) {
+                    var fromModelObj = getValueByJsonPath(finalObj, "from_terms;models", []);
+                    var fromModelObjLen = fromModelObj.length;
+                    var elements = {"community":0,"prefix":0};
+                    for (var i = 0; i < fromModelObjLen; i++) {
+                        var name = getValueByJsonPath(fromModelObj[i], "attributes;name")();
+                        elements[name] += 1;
+                        if (elements["community"] > 1) {
+                            return "cannot have more than one community";
                         }
                     }
                 },
-                'thenValue': function (value, attr, finalObj) {
-                    if (value.trim() != "") {
-                        var result =
-                            routingPolicyFormatter.buildThenStructure(value);
-                        if (result.error.available == true) {
-                            return result.error.message;
+                'then_terms': function (value, attr, finalObj) {
+                    var thenModelObj = getValueByJsonPath(finalObj, "then_terms;models", []);
+                    var thenModelObjLen = thenModelObj.length;
+                    var elements = {'add community':0,'set community':0,
+                                    'remove community':0, 'local-preference':0, 'action':0};
+                    for (var i = 0; i < thenModelObjLen; i++) {
+                        var name = getValueByJsonPath(thenModelObj[i], "attributes;name")();
+                        elements[name] += 1;
+                        if (name == "local-preference") {
+                            var value = getValueByJsonPath(thenModelObj[i], "attributes;value")();
+                            if (!isNumber(String(value).trim())){
+                                return "Local preference has to be a number.";
+                            }
+                            if (elements["local-preference"] > 1) {
+                                return "cannot have more than one local preference";
+                            }
+                        }
+                        if (name == "med") {
+                            var value = getValueByJsonPath(thenModelObj[i], "attributes;value")();
+                            if (!isNumber(String(value).trim())){
+                                return "Med has to be a number.";
+                            }
+                            if (elements["med"] > 1) {
+                                return "cannot have more than one Med";
+                            }
+                        }
+                        if (elements["action"] > 1) {
+                            return "cannot have more than one action";
                         }
                     }
                 }
-                
             }
         }
     });
