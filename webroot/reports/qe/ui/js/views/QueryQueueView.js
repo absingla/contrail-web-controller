@@ -607,15 +607,13 @@ define([
                     titleText: cowl.TITLE_FLOW_RECORD,
                     queryQueueUrl: cowc.URL_QUERY_FLOW_QUEUE,
                     queryQueueTitle: cowl.TITLE_FLOW,
-                    gridColumns: [{
-                        id: 'fr-details', field: "", name: "", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: {allow: false},
-                        allowColumnPickable: false,
-                        formatter: qewgc.setAnalyzerIconFormatter,
-                        cssClass: 'cell-hyperlink-blue',
-                        events: {
+                    actionCell: [
+                        {
+                            title: 'Analyze Session',
+                            iconClass: 'icon-external-link-sign',
                             onClick: qewgc.getOnClickSessionAnalyzer(self, queryFormAttributes.queryId, queryFormAttributes.formModelAttrs)
                         }
-                    }]
+                    ]
                 };
                 break;
 
