@@ -13,7 +13,8 @@ define([
         defaultConfig: {
             name: '',
             value : '',
-            action_condition: ''
+            action_condition: '',
+            protocol: ''
         },
 
         constructor: function (parentModel, modelData) {
@@ -40,12 +41,7 @@ define([
                 thenTerm = self.model(),
                 thenTermIndex = _.indexOf(thenTerms.models, thenTerm),
                 newThenTerm = new RoutingPolicyTermThenModel(self.parentModel(), {});
-
-            if (thenTerms.length < 5) {
-
-                thenTerms.add(newThenTerm, {at: thenTermIndex + 1});
-
-            }
+            thenTerms.add(newThenTerm, {at: thenTermIndex + 1});
         },
 
         deleteThenTerm: function() {
@@ -58,7 +54,7 @@ define([
         },
 
         getNameOptionList: function(viewModel) {
-            var namesOption = ['add community','set community', 'remove community', 'local-preference', 'action'];
+            var namesOption = ['add community','set community', 'remove community', 'local-preference', 'med', 'action'];
 
             return $.map(namesOption, function(optionValue, optionKey) {
                 return {id: optionValue, text: optionValue}
