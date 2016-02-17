@@ -93,8 +93,8 @@ define([
                                 viewConfig: {
                                     loadChartInChunks: true,
                                     chartOptions: {
-                                        xLabel: 'Throughput In',
-                                        yLabel: 'Throughput Out',
+                                        xLabel: 'Throughput Out',
+                                        yLabel: 'Throughput In',
                                         forceX: [0, 1],
                                         forceY: [0, 1000],
                                         xField: 'throughput',
@@ -140,7 +140,6 @@ define([
     };
 
     function getInterfaceTooltipConfig (data) {
-        console.log(data);
         tooltipConfig = {
             title: {
                 name: data.ip,
