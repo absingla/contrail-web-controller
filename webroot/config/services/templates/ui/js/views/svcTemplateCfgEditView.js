@@ -21,7 +21,7 @@ define([
             var editLayout = editTemplate({prefixId: prefixId}),
                 self = this;
 
-            cowu.createModal({'modalId': modalId, 'className': 'modal-480',
+            cowu.createModal({'modalId': modalId, 'className': 'modal-700',
                              'title': options['title'], 'body': editLayout,
                              'onSave': function () {
                 self.model.addSvcTemplateCfg({
@@ -47,7 +47,7 @@ define([
             }});
             self.renderView4Config($("#" + modalId).find("#" + prefixId + "-form"),
                                    self.model,
-                                   getSvcTemplateCfgViewConfig(false),
+                                   getSvcTemplateCfgViewConfig(false, self.model),
                                    "svcTemplateCfgConfigValidations", null, null,
                                    function () {
 
@@ -99,7 +99,7 @@ define([
         }
     });
 
-    function getSvcTemplateCfgViewConfig (disableOnEdit) {
+    function getSvcTemplateCfgViewConfig (disableOnEdit, model) {
         var prefixId = ctwl.CFG_SVC_TEMPLATE_PREFIX_ID;
         var svcTemplateCfgViewConfig = {
             elementId: cowu.formatElementId([prefixId,
@@ -199,6 +199,7 @@ define([
                             }
                         ]
                     },
+
                     {
                         columns: [
                             {
@@ -217,7 +218,10 @@ define([
                                         dataSource : {
                                             type: 'remote',
                                             url: '/api/tenants/config/service-template-images',
-                                            parse: formatSvcTemplateCfg.imageDropDownFormatter
+                                            parse: function(result) {
+                                                return formatSvcTemplateCfg.imageDropDownFormatter(result,
+                                                                                                   model);
+                                            }
                                         }
                                     }
                                 }
@@ -264,6 +268,7 @@ define([
                                                      path : 'interfaces',
                                                      validations:
                                                          'svcTemplateInterfaceConfigValidations',
+                                                     templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
                                                      collection: 'interfaces',
                                                      columns: [
                                                         {
@@ -276,7 +281,7 @@ define([
                                                             {
                                                              templateId:
                                                                 cowc.TMPL_EDITABLE_GRID_COMBOBOX_VIEW,
-                                                             width: 250,
+                                                             width: 400,
                                                              path: "service_interface_type",
                                                              dataBindValue: 'service_interface_type()',
                                                              dataBindOptionList:
@@ -292,7 +297,7 @@ define([
                                                           elementId: 'shared_ip',
                                                           name: 'Shared IP',
                                                           view: "FormCheckboxView",
-                                                          class: "",
+                                                          class: "text-center",
                                                           viewConfig:
                                                             {
                                                              disabled:
@@ -300,7 +305,7 @@ define([
                                                              visible:
                                                                 '$root.showIntfTypeParams($root.user_created_version())',
                                                              templateId: cowc.TMPL_EDITABLE_GRID_CHECKBOX_VIEW,
-                                                             width: 100,
+                                                             width: 80,
                                                              path: "shared_ip",
                                                              dataBindValue: 'shared_ip()'
                                                             }
@@ -309,7 +314,7 @@ define([
                                                           elementId: 'static_route_enable',
                                                           name: 'Static Routes',
                                                           view: "FormCheckboxView",
-                                                          class: "", width: 100,
+                                                          class: "text-center", width: 100,
                                                           viewConfig:
                                                             {
                                                              visible:
@@ -325,6 +330,10 @@ define([
                                                       ],
                                                      rowActions: [
                                                          {onClick: "function() {\
+                                                             $root.addSvcTemplateInterface();\
+                                                             }",
+                                                             iconClass: 'icon-plus'},
+                                                         {onClick: "function() {\
                                                              $root.deleteSvcTemplateInterface($root, $data, this);\
                                                             }",
                                                           iconClass: 'icon-minus'}
@@ -334,7 +343,7 @@ define([
                                                              $root.addSvcTemplateInterface();\
                                                              }",
                                                           buttonTitle:
-                                                            "Interface"}
+                                                            ""}
                                                      ]
                                                  }
                                              }
@@ -366,6 +375,7 @@ define([
                                             viewConfig : {
                                                 label: 'Service Scaling',
                                                 path : 'user_created_service_scaling',
+                                                templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                                 class : "span6",
                                                 dataBindValue : 'user_created_service_scaling',
                                                 elementConfig : {
@@ -381,6 +391,7 @@ define([
                                                 visible: 'isSvcVirtTypeNonPhysicalDevice',
                                                 label: 'Availability Zone',
                                                 path : 'service_template_properties.availability_zone_enable',
+                                                templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                                 class : "span6",
                                                 dataBindValue : 'service_template_properties().availability_zone_enable',
                                                 elementConfig : {
@@ -407,9 +418,11 @@ define([
                                                     dataValueField : "id",
                                                     dataSource : {
                                                         type: 'remote',
-                                                        //domain for , why?
                                                         url: '/api/tenants/config/system-flavors',
-                                                        parse: formatSvcTemplateCfg.flavorDropDownFormatter
+                                                        parse: function(result) {
+                                                            return formatSvcTemplateCfg.flavorDropDownFormatter(result,
+                                                                                                                model);
+                                                        }
                                                     }
                                                 }
                                             }

@@ -810,7 +810,7 @@ define([
                         viewConfig: [
                             {
                             elementId: 'dnsServers',
-                            title: 'DNS Servers',
+                            title: 'DNS Server(s)',
                             view: "SectionView",
                             viewConfig: {
                                     rows: [
