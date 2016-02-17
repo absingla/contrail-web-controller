@@ -404,7 +404,7 @@ define([
                     }
                     configDatabaseActionView.renderDeleteRecord({
                         "title": title, "type": type, checkedRows: checkedRow, callback: function () {
-                            var dataView = $(gridId).data("contrailGrid")._dataView;
+                            var dataView = $('#' + gridId).data("contrailGrid")._dataView;
                             dataView.refreshData();
                         }
                     });
