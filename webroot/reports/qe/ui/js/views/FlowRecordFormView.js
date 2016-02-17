@@ -342,9 +342,9 @@ define([
     };
 
     function getSessionAnalyzerTabViewConfig(queryFormAttributes, selectedFlowRecord) {
-        var queryId = qewu.generateQueryUUID();
+        var queryId = queryFormAttributes.queryId;
         return [{
-            elementId: cowl.QE_SESSION_ANALYZER_VIEW_ID + '-' +queryId,
+            elementId: cowl.QE_SESSION_ANALYZER_VIEW_ID + '-' +queryId + '-' + selectedFlowRecord.cgrid,
             title: cowl.TITLE_SESSION_ANALYZER,
             iconClass: 'icon-bar-chart',
             app: cowc.APP_CONTRAIL_CONTROLLER,
