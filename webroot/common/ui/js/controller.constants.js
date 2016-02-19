@@ -567,6 +567,7 @@ define([
                                             value : 'md5'
                                         }
                                     ];
+         this.BGP_AAS_ROUTERS = ["bgpaas-server", "bgpaas-client"];
 
         //Physical Routers constants
         this.URL_PHYSICAL_ROUTERS_DETAILS_IN_CHUNKS =
