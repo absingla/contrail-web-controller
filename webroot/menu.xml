@@ -642,7 +642,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             </resources>
                             <searchStrings>Floating IPs, Floating IP, FIP</searchStrings>
                         </item>
-                        <item>
+                        <!-- <item>
                             <label>Routing Policies</label>
                             <hash>config_net_rpolicies</hash>
                             <resources>
@@ -657,10 +657,10 @@ and need to add the iconClass tag wherever we need to show some icons
                                 </resource>
                             </resources>
                             <searchStrings>Routing Policies</searchStrings>
-                        </item>
+                        </item> -->
                         <item>
-                            <label>Route Tables</label>
-                            <hash>config_net_rttable</hash>
+                            <label>Routing</label>
+                            <hash>config_net_routing</hash>
                             <resources>
                             <resource>
                                 <rootDir>/common/ui</rootDir>
@@ -674,7 +674,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             </resources>
                             <searchStrings>Route Tables</searchStrings>
                         </item>
-                        <item>
+                        <!-- <item>
                             <label>Route Aggregates</label>
                             <hash>config_net_rtaggregates</hash>
                             <resources>
@@ -689,7 +689,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                 </resource>
                             </resources>
                             <searchStrings>Route Aggregates</searchStrings>
-                        </item>
+                        </item> -->
                     </items>
                 </item>
                 <item>
