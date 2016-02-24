@@ -55,27 +55,30 @@ define([
             if ((domain == domProj[0]) && (project == domProj[1])) {
                 text = vmi['uuid'];
                 if (instIpAddrs.length > 0) {
-                    text = text + ' - (' + instIpAddrs.join(', ') + ')';
+                    text = '(' + instIpAddrs.join(', ') + ') - ' + text;
                 }
                 return {text: text, id:
-                             vmi['fq_name'].join(':') + "~~" + vmi['uuid']};
+                             vmi['fq_name'].join(':') + "~~" + vmi['uuid'],
+                        instIps: instIpAddrs};
             } else {
                 var tmpFqn =
                     JSON.parse(JSON.stringify(vmi['fq_name']));
                 var domProj = tmpFqn.splice(0, 2);
                 text = vmi['uuid']  + " (" + domProj.join(':') + ")";
                 if (instIpAddrs.length > 0) {
-                    text = text + ' - (' + instIpAddrs.join(', ') + ')';
+                    text = '(' + instIpAddrs.join(', ') + ') - ' + text;
                 }
                 return {text: text +" (" + domProj.join(':')
                              + ")",
                              id: vmi['fq_name'].join(':') +
-                             "~~" + vmi['uuid']};
+                             "~~" + vmi['uuid'],
+                        instIps: instIpAddrs};
             }
             return {};
         },
         this.vmiListFormatter = function(vmis) {
             var vnVmiMaps = {};
+            var vmiToInstIpsMap = {};
             var vnList = [];
             if ((null == vmis) || (!vmis.length)) {
                 return ({vnList:
@@ -85,6 +88,7 @@ define([
             var vmisCnt = vmis.length;
             var tmpVNIds = {};
             window.allVMIList = [];
+            window.vmiToInstIpsMap = {};
             for (var i = 0; i < vmisCnt; i++) {
                 var vmi =
                     getValueByJsonPath(vmis[i],
@@ -94,6 +98,9 @@ define([
                 }
                 var builtVMI = this.buildVMI(vmi);
                 window.allVMIList.push(builtVMI);
+                if (null != builtVMI.instIps) {
+                    window.vmiToInstIpsMap[vmi.uuid] = builtVMI.instIps;
+                }
                 var vmRefs = getValueByJsonPath(vmi,
                                                 'virtual_machine_refs',
                                                 []);
@@ -405,15 +412,15 @@ define([
                      iconClass: 'icon-minus'}
                 ],
                 columns: [{
-                    elementId: 'portTupleName',
+                    elementId: 'portTupleDisplayName',
                     view: 'FormInputView',
                     class: "", width: "600",
-                    name: 'Tuple Name',
+                    name: 'Tuple',
                     viewConfig: {
                         disabled: true,
                         templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
-                        path: 'portTupleName',
-                        dataBindValue: 'portTupleName()'
+                        path: 'portTupleDisplayName',
+                        dataBindValue: 'portTupleDisplayName()'
                     }
                 }]
             }
@@ -549,6 +556,15 @@ define([
                                 this.getRtAggregateAccordianView(isDisabled)
                             ]
                         }]
+                    },
+                    {
+                        columns: [{
+                            elementId: 'allowedAddrPairAccordian',
+                            view: 'AccordianView',
+                            viewConfig: [
+                                this.getAllowedAddressPairAccordianConfig(isDisabled)
+                            ]
+                        }]
                     }]
                 }
             }
@@ -593,6 +609,15 @@ define([
                             view: 'AccordianView',
                             viewConfig: [
                                 this.getRtAggregateAccordianView(isDisabled)
+                            ]
+                        }]
+                    },
+                    {
+                        columns: [{
+                            elementId: 'allowedAddrPairAccordian',
+                            view: 'AccordianView',
+                            viewConfig: [
+                                this.getAllowedAddressPairAccordianConfig(isDisabled)
                             ]
                         }]
                     }]
@@ -829,6 +854,87 @@ define([
                                     onClick: "function() {\
                                         $root.addPropRtPolicy();\
                                     }"
+                                }]
+                            }
+                        }]
+                    }]
+                }
+            }
+        },
+        this.getAllowedAddressPairAccordianConfig = function(isDisabled) {
+            return {
+                elementId: 'allowedAddressPairElId',
+                title: 'Allowed Address Pair',
+                view: 'SectionView',
+                viewConfig: {
+                    rows: [{
+                        columns: [{
+                        elementId: 'allowedAddressPairCollection',
+                        view: 'FormEditableGridView',
+                            viewConfig: {
+                                path: "allowedAddressPairCollection",
+                                validation: 'allowedAddressPairValidations',
+                                templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
+                                collection: "allowedAddressPairCollection",
+                                columns: [
+                                {
+                                    elementId: 'interface_type',
+                                    name: 'Interface Type',
+                                    view: 'FormDropdownView',
+                                    class: "",
+                                    viewConfig: {
+                                        width: 150,
+                                        templateId:
+                                            cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
+                                        path: 'interface_type',
+                                        dataBindValue: 'interface_type()',
+                                        dataBindOptionList:
+                                            'interfaceTypesData()',
+                                        elementConfig: {
+                                            minimumResultsForSearch: 1,
+                                            placeholder: 'Select Interface ' +
+                                                'Type'
+                                        }
+                                    }
+                                },
+                                {
+                                    elementId: 'user_created_ip',
+                                    name: "IP",
+                                    view: "FormInputView",
+                                    viewConfig: {
+                                        path: 'user_created_ip',
+                                        templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                        dataBindValue: 'user_created_ip()',
+                                        placeholder: 'IP',
+                                        width:275,
+                                        label: 'IP'
+                                    }
+                                },
+                                {
+                                    elementId: 'mac',
+                                    name: "MAC",
+                                    view: "FormInputView",
+                                    viewConfig: {
+                                        path: 'mac',
+                                        templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                        dataBindValue: 'mac()',
+                                        placeholder: 'MAC',
+                                        width:275,
+                                        label: 'MAC'
+                                    }
+                                }],
+                                rowActions: [{
+                                 onClick: "function() { $root.addAAP(); }",
+                                iconClass: 'icon-plus',
+                                },
+                                {
+                                    onClick:
+                                    "function() { $root.deleteSvcInstProperty($data, this);}",
+                                     iconClass: 'icon-minus'
+                                }],
+                                gridActions: [{
+                                    onClick: "function() { addAAP(); }",
+                                    buttonTitle: ""
                                 }]
                             }
                         }]
