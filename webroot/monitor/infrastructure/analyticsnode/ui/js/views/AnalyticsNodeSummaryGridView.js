@@ -13,28 +13,30 @@ define([ 'underscore', 'contrail-view' ],function(_, ContrailView) {
                                 self.$el,
                                 self.model,
                                 getAnalyticsNodeSummaryGridViewConfig(
-                                    pagerOptions));
+                                    pagerOptions),
+                                null,
+                                null,
+                                null,
+                                function() {
+                                    self.model.onDataUpdate.subscribe(function () {
+                                        if($('#'+ctwl.ANALYTICSNODE_SUMMARY_GRID_ID).data('contrailGrid')) {
+                                            $('#'+ctwl.ANALYTICSNODE_SUMMARY_GRID_ID).data('contrailGrid')._grid.invalidate();
+                                        }
+                                    });
+                                });
                         }
                     });
 
             function getAnalyticsNodeSummaryGridViewConfig(
                     pagerOptions) {
                 return {
-                    elementId : ctwl.ANALYTICSNODE_SUMMARY_GRID_SECTION_ID,
-                    view : "SectionView",
+                    elementId : ctwl.ANALYTICSNODE_SUMMARY_GRID_ID,
+                    title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
+                    view : "GridView",
                     viewConfig : {
-                        rows : [ {
-                            columns : [ {
-                                elementId : ctwl.ANALYTICSNODE_SUMMARY_GRID_ID,
-                                title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
-                                view : "GridView",
-                                viewConfig : {
-                                    elementConfig :
-                                        getAnalyticsNodeSummaryGridConfig(
-                                            pagerOptions)
-                                }
-                            } ]
-                        } ]
+                        elementConfig :
+                            getAnalyticsNodeSummaryGridConfig(
+                                pagerOptions)
                     }
                 };
             }
@@ -120,7 +122,7 @@ define([ 'underscore', 'contrail-view' ],function(_, ContrailView) {
                    {
                        field:"cpu",
                        id:"analyticsCpu",
-                       name:"CPU (%)",
+                       name: ctwl.TITLE_CPU,
                        formatter:function(r,c,v,cd,dc) {
                            return '<div class="gridSparkline display-inline">' +
                                   '</div><span class="display-inline">' +

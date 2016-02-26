@@ -14,28 +14,30 @@ define(
                                 pagerOptions = viewConfig['pagerOptions'];
                             this.renderView4Config(self.$el,
                             self.model,
-                            getControlNodeSummaryGridViewConfig(pagerOptions));
+                            getControlNodeSummaryGridViewConfig(pagerOptions),
+                            null,
+                            null,
+                            null,
+                            function() {
+                                self.model.onDataUpdate.subscribe(function () {
+                                    if($('#'+ctwl.CONTROLNODE_SUMMARY_GRID_ID).data('contrailGrid')) {
+                                        $('#'+ctwl.CONTROLNODE_SUMMARY_GRID_ID).data('contrailGrid')._grid.invalidate();
+                                    }
+                                });
+                            });
                         }
                     });
 
             function getControlNodeSummaryGridViewConfig(
                     pagerOptions) {
                 return {
-                    elementId : ctwl.CONTROLNODE_SUMMARY_GRID_SECTION_ID,
-                    view : "SectionView",
+                    elementId : ctwl.CONTROLNODE_SUMMARY_GRID_ID,
+                    title : ctwl.CONTROLNODE_SUMMARY_TITLE,
+                    view : "GridView",
                     viewConfig : {
-                        rows : [ {
-                            columns : [ {
-                                elementId : ctwl.CONTROLNODE_SUMMARY_GRID_ID,
-                                title : ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                view : "GridView",
-                                viewConfig : {
-                                    elementConfig :
-                                        getControlNodeSummaryGridConfig(
-                                                pagerOptions)
-                                }
-                            } ]
-                        } ]
+                        elementConfig :
+                            getControlNodeSummaryGridConfig(
+                                    pagerOptions)
                     }
                 };
             }
@@ -104,7 +106,7 @@ define(
                    },
                    {
                        field:"cpu",
-                       name:"CPU (%)",
+                       name: ctwl.TITLE_CPU,
                        formatter:function(r,c,v,cd,dc) {
                            return '<div class="gridSparkline display-inline">'+
                                '</div><span class="display-inline">'

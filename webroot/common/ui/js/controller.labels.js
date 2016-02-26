@@ -302,11 +302,15 @@ define([
         this.TITLE_PORT_DISTRIBUTION = "Port Distribution";
         this.TITLE_PORT_MAP = "Port Map";
 
+        this.TITLE_CPU = "CPU Share (%)";
+        this.TITLE_CPU_LOAD = "CPU Load";
+        this.TITLE_MEMORY = "Memory";
+
         /** Titles used in node details chart widget **/
         this.TITLE_CONTROLNODE_CPU_MEM_UTILIZATION = 'Control Node CPU/Memory Utilization';
         this.TITLE_VROUTER_AGENT_CPU_MEM_UTILIZATION = 'Virtual Router Agent CPU/Memory Utilization';
-        this.TITLE_VROUTER_SYSTEM_CPU_MEM_UTILIZATION = 'Virtual Router System CPU/Memory Utilization';
-        this.TITLE_VROUTER_BANDWIDTH_UTILIZATION = 'Virtual Router Physical Bandwidth Utilization';
+        this.TITLE_VROUTER_SYSTEM_CPU_MEM_UTILIZATION = 'System CPU/Memory Utilization';
+        this.TITLE_VROUTER_BANDWIDTH_UTILIZATION = 'Physical Bandwidth Utilization';
         this.TITLE_ANALYTICS_COLLECTOR_CPU_MEM_UTILIZATION = 'Collector CPU/Memory Utilization';
         this.TITLE_ANALYTICS_QE_CPU_MEM_UTILIZATION = 'Query Engine CPU/Memory Utilization';
         this.TITLE_ANALYTICS_ANALYTICS_CPU_MEM_UTILIZATION = 'OpServer CPU/Memory Utilization';
@@ -1071,6 +1075,13 @@ define([
         this.CFG_SVC_HEALTH_CHK_TITLE_CREATE = 'Create Health Check Service';
         this.CFG_SVC_HEALTH_CHK_TITLE_DELETE = 'Delete Health Check Service';
         this.CFG_SVC_HEALTH_CHK_TITLE_MULTI_DELETE = 'Delete Health Check Service(s)';
+
+        /* Packet Capture Labels */
+        this.TITLE_PACKET_CAPTURE = 'Analyzers';
+        this.TITLE_EDIT_PACKET_CAPTURE = 'Edit Analyzer';
+        this.TITLE_PACKET_CAPTURE_DELETE = 'Delete Analyzer';
+        this.TITLE_PACKET_CAPTURE_MULTI_DELETE = 'Delete Analyzer(s)';
+        this.TITLE_ADD_PACKET_CAPTURE = 'Create Analyzer';
     };
     return CTLabels;
 });

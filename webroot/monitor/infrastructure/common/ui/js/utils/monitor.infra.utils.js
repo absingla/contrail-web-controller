@@ -609,12 +609,13 @@ define([
             return ajaxConfig;
         };
 
-        self.getAjaxConfigForInfraNodesCpuStats = function (dsName,responseJSON) {
+        self.getAjaxConfigForInfraNodesCpuStats = function (dsName,responseJSON,page) {
             var ajaxConfig = {};
             //build the query
             var postData = self.getPostDataForCpuMemStatsQuery({
                 nodeType:dsName,
-                node:''});
+                node:'',
+                page:page});
             ajaxConfig = {
                 url: monitorInfraConstants.monitorInfraUrls['QUERY'],
                 type:'POST',
@@ -1032,8 +1033,11 @@ define([
             statsData = statsData['data'];
             $.each(statsData,function(idx,d){
                 var source = d['Source'];
+                var name = d['name'];
                 var t = JSON.stringify({"ts":d['T']});
-
+                if(name != null && source != name) {
+                    source = name;//In case of TOR agents the name is the key
+                }
                 if(ret[source] != null && ret[source]['history-10'] != null){
                     var hist10 = ret[source]['history-10'];
                     hist10[t] = d['cpu_info.cpu_share'];
@@ -1520,7 +1524,7 @@ define([
             //var avgMem = d3.mean(nodes,function(d){return d.y});
             var tooltipContents = [
                 {label:'', value: 'No. of Nodes: ' + nodes.length},
-                {label:'Avg. CPU', value:$.isNumeric(currObj['x']) ? currObj['x'].toFixed(2)  + '%' : currObj['x']},
+                {label:'Avg. ' + ctwl.TITLE_CPU, value:$.isNumeric(currObj['x']) ? currObj['x'].toFixed(2)  : currObj['x']},
                 {label:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024* 1024) : currObj['y']}
             ];
             if(formatType == 'simple') {
@@ -1551,7 +1555,7 @@ define([
             var tooltipContents = [
                 {label:'Host Name', value: currObj['name']},
                 {label:'Version', value:currObj['version']},
-                {label:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  + '%' : '-'},
+                {label: ctwl.TITLE_CPU, value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  : '-'},
                 {label:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
             ];
             //Get tooltipAlerts
@@ -1934,7 +1938,7 @@ define([
                 moduleType = options.moduleType,
                 node = options.node;
             var postData = {
-                    pageSize:50,
+                    pageSize:10000,
                     page:1,
 //                    timeRange:600,
                     tgUnits:'secs',
@@ -1947,7 +1951,9 @@ define([
                     groupFields:['Source'],
                     plotFields:['cpu_info.cpu_share']
             }
-
+            if(options.page != null && options.page == "summary") {
+                postData['fromTimeUTC'] = 'now-15m';
+            }
             if (dsName == monitorInfraConstants.CONTROL_NODE) {
                 postData['table'] = 'StatTable.ControlCpuState.cpu_info';
                 if (moduleType != null && moduleType != '') {
@@ -1959,16 +1965,22 @@ define([
                 postData['table'] = 'StatTable.ComputeCpuState.cpu_info';
                 if (moduleType != null && moduleType != '') {
                     if(moduleType == 'vRouterAgent') {
-                        postData['select'] = 'Source, T, cpu_info.cpu_share, cpu_info.mem_res';
+                        postData['select'] = 'Source, name, T, cpu_info.cpu_share, cpu_info.mem_res';
                     } else if (moduleType == 'vRouterSystem') {
-                        postData['select'] = 'Source, T, cpu_info.one_min_cpuload, cpu_info.used_sys_mem';
+                        postData['select'] = 'Source, name, T, cpu_info.one_min_cpuload, cpu_info.used_sys_mem';
                     } else if (moduleType == 'vRouterBandwidth') {
                         postData['table'] = 'StatTable.VrouterStatsAgent.phy_if_band';
-                        postData['select'] = 'Source, T, phy_if_band.in_bandwidth_usage, phy_if_band.out_bandwidth_usage';
+                        postData['select'] = 'Source, name, T=, phy_if_band.in_bandwidth_usage, phy_if_band.out_bandwidth_usage';
+                        postData['tgValue'] = 60;
+                    } else if (moduleType == 'vRouterFlowRate') {
+                        postData['table'] = 'StatTable.VrouterStatsAgent.flow_rate';
+                        postData['select'] = 'Source, name, T=, MAX(flow_rate.active_flows)';
+                        postData['tgValue'] = 60;
+                        postData['plotFields'] = ['MAX(flow_rate.active_flows)'];
                     }
-                    postData['where'] = '(Source = '+ node +')';
+                    postData['where'] = '(Source = '+ node +' OR name = '+ node +')';
                 } else {
-                    postData['select'] = 'Source, T, cpu_info.cpu_share, cpu_info.mem_res';
+                    postData['select'] = 'Source, name, T, cpu_info.cpu_share, cpu_info.mem_res';
                     postData['where'] = '';
                 }
             } else if (dsName == monitorInfraConstants.ANALYTICS_NODE) {
@@ -2005,7 +2017,21 @@ define([
                 postData['where'] = '(Source = '+ node +')';
             }
             return postData;
-        }
+        };
+
+        self.filterTORAgentData = function (data) {
+            if(data == null) {
+                return [];
+            }
+            var ret = [];
+            $.each(data,function(i,d){
+                if (d['Source'] == d['name']) {
+                    ret.push(d);
+                }
+            });
+            return ret;
+        };
+
         self.getComputeNodeDetails = function(deferredObj,hostname) {
             $.ajax({
                 url: contrail.format(monitorInfraConstants.monitorInfraUrls['VROUTER_DETAILS'] , hostname,true)
