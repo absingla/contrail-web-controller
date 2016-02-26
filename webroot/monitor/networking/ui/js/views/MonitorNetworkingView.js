@@ -49,6 +49,7 @@ define([
     function getProjectConfig(viewConfig) {
         var hashParams = viewConfig.hashParams,
             customProjectDropdownOptions = {
+                getProjectsFromIdentity: true,
                 changeCB: getProjectChangeCB(hashParams),
                 childView: {
                     init: getProjectViewConfig()
@@ -83,6 +84,7 @@ define([
                 }
             },
             customProjectDropdownOptions = {
+                getProjectsFromIdentity: true,
                 changeCB: getProjectChangeCB(hashParams),
                 childView: {
                     init: ctwvc.getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
@@ -101,6 +103,7 @@ define([
     function getNetworkListConfig(viewConfig) {
         var hashParams = viewConfig.hashParams,
             customProjectDropdownOptions = {
+                getProjectsFromIdentity: true,
                 childView: {
                     init: getNetworkListViewConfig(viewConfig),
                 },
@@ -130,6 +133,7 @@ define([
                 }
             },
             customProjectDropdownOptions = {
+                getProjectsFromIdentity: true,
                 changeCB: getProjectChangeCB(hashParams),
                 childView: {
                     init: ctwvc.getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
@@ -154,6 +158,7 @@ define([
                 allDropdownOption: ctwc.ALL_NETWORK_DROPDOWN_OPTION
             },
             customProjectDropdownOptions = {
+                getProjectsFromIdentity: true,
                 childView: {
                     init: ctwvc.getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
                 },
@@ -177,6 +182,7 @@ define([
                 allDropdownOption: ctwc.ALL_NETWORK_DROPDOWN_OPTION
             },
             customProjectDropdownOptions = {
+                getProjectsFromIdentity: true,
                 childView: {
                     init: ctwvc.getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
                 },
