@@ -123,6 +123,77 @@ define([
 
                     break;
 
+                case ctwc.GRAPH_ELEMENT_NETWORK_POLICY:
+
+                    config = {
+                        elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_CONFIG_ID]),
+                        view: "SectionView",
+                        viewConfig: {
+                            rows: [
+                                {
+                                    columns: [
+                                        {
+                                            elementId: ctwl.MONITOR_NETWORK_CONFIG_VIEW_ID,
+                                            view: "NetworkConfigTabView",
+                                            viewPathPrefix: "monitor/networking/ui/js/views/",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: elementObj
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+
+                    break;
+
+                case ctwc.GRAPH_ELEMENT_SECURITY_GROUP:
+
+                    config = {
+                        elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_CONFIG_ID]),
+                        view: "SectionView",
+                        viewConfig: {
+                            rows: [
+                                {
+                                    columns: [
+                                        {
+                                            elementId: ctwl.MONITOR_NETWORK_CONFIG_VIEW_ID,
+                                            view: "NetworkConfigTabView",
+                                            viewPathPrefix: "monitor/networking/ui/js/views/",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: elementObj
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+
+                    break;
+
+                case ctwc.GRAPH_ELEMENT_NETWORK_IPAM:
+
+                    config = {
+                        elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_CONFIG_ID]),
+                        view: "SectionView",
+                        viewConfig: {
+                            rows: [
+                                {
+                                    columns: [
+                                        {
+                                            elementId: ctwl.MONITOR_NETWORK_CONFIG_VIEW_ID,
+                                            view: "NetworkConfigTabView",
+                                            viewPathPrefix: "monitor/networking/ui/js/views/",
+                                            app: cowc.APP_CONTRAIL_CONTROLLER,
+                                            viewConfig: elementObj
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    };
+
+                    break;
             }
 
             return config;

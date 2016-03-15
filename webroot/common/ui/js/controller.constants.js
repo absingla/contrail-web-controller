@@ -84,7 +84,10 @@ define([
         this.URL_LOGICAL_ROUTER_PUT = '/api/tenants/config/logicalrouter/{0}';
         this.URL_LOGICAL_ROUTER_VIEW_PATH_PREFIX = 'config/networking/logicalrouter/ui/js/views/';
 
+        this.URL_GET_CONFIG_DETAILS = '/api/tenants/config/get-config-details';
+
         this.URL_POLICIES_VIEW_PATH_PREFIX = 'config/networking/policy/ui/js/views/';
+        this.URL_NETWORK_POLICY_DETAIL = '/api/tenants/config/policy/{0}';
         this.URL_POLICIES_IN_CHUNKS = '/api/admin/config/get-data?type=network-policy&count={0}&fqnUUID={1}';
 
         this.URL_ROUTING_POLICY_PATH_PREFIX = 'config/networking/routingpolicy/ui/js/views/';
@@ -107,6 +110,8 @@ define([
         this.TYPE_VN = 'vn';
         this.TYPE_VIRTUAL_NETWORK = "virtual-network";
         this.TYPE_VIRTUAL_MACHINE = "virtual-machine";
+        this.TYPE_SECURITY_GROUPS = "security-groups";
+        this.TYPE_NETWORK_IPAMS = "network-ipams";
 
         this.ALL_PROJECT_DROPDOWN_OPTION = [{name: 'all projects', value: 'all', fq_name: 'all'}];
         this.ALL_NETWORK_DROPDOWN_OPTION = [{name: 'all networks', value: 'all', fq_name: 'all'}];
@@ -159,6 +164,10 @@ define([
 
         this.UCID_NODE_CPU_MEMORY_LIST = 'node_details' + "{0}:cpu-memory";
 
+        this.UCID_NETWORK_POLICY_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:network-policy";
+        this.UCID_SECURITY_GROUP_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:security-group";
+        this.UCID_NETWORK_IPAM_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:network-ipam";
+
         this.GRAPH_DIR_LR = "LR";
         this.GRAPH_DIR_TB = "TB";
 
@@ -185,6 +194,8 @@ define([
         this.GRAPH_ELEMENT_INSTANCE = 'virtual-machine';
         this.GRAPH_ELEMENT_CONNECTED_NETWORK = 'connected-network';
         this.GRAPH_ELEMENT_NETWORK_POLICY = 'network-policy';
+        this.GRAPH_ELEMENT_SECURITY_GROUP = 'security-group';
+        this.GRAPH_ELEMENT_NETWORK_IPAM = 'network-ipam';
 
         this.TOP_IN_LAST_MINS = 10;
         this.NUM_DATA_POINTS_FOR_FLOW_SERIES = 120;

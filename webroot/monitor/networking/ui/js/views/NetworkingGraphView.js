@@ -72,6 +72,8 @@ define([
         },
 
         renderConfigGraph: function (graphConfig, configSelectorId, connectedGraphView) {
+            var self = this;
+
             var confGraphModelConfig = $.extend(true, {}, graphConfig, {
                 forceFit: false,
                 generateElementsFn: getElements4ConfigGraph
@@ -83,7 +85,7 @@ define([
                 graphModelConfig: confGraphModelConfig,
                 tooltipConfig: nmwgrc.getConfigGraphTooltipConfig(),
                 clickEvents: {
-                    'cell:pointerclick': getConfgPointerClickFn(connectedGraphView)
+                    'cell:pointerclick': getConfgPointerClickFn(connectedGraphView, configSelectorId, self)
                 },
                 successCallback: function (graphView) {
                     $(configSelectorId).panzoom();
@@ -765,7 +767,7 @@ define([
         return zoomedElements;
     };
 
-    function showClickedElement(self, clickedElementModel, connectedSelectorId) {
+    function showClickedElement(self, clickedElementModel, connectedSelectorId, configSelectorId) {
         var clickedElement = clickedElementModel.attributes,
             elementNodeType = clickedElement.elementType,
             elementNodeId = clickedElementModel.id,
@@ -843,6 +845,24 @@ define([
                     tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, clickedElement);
                     self.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
                 }
+
+                break;
+
+            case ctwc.GRAPH_ELEMENT_NETWORK_POLICY:
+                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, clickedElement);
+                self.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
+
+                break;
+
+            case ctwc.GRAPH_ELEMENT_SECURITY_GROUP:
+                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, clickedElement);
+                self.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
+
+                break;
+
+            case ctwc.GRAPH_ELEMENT_NETWORK_IPAM:
+                tabConfig = ctwgrc.getTabsViewConfig(elementNodeType, clickedElement);
+                self.renderView4Config(bottomContainerElement, null, tabConfig, null, null, null);
 
                 break;
         }
@@ -1004,21 +1024,27 @@ define([
         highlightSVGElements([$('g.ZoomedElement'), $('g.VirtualMachine'), $('.VirtualMachineLink')]);
     };
 
-    function getConfgPointerClickFn(connectedGraphView) {
+    function getConfgPointerClickFn(connectedGraphView, configSelectorId, self) {
         return function (cellView, evt, x, y) {
             var clickedElement = cellView.model.attributes,
                 elementNodeType = clickedElement.elementType;
 
             switch (elementNodeType) {
                 case ctwc.GRAPH_ELEMENT_NETWORK_POLICY:
-                    onClickNetworkPolicy(cellView.model, connectedGraphView);
+                    onClickNetworkPolicy(cellView.model, connectedGraphView, configSelectorId, self);
+                    break;
+                case ctwc.GRAPH_ELEMENT_SECURITY_GROUP:
+                    showClickedElement(self, cellView.model, null, configSelectorId);
+                    break;
+                case ctwc.GRAPH_ELEMENT_NETWORK_IPAM:
+                    showClickedElement(self, cellView.model, null, configSelectorId);
                     break;
             }
             ;
         }
     };
 
-    function onClickNetworkPolicy(elementObj, connectedGraphView) {
+    function onClickNetworkPolicy(elementObj, connectedGraphView, configSelectorId, self) {
         var elementMap = connectedGraphView.model.elementMap,
             cellAttributes = elementObj.attributes;
 
@@ -1094,6 +1120,8 @@ define([
                 }
             }
         });
+
+        showClickedElement(self, elementObj, null, configSelectorId);
     };
 
     function highlightCurrentNodeElement(elementNodeId) {
