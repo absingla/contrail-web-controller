@@ -23,7 +23,7 @@ define([
             }
             return vnFqn[2] + " (" + vnFqn[0] + ":" + vnFqn[1] + ")";
         },
-        this.virtNwListFormatter = function(response) {
+        this.virtNwListFormatter = function(response, isShared) {
             var vnListResp =
                 getValueByJsonPath(response, 'virtual-networks', []);
             if (!vnListResp.length) {
@@ -32,6 +32,16 @@ define([
             var vnList = [];
             var vnCnt = vnListResp.length;
             for (var i = 0; i < vnCnt; i++) {
+                if (true == isShared) {
+                    var domain = getValueByJsonPath(vnListResp[i],
+                                                    'fq_name;0', null);
+                    var project = getValueByJsonPath(vnListResp[i], 'fq_name;1',
+                                                     null);
+                    if ((domain == contrail.getCookie('domain')) &&
+                        (project == contrail.getCookie('project'))) {
+                        continue;
+                    }
+                }
                 var vnText = this.getVNNameFormatter(vnListResp[i]['fq_name']);
                 vnList.push({'text': vnText, id:
                             vnListResp[i]['fq_name'].join(':')});
@@ -87,8 +97,9 @@ define([
             }
             var vmisCnt = vmis.length;
             var tmpVNIds = {};
-            window.allVMIList = [];
-            window.vmiToInstIpsMap = {};
+            if (null == window.vmiToInstIpsMap) {
+                window.vmiToInstIpsMap = {};
+            }
             for (var i = 0; i < vmisCnt; i++) {
                 var vmi =
                     getValueByJsonPath(vmis[i],
@@ -97,7 +108,6 @@ define([
                     continue;
                 }
                 var builtVMI = this.buildVMI(vmi);
-                window.allVMIList.push(builtVMI);
                 if (null != builtVMI.instIps) {
                     window.vmiToInstIpsMap[vmi.uuid] = builtVMI.instIps;
                 }
@@ -129,6 +139,50 @@ define([
                 }
             }
             return {vnList: vnList, vnVmiMaps: vnVmiMaps};
+        },
+        this.updateVnVmiMaps = function(vmiList) {
+            var vnObjs = this.vmiListFormatter(vmiList);
+            if (null == window.vnList) {
+                window.vnList = [];
+            }
+            window.vnList.concat(vnObjs.vnList);
+            if (null == window.vnVmiMaps) {
+                window.vnVmiMaps = {};
+            }
+            for (key in vnObjs.vnVmiMaps) {
+                window.vnVmiMaps[key] = vnObjs.vnVmiMaps[key];
+            }
+        },
+        this.buildTextValueByConfigList =function (configListObj, type) {
+            if ((null == configListObj[type]) || (!configListObj[type].length)) {
+                return [];
+            }
+            var domain = contrail.getCookie('domain');
+            var project = contrail.getCookie('project');
+            var results = [];
+
+            var configList = configListObj[type];
+            var cnt = configList.length;
+            for (var i = 0; i < cnt; i++) {
+                var fqn = JSON.parse(JSON.stringify(configList[i]['fq_name']));
+                var domProj = fqn.splice(0, 2);
+                if ((domain == domProj[0]) && (project == domProj[1])) {
+                    var text = fqn.join(':');
+                    results.push({text: text, value:
+                                 configList[i]['fq_name'].join(':') +
+                                 "~~" + configList[i]['uuid']});
+                } else {
+                    var tmpFqn =
+                        JSON.parse(JSON.stringify(configList[i]['fq_name']));
+                    var domProj = tmpFqn.splice(0, 2);
+                    var text = fqn[fqn.length - 1];
+                    results.push({text: text +" (" + domProj.join(':')
+                                 + ")",
+                                 value: configList[i]['fq_name'].join(':') +
+                                 "~~" + configList[i]['uuid']});
+                }
+            }
+            return results;
         },
         this.getRouteAggregateInterfaceTypes = function(svcTmplIntfTypes) {
             var rtAggIntfTypesList = [];
@@ -794,6 +848,7 @@ define([
         },
         this.getRtPolicyAccordianView = function (isDisabled) {
             return {
+                visible: 'ifNotTransparentTmpl',
                 elementId: 'rtPolicySection',
                 title: 'Routing Policy',
                 active:false,
@@ -957,6 +1012,7 @@ define([
         },
         this.getRtAggregateAccordianView = function (isDisabled) {
             return {
+                visible: 'ifNotTransparentTmpl',
                 elementId: 'rtAggregateSection',
                 title: 'Route Aggregate',
                 view: 'SectionView',
