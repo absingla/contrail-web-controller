@@ -933,6 +933,12 @@ and need to add the iconClass tag wherever we need to show some icons
             <label>Query</label>
             <name>query</name>
             <iconClass>icon-search</iconClass>
+            <resources>
+                <resource>
+                    <rootDir>/reports/qe/ui</rootDir>
+                    <css>qe.main.css</css>
+                </resource>
+            </resources>
             <access>
                 <roles>
                     <role>superAdmin</role>
