@@ -7,54 +7,50 @@ define([
     'contrail-view',
     'contrail-list-model',
 ], function (_, ContrailView, ContrailListModel) {
-    var configObj = {};
-    var self;
-    var routeAggregateListView = ContrailView.extend({
+    var bgpOptionsListView = ContrailView.extend({
         el: $(contentContainer),
-
         render: function () {
-            self = this;
-            var viewConfig = this.attributes.viewConfig;
-            currentProject = viewConfig["projectSelectedValueData"];
+            var self = this,
+                viewConfig = this.attributes.viewConfig;
             var listModelConfig = {
                 remote: {
                     ajaxConfig: {
-                        url: ctwc.URL_GET_CONFIG_DETAILS,
+                        url: "/api/tenants/config/get-config-details",
                         type: "POST",
-                        data: JSON.stringify({data: [{type: "route-aggregates",
-                                parent_id: currentProject.value}]})
+                        data: JSON.stringify(
+                            {data: [{type: 'global-system-configs'}]})
                     },
-                    dataParser: self.parseRouteAggregateData,
+                    dataParser: self.parseBGPOptionsData,
                 }
             };
             var contrailListModel = new ContrailListModel(listModelConfig);
             this.renderView4Config(this.$el,
-                    contrailListModel, getRouteAggregateGridViewConfig());
+                    contrailListModel, getBGPOptionsGridViewConfig());
         },
-
-        parseRouteAggregateData : function(result){
-            var gridDS = [];
-            var routeAggregates = getValueByJsonPath(result,
-                "0;route-aggregates", []);
-            _.each(routeAggregates, function(routeAggregate){
-                gridDS.push(routeAggregate["route-aggregate"]);
+        parseBGPOptionsData : function(result){
+            var gridDS = [],
+                globalSysConfig = getValueByJsonPath(result,
+                    "0;global-system-configs;0;global-system-config", {});
+            _.each(ctwc.GLOBAL_BGP_OPTIONS_MAP, function(bgpOption){
+                gridDS.push({name: bgpOption.name, key: bgpOption.key,
+                    value: globalSysConfig[bgpOption.key]});
             });
             return gridDS;
         }
     });
 
-    var getRouteAggregateGridViewConfig = function () {
+    var getBGPOptionsGridViewConfig = function () {
         return {
-            elementId: cowu.formatElementId([ctwc.CONFIG_ROUTE_AGGREGATE_SECTION_ID]),
+            elementId: cowu.formatElementId([ctwc.GLOBAL_BGP_OPTIONS_SECTION_ID]),
             view: "SectionView",
             viewConfig: {
                 rows: [
                     {
                         columns: [
                             {
-                                elementId: ctwc.CONFIG_ROUTE_AGGREGATE_ID,
-                                view: "routeAggregateGridView",
-                                viewPathPrefix: "config/networking/routeaggregate/ui/js/views/",
+                                elementId: ctwc.GLOBAL_BGP_OPTIONS_ID,
+                                view: "bgpOptionsGridView",
+                                viewPathPrefix: "config/infra/globalconfig/ui/js/views/",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {
                                     pagerOptions: {
@@ -72,6 +68,6 @@ define([
         }
     };
 
-    return routeAggregateListView;
+    return bgpOptionsListView;
 });
 

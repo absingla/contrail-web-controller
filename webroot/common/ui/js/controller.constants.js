@@ -504,6 +504,40 @@ define([
             href: '/#p=config_net_vn'
         };
 
+        /* Global Config Constants*/
+        this.GLOBAL_CONFIG_TAB_ID = "global-config-tab";
+        this.GLOBAL_BGP_OPTIONS_MAP = [
+            {"key": "autonomous_system", "name": "Global ASN"},
+            {"key": "ibgp_auto_mesh", "name": "iBGP Auto Mesh"},
+            {"key": "ip_fabric_subnets", "name": "IP Fabric Subnets"}
+        ];
+        this.GLOBAL_BGP_OPTIONS_SECTION_ID = "global-bgp-options-section";
+        this.GLOBAL_BGP_OPTIONS_ID = "global-bgp-options";
+        this.GLOBAL_BGP_OPTIONS_GRID_ID = "global-bgp-options-grid";
+        this.GLOBAL_BGP_OPTIONS_PREFIX_ID = "global_bgp_options";
+        this.GLOBAL_BGP_OPTIONS_LIST_VIEW_ID = "global-bgp-options-list-view";
+
+        this.GLOBAL_FORWARDING_OPTIONS_MAP = [
+            {'key': 'forwarding_mode', 'name': 'Forwarding Mode'},
+            {'key': 'vxlan_network_identifier_mode',
+                'name': 'VxLAN Identifier Mode'},
+            {'key': 'encapsulation_priorities',
+             'name': 'Encapsulation Priority Order',},
+            {'key': 'ecmp_hashing_include_fields',
+                'name': 'ECMP Hashing Fields'},
+            {'key': 'flow_export_rate', 'name': 'Flow Export Rate'}
+        ];
+        this.GLOBAL_FORWARDING_OPTIONS_SECTION_ID = "global-forwarding-options-section";
+        this.GLOBAL_FORWARDING_OPTIONS_ID = "global-forwarding-options";
+        this.GLOBAL_FORWARDING_OPTIONS_GRID_ID = "global-forwarding-options-grid";
+        this.GLOBAL_FORWARDING_OPTIONS_PREFIX_ID = "global_forwarding_options";
+        this.GLOBAL_FORWARDING_OPTIONS_LIST_VIEW_ID = "global-forwarding-options-list-view";
+
+        this.GLOBAL_FLOW_AGING_SECTION_ID = "global-flow-aging-section";
+        this.GLOBAL_FLOW_AGING_ID = "global-flow-aging";
+        this.GLOBAL_FLOW_AGING_GRID_ID = "global-flow-aging-grid";
+        this.GLOBAL_FLOW_AGING_PREFIX_ID = "global_flow_aging";
+        this.GLOBAL_FLOW_AGING_LIST_VIEW_ID = "global-flow-aging-list-view";
 
         //BGP
         this.URL_GET_BGP = '/api/tenants/config/bgp/get-bgp-routers';
@@ -675,13 +709,12 @@ define([
         /* Route Aggregate Constants */
         this.CONFIG_ROUTE_AGGREGATE_LIST_ID = "config-route-aggregate-list";
         this.ROUTE_AGGREGATE_GRID_ID = "route-aggregate-grid";
-        this.URL_GET_ROUTE_AGGREGATE_DATA = "/api/tenants/config/route-aggregates/";
         this.CONFIG_ROUTE_AGGREGATE_SECTION_ID = "config-route-aggregate-section";
         this.CONFIG_ROUTE_AGGREGATE_ID = "config-route-aggregate";
         this.CONFIG_ROUTE_AGGREGATE_LIST_VIEW_ID = "config-route-aggregate-list-view";
         this.ROUTE_AGGREGATE_PREFIX_ID = "route_aggregate";
-        this.URL_CREATE_ROUTE_AGGREGATE = "/api/tenants/config/route-aggregates";
-        this.URL_UPDATE_ROUTE_AGGREGATE = "/api/tenants/config/route-aggregate/";
+        this.URL_CREATE_ROUTE_AGGREGATE = "/route-aggregates";
+        this.URL_UPDATE_ROUTE_AGGREGATE = "/route-aggregate/";
 
         this.DEFAULT_COMMUNITIES = [
             {text:"no-export",id:"no-export"},
@@ -700,6 +733,11 @@ define([
         this.PACKET_CAPTURE_LIST_VIEW_ID = "packet-capture-list-view";
         this.PACKET_CAPTURE_PREFIX_ID = "packet_capture";
         this.URL_GET_SERVICE_TEMPLATE_IMAGES = "/api/tenants/config/service-template-images";
+
+        /* common config url constants */
+        this.URL_GET_CONFIG_DETAILS = "/api/tenants/config/get-config-details";
+        this.URL_CREATE_CONFIG_OBJECT = "/api/tenants/config/create-config-object";
+        this.URL_UPDATE_CONFIG_OBJECT = "/api/tenants/config/update-config-object";
     };
 
     //str will be [0-9]+(m|h|s|d)
