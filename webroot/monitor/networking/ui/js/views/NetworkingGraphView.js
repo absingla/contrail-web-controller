@@ -963,7 +963,7 @@ define([
                     break;
 
                 case ctwc.GRAPH_ELEMENT_NETWORK:
-                    var networkFQN = graphConfig.focusedElement.name.fqName;
+                    var networkFQN = decodeURIComponent(graphConfig.focusedElement.name.fqName);
 
                     if (contrail.checkIfExist(currentHashParams.clickedElement)) {
                         var networkUUID = nmwu.getUUIDByName(networkFQN);
@@ -984,7 +984,7 @@ define([
                     break;
 
                 case ctwc.GRAPH_ELEMENT_INSTANCE:
-                    var networkFQN = graphConfig.focusedElement.name.fqName;
+                    var networkFQN = decodeURIComponent(graphConfig.focusedElement.name.fqName);
 
                     if (contrail.checkIfExist(currentHashParams.clickedElement)) {
                         var instanceUUID = graphConfig.focusedElement.name.instanceUUID;
