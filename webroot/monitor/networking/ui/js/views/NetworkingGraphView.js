@@ -358,7 +358,7 @@ define([
 
     function getElements4ConnectedGraphFn(graphconfig) {
         var focusedElementType = graphconfig.focusedElement.type,
-            fqName = graphconfig.focusedElement.name.fqName;
+            fqName = decodeURIComponent(graphconfig.focusedElement.name.fqName);
 
         return function (response, elementMap, rankDir) {
             var elements4ConnectedGraph = [],
