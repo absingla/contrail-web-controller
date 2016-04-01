@@ -191,7 +191,7 @@ define([
         setTimeout(function() {
                 /**
                  * Tabs are already rendered so by default the event will not get fired.
-                 * call the notify once the 
+                 * call the notify once tabs are activated.
                  */
                 onAllViewsRenderComplete.notify(); 
                 defObj.resolve();
