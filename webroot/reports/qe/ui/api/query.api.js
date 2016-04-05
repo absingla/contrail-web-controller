@@ -837,7 +837,7 @@ function parseKeywordsObj(keywordsArray)
         keywordObj[i].name = "Keyword";
         var keywordStrLen = keywordsArray[i].length;
         //check if the keyword has a star in the end: if yes change op to 7 and delete trailing star; else let it be 1
-        if(keywordsArray[i].charAt(keywordStrLen - 1) === getOperatorCode('*')){
+        if(keywordsArray[i].charAt(keywordStrLen - 1) === '*'){
             keywordObj[i].value = keywordsArray[i].slice(0, -1);
             keywordObj[i].op = 7;
         } else {
