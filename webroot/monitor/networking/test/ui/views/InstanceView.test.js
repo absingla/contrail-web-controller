@@ -184,8 +184,10 @@ define([
         var instanceTabsViewObj = mnPageLoader.mnView.viewMap[ctwl.INSTANCE_TABS_ID],
             instanceTabs = instanceTabsViewObj.attributes.viewConfig.tabs;
 
-        _.each(instanceTabs, function(tab) {
-            $("#" + tab.elementId + "-tab-link").trigger("click");
+        _.each(instanceTabs, function(tab, idx) {
+            setTimeout(function() {
+		$("#" + tab.elementId + "-tab-link").trigger("click");
+	    }, 300*(idx+1));
         });
 
         setTimeout(function() {
@@ -197,7 +199,7 @@ define([
                 defObj.resolve();
             },
             // Add necessary timeout for the tab elements to load properly and resolve the promise
-            cotc.PAGE_INIT_TIMEOUT * 2
+            cotc.PAGE_INIT_TIMEOUT * 50
         );
 
         return;
