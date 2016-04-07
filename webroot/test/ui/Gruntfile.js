@@ -163,6 +163,22 @@ module.exports = function (grunt) {
                     {
                         pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/ProjectView.test.js',
                         included: false
+                    },
+                    {
+                        pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/ProjectViewNetworks.test.js',
+                        included: false
+                    },
+                    {
+                        pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/ProjectViewInstances.test.js',
+                        included: false
+                    },
+                    {
+                        pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/ProjectViewInterfaces.test.js',
+                        included: false
+                    },
+                    {
+                        pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/ProjectViewPortDistribution.test.js',
+                        included: false
                     }
                 ],
                 preprocessors: {
