@@ -821,6 +821,82 @@ define([
                                     }
                                 ]
                             }
+                        },
+                        {
+                            templateGenerator: 'ColumnSectionTemplateGenerator',
+                            templateGeneratorConfig: {
+                                columns: [
+                                    {
+                                        class: 'span12',
+                                        rows: [{
+                                            title: 'Interface Details',
+                                            key: 'value.UveVirtualMachineAgent.interface_details',
+                                            templateGenerator: 'BlockArrayListTemplateGenerator',
+                                            templateGeneratorConfig: {
+                                                titleColumn: {
+                                                    key: 'name',
+                                                    templateGenerator: 'TextGenerator'
+                                                },
+                                                dataColumn: [
+                                                    {
+                                                        key: 'active',
+                                                        templateGenerator: 'TextGenerator'
+                                                    },
+                                                    {
+                                                        key: 'ip',
+                                                        templateGenerator: 'TextGenerator'
+                                                    },
+                                                    {
+                                                        key: 'mac_address',
+                                                        templateGenerator: 'TextGenerator'
+                                                    },
+                                                    {
+                                                        key: 'virtual_network',
+                                                        templateGenerator: 'TextGenerator'
+                                                    },
+                                                    {
+                                                        key: 'floatingIP',
+                                                        templateGenerator: 'TextGenerator'
+                                                    },
+                                                    {
+                                                        key: 'is_health_check_active',
+                                                        templateGenerator: 'TextGenerator'
+                                                    },
+                                                    {
+                                                        key: 'health_check_instance_list',
+                                                        templateGenerator: 'BlockGridTemplateGenerator',
+                                                        templateGeneratorConfig: {
+                                                            dataColumn: [
+                                                                {
+                                                                    key: 'status',
+                                                                    templateGenerator: 'TextGenerator',
+                                                                    templateGeneratorConfig: {
+                                                                        width: 35
+                                                                    }
+                                                                },
+                                                                {
+                                                                    key: 'name',
+                                                                    templateGenerator: 'TextGenerator',
+                                                                    templateGeneratorConfig: {
+                                                                        width: 90
+                                                                    }
+                                                                },
+                                                                {
+                                                                    key: 'uuid',
+                                                                    templateGenerator: 'TextGenerator',
+                                                                    templateGeneratorConfig: {
+                                                                        width: 90
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }]
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }

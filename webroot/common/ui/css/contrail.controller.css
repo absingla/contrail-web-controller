@@ -92,10 +92,6 @@
     background : transparent;
 }
 
-#pageHeader.navbar .nav > li {
-    float:right;
-}
-
 .image-network:before  {
     content : url(../img/network.png);
     vertical-align : middle;
