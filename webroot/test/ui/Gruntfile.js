@@ -680,6 +680,42 @@ module.exports = function (grunt) {
                 },
                 feature: 'config'
             }
+        },
+        portGridView : {
+            options: {
+                files: [
+                    {
+                        pattern : 'contrail-web-controller/webroot/config/networking/port/ui/js/*.js',
+                        included : false
+                    },
+                    {
+                        pattern : 'contrail-web-controller/webroot/config/networking/port/ui/js/**/*.js',
+                        included : false
+                    },
+                    {
+                        pattern : 'contrail-web-controller/webroot/config/networking/port/test/ui/views/*.js',
+                        included : false
+                    }
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/config/networking/port/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputDir:__dirname + '/reports/tests/config/views/',
+                    outputFile: 'Port-grid-view-test-results.xml',
+                    suite: 'portGridView',
+                    useBrowserName: false
+                },
+                htmlReporter: {
+                    outputFile:__dirname + '/reports/tests/config/views/port-grid-view-test-results.html'
+                },
+                coverageReporter: {
+                    type: 'html',
+                    dir: __dirname + '/reports/coverage/config/views/portGridView/',
+                    subdir : browserSubdirFn
+                },
+                feature: 'config'
+            }
         }
 //        routeAggregateGridView : {
 //            options: {
@@ -820,9 +856,23 @@ module.exports = function (grunt) {
                 outputFile: __dirname + '/reports/tests/web-controller-test-results.html'
             },
             coverageReporter: {
-                type: 'html',
-                dir: __dirname + '/reports/coverage/webController/',
-                subdir: browserSubdirFn
+                 reporters: [
+                    {
+                        type: 'html',
+                        dir: __dirname + '/reports/coverage/webController/',
+                        subdir: browserSubdirFn
+                    },
+                    {
+                        type: 'json',
+                        dir: __dirname + '/reports/coverage/webController/',
+                        subdir: browserSubdirFn
+                    },
+                    {
+                        type: 'cobertura',
+                        dir: __dirname + '/reports/coverage/webController/',
+                        subdir: browserSubdirFn
+                    }
+                ]
             }
         }
     };
@@ -948,6 +998,10 @@ module.exports = function (grunt) {
             case 'bgpasaservice' :
                 grunt.task.run('karma:bgpAsAServiceGridView');
                 testDir = 'bgpAsAServiceGridView'
+                break;
+            case 'port' :
+                grunt.task.run('karma:portGridView');
+                testDir = 'portGridView'
                 break;
             /* case 'routeaggregates' :
                 grunt.task.run('karma:routeAggregateGridView');
