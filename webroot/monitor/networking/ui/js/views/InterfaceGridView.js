@@ -235,7 +235,8 @@ define([
                                                     templateGeneratorConfig: {
                                                         formatter: 'throughput'
                                                     }
-                                                }
+                                                },
+
                                             ]
                                         },
                                         {

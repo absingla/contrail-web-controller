@@ -768,29 +768,23 @@ define([
                                             templateGeneratorConfig: [
                                                 {
                                                     key: 'uuid',
-                                                    templateGenerator:
-                                                        'TextGenerator'
+                                                    templateGenerator: 'TextGenerator'
                                                 },{
                                                     key: 'vRouter',
-                                                    templateGenerator:
-                                                        'LinkGenerator',
+                                                    templateGenerator: 'LinkGenerator',
                                                     templateGeneratorConfig: {
-                                                        template:
-                                                            ctwc.URL_VROUTER,
+                                                        template: ctwc.URL_VROUTER,
                                                         params: {}
                                                     }
                                                 },{
                                                     key: 'vn',
-                                                    templateGenerator:
-                                                        'TextGenerator'
+                                                    templateGenerator: 'TextGenerator'
                                                 },{
                                                     key: 'ip',
-                                                    templateGenerator:
-                                                        'TextGenerator'
+                                                    templateGenerator: 'TextGenerator'
                                                 },{
                                                     key: 'intfCnt',
-                                                    templateGenerator:
-                                                        'TextGenerator'
+                                                    templateGenerator: 'TextGenerator'
                                              }]
                                        }]
                                     },
