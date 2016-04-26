@@ -160,7 +160,64 @@ define([
                                 forceY1: [0, 0.5]
                             }
                         }
-                    }
+                    },
+                    //This is the new LineBar chart view config. Enable following for testing.
+                    // {
+                    //     elementId: ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new",
+                    //     title: ctwl.TITLE_CPU_MEMORY,
+                    //     view: "D3LineBarChartView",
+                    //     tabConfig: {
+                    //         renderOnActivate: true,
+                    //         activate: function(event, ui) {
+                    //             //$('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find('.contrailD3-container').data('chart').resize();
+                    //         }
+                    //     },
+                    //     viewConfig: {
+                    //         modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
+                    //         parseFn: ctwp.parseCPUMemLineChartData,
+                    //         chartOptions: {
+                    //             forceY1: [0, 0.5],
+                    //             xAccessor: 'x',
+                    //             y1Accessor: 'cpu_one_min_avg',
+                    //             y2Accessor: 'rss',
+                    //             metaData : {
+                    //                 "x": {
+                    //                     isAvailable: false,
+                    //                     axisFormatter: function(value) {
+                    //                         return d3.time.format("%H:%M")(value);
+                    //                     }
+                    //                 },
+                    //                 "cpu_one_min_avg" : {
+                    //                     min : 0,
+                    //                     isAvailable: true,
+                    //                     tooltip : {
+                    //                         nameFormatter: function(name) {
+                    //                             return "CPU average";
+                    //                         },
+                    //                         valueFormatter: function(value) {
+                    //                             return d3.round(value, 1) + " %";
+                    //                         }
+                    //                     },
+                    //                     axisFormatter: d3.format(".01f")
+                    //                 },
+                    //                 "rss": {
+                    //                     isAvailable: true,
+                    //                     axisFormatter: function (y2Value) {
+                    //                         return formatBytes(y2Value * 1024, false, 2, 3);
+                    //                     },
+                    //                     tooltip : {
+                    //                         nameFormatter: function(name) {
+                    //                             return "Memory Usage";
+                    //                         },
+                    //                         valueFormatter: function(value) {
+                    //                             return formatBytes(value * 1024, false, 2, 3);
+                    //                         }
+                    //                     }
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
             ];
         };
 
