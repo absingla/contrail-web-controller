@@ -230,7 +230,7 @@ define([
                                     path: 'network_policy_refs',
                                     class: 'span12',
                                     dataBindValue: 'network_policy_refs',
-                                    dataBindOptionList: 'ui_added_parameters().networkPolicyList()',
+                                    dataBindOptionList: 'ui_added_parameters().network_policy_options()',
                                     elementConfig: {
                                         placeholder: 'Select Network Policies',
                                         dataTextField: "text",
@@ -265,7 +265,7 @@ define([
                                                  collection:
                                                      'network_ipam_refs',
                                                      templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
-                                                gridActions: [
+                                                 gridActions: [
                                                      {onClick: "function() {\
                                                          if (!isVCenter())\
                                                              addSubnet();\
@@ -296,16 +296,12 @@ define([
                                                             class: "", width: 160,
                                                             disabled: 'disable()',
                                                             dataBindValue : 'user_created_ipam_fqn()',
+                                                            dataBindOptionList : '$root.ui_added_parameters().user_created_ipam_fqn_options()',
                                                             elementConfig : {
                                                                 placeholder: 'Select IPAM',
                                                                 dataTextField : "text",
                                                                 dataValueField : "id",
-                                                                defaultValueId : 0,
-                                                                dataSource : {
-                                                                    type: 'remote',
-                                                                    url: '/api/tenants/config/ipams',
-                                                                    parse: formatVNCfg.ipamDropDownFormatter
-                                                                }
+                                                                defaultValueId : 0
                                                             }
                                                         }
                                                     },
@@ -532,14 +528,12 @@ define([
                                                 label: 'Admin State',
                                                 path : 'id_perms.enable',
                                                 class: 'span6',
-                                                dataBindValue :
-                                                    'id_perms().enable',
+                                                dataBindValue : 'id_perms().enable',
+                                                dataBindOptionList : 'ui_added_parameters().admin_state_options',
                                                 elementConfig : {
                                                     dataTextField : "text",
                                                     dataValueField : "id",
-                                                    placeholder : 'Select Admin State',
-                                                    data : [{id: 'true', text:'Up'},
-                                                            {id: 'false', text:'Down'}]
+                                                    placeholder : 'Select Admin State'
                                                 }
                                             }
                                         },
@@ -661,16 +655,12 @@ define([
                                                 label: 'Forwarding Mode',
                                                 path : 'virtual_network_properties.forwarding_mode',
                                                 class: 'span6',
-                                                dataBindValue :
-                                                    'virtual_network_properties().forwarding_mode',
+                                                dataBindValue : 'virtual_network_properties().forwarding_mode',
+                                                dataBindOptionList : 'ui_added_parameters().forwarding_mode_options',
                                                 elementConfig : {
                                                     dataTextField : "text",
                                                     dataValueField : "id",
-                                                    placeholder : 'Select Forwarding Mode',
-                                                    data : [{id: 'default', text:'Default'},
-                                                            {id: 'l2_l3', text:'L2 and L3'},
-                                                            {id: 'l3', text:'L3 Only'},
-                                                            {id: 'l2', text:'L2 Only'}]
+                                                    placeholder : 'Select Forwarding Mode'
                                                 }
                                             }
                                         },
@@ -698,7 +688,7 @@ define([
                                                     path: 'physical_router_back_refs',
                                                     class: 'span6',
                                                     dataBindValue: 'physical_router_back_refs',
-                                                    dataBindOptionList: 'ui_added_parameters().physicalRouterList()',
+                                                    dataBindOptionList: 'ui_added_parameters().physical_router_options()',
                                                     elementConfig: {
                                                         placeholder: 'Select Physical Router(s)',
                                                         dataTextField: "text",
@@ -714,7 +704,7 @@ define([
                                                     path: 'route_table_refs',
                                                     class: 'span6',
                                                     dataBindValue: 'route_table_refs',
-                                                    dataBindOptionList: 'ui_added_parameters().routeTableList()',
+                                                    dataBindOptionList: 'ui_added_parameters().route_table_options()',
                                                     elementConfig: {
                                                         placeholder: 'Select Static Route(s)',
                                                         dataTextField: "text",
@@ -734,22 +724,11 @@ define([
                                                     path: 'ecmp_hashing_include_fields',
                                                     class: 'span12',
                                                     dataBindValue: 'ecmp_hashing_include_fields',
+                                                    dataBindOptionList: 'ui_added_parameters().ecmp_hashing_include_fields_options',
                                                     elementConfig: {
                                                         placeholder: 'Select ECMP Hashing Fields',
                                                         dataTextField: "text",
-                                                        dataValueField: "id",
-                                                        data: [
-                                                            {text: 'source-ip',
-                                                             id: 'source_ip'},
-                                                            {text: 'destination-ip',
-                                                             id: 'destination_ip'},
-                                                            {text: 'ip-protocol',
-                                                             id: 'ip_protocol'},
-                                                            {text: 'source-port',
-                                                             id: 'source_port'},
-                                                            {text: 'destination-port',
-                                                             id: 'destination_port'}
-                                                        ]
+                                                        dataValueField: "id"
                                                 }
                                             }
                                         }
@@ -924,19 +903,13 @@ define([
                                                             path: 'projects',
                                                             class: 'span6',
                                                             dataBindValue: 'projects()',
+                                                            dataBindOptionList: '$root.ui_added_parameters().projects_options()',
                                                             templateId: cowc.TMPL_EDITABLE_GRID_MULTISELECT_VIEW,
                                                             class: "", width: 400,
                                                             disabled: 'disable()',
                                                             elementConfig: {
                                                                 dataTextField: "text",
-                                                                dataValueField: "id",
-                                                                dataSource : {
-                                                                    type: 'remote',
-                                                                    url:
-                                                                    '/api/tenants/config/projects',
-                                                                    parse:
-                                                                    formatVNCfg.allProjMSFormatter,
-                                                                }
+                                                                dataValueField: "id"
                                                             }
                                                         }
                                                     }

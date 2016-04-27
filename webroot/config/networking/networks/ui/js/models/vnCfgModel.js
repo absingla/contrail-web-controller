@@ -81,9 +81,14 @@ define([
             'user_created_vxlan_mode': false,
             'disable': false,
             'ui_added_parameters': {
-                networkPolicyList: ko.observableArray([]),
-                physicalRouterList: ko.observableArray([]),
-                routeTableList: ko.observableArray([])
+                admin_state_options: ctwc.ADMIN_STATE_OPTIONS,
+                forwarding_mode_options: ctwc.FORWARDING_MODE_OPTIONS,
+                ecmp_hashing_include_fields_options: ctwc.ECMP_HASHING_INCLUDE_FIELDS_OPTIONS,
+                network_policy_options: ko.observableArray([]),
+                physical_router_options: ko.observableArray([]),
+                route_table_options: ko.observableArray([]),
+                user_created_ipam_fqn_options: ko.observableArray([]),
+                projects_options: ko.observableArray([])
             }
         },
 
@@ -129,10 +134,10 @@ define([
             var self = this;
 
             $.ajax('/api/tenants/config/policys').success(function (response) {
-                self.ui_added_parameters().networkPolicyList(formatVNCfg.polMSFormatter(response));
+                self.ui_added_parameters().network_policy_options(formatVNCfg.polMSFormatter(response));
             });
             $.ajax('/api/tenants/config/physical-routers-list').success(function (response) {
-                self.ui_added_parameters().physicalRouterList(formatVNCfg.phyRouterMSFormatter(response));
+                self.ui_added_parameters().physical_router_options(formatVNCfg.phyRouterMSFormatter(response));
             });
 
             $.ajax({
@@ -140,7 +145,15 @@ define([
                 type: "POST",
                 data: {'data': [{'type': 'route-tables'}]}
             }).success(function (response) {
-                self.ui_added_parameters().routeTableList(formatVNCfg.staticRouteMSFormatter(response));
+                self.ui_added_parameters().route_table_options(formatVNCfg.staticRouteMSFormatter(response));
+            });
+
+            $.ajax('/api/tenants/config/ipams').success(function (response) {
+                self.ui_added_parameters().user_created_ipam_fqn_options(formatVNCfg.ipamDropDownFormatter(response));
+            });
+
+            $.ajax('/api/tenants/config/projects').success(function (response) {
+                self.ui_added_parameters().projects_options(formatVNCfg.allProjMSFormatter(response));
             });
         },
 

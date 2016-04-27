@@ -714,7 +714,20 @@ define([
 
         // Virtual Network Config Constants
         this.URL_CFG_VN_DETAILS = '/api/tenants/config/virtual-network-details';
-
+        
+        this.ADMIN_STATE_OPTIONS = [{id: 'true', text:'Up'}, {id: 'false', text:'Down'}];
+        this.FORWARDING_MODE_OPTIONS = [{id: 'default', text:'Default'},
+            {id: 'l2_l3', text:'L2 and L3'},
+            {id: 'l3', text:'L3 Only'},
+            {id: 'l2', text:'L2 Only'}];
+        this.ECMP_HASHING_INCLUDE_FIELDS_OPTIONS = [
+            {text: 'source-ip', id: 'source_ip'},
+            {text: 'destination-ip', id: 'destination_ip'},
+            {text: 'ip-protocol', id: 'ip_protocol'},
+            {text: 'source-port', id: 'source_port'},
+            {text: 'destination-port', id: 'destination_port'}
+        ];
+        
         /* DNS Server constants */
         this.ACTIVE_DNS_DATA = "/api/tenants/config/sandesh/virtual-DNS/";
         this.DNS_SERVER_GRID_ID = "dns-server-grid";
