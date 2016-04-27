@@ -51,15 +51,16 @@ define([
                 }
             });
 
-            var instanceTrafficStatsDropdown = instancePortDistDropdown.contrailDropdown({
+            var instancePortDistDataDropdown = instancePortDistDropdown.contrailDropdown({
                 dataTextField: "name",
                 dataValueField: "value",
                 data: dropdownData,
                 change: changeCB
             }).data('contrailDropdown');
 
-            instanceTrafficStatsDropdown.text(dropdownData[0].name);
+            instancePortDistDataDropdown.value(dropdownData[0].value);
             changeCB();
+            
         } else {
             instancePortDistChart.append(ctwm.NO_TRAFFIC_STATS_FOUND); //TODO - Style
         }

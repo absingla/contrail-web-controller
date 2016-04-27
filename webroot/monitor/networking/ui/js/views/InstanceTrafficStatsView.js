@@ -55,14 +55,14 @@ define([
                 }
             });
 
-            var instanceTrafficStatsDropdown = instanceTrafficStatsDropdown.contrailDropdown({
+            var instanceTrafficStatsDataDropdown = instanceTrafficStatsDropdown.contrailDropdown({
                 dataTextField: "name",
                 dataValueField: "value",
                 data: dropdownData,
                 change: changeCB
             }).data('contrailDropdown');
 
-            instanceTrafficStatsDropdown.text(dropdownData[0].name);
+            instanceTrafficStatsDataDropdown.value(dropdownData[0].value);
             changeCB();
         } else {
             $('#'+instanceTrafficStatsChartId).append(ctwm.NO_TRAFFIC_STATS_FOUND); //TODO - Style
