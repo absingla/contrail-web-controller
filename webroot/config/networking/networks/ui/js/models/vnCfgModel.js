@@ -18,7 +18,6 @@ define([
     var vnCfgModel = ContrailModel.extend({
 
         constructor: function (modelData) {
-            this.initModel();
             ContrailModel.prototype.constructor.call(this, modelData);
             return this;
         },
