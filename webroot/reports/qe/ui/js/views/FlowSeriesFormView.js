@@ -34,6 +34,7 @@ define([
                 self.model.showErrorAttr(flowSeriesId, false);
                 Knockback.applyBindings(self.model, document.getElementById(flowSeriesId));
                 kbValidation.bind(self);
+
                 $("#run_query").on('click', function() {
                     if (self.model.model().isValid(true, cowc.KEY_RUN_QUERY_VALIDATION)) {
                         self.renderQueryResult();
@@ -131,8 +132,9 @@ define([
                                 {
                                     elementId: 'time_range', view: "FormDropdownView",
                                     viewConfig: {
-                                        path: 'time_range', dataBindValue: 'time_range', class: "span3",
-                                        elementConfig: {dataTextField: "text", dataValueField: "id", data: cowc.TIMERANGE_DROPDOWN_VALUES}}
+                                        path: 'time_range', class: "span3",
+                                        dataBindValue: 'time_range', dataBindOptionList: 'ui_added_parameters().time_range_options',
+                                        elementConfig: {defaultValueId: 2, dataTextField: "text", dataValueField: "id"}}
                                 },
                                 {
                                     elementId: 'from_time', view: "FormDateTimePickerView",
@@ -187,10 +189,8 @@ define([
                                             {
                                                 elementId: 'time_granularity_unit', view: "FormDropdownView",
                                                 viewConfig: {
-                                                    label: false,
-                                                    path: 'time_granularity_unit',
-                                                    dataBindValue: 'time_granularity_unit',
-                                                    dataBindOptionList: 'getTimeGranularityUnits()',
+                                                    label: false, path: 'time_granularity_unit',
+                                                    dataBindValue: 'time_granularity_unit', dataBindOptionList: 'getTimeGranularityUnits()',
                                                     class: "span4",
                                                     elementConfig: {}
                                                 }
@@ -217,8 +217,9 @@ define([
                                 {
                                     elementId: 'direction', view: "FormDropdownView",
                                     viewConfig: {
-                                        path: 'direction', dataBindValue: 'direction', class: "span3",
-                                        elementConfig: {dataTextField: "text", dataValueField: "id", data: cowc.DIRECTION_DROPDOWN_VALUES}
+                                        path: 'direction', class: "span3",
+                                        dataBindValue: 'direction', dataBindOptionList: 'ui_added_parameters().direction_options',
+                                        elementConfig: {dataTextField: "text", dataValueField: "id"}
                                     }
                                 }
                             ]

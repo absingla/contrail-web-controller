@@ -123,8 +123,9 @@ define([
                                 {
                                     elementId: 'time_range', view: "FormDropdownView",
                                     viewConfig: {
-                                        path: 'time_range', dataBindValue: 'time_range', class: "span3",
-                                        elementConfig: {dataTextField: "text", dataValueField: "id", data: cowc.TIMERANGE_DROPDOWN_VALUES}}
+                                        path: 'time_range', class: "span3",
+                                        dataBindValue: 'time_range', dataBindOptionList: 'ui_added_parameters().time_range_options',
+                                        elementConfig: {dataTextField: "text", dataValueField: "id"}}
                                 },
                                 {
                                     elementId: 'from_time', view: "FormDateTimePickerView",
