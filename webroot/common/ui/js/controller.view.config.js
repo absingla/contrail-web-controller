@@ -449,6 +449,9 @@ define([
                     viewPathPrefix: ctwl.UNDERLAY_VIEWPATH_PREFIX,
                     app: cowc.APP_CONTRAIL_CONTROLLER,
                     viewConfig: {
+                        viewConfig: {
+                            model: viewConfig.model
+                        },
                         widgetConfig: {
                             elementId: ctwc.UNDERLAY_SEARCHFLOW_TAB_ID + '-widget',
                             view: "WidgetView",
@@ -474,6 +477,9 @@ define([
                         ctwl.UNDERLAY_VIEWPATH_PREFIX,
                     app: cowc.APP_CONTRAIL_CONTROLLER,
                     viewConfig: {
+                        viewConfig: {
+                            model: viewConfig.model
+                        },
                         widgetConfig: {
                             elementId: ctwc.UNDERLAY_TRACEFLOW_TAB_ID + '-widget',
                             view: "WidgetView",
