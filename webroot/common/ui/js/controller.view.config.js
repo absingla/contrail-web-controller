@@ -168,9 +168,9 @@ define([
                     //     view: "D3LineBarChartView",
                     //     tabConfig: {
                     //         renderOnActivate: true,
-                    //         activate: function(event, ui) {
-                    //             //$('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find('.contrailD3-container').data('chart').resize();
-                    //         }
+                    //         // activate: function(event, ui) {
+                    //         //     $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find('.contrailD3-container').data('chart').refreshView();
+                    //         // }
                     //     },
                     //     viewConfig: {
                     //         modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
@@ -178,16 +178,19 @@ define([
                     //         chartOptions: {
                     //             forceY1: [0, 0.5],
                     //             xAccessor: 'x',
-                    //             y1Accessor: 'cpu_one_min_avg',
-                    //             y2Accessor: 'rss',
+                    //             xFormatter: function(value) {
+                    //                 return d3.time.format("%H:%M")(value);
+                    //             },
+                    //             y1Formatter: d3.format(".01f"),
+                    //             y2Formatter: function (y2Value) {
+                    //                 return formatBytes(y2Value * 1024, true);
+                    //             },
                     //             metaData : {
                     //                 "x": {
                     //                     isAvailable: false,
-                    //                     axisFormatter: function(value) {
-                    //                         return d3.time.format("%H:%M")(value);
-                    //                     }
                     //                 },
                     //                 "cpu_one_min_avg" : {
+                    //                     color: cowc.D3_COLOR_CATEGORY5[1],
                     //                     min : 0,
                     //                     isAvailable: true,
                     //                     tooltip : {
@@ -197,14 +200,11 @@ define([
                     //                         valueFormatter: function(value) {
                     //                             return d3.round(value, 1) + " %";
                     //                         }
-                    //                     },
-                    //                     axisFormatter: d3.format(".01f")
+                    //                     }
                     //                 },
                     //                 "rss": {
+                    //                     color: cowc.D3_COLOR_CATEGORY5[3],
                     //                     isAvailable: true,
-                    //                     axisFormatter: function (y2Value) {
-                    //                         return formatBytes(y2Value * 1024, false, 2, 3);
-                    //                     },
                     //                     tooltip : {
                     //                         nameFormatter: function(name) {
                     //                             return "Memory Usage";
