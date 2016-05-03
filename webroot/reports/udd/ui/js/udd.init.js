@@ -2,10 +2,8 @@
 
 define([
     'underscore',
-    'text!reports/udd/ui/templates/udd.tmpl',
     'reports/udd/ui/js/udd.main'
-], function (_, UDDTemplates) {
-    $("body").append(UDDTemplates);
+], function (_) {
 
     var initJSpath = pkgBaseDir + '/reports/udd/ui/js/udd.init.js',
         initStatus = contentHandler.initFeatureModuleMap[initJSpath],

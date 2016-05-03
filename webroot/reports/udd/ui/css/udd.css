@@ -1,3 +1,91 @@
-/* Copyright (c) 2016 Juniper Networks, Inc. All rights reserved. */
+/*
+ * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
+ */
 
-/* TODO: UDD Specific Styles */
+.btn {
+  border: none; }
+
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+
+#menu .new-dashboard {
+  text-align: center; }
+  #menu .new-dashboard:before, #menu .new-dashboard:after {
+    display: none; }
+  #menu .new-dashboard a {
+    padding-left: 0;
+    padding-right: 0; }
+
+.new-widget {
+  position: fixed;
+  right: 0;
+  z-index: 13;
+  line-height: 40px;
+  border-left: 1px solid #ccc;
+  padding: 0 16px; }
+
+#widgets {
+  display: flex;
+  min-height: 320px;
+  margin-bottom: 16px; }
+  #widgets .area {
+    width: 100%;
+    padding: 8px 0; }
+  #widgets .placeholder {
+    margin: 8px;
+    text-align: center;
+    border: 1px dashed #ccc;
+    color: grey;
+    font-size: 72px;
+    line-height: 56px; }
+
+#widgets .area .grid-stack .widget,
+#widgets .area .grid-stack .widget *,
+#widgets .area .grid-stack .widget *:before,
+#widgets .area .grid-stack .widget *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+#widgets .area .grid-stack .widget.grid-stack-item,
+#widgets .area .grid-stack .widget.grid-stack-item .placeholder-content {
+  padding: 0 8px; }
+
+#widgets .area .grid-stack .widget .panel {
+  position: relative;
+  height: 100%; }
+  #widgets .area .grid-stack .widget .panel .panel-heading {
+    height: 36px; }
+    #widgets .area .grid-stack .widget .panel .panel-heading .close, #widgets .area .grid-stack .widget .panel .panel-heading .config {
+      margin-left: 16px;
+      color: #898989;
+      opacity: 1; }
+    #widgets .area .grid-stack .widget .panel .panel-heading input {
+      position: absolute;
+      top: 5px; }
+  #widgets .area .grid-stack .widget .panel .back {
+    display: none; }
+    #widgets .area .grid-stack .widget .panel .back .panel-footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%; }
+
+#widgets .chart {
+  width: 100%;
+  height: 100%;
+  margin: 20px 0;
+  padding: 0px; }
+  #widgets .chart svg {
+    display: block;
+    width: 100%;
+    min-height: 300px;
+    margin: 20px 0;
+    padding: 0px; }
+  #widgets .chart text {
+    font: 12px sans-serif; }
+
