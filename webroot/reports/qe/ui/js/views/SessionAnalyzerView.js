@@ -133,8 +133,11 @@ define([
                                 top: false,
                                 right: {
                                     custom: {
-                                        filterChart: {
+                                        filterY: {
                                             enable: true,
+                                            iconClass: 'icon-filter',
+                                            title: 'Filter',
+                                            events: cowu.getFilterEvent(),
                                             viewConfig: getLineChartFilterConfig(queryId, aggregateSelectFields, saResultChartId)
                                         }
                                     }
