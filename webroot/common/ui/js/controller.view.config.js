@@ -168,26 +168,184 @@ define([
                     //     view: "D3LineBarChartView",
                     //     tabConfig: {
                     //         renderOnActivate: true,
-                    //         activate: function(event, ui) {
-                    //             //$('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find('.contrailD3-container').data('chart').resize();
-                    //         }
+                    //         // activate: function(event, ui) {
+                    //         //     $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find('.contrailD3-container').data('chart').refreshView();
+                    //         // }
                     //     },
                     //     viewConfig: {
+                    //         widgetConfig: {
+                    //             elementId: 'aa' + '-widget',
+                    //             view: "WidgetView",
+                    //             viewConfig: {
+                    //                 header: false,
+                    //                 controls: {
+                    //                     top: false,
+                    //                     right: {
+                    //                         custom: {
+                    //                             filterY1: {
+                    //                                 enable: true,
+                    //                                 iconClass: 'icon-filter',
+                    //                                 title: 'Filter Y Axis',
+                    //                                 events: cowu.getFilterEvent(),
+                    //                                 viewConfig: {
+                    //                                     groupType: '2-cols',
+                    //                                     groups: [
+                    //                                         [{
+                    //                                             id: 'by-y-axis-type',
+                    //                                             title: 'Y1 Axis Type',
+                    //                                             type: 'radio',
+                    //                                             items: [
+                    //                                                 {
+                    //                                                     text: 'Line',
+                    //                                                     events: {
+                    //                                                         change: function(event) {
+                    //                                                             var chartContainer = $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find(".contrailD3-container").data('chart');
+                    //                                                             chartContainer._convertTo('contrailD3.charts.LineChart', 1, null);
+                    //                                                         }
+                    //                                                     }
+                    //                                                 },
+                    //                                                 {
+                    //                                                     text: 'Stacked Bars',
+                    //                                                     selected: true,
+                    //                                                     events: {
+                    //                                                         change: function(event) {
+                    //                                                             var chartContainer = $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find(".contrailD3-container").data('chart');
+                    //                                                             chartContainer._convertTo('contrailD3.charts.BarChart', 1, 'stacked');
+                    //                                                         }
+                    //                                                     }
+                    //                                                 },
+                    //                                                 {
+                    //                                                     text: 'Grouped Bars',
+                    //                                                     events: {
+                    //                                                         change: function(event) {
+                    //                                                             var chartContainer = $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find(".contrailD3-container").data('chart');
+                    //                                                             chartContainer._convertTo('contrailD3.charts.BarChart', 1, 'grouped');
+                    //                                                         }
+                    //                                                     }
+                    //                                                 }
+                    //                                             ]
+                    //                                         },
+                    //                                         {
+                    //                                             id: 'by-y-axis-field',
+                    //                                             title: 'Y1 Axis Field',
+                    //                                             type: 'checkbox',
+                    //                                             items: [
+                    //                                                 {
+                    //                                                     text: 'cpu_one_min_avg',
+                    //                                                     events: {
+                    //                                                         click: function(event) {
+                    //
+                    //                                                         }
+                    //                                                     }
+                    //                                                 },
+                    //                                                 {
+                    //                                                     text: 'cpu_five_min_avg',
+                    //                                                     events: {
+                    //                                                         click: function(event) {
+                    //                                                         }
+                    //                                                     }
+                    //                                                 },
+                    //                                                 {
+                    //                                                     text: 'rss',
+                    //                                                     events: {
+                    //                                                         click: function(event) {
+                    //                                                         }
+                    //                                                     }
+                    //                                                 }
+                    //                                             ]
+                    //                                         }],
+                    //                                         [{
+                    //                                             id: 'by-y-axis-1-type',
+                    //                                             title: 'Y2 Axis Type',
+                    //                                             type: 'radio',
+                    //                                             items: [
+                    //                                                 {
+                    //                                                     text: 'Line',
+                    //                                                     selected: true,
+                    //                                                     events: {
+                    //                                                         change: function(event) {
+                    //                                                             var chartContainer = $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find(".contrailD3-container").data('chart');
+                    //                                                             chartContainer._convertTo('contrailD3.charts.LineChart', 2, null);
+                    //                                                         }
+                    //                                                     }
+                    //                                                 },
+                    //                                                 {
+                    //                                                     text: 'Stacked Bars',
+                    //                                                     events: {
+                    //                                                         change: function(event) {
+                    //                                                             var chartContainer = $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find(".contrailD3-container").data('chart');
+                    //                                                             chartContainer._convertTo('contrailD3.charts.BarChart', 2, 'stacked');
+                    //                                                         }
+                    //                                                     }
+                    //                                                 },
+                    //                                                 {
+                    //                                                     text: 'Grouped Bars',
+                    //                                                     events: {
+                    //                                                         change: function(event) {
+                    //                                                             var chartContainer = $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find(".contrailD3-container").data('chart');
+                    //                                                             chartContainer._convertTo('contrailD3.charts.BarChart', 2, 'grouped');
+                    //                                                         }
+                    //                                                     }
+                    //                                                 }
+                    //                                             ]
+                    //                                         },
+                    //                                         {
+                    //                                             id: 'by-y-axis-1-field',
+                    //                                             title: 'Y2 Axis Field',
+                    //                                             type: 'checkbox',
+                    //                                             items: [
+                    //                                                 {
+                    //                                                     text: 'cpu_one_min_avg',
+                    //                                                     events: {
+                    //                                                         click: function(event) {
+                    //
+                    //                                                         }
+                    //                                                     }
+                    //                                                 },
+                    //                                                 {
+                    //                                                     text: 'cpu_five_min_avg',
+                    //                                                     events: {
+                    //                                                         click: function(event) {
+                    //                                                         }
+                    //                                                     }
+                    //                                                 },
+                    //                                                 {
+                    //                                                     text: 'rss',
+                    //                                                     events: {
+                    //                                                         click: function(event) {
+                    //                                                         }
+                    //                                                     }
+                    //                                                 }
+                    //                                             ]
+                    //                                         }]
+                    //                                     ]
+                    //                                 }
+                    //                             }
+                    //                         },
+                    //                         expandedContainerWidth: 350,
+                    //                         expandedContainerHeight: 280
+                    //                     }
+                    //                 }
+                    //             }
+                    //         },
                     //         modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
                     //         parseFn: ctwp.parseCPUMemLineChartData,
                     //         chartOptions: {
                     //             forceY1: [0, 0.5],
                     //             xAccessor: 'x',
-                    //             y1Accessor: 'cpu_one_min_avg',
-                    //             y2Accessor: 'rss',
+                    //             xFormatter: function(value) {
+                    //                 return d3.time.format("%H:%M")(value);
+                    //             },
+                    //             y1Formatter: d3.format(".01f"),
+                    //             y2Formatter: function (y2Value) {
+                    //                 return formatBytes(y2Value * 1024, true);
+                    //             },
                     //             metaData : {
                     //                 "x": {
                     //                     isAvailable: false,
-                    //                     axisFormatter: function(value) {
-                    //                         return d3.time.format("%H:%M")(value);
-                    //                     }
                     //                 },
                     //                 "cpu_one_min_avg" : {
+                    //                     color: cowc.D3_COLOR_CATEGORY5[1],
                     //                     min : 0,
                     //                     isAvailable: true,
                     //                     tooltip : {
@@ -197,14 +355,24 @@ define([
                     //                         valueFormatter: function(value) {
                     //                             return d3.round(value, 1) + " %";
                     //                         }
-                    //                     },
-                    //                     axisFormatter: d3.format(".01f")
+                    //                     }
+                    //                 },
+                    //                 "cpu_five_min_avg" : {
+                    //                     color: cowc.D3_COLOR_CATEGORY5[2],
+                    //                     min : 0,
+                    //                     isAvailable: true,
+                    //                     tooltip : {
+                    //                         nameFormatter: function(name) {
+                    //                             return "CPU average";
+                    //                         },
+                    //                         valueFormatter: function(value) {
+                    //                             return d3.round(value, 1) + " %";
+                    //                         }
+                    //                     }
                     //                 },
                     //                 "rss": {
+                    //                     color: cowc.D3_COLOR_CATEGORY5[3],
                     //                     isAvailable: true,
-                    //                     axisFormatter: function (y2Value) {
-                    //                         return formatBytes(y2Value * 1024, false, 2, 3);
-                    //                     },
                     //                     tooltip : {
                     //                         nameFormatter: function(name) {
                     //                             return "Memory Usage";
@@ -449,6 +617,9 @@ define([
                     viewPathPrefix: ctwl.UNDERLAY_VIEWPATH_PREFIX,
                     app: cowc.APP_CONTRAIL_CONTROLLER,
                     viewConfig: {
+                        viewConfig: {
+                            model: viewConfig.model
+                        },
                         widgetConfig: {
                             elementId: ctwc.UNDERLAY_SEARCHFLOW_TAB_ID + '-widget',
                             view: "WidgetView",
@@ -474,6 +645,9 @@ define([
                         ctwl.UNDERLAY_VIEWPATH_PREFIX,
                     app: cowc.APP_CONTRAIL_CONTROLLER,
                     viewConfig: {
+                        viewConfig: {
+                            model: viewConfig.model
+                        },
                         widgetConfig: {
                             elementId: ctwc.UNDERLAY_TRACEFLOW_TAB_ID + '-widget',
                             view: "WidgetView",
@@ -569,6 +743,8 @@ define([
                 controlPanelConfig: {
                     filter: {
                         enable: true,
+                        iconClass: 'icon-filter',
+                        title: 'Filter',
                         viewConfig: getControlPanelFilterConfig()
                     },
                     legend: {
