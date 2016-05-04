@@ -1098,7 +1098,7 @@ define([
                                                                     key: 'status',
                                                                     templateGenerator: 'TextGenerator',
                                                                     templateGeneratorConfig: {
-                                                                        width: 35
+                                                                        width: 45
                                                                     }
                                                                 },
                                                                 {
@@ -1112,7 +1112,7 @@ define([
                                                                     key: 'uuid',
                                                                     templateGenerator: 'TextGenerator',
                                                                     templateGeneratorConfig: {
-                                                                        width: 90
+                                                                        width: 100
                                                                     }
                                                                 }
                                                             ]
