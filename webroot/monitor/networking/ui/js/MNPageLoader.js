@@ -4,21 +4,18 @@
 define([
     'controller-basedir/monitor/networking/ui/js/views/MonitorNetworkingView',
 ], function(MonitorNetworkingView) {
-    var MNPageLoader = function MonitorNetworkingLoader() {
+    var MNPageLoader = function() {
         this.load = function (paramObject) {
             var self = this, currMenuObj = globalObj.currMenuObj,
                 hashParams = paramObject['hashParams'],
-                //pathMNView = ctWebDir + '/monitor/networking/ui/js/views/MonitorNetworkingView.js',
                 renderFn = paramObject['function'],
                 loadingStartedDefObj = paramObject['loadingStartedDefObj'];
 
-            //require([pathMNView], function (MonitorNetworkingView) {
                 self.mnView = new MonitorNetworkingView();
                 self.renderView(renderFn, hashParams);
                 if(contrail.checkIfExist(loadingStartedDefObj)) {
                     loadingStartedDefObj.resolve();
                 }
-            //});
         };
         this.renderView = function (renderFn, hashParams, view) {
             $(contentContainer).empty();
