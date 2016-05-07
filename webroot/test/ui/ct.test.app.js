@@ -11,7 +11,7 @@ var ctwu, ctwc, ctwgc, ctwgrc, ctwl, ctwm, ctwp, ctwvc,
     nmwu, nmwgc, nmwgrc, nmwp, nmwvc;
 
 require([
-    coreBaseDir + '/js/common/core.app.utils.js',
+    coreBaseDir + '/js/common/core.app.js',
     coreBaseDir + '/test/ui/js/co.test.app.utils.js'
 ], function () {
     /**
@@ -24,7 +24,7 @@ require([
         globalObj['testConf'] = testConf;
 
         if (globalObj['env'] == 'prod') {
-            globalObj['buildBaseDir'] = '/built';
+            globalObj['buildBaseDir'] = '/dist';
         } else {
             globalObj['buildBaseDir'] = '';
         }
