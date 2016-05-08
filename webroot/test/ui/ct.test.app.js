@@ -11,12 +11,8 @@ var ctwu, ctwc, ctwgc, ctwgrc, ctwl, ctwm, ctwp, ctwvc,
     nmwu, nmwgc, nmwgrc, nmwp, nmwvc;
 
 require([
-    coreBaseDir + '/js/common/core.app.js',
     coreBaseDir + '/test/ui/js/co.test.app.utils.js'
 ], function () {
-    /**
-     * require -ing the test config separately to make core.app.utils starting point for the app.
-     */
     require([coreBaseDir + '/test/ui/js/co.test.config.js'], function(testConf) {
         globalObj['env'] = testConf['env'];
 
