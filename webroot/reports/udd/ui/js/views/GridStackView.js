@@ -7,11 +7,13 @@
  */
 define(function (require) {
     var GridStack = require('/assets/gridstack/js/gridstack.js')
-    var Widget = require('/reports/udd/ui/js/views/widgetView.js')
+    var WidgetsCollection = require('/reports/udd/ui/js/models/WidgetsCollection.js')
+    var ContrailView = require('contrail-view')
+
     var $ = require('jquery')
     var _ = require('lodash')
 
-    return Backbone.View.extend({
+    return ContrailView.extend({
         initialize: function (p) {
             var self = this
             self.p = {
@@ -22,15 +24,21 @@ define(function (require) {
                 acceptWidgets: '.grid-stack-item',
                 handle: '.panel-heading',
                 verticalMargin: 8,
-                cellHeight: 60,
+                cellHeight: 60
             }
             self.widgets = {}
+
+            var viewConfig = self.attributes.viewConfig;
+
+            self.model = new WidgetsCollection()
+            self.model.url = viewConfig.dataUrl;
 
             self.listenTo(self.model, 'add', self.onModelAdded)
         },
 
         id: 'widgets',
         template: Handlebars.compile(require('text!/reports/udd/ui/templates/layout.html')),
+        widgetTemplate: Handlebars.compile(require('text!/reports/udd/ui/templates/widget.html')),
         events: {
             'change .grid-stack': 'onAddWidget',
             'click .grid-stack-item .close': 'onRemoveWidget',
@@ -41,13 +49,18 @@ define(function (require) {
 
         render: function () {
             var self = this
-            self.$el.html(self.template({width: self.p.width}))
+
+            self.$el.prepend(self.template({width: self.p.width}))
+            self.initLayout()
+            self.model.fetch()
+
             return self
         },
 
         initLayout: function () {
             var self = this
             var $grid = self.$('.grid-stack')
+
             $grid.gridstack(self.p)
             self.grid = $grid.data('gridstack')
             self.placeHolder = self.grid.addWidget(self.placeholderHTML, 0, 10, 1, 1, true)
@@ -68,30 +81,36 @@ define(function (require) {
         // *Add a single widget to the area by creating a view for it
         onModelAdded: function (model) {
             var self = this
-            var view = new Widget({ model })
-            self.widgets[view.cid] = view
-            var el = view.render().el
-            self.grid.addWidget(el, model.get('x'), model.get('y'), model.get('width'), model.get('height'))
-            self.grid.minWidth(el, view.chart.p.minWidth)
-            self.grid.minHeight(el, view.chart.p.minHeight)
+            self.grid.addWidget(self.widgetTemplate(model.toJSON()), model.get('x'), model.get('y'), model.get('width'), model.get('height'))
+
+            self.renderView4Config(self.$('#' + model.get('widgetId')), model, {
+                view: "WidgetView",
+                viewPathPrefix: "reports/udd/ui/js/views/",
+                viewConfig: {}
+            });
+
+            //self.grid.minWidth(el, view.chart.p.minWidth)
+            //self.grid.minHeight(el, view.chart.p.minHeight)
         },
 
         onAddWidget: function (event, items) {
             var self = this
             if (!event || !event.target.classList.contains('grid-stack')) return
-                if (items.length === 1 && items[0].el.hasClass('placeholder')) return
-                    self.grid.move(self.placeholder, 0, Infinity)
+            if (items.length === 1 && items[0].el.hasClass('placeholder')) return
+            self.grid.move(self.placeholder, 0, Infinity)
         },
 
         onRemoveWidget: function (e) {
             var self = this
-            var el = self.$(e.currentTarget).parents('.grid-stack-item')   
+            var el = self.$(e.currentTarget).parents('.grid-stack-item')
             self.grid.removeWidget(el)
         },
 
         onResize: function (event, ui) {
             var self = this
-            var widget = _.find(self.widgets, function (w) { return w.$el[0] === ui.element[0]})
+            var widget = _.find(self.widgets, function (w) {
+                return w.$el[0] === ui.element[0]
+            })
             widget.chart.chart.update()
         }
     })

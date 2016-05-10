@@ -3,30 +3,38 @@
  */
 
 define([
-       'underscore',
-       'contrail-view',
-       '/reports/udd/ui/js/views/layoutView.js'
-], function (_, ContrailView, Layout) {
+    'underscore',
+    'contrail-view'
+], function (_, ContrailView) {
     var UDDashboardView = ContrailView.extend({
         el: $(contentContainer),
 
         initialize: function (p) {
             var self = this
-            self.layout = new Layout({model: p.userWidgets})
 
-            Handlebars.registerHelper('select', function( value, options ){
-                var $el = $('<select />').html( options.fn(self) )
-                $el.find('[value="' + value + '"]').attr({'selected':'selected'})
+            Handlebars.registerHelper('select', function (value, options) {
+                var $el = $('<select />').html(options.fn(self))
+                $el.find('[value="' + value + '"]').attr({'selected': 'selected'})
                 return $el.html()
             })
         },
 
         renderNetworkingUDD: function (viewConfig) {
             var self = this
-            self.$el.prepend(self.layout.render().el)
-            self.layout.initLayout()
-            self.layout.model.fetch()
+
+            self.renderView4Config(self.$el, null, self.getUDDViewConfig())
+        },
+
+        getUDDViewConfig: function () {
+            return {
+                view: "GridStackView",
+                viewPathPrefix: "reports/udd/ui/js/views/",
+                viewConfig: {
+                    dataUrl: '/reports/udd/data/networking-udd.json'
+                }
+            }
         }
+
     });
 
     return UDDashboardView;
