@@ -1,0 +1,17 @@
+[{
+  "widgetId": "nudd-line-chart",
+  "type": "node",
+  "title": "Query Count Time Series",
+  "x": 0,
+  "y": 0,
+  "width": 1,
+  "height": 6,
+  "contentViewConfig": {
+    "view": "LineChart4TableView",
+    "viewPathPrefix": "reports/udd/ui/js/views/",
+    "viewConfig": {
+      "tableName": "StatTable.QueryPerfInfo.query_stats",
+      "timeRangeMins": 60
+    }
+  }
+}]
