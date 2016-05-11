@@ -140,7 +140,7 @@ define([
     };
 
     function getInterfaceTooltipConfig (data) {
-        tooltipConfig = {
+        var tooltipConfig = {
             title: {
                 name: data.ip,
                 type: ctwl.TITLE_GRAPH_ELEMENT_INTERFACE
