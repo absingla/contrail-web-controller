@@ -96,6 +96,7 @@ define([
             //         y: 2,
             //         label: 'Memory Usage',
             //         isAvailable: true,
+            //         interpolate: chUtils.interpolateSankey,
             //         tooltip : {
             //             nameFormatter: function(name) {
             //                 return "Memory Usage";
@@ -228,11 +229,11 @@ define([
                     // {
                     //     elementId: ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new",
                     //     title: ctwl.TITLE_CPU_MEMORY,
-                    //     view: "D3LineBarChartView",
+                    //     view: "LineBarChartView",
                     //     tabConfig: {
                     //         renderOnActivate: true,
                     //         // activate: function(event, ui) {
-                    //         //     $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find('.contrailD3-container').data('chart').refreshView();
+                    //         //     $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find('.coCharts-container').data('chart').refreshView();
                     //         // }
                     //     },
                     //     viewConfig: {
@@ -281,13 +282,13 @@ define([
         self.getCPUMemWidgetFilterViewConfig = function (selectorId, metaData) {
 
             function convertToLineChart(axis) {
-                var chartContainer = $('#' + selectorId).find(".contrailD3-container").data('chart');
-                chartContainer._convertTo('contrailD3.charts.LineChart', axis, null);
+                var chartContainer = $('#' + selectorId).find(".coCharts-container").data('chart');
+                chartContainer._convertTo('coCharts.LineChart', axis, null);
             };
 
             function convertToBarChart(axis, type) {
-                var chartContainer = $('#' + selectorId).find(".contrailD3-container").data('chart');
-                chartContainer._convertTo('contrailD3.charts.BarChart', axis, type || 'grouped');
+                var chartContainer = $('#' + selectorId).find(".coCharts-container").data('chart');
+                chartContainer._convertTo('coCharts.BarChart', axis, type || 'grouped');
             };
 
             function getYAxisFieldItems(axis) {
