@@ -308,6 +308,35 @@ define([
                 return items;
             };
 
+            function radioSelector(axis, valueType) {
+                return $('#' + selectorId).find('input:radio[name="control-panel-filter-' + getYAxisId(axis, "type") + '"][value="' + valueType + '"]');
+            };
+
+            function updateFilterOptionsLineClick(axis) {
+                var updateAxis = (axis == 1) ? 2 : 1;
+
+                if ($(radioSelector(updateAxis, "Stacked Bars")).prop('disabled')) {
+                    $(radioSelector(updateAxis, "Stacked Bars")).prop('disabled', false);
+                }
+                if ($(radioSelector(updateAxis, "Grouped Bars")).prop('disabled')) {
+                    $(radioSelector(updateAxis, "Grouped Bars")).prop('disabled', false);
+                }
+            };
+
+            function updateFilterOptionsBarClick(axis) {
+                var updateAxis = (axis == 1) ? 2 : 1;
+
+                if (!$(radioSelector(updateAxis, "Stacked Bars")).prop('disabled')) {
+                    $(radioSelector(updateAxis, "Stacked Bars")).prop('disabled', true);
+                }
+                if (!$(radioSelector(updateAxis, "Grouped Bars")).prop('disabled')) {
+                    $(radioSelector(updateAxis, "Grouped Bars")).prop('disabled', true);
+                }
+                if ($(radioSelector(updateAxis, "Line")).prop('disabled')) {
+                    $(radioSelector(updateAxis, "Line")).prop('disabled', false);
+                }
+            };
+
             function lineBarSwitcherItems(axis, bar) {
                 return [
                     {
@@ -315,7 +344,8 @@ define([
                         selected: !bar,
                         events: {
                             change: function (event) {
-                                convertToLineChart(axis)
+                                convertToLineChart(axis);
+                                updateFilterOptionsLineClick(axis);
                             }
                         }
                     },
@@ -324,7 +354,8 @@ define([
                         selected: bar,
                         events: {
                             change: function (event) {
-                                convertToBarChart(axis, 'stacked')
+                                convertToBarChart(axis, 'stacked');
+                                updateFilterOptionsBarClick(axis);
                             }
                         }
                     },
@@ -332,34 +363,39 @@ define([
                         text: 'Grouped Bars',
                         events: {
                             change: function (event) {
-                                convertToBarChart(axis)
+                                convertToBarChart(axis);
+                                updateFilterOptionsBarClick(axis);
                             }
                         }
                     }
                 ];
             };
 
+            function getYAxisId(axis, name) {
+                return 'by-y' + axis + '-' + name;
+            }
+
             return {
                 groupType: '2-cols',
                 groups: [
                     [{
-                        id: 'by-y-axis-type',
+                        id: getYAxisId(1, 'type'),
                         title: 'Y1 Axis Type',
                         type: 'radio',
                         items: lineBarSwitcherItems(1, true)
                     }, {
-                        id: 'by-y-axis-field',
+                        id: getYAxisId(1, 'field'),
                         title: 'Y1 Axis Field',
                         type: 'checkbox',
                         items: getYAxisFieldItems(1)
                     }],
                     [{
-                        id: 'by-y-axis-1-type',
+                        id: getYAxisId(2, 'type'),
                         title: 'Y2 Axis Type',
                         type: 'radio',
                         items: lineBarSwitcherItems(2, false)
                     }, {
-                        id: 'by-y-axis-1-field',
+                        id: getYAxisId(2, 'field'),
                         title: 'Y2 Axis Field',
                         type: 'checkbox',
                         items: getYAxisFieldItems(2)
