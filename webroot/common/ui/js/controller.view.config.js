@@ -59,15 +59,12 @@ define([
             var instanceDetailsUrl = ctwc.get(ctwc.URL_INSTANCE_DETAIL, instanceUUID);
 
             // var CPUMemChartMetadata = {
-            //     "x": {
-            //         isAvailable: false,
-            //     },
             //     "cpu_one_min_avg" : {
             //         color: cowc.D3_COLOR_CATEGORY5[1],
             //         label: 'CPU 1min Avg',
-            //         y: 1,
             //         min : 0,
-            //         isAvailable: true,
+            //         enable: true,
+            //         y: 1,
             //         tooltip : {
             //             nameFormatter: function(name) {
             //                 return "CPU average";
@@ -79,9 +76,9 @@ define([
             //     },
             //     // "cpu_five_min_avg" : {
             //     //     color: cowc.D3_COLOR_CATEGORY5[2],
-            //     //     y: 1,
             //     //     min : 0,
-            //     //     isAvailable: true,
+            //     //     enable: true,
+            //     //     y: 1,
             //     //     tooltip : {
             //     //         nameFormatter: function(name) {
             //     //             return "CPU 5min average";
@@ -93,9 +90,9 @@ define([
             //     // },
             //     "rss": {
             //         color: cowc.D3_COLOR_CATEGORY5[3],
-            //         y: 2,
             //         label: 'Memory Usage',
-            //         isAvailable: true,
+            //         enable: true,
+            //         y: 2,
             //         interpolate: chUtils.interpolateSankey,
             //         tooltip : {
             //             nameFormatter: function(name) {
@@ -108,8 +105,8 @@ define([
             //     },
             //     // "rss_buffer": {
             //     //     color: cowc.D3_COLOR_CATEGORY5[4],
+            //     //     enable: true,
             //     //     y: 2,
-            //     //     isAvailable: true,
             //     //     tooltip : {
             //     //         nameFormatter: function(name) {
             //     //             return "Buffer Memory Usage";
@@ -247,11 +244,7 @@ define([
                     //                     right: {
                     //                         custom: {
                     //                             filterY: {
-                    //                                 enable: true,
-                    //                                 iconClass: 'icon-filter',
-                    //                                 title: 'Filter Y Axis',
-                    //                                 events: cowu.getFilterEvent(),
-                    //                                 viewConfig: self.getCPUMemWidgetFilterViewConfig(ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new", CPUMemChartMetadata)
+                    //                                 enable: true
                     //                             }
                     //                         },
                     //                         expandedContainerWidth: 350,
@@ -277,131 +270,6 @@ define([
                     //     }
                     // }
             ];
-        };
-
-        self.getCPUMemWidgetFilterViewConfig = function (selectorId, metaData) {
-
-            function convertToLineChart(axis) {
-                var chartContainer = $('#' + selectorId).find(".coCharts-container").data('chart');
-                chartContainer._convertTo('coCharts.LineChart', axis, null);
-            };
-
-            function convertToBarChart(axis, type) {
-                var chartContainer = $('#' + selectorId).find(".coCharts-container").data('chart');
-                chartContainer._convertTo('coCharts.BarChart', axis, type || 'grouped');
-            };
-
-            function getYAxisFieldItems(axis) {
-                var items = [];
-                _.each(metaData, function (metaVal, metaKey) {
-                    if (metaVal.y == axis && metaVal.isAvailable) {
-                        items.push({
-                            text: metaVal.label || metaKey,
-                            checked: true,
-                            events: {
-                                click: function (event) {
-                                }
-                            }
-                        });
-                    }
-                });
-                return items;
-            };
-
-            function radioSelector(axis, valueType) {
-                return $('#' + selectorId).find('input:radio[name="control-panel-filter-' + getYAxisId(axis, "type") + '"][value="' + valueType + '"]');
-            };
-
-            function updateFilterOptionsLineClick(axis) {
-                var updateAxis = (axis == 1) ? 2 : 1;
-
-                if ($(radioSelector(updateAxis, "Stacked Bars")).prop('disabled')) {
-                    $(radioSelector(updateAxis, "Stacked Bars")).prop('disabled', false);
-                }
-                if ($(radioSelector(updateAxis, "Grouped Bars")).prop('disabled')) {
-                    $(radioSelector(updateAxis, "Grouped Bars")).prop('disabled', false);
-                }
-            };
-
-            function updateFilterOptionsBarClick(axis) {
-                var updateAxis = (axis == 1) ? 2 : 1;
-
-                if (!$(radioSelector(updateAxis, "Stacked Bars")).prop('disabled')) {
-                    $(radioSelector(updateAxis, "Stacked Bars")).prop('disabled', true);
-                }
-                if (!$(radioSelector(updateAxis, "Grouped Bars")).prop('disabled')) {
-                    $(radioSelector(updateAxis, "Grouped Bars")).prop('disabled', true);
-                }
-                if ($(radioSelector(updateAxis, "Line")).prop('disabled')) {
-                    $(radioSelector(updateAxis, "Line")).prop('disabled', false);
-                }
-            };
-
-            function lineBarSwitcherItems(axis, bar) {
-                return [
-                    {
-                        text: 'Line',
-                        selected: !bar,
-                        events: {
-                            change: function (event) {
-                                convertToLineChart(axis);
-                                updateFilterOptionsLineClick(axis);
-                            }
-                        }
-                    },
-                    {
-                        text: 'Stacked Bars',
-                        selected: bar,
-                        events: {
-                            change: function (event) {
-                                convertToBarChart(axis, 'stacked');
-                                updateFilterOptionsBarClick(axis);
-                            }
-                        }
-                    },
-                    {
-                        text: 'Grouped Bars',
-                        events: {
-                            change: function (event) {
-                                convertToBarChart(axis);
-                                updateFilterOptionsBarClick(axis);
-                            }
-                        }
-                    }
-                ];
-            };
-
-            function getYAxisId(axis, name) {
-                return 'by-y' + axis + '-' + name;
-            }
-
-            return {
-                groupType: '2-cols',
-                groups: [
-                    [{
-                        id: getYAxisId(1, 'type'),
-                        title: 'Y1 Axis Type',
-                        type: 'radio',
-                        items: lineBarSwitcherItems(1, true)
-                    }, {
-                        id: getYAxisId(1, 'field'),
-                        title: 'Y1 Axis Field',
-                        type: 'checkbox',
-                        items: getYAxisFieldItems(1)
-                    }],
-                    [{
-                        id: getYAxisId(2, 'type'),
-                        title: 'Y2 Axis Type',
-                        type: 'radio',
-                        items: lineBarSwitcherItems(2, false)
-                    }, {
-                        id: getYAxisId(2, 'field'),
-                        title: 'Y2 Axis Field',
-                        type: 'checkbox',
-                        items: getYAxisFieldItems(2)
-                    }]
-                ]
-            };
         };
 
         self.getInstanceTabViewModelConfig = function (instanceUUID) {
