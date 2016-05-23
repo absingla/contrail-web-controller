@@ -8,15 +8,10 @@ define([
 ], function (_, ContrailView) {
     var UDDashboardView = ContrailView.extend({
         el: $(contentContainer),
+        className: 'widgets',
 
         initialize: function (p) {
             var self = this
-
-            Handlebars.registerHelper('select', function (value, options) {
-                var $el = $('<select />').html(options.fn(self))
-                $el.find('[value="' + value + '"]').attr({'selected': 'selected'})
-                return $el.html()
-            })
         },
 
         renderNetworkingUDD: function (viewConfig) {
@@ -28,6 +23,7 @@ define([
         getUDDViewConfig: function () {
             return {
                 view: "GridStackView",
+                elementId: 'gridStackView',
                 viewPathPrefix: "reports/udd/ui/js/views/",
                 viewConfig: {
                     dataUrl: '/reports/udd/data/networking-udd.json'

@@ -1,5 +1,5 @@
 [{
-  "widgetId": "nudd-line-chart",
+  "widgetId": "udd0",
   "type": "node",
   "title": "Query Count Time Series",
   "x": 0,
@@ -8,10 +8,34 @@
   "height": 6,
   "contentViewConfig": {
     "view": "LineChart4TableView",
-    "viewPathPrefix": "reports/udd/ui/js/views/",
-    "viewConfig": {
-      "tableName": "StatTable.QueryPerfInfo.query_stats",
-      "timeRangeMins": 60
-    }
+    "viewPathPrefix": "reports/udd/ui/js/views/"
+  },
+  "query": {
+    "table_name": "StatTable.QueryPerfInfo.query_stats",
+    "select": "T=, COUNT(query_stats)",
+    "time_range": 3600,
+    "yAxisLabel": "Query Count",
+    "yAxisValue": "COUNT(query_stats)",
+    "from_time_utc": 1463659191722,
+    "to_time_utc": 1463662671656
+  }
+}, {
+  "widgetId": "udd1",
+  "type": "node",
+  "title": "CPU Stat",
+  "x": 1,
+  "y": 0,
+  "width": 1,
+  "height": 6,
+  "contentViewConfig": {
+    "view": "LineChart4TableView",
+    "viewPathPrefix": "reports/udd/ui/js/views/"
+  },
+  "query": {
+    "table_name": "StatTable.ConfigCpuState.cpu_info",
+    "select": "T=, SUM(cpu_info.mem_virt)",
+    "time_range": 43200,
+    "yAxisLabel": "SUM Virtual Memory",
+    "yAxisValue": "SUM(cpu_info.mem_virt)"
   }
 }]

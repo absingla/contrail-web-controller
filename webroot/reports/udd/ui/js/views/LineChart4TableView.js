@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
-
 define([
     'underscore',
     'contrail-view',
@@ -10,37 +9,16 @@ define([
 
     var LineChart4TableView = ContrailView.extend({
         render: function () {
-            var self = this,
-                viewConfig = self.attributes.viewConfig;
+            var self = this
 
-            self.renderView4Config(self.$el, null, self.getContentViewConfig(viewConfig))
+            self.renderView4Config(self.$el, null, self.getContentViewConfig(self.model.model().attributes), null, null, null, function () {
+                nv.utils.windowResize(self.childViewMap['lineWithFocusChart'].chartModel.update)
+            })
         },
 
-        getContentViewConfig: function (viewConfig) {
-            var queryRequestPostData = {
-                async: false,
-                autoSort: true,
-                chunk: 1,
-                chunkSize: 15000,
-                formModelAttrs: {
-                    table_name: "StatTable.QueryPerfInfo.query_stats",
-                    table_type: "STAT",
-                    direction: "1",
-                    filter_json: null,
-                    filters: "",
-                    from_time: 1462844869870,
-                    from_time_utc: 1462844880000,
-                    limit: "15000",
-                    query_prefix: "stat",
-                    select: "T=, Source, COUNT(query_stats), name",
-                    time_granularity: 60,
-                    time_granularity_unit: "secs",
-                    time_range: "3600",
-                    to_time: 1462846716271,
-                    to_time_utc: 1462846740000,
-                    where: ""
-                }
-            };
+        getContentViewConfig: function (data) {
+            var self = this
+            var queryRequestPostData = self.model.getQueryRequestPostData(+ new Date)
 
             var queryResultRemoteConfig = {
                 url: "/api/qe/query",
@@ -59,25 +37,26 @@ define([
 
             return {
                 view: "LineWithFocusChartView",
+                elementId: 'lineWithFocusChart',
                 viewConfig: {
                     modelConfig: listModelConfig,
                     parseFn: function (responseArray) {
                         if (responseArray.length == 0) {
                             return [];
                         }
-                        var queryCount = {key: "Query Count", values: [], color: cowc.D3_COLOR_CATEGORY5[0]},
+                        var queryCount = {values: [], color: cowc.D3_COLOR_CATEGORY5[0]},
                             chartData = [queryCount];
 
                         for (var i = 0; i < responseArray.length; i++) {
                             var ts = Math.floor(responseArray[i]["T="] / 1000);
-                            queryCount.values.push({x: ts, y: responseArray[i]['COUNT(query_stats)']});
+                            queryCount.values.push({x: ts, y: responseArray[i][data.yAxisValue]});
                         }
                         return chartData;
                     },
                     chartOptions: {
                         axisLabelDistance: 5,
                         height: 300,
-                        yAxisLabel: 'Query Count',
+                        yAxisLabel: data.yAxisLabel,
                         forceY: [0, 10],
                         yFormatter: function (d) {
                             return d;

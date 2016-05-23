@@ -13,7 +13,7 @@ define(function (require) {
     var $ = require('jquery')
     var _ = require('lodash')
 
-    return ContrailView.extend({
+    var GridStackView = ContrailView.extend({
         initialize: function (p) {
             var self = this
             self.p = {
@@ -50,7 +50,7 @@ define(function (require) {
         render: function () {
             var self = this
 
-            self.$el.prepend(self.template({width: self.p.width}))
+            self.$el.html(self.template({width: self.p.width}))
             self.initLayout()
             self.model.fetch()
 
@@ -83,14 +83,16 @@ define(function (require) {
             var self = this
             self.grid.addWidget(self.widgetTemplate(model.toJSON()), model.get('x'), model.get('y'), model.get('width'), model.get('height'))
 
-            self.renderView4Config(self.$('#' + model.get('widgetId')), model, {
+            var el = self.$('#' + model.get('widgetId'))
+            self.renderView4Config(el, model, {
                 view: "WidgetView",
+                elementId: model.get('widgetId'),
                 viewPathPrefix: "reports/udd/ui/js/views/",
                 viewConfig: {}
+            }, null, null, null, function () {
+                self.grid.minWidth(el, 1)
+                self.grid.minHeight(el, 6)
             });
-
-            //self.grid.minWidth(el, view.chart.p.minWidth)
-            //self.grid.minHeight(el, view.chart.p.minHeight)
         },
 
         onAddWidget: function (event, items) {
@@ -108,10 +110,13 @@ define(function (require) {
 
         onResize: function (event, ui) {
             var self = this
-            var widget = _.find(self.widgets, function (w) {
+            var widget = _.find(self.childViewMap, function (w) {
                 return w.$el[0] === ui.element[0]
             })
-            widget.chart.chart.update()
+            var chart = widget.childViewMap['widgetContentView'].childViewMap['undefined'].childViewMap
+            var chartType = Object.keys(chart)[0]
+            chart[chartType].chartModel.update()
         }
     })
+    return GridStackView;
 })

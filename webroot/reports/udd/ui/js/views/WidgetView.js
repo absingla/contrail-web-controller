@@ -4,12 +4,12 @@
 define(function (require) {
     var ContrailView = require('contrail-view')
 
-    return ContrailView.extend({
+    var WidgetView = ContrailView.extend({
         className: 'widget',
         events: {
             'click .close': 'remove',
             'click .panel-heading .config': 'flipCard',
-            'click .title': 'onTitleClick',
+            'click .title': 'editTitle',
             'blur .panel-heading>input': 'onTitleChange',
             'click .save': 'saveConfig',
         },
@@ -22,10 +22,14 @@ define(function (require) {
 
         render: function () {
             var self = this
-            self.renderView4Config(self.$el, self.model, {
+            self.renderView4Config(self.$el, null, {
                 view: "WidgetContentView",
+                elementId: 'widgetContentView',
                 viewPathPrefix: "reports/udd/ui/js/views/",
-                viewConfig: {}
+                viewConfig: self.model.attributes
+            }, null, null, null, function () {
+                var widgetConfigView = self.childViewMap.widgetContentView.childViewMap[self.model.get('widgetId')]
+                widgetConfigView.on('change', self.onConfigChange.bind(self))
             });
             return self
         },
@@ -35,13 +39,16 @@ define(function (require) {
             self.model.destroy()
         },
 
+        /*
+         * toggle between chart and config view
+         */
         flipCard: function () {
             var self = this
             self.$('.front').toggle()
             self.$('.back').toggle()
         },
 
-        onTitleClick: function (e) {
+        editTitle: function (e) {
             var self = this
             var title = self.model.get('title')
             self.$('.title').remove()
@@ -58,6 +65,12 @@ define(function (require) {
             self.$('.panel-heading').prepend('<span class="title">${ newTitle }</span>')
         },
 
+        onConfigChange: function () {
+            var self = this
+            self.flipCard()
+        },
+
+        //TODO move to WidgetConfigView
         updateSaveBtn: function () {
             var self = this
             self.$('.save').toggleClass('disabled', !self.model.provider.isDirty())
@@ -68,4 +81,5 @@ define(function (require) {
             self.chart.model.save()
         }
     })
+    return WidgetView;
 })

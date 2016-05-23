@@ -7,7 +7,7 @@ define([
     'knockout',
     'query-form-model'
 ], function (_, Knockout, QueryFormModel) {
-    var FormSeriesFormModel = QueryFormModel.extend({
+    var FlowSeriesFormModel = QueryFormModel.extend({
 
         defaultSelectFields: ['flow_class_id', 'direction_ing'],
 
@@ -22,5 +22,5 @@ define([
         }
     });
 
-    return FormSeriesFormModel;
+    return FlowSeriesFormModel;
 });
