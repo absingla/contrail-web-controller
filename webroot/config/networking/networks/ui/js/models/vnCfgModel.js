@@ -302,14 +302,12 @@ define([
                 var fipPoolObj = fipPoolCollection[i];
                 var fipFQN = vnFQN.concat(fipPoolObj.name());
                 if (fipPoolObj.projects()) {
-                    var projList = fipPoolObj.projects().split(',');
+                    var projList = fipPoolObj.projects().
+                        split(cowc.DROPDOWN_VALUE_SEPARATOR);
                     var projects = []
                     _.each(projList, function (proj) {
-                        var projData = proj.trim().split('~');
-                        if (projData.length != 2) {
-                            return;
-                        }
-                        projects.push({'uuid': projData[1]});
+                        var projData = proj ? proj.trim() : proj;
+                        projects.push({'uuid': projData});
                     });
                     fipPoolArray.push({'to': fipFQN, 'projects': projects});
                 } else {
@@ -451,7 +449,8 @@ define([
             var policies = [], policyList = [];
 
             if (attr.network_policy_refs.length) {
-                policies = attr.network_policy_refs.split(',');
+                policies = attr.network_policy_refs.split(
+                    cowc.DROPDOWN_VALUE_SEPARATOR);
             }
             policies.every(function(policy) {
                 policyList.push({'to': policy.split(':'),
@@ -466,7 +465,8 @@ define([
             var routes = [], routeList = [];
 
             if (attr.route_table_refs.length) {
-                routes = attr.route_table_refs.split(',');
+                routes =
+                    attr.route_table_refs.split(cowc.DROPDOWN_VALUE_SEPARATOR);
             }
             routes.every(function(route) {
                 routeList.push({'to': route.split(':')});
@@ -561,7 +561,7 @@ define([
                 ipamAssocArr[ipam_fqn].push(subnet);
             }
             for (var ipam in ipamAssocArr) {
-                subnetArray.push({'to': ipam.split(':'),
+                subnetArray.push({'to': ipam.split(cowc.DROPDOWN_VALUE_SEPARATOR),
                                   'attr' :
                                   {'ipam_subnets': ipamAssocArr[ipam]}
                                   });
@@ -656,7 +656,8 @@ define([
             var phyRouters = getValueByJsonPath(attr,
                         'physical_router_back_refs', '');
 
-            attr['physical-routers'] = phyRouters.length ? phyRouters.split(',') : [];
+            attr['physical-routers'] = phyRouters.length ?
+                phyRouters.split(cowc.DROPDOWN_VALUE_SEPARATOR) : [];
             delete attr['physical_router_back_refs'];
         },
 
@@ -784,20 +785,44 @@ define([
                 'pVlanId' :
                 function (value, attr, finalObj) {
                     if (isVCenter() && finalObj['uuid'] == null) {
-                        var vlan = Number(value);
-                        if (isNaN(vlan) ||
-                            vlan < 1 || vlan > 4094) {
+                        var pVlanId = Number(value);
+                        if ((isNaN(pVlanId) ||
+                            (pVlanId < 1) || (pVlanId > 4094))) {
                             return "Enter Primary VLAN Identifier between 1 - 4094";
+                        }
+                    }
+                    if (null != finalObj['sVlanId']) {
+                        var sVlanId = Number(finalObj['sVlanId']);
+                        if (pVlanId == sVlanId) {
+                            return "Primany and Secondary VLAN identifier " +
+                                "should not be same";
+                        } else {
+                            /* Remove any error message which was displayed in
+                             * sVlanId lostFocus
+                             */
+                            ctwu.removeAttrErrorMsg(this, 'sVlanId');
                         }
                     }
                 },
                 'sVlanId' :
                 function (value, attr, finalObj) {
                     if (isVCenter() && finalObj['uuid'] == null) {
-                        var vlan = Number(value);
-                        if (isNaN(vlan) ||
-                            vlan < 1 || vlan > 4094) {
+                        var sVlanId = Number(value);
+                        if ((isNaN(sVlanId) ||
+                            (sVlanId < 1) || (sVlanId > 4094))) {
                             return "Enter Secondary VLAN Identifier between 1 - 4094";
+                        }
+                    }
+                    if (null != finalObj['pVlanId']) {
+                        var pVlanId = Number(finalObj['pVlanId']);
+                        if (sVlanId == pVlanId) {
+                            return "Primany and Secondary VLAN identifier " +
+                                "should not be same";
+                        } else {
+                            /* Remove any error message which was displayed in
+                             * pVlanId lostFocus
+                             */
+                            ctwu.removeAttrErrorMsg(this, 'pVlanId');
                         }
                     }
                 },
@@ -903,6 +928,14 @@ define([
                 this.getSRIOV(newVNCfgData);
                 this.getEcmpHashing(newVNCfgData);
 
+                if (!isVCenter()) {
+                    delete newVNCfgData.pVlanId;
+                    delete newVNCfgData.external_ipam;
+                } else {
+                    newVNCfgData['pVlanId'] =
+                        Number(getValueByJsonPath(newVNCfgData, 'sVlanId', 0));
+                }
+
                 delete newVNCfgData.virtual_network_network_id;
                 delete newVNCfgData.errors;
                 delete newVNCfgData.locks;
@@ -921,14 +954,6 @@ define([
                 delete newVNCfgData.sVlanId;
                 delete newVNCfgData.disable;
                 delete newVNCfgData.user_created_vxlan_mode;
-
-                if (!isVCenter()) {
-                    delete newVNCfgData.pVlanId;
-                    delete newVNCfgData.external_ipam;
-                } else {
-                    newVNCfgData['pVlanId'] =
-                        Number(getValueByJsonPath(newVNCfgData, 'pVlanId', 0));
-                }
 
                 postData['virtual-network'] = newVNCfgData;
 

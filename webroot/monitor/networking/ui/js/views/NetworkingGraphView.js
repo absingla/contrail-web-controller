@@ -6,8 +6,9 @@ define([
     'underscore',
     'contrail-view',
     'contrail-graph-model',
-    'graph-view'
-], function (_, ContrailView, ContrailGraphModel, GraphView) {
+    'graph-view',
+    'contrail-element'
+], function (_, ContrailView, ContrailGraphModel, GraphView, ContrailElement) {
 
     var NetworkingGraphView = ContrailView.extend({
         render: function () {
@@ -1361,7 +1362,7 @@ define([
 
                 var nodeName = collectionNodeValue['name'],
                     nodeType = collectionNodeValue['node_type'],
-                    imageName = getImageName(collectionNodeValue),
+                    imageName = grUtils.getImageName(collectionNodeValue),
                     imageLink = '/img/icons/' + imageName,
                     options = {
                         position: {

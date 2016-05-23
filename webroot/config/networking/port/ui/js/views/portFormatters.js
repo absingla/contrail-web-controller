@@ -216,13 +216,15 @@ define([
                            "");
             if(dhcpVals != "" && dhcpVals.length > 0){
                 var dhcp_length = dhcpVals.length;
-                dhcp = "<table><tbody><tr><td>Code</td><td>Value</td></tr>"
+                dhcp = "<table width='100%'><thead><tr><th class='span4'>Code</th><th class='span4'>Value</th><th class='span4'>Value in Bytes</th></tr></thead><tbody>"
                 for(var i = 0; i < dhcp_length;i++) {
                     var dhcpVal = dhcpVals[i];
                     dhcp += "<tr><td>";
                     dhcp += dhcpVal["dhcp_option_name"]
                     dhcp += "</td><td>";
-                    dhcp += dhcpVal["dhcp_option_value"]
+                    dhcp += dhcpVal["dhcp_option_value"] ? dhcpVal["dhcp_option_value"] : "-";
+                    dhcp += "</td><td>";
+                    dhcp += dhcpVal["dhcp_option_value_bytes"] ? dhcpVal["dhcp_option_value_bytes"] : "-" ;                   
                     dhcp += "</td></tr>";
                 }
                 dhcp += "</tbody></table>";
@@ -341,10 +343,10 @@ define([
                           []);
             if(portBindingData.length > 0) {
                 var portBinding_length = portBindingData.length;
-                portBinding = "<table><tbody><tr><td>Key</td><td>Value</td></tr>"
+                portBinding = "<table width='100%'><thead><tr><th class='span5'>Key</th><th class='span7'>Value</th></tr></thead>"
                 for(var i = 0; i < portBinding_length;i++) {
                     var portBindingVal = portBindingData[i];
-                    portBinding += "<tr><td>";
+                    portBinding += "<tbody><tr><td>";
                     if(portBindingVal["key"] == "vnic_type" &&
                        portBindingVal['value'] == "direct") {
                         portBinding += "SR-IOV (vnic_type:direct)";
@@ -634,7 +636,7 @@ define([
 
                 if(fip && fip.floating_ip_address && fq_name.length === 5) {
                     toStr = fq_name.join(":");
-                    val = uuid + " " + toStr;
+                    val = uuid + cowc.DROPDOWN_VALUE_SEPARATOR + toStr;
                     fipText = fip.floating_ip_address + " (" +
                                   fip.fq_name[2] + ":" +
                                   fip.fq_name[3] + ")";
@@ -671,7 +673,7 @@ define([
                 var to = vm["fq_name"].join(":");
                 var uuid = vm["uuid"];
                 var uuid = vm["uuid"];
-                deviceVMIValue = uuid +" "+to;
+                deviceVMIValue = uuid + cowc.DROPDOWN_VALUE_SEPARATOR + to;
                 returnComputeUUID.push({"text":text,"value":deviceVMIValue});
             }
             if((returnComputeUUID.length > 0) &&
@@ -698,7 +700,7 @@ define([
                     var deviceLRArr = [];
                     var to = localLogicalRout["fq_name"].join(":");
                     var uuid = localLogicalRout["uuid"];
-                    deviceLRArr = to +" "+ uuid;
+                    deviceLRArr = to + cowc.DROPDOWN_VALUE_SEPARATOR + uuid;
                     lrReturn.push({"text":text,"value":deviceLRArr});
                 }
             }
@@ -722,7 +724,8 @@ define([
                 var healthCheckFQName = getValueByJsonPath(healthCheckData[i], 'fq_name', []);
                 var healthCheckUUID = getValueByJsonPath(healthCheckData[i], 'uuid', '');
                 if(healthCheckFQName.length > 0) {
-                    healthCheckVal = healthCheckFQName.join(":") + " " + healthCheckUUID;
+                    healthCheckVal = healthCheckFQName.join(":") +
+                        cowc.DROPDOWN_VALUE_SEPARATOR + healthCheckUUID;
                     var text = ctwu.formatCurrentFQName(healthCheckFQName, self.currentDomainProject);
                     healthCheckDataReturn.push({value: healthCheckVal, text: text});
                 }
@@ -770,7 +773,8 @@ define([
                             ip["virtual_network_refs"][0]["to"][2];
                         var uuid = ip["uuid"];
                         var to = ip["fq_name"].join(":");
-                        var subInterfaceVMI = uuid + " " + to;
+                        var subInterfaceVMI = uuid +
+                            cowc.DROPDOWN_VALUE_SEPARATOR + to;
                         if(!(true == edit && ip["uuid"] == portModel.model.uuid())){
                             subInterfaceParentDatas.push(
                                                 {"text":subInterfaceParentText,

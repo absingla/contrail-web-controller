@@ -1,3 +1,5 @@
+/* Copyright (c) 2016 Juniper Networks, Inc. All rights reserved. */
+
 textarea[name="select"] {
     max-height: 100px !important;
 }

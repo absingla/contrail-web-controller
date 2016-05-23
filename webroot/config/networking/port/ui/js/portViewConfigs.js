@@ -243,6 +243,7 @@
                                              placeholder: 'Select Static Routes',
                                              dataTextField: "text",
                                              dataValueField: "value",
+                                             separator: cowc.DROPDOWN_VALUE_SEPARATOR,
                                              dataSource : {
                                                  type: 'remote',
                                                  requestType: 'post',
@@ -720,9 +721,7 @@
                                                  templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                                                  dataBindValue: 'dhcp_option_name()',
                                                  placeholder: 'Option code',
-                                                 class: "span6",
-                                                 width:275,
-                                                 label: 'Code'
+                                                 width: 200,
                                              }
                                          }, {
                                              elementId: 'dhcp_option_value',
@@ -733,9 +732,18 @@
                                                  placeholder: 'Option value',
                                                  templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                                                  dataBindValue: 'dhcp_option_value()',
-                                                 class: "span6",
-                                                 width:275,
-                                                 label: 'Value'
+                                                 width: 300,
+                                             }
+                                         }, {
+                                             elementId: 'dhcp_option_value_bytes',
+                                             name: "Value in Bytes",
+                                             view: "FormInputView",
+                                             viewConfig: {
+                                                 path: 'dhcp_option_value_bytes',
+                                                 placeholder: 'Option value in bytes',
+                                                 templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                                 dataBindValue: 'dhcp_option_value_bytes()',
+                                                 width: 300,
                                              }
                                          }],
                                          rowActions: [{
@@ -903,6 +911,7 @@
                                  placeholder: 'Select Security Group(s)',
                                  dataTextField: "text",
                                  dataValueField: "value",
+                                 separator: cowc.DROPDOWN_VALUE_SEPARATOR,
                                  dataSource : {
                                      type: 'remote',
                                      url:'/api/tenants/config/securitygroup',

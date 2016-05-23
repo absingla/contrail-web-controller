@@ -181,7 +181,8 @@ define([
                          modelConfig['floating_ip_back_refs'][i], 'to', '');
                     var toStr = to.join(":");
                     if(uuid != '') {
-                        modelConfig['floatingIpValue'].push(uuid + " " + toStr);
+                        modelConfig['floatingIpValue'].
+                            push(uuid + cowc.DROPDOWN_VALUE_SEPARATOR + toStr);
                     }
                 }
             }
@@ -230,30 +231,26 @@ define([
             modelConfig['allowedAddressPairCollection'] = appCollectionModel;
 
             //Modal config default DHCP option formatting
-            var DHCP = [];
-            var dhcpList =
-              modelConfig["virtual_machine_interface_dhcp_option_list"]["dhcp_option"];
-            if(dhcpList != null && dhcpList.length > 0) {
+            var dhcpModelArray = [],
+                dhcpList = getValueByJsonPath(modelConfig,
+                    "virtual_machine_interface_dhcp_option_list;dhcp_option", []);
+            if(dhcpList.length) {
                 var dhcpLen = dhcpList.length;
                 for(var i = 0; i < dhcpLen; i++) {
-                    var dhcp_obj = dhcpList[i];
-                    var dhcpVal = dhcpList[i].dhcp_option_value.split(" ");
-                    if(dhcpVal.length > 1) {
-                        var dhcpValLen = dhcpVal.length;
-                        for(var j = 0; j < dhcpValLen; j++) {
-                            var dhcp = {};
-                            dhcp.dhcp_option_name = dhcpList[i].dhcp_option_name;
-                            dhcp.dhcp_option_value = dhcpVal[j];
-                            var dhcpOptionModel = new DHCPOptionModel(dhcp);
-                            DHCP.push(dhcpOptionModel);
-                        }
-                    } else {
-                        var dhcpOptionModel = new DHCPOptionModel(dhcp_obj);
-                        DHCP.push(dhcpOptionModel);
-                    }
+                    var dhcp_obj = dhcpList[i],
+                        dhcpVal = getValueByJsonPath(dhcpList[i],
+                            "dhcp_option_value", null, false),
+                        dhcpValBytes = getValueByJsonPath(dhcpList[i],
+                            "dhcp_option_value_bytes", null, false),
+                        dhcp = {}, dhcpOptionModel;
+                     dhcp.dhcp_option_name = dhcpList[i].dhcp_option_name;
+                     dhcp.dhcp_option_value = dhcpVal;
+                     dhcp.dhcp_option_value_bytes = dhcpValBytes;
+                     dhcpOptionModel = new DHCPOptionModel(dhcp);
+                     dhcpModelArray.push(dhcpOptionModel);
                 }
             }
-            var dhcpCollectionModel = new Backbone.Collection(DHCP);
+            var dhcpCollectionModel = new Backbone.Collection(dhcpModelArray);
             modelConfig["virtual_machine_interface_dhcp_option_list"]["dhcp_option"]
                                                 = dhcpCollectionModel;
             modelConfig['dhcpOptionCollection'] = dhcpCollectionModel;
@@ -279,7 +276,8 @@ define([
                 var healthCheckuuid = getValueByJsonPath(healthCheck[0],
                                          'uuid', '');
                 if (healthCheckTo != "" && healthCheckuuid != "") {
-                    healthCheckVal = healthCheckTo.join(":") + " " + healthCheckuuid;
+                    healthCheckVal = healthCheckTo.join(":") +
+                        cowc.DROPDOWN_VALUE_SEPARATOR + healthCheckuuid;
                     modelConfig['service_health_check_refs'] = healthCheckVal;
                 }
             }
@@ -398,7 +396,8 @@ define([
                                           "logical_router_back_refs;0;uuid", "");
                     if(logicalRouterTo.length > 0 && logicalRouterUUID != "") {
                         deviceLRValue = logicalRouterTo.join(":") +
-                                        " " + logicalRouterUUID;
+                                        cowc.DROPDOWN_VALUE_SEPARATOR +
+                                        logicalRouterUUID;
                         modelConfig["logicalRouterValue"] = deviceLRValue;
                         modelConfig["deviceRouterShow"] = true;
                     }
@@ -414,7 +413,8 @@ define([
                     var vmUUID = getValueByJsonPath(modelConfig,
                                "virtual_machine_refs;0;uuid", "");
                     if(vmRefTo.length > 0 && vmUUID != "") {
-                        deviceVMIValue = vmUUID +" "+vmRefTo.join(":");
+                        deviceVMIValue = vmUUID + cowc.DROPDOWN_VALUE_SEPARATOR
+                            + vmRefTo.join(":");
                         modelConfig["virtualMachineValue"] = deviceVMIValue;
                         modelConfig["deviceComputeShow"] = true;
                     }
@@ -439,7 +439,8 @@ define([
                 var vmiRefTo = getValueByJsonPath(modelConfig,
                               "virtual_machine_interface_refs;0;to",[]);
                 if(vmiRefUUID != "" && vmiRefTo.length > 0) {
-                    var subInterfaceVMI = vmiRefUUID + " " + vmiRefTo.join(":");
+                    var subInterfaceVMI = vmiRefUUID +
+                        cowc.DROPDOWN_VALUE_SEPARATOR + vmiRefTo.join(":");
                     modelConfig["subInterfaceVMIValue"] = subInterfaceVMI;
                     modelConfig["disable_sub_interface"] = true;
                 }
@@ -625,6 +626,33 @@ define([
                             return "Select Routing Instance";
                         }
                     }
+                },
+                'dhcpOptionCollection': function(value, attr, finalObj) {
+                    var dhcpOptCol = finalObj["dhcpOptionCollection"] ?
+                        finalObj["dhcpOptionCollection"].toJSON() : [],
+                        i, dhcpOptColCnt, dhcpOptionVal, dhcpOptionValBytes;
+                    if(dhcpOptCol.length) {
+                        dhcpOptColCnt = dhcpOptCol.length;
+                        for(i = 0; i < dhcpOptColCnt; i++) {
+                            if(dhcpOptCol[i]) {
+                                dhcpOptionVal = dhcpOptCol[i].dhcp_option_value() ?
+                                    dhcpOptCol[i].dhcp_option_value().trim() : null;
+                                dhcpOptionValBytes = dhcpOptCol[i].dhcp_option_value_bytes() ?
+                                    dhcpOptCol[i].dhcp_option_value_bytes().trim() : null;
+                                if(!(dhcpOptionVal ||  dhcpOptionValBytes)) {
+                                    return "Invalid option value";
+                                }
+                            }
+                        }
+                        dhcpOptCol = _.map(dhcpOptCol, function(dhcpOpt) {
+                            return dhcpOpt.dhcp_option_name();
+                        });
+                        for(i = 0; i < dhcpOptCol.length; i++){
+                            if(dhcpOptCol[i] === dhcpOptCol[i + 1]){
+                                return "DHCP Options are repeated";
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -690,6 +718,7 @@ define([
                 dhcpOptionModel = new DHCPOptionModel();
             dhcpList.add([dhcpOptionModel]);
         },
+
         //DHCP Delete
         deleteDHCP: function(data, dhcp) {
             var dhcpCollection = data.model().collection,
@@ -768,18 +797,6 @@ define([
                 'ip_protocol': false, 'source_port': false,
                 'destination_port': false};
         },
-        groupBy: function(array, f) {
-            var groups = {};
-            array.forEach( function(o) {
-                var group = JSON.stringify( f(o) );
-                groups[group] = groups[group] || [];
-                groups[group].push(o);
-            });
-            return Object.keys(groups).map( function( group )
-            {
-              return groups[group];
-            })
-        },
         configurePorts: function (mode, callbackObj) {
             var ajaxConfig = {}, returnFlag = true;
             var temp_val;
@@ -855,7 +872,7 @@ define([
                 var sgData = getValueByJsonPath(newPortData,
                            "securityGroupValue","");
                 if(newPortData.is_sec_grp == true && sgData != "") {
-                    var msSGselectedData = sgData.split(",");
+                    var msSGselectedData = sgData.split(cowc.DROPDOWN_VALUE_SEPARATOR);
                     if (msSGselectedData && msSGselectedData.length > 0) {
                         newPortData.security_group_refs = []
                         for (var i = 0; i < msSGselectedData.length; i++) {
@@ -936,54 +953,27 @@ define([
                     newPortData.virtual_machine_interface_bindings.key_value_pair = portBindingLocal;
                 }
         //DHCP
-                var allDHCPValues = newPortData["dhcpOptionCollection"].toJSON();
+                var allDHCPValues = newPortData["dhcpOptionCollection"] ?
+                    newPortData["dhcpOptionCollection"].toJSON() : [];
                 newPortData.virtual_machine_interface_dhcp_option_list = {};
                 if (allDHCPValues && allDHCPValues.length > 0) {
-                    var unGroupedDHCPOptionsList = [];
+                    var returnDHCPOptionsList = [];
                     var dhcpLen = allDHCPValues.length;
                     for(i = 0; i < dhcpLen; i++){
-                        var dhcpCode = allDHCPValues[i].dhcp_option_name();
-                        var dhcpValue = allDHCPValues[i].dhcp_option_value();
-                        unGroupedDHCPOptionsList[i] = {};
-                        unGroupedDHCPOptionsList[i]["dhcp_option_name"] =
+                        var dhcpCode = allDHCPValues[i].dhcp_option_name(),
+                            dhcpValue = allDHCPValues[i].dhcp_option_value(),
+                            dhcpValueBytes =
+                                allDHCPValues[i].dhcp_option_value_bytes();
+                        returnDHCPOptionsList[i] = {};
+                        returnDHCPOptionsList[i]["dhcp_option_name"] =
                                                    dhcpCode.trim();
-                        unGroupedDHCPOptionsList[i]["dhcp_option_value"] =
+                        returnDHCPOptionsList[i]["dhcp_option_value"] =
                                                    dhcpValue.trim();
+                        returnDHCPOptionsList[i]["dhcp_option_value_bytes"] =
+                                                   dhcpValueBytes.trim();
                     }
-                    if(unGroupedDHCPOptionsList.length > 0) {
-                        var groupedDHCPOptionsList =
-                            self.groupBy(unGroupedDHCPOptionsList, function(item)
-                            { return [item.dhcp_option_name]; });
-                        if (groupedDHCPOptionsList &&
-                            groupedDHCPOptionsList != "" &&
-                            groupedDHCPOptionsList.length > 0) {
-                            returnDHCPOptionsList = [];
-                            for (var i = 0; i < groupedDHCPOptionsList.length;
-                                i++) {
-                                var dhcpOptionsOfSameValue =
-                                    jsonPath(groupedDHCPOptionsList[i],
-                                    "$.*.dhcp_option_value");
-                                if(dhcpOptionsOfSameValue === false)
-                                    dhcpOptionsOfSameValue = "";
-                                else {
-                                    dhcpOptionsOfSameValue =
-                                               dhcpOptionsOfSameValue.join(" ");
-                                }
-                                if(typeof dhcpOptionsOfSameValue === "string" &&
-                                   dhcpOptionsOfSameValue.trim() !== "") {
-                                        returnDHCPOptionsList.push({
-                                        "dhcp_option_name":
-                                            groupedDHCPOptionsList[i][0]['dhcp_option_name'],
-                                        "dhcp_option_value":
-                                            dhcpOptionsOfSameValue
-                                        });
-                                }
-                            }
-                            if(returnDHCPOptionsList.length > 0)
-                                newPortData.virtual_machine_interface_dhcp_option_list.dhcp_option
-                                    = returnDHCPOptionsList;
-                        }
-                    }
+                    newPortData.virtual_machine_interface_dhcp_option_list.dhcp_option
+                        = returnDHCPOptionsList;
                 } else {
                     delete(newPortData.virtual_machine_interface_dhcp_option_list.dhcp_option);
                 }
@@ -992,7 +982,7 @@ define([
                 var staticRoute = getValueByJsonPath(newPortData,
                            "staticRoute","");
                 if(staticRoute != "") {
-                    var msSRselectedData = staticRoute.split(",");
+                    var msSRselectedData = staticRoute.split(cowc.DROPDOWN_VALUE_SEPARATOR);
                     if (msSRselectedData && msSRselectedData.length > 0) {
                         newPortData.interface_route_table_refs = []
                         for (var i = 0; i < msSRselectedData.length; i++) {
@@ -1011,7 +1001,8 @@ define([
                 var healthCheck = getValueByJsonPath(newPortData,
                            "service_health_check_refs","");
                 if(healthCheck != "") {
-                    var healthCheckArr = healthCheck.split(" ");
+                    var healthCheckArr =
+                        healthCheck.split(cowc.DROPDOWN_VALUE_SEPARATOR);
                     newPortData.service_health_check_refs = [];
                     newPortData.service_health_check_refs[0] = {};
                     newPortData.service_health_check_refs[0].to = healthCheckArr[0].split(":");
@@ -1113,7 +1104,7 @@ define([
                     newPortData.logical_router_back_refs = [];
                     newPortData.virtual_machine_refs = [];
                     var deviceUUIDArr =
-                        newPortData.logicalRouterValue.split(" ");
+                        newPortData.logicalRouterValue.split(cowc.DROPDOWN_VALUE_SEPARATOR);
                     var to = deviceUUIDArr[0].split(":");
                     var uuid = deviceUUIDArr[1];
                     newPortData.logical_router_back_refs[0] = {};
@@ -1129,7 +1120,8 @@ define([
                     newPortData.virtual_machine_refs = [];
                     var deviceuuidval = newPortData.virtualMachineValue;
 
-                    var deviceUUIDArr = deviceuuidval.split(" ");
+                    var deviceUUIDArr =
+                        deviceuuidval.split(cowc.DROPDOWN_VALUE_SEPARATOR);
                     var uuid = deviceUUIDArr[0];
                     newPortData.virtual_machine_refs[0] = {};
                     newPortData.virtual_machine_refs[0].uuid = uuid;
@@ -1150,7 +1142,8 @@ define([
                     var uuid = "";
                     var floatingipLen = allfloatingIP.length;
                     for (var i = 0; i < floatingipLen; i++) {
-                        floatingip = allfloatingIP[i].split(" ");
+                        floatingip =
+                            allfloatingIP[i].split(cowc.DROPDOWN_VALUE_SEPARATOR);
                         uuid = floatingip[0];
                         to = floatingip[1].split(":");
                         newPortData.floating_ip_back_refs[i] = {};
@@ -1162,7 +1155,7 @@ define([
                 if (newPortData.is_sub_interface) {
                     newPortData.virtual_machine_interface_properties.sub_interface_vlan_tag =
                     parseInt(newPortData.virtual_machine_interface_properties.sub_interface_vlan_tag);
-                    var subIntrface = newPortData.subInterfaceVMIValue.split(" ");
+                    var subIntrface = newPortData.subInterfaceVMIValue.split(cowc.DROPDOWN_VALUE_SEPARATOR);
                     var uuid = subIntrface[0];
                     var to = subIntrface[1].split(":");
                     newPortData.virtual_machine_interface_refs[0] = {};

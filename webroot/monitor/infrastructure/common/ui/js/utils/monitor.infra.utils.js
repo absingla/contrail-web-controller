@@ -1386,10 +1386,18 @@ define([
                             footerlinks.push({
                               name:'introspect',
                               onClick: function () {
-                                        monitorInfraUtils.
-                                            onConfigLinkClick(res.ip,
-                                                    res.port);
+                                          monitorInfraUtils.
+                                              onIntrospectLinkClick(res.ip,
+                                                      '8084');
                                     }
+                            });
+                            footerlinks.push({
+                                name:'config',
+                                onClick: function () {
+                                          monitorInfraUtils.
+                                              onConfigLinkClick(res.ip,
+                                                      res.port);
+                                      }
                             });
                             footerlinks.push({
                                 name:'status',
@@ -1445,7 +1453,8 @@ define([
         self.createFooterLinks = function (parent, config) {
             var template = contrail.
                 getTemplate4Id('monitor-infra-details-footer-links-template');
-            $('#monitor-infra-details-footer-links-template').remove();
+//            $('.monitor-infra-details-footer-links').remove();
+            $(parent).find('.footer-links').remove();
             $(parent).append(template(config));
             $.each(config,function(i,d){
                 var linkDiv = '<a id="mon_infra_footer_link_'+
@@ -2216,6 +2225,40 @@ define([
                 var errorMsg = contrail.parseErrorMsgFromXHR(response);
                 showInfoWindow(errorMsg, "Error");
             });
+        };
+
+        self.doAjaxCallsForNodeDetails = function (options) {
+            var ajaxConfigs = getValueByJsonPath(options, 'ajaxConfigList',[]);
+            var viewConfig = getValueByJsonPath(options, 'viewConfig',[]);
+            var noConfigs = ajaxConfigs.length;
+            var oldData =  getValueByJsonPath(options, 'oldData');
+            var merge = getValueByJsonPath(options, 'merge', false);
+            var i = getValueByJsonPath(options,'currIndex',0);
+            contrail.ajaxHandler(
+                    ajaxConfigs[i]['ajaxConfig'],//ajaxconfig
+                    null, //inithandler
+                    function (response) { //success
+                        var dataparser = getValueByJsonPath(ajaxConfigs[i], 'dataParser');
+                        var callback = getValueByJsonPath(ajaxConfigs[i],'callBack');
+                        var parsedData = response;
+                        if(dataparser != null) {
+                            parsedData = dataparser (response,viewConfig);
+                        }
+                        if (merge && oldData) {
+                            $.extend(oldData, parsedData);
+                        }
+                        if(callback) {
+                            callback(parsedData,viewConfig);
+                         }
+                        if (i < noConfigs - 1) {
+                            options['currIndex'] = ++i;
+                            self.doAjaxCallsForNodeDetails(options);//recursive call
+                        }
+                    },
+                    function (error) {//failure
+                        //do nothing
+                    }
+            );
         };
     };
     return MonitorInfraUtils;

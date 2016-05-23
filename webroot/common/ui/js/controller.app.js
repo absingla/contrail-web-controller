@@ -3,7 +3,9 @@
  */
 
 var ctwu, ctwc, cowch, ctwgc, ctwgrc, ctwl, ctwm, ctwp, ctwvc,
-    nmwu, nmwgc, nmwgrc, nmwp, nmwvc, ctBuildDir, ctWebDir;
+    nmwu, nmwgc, nmwgrc, nmwp, nmwvc, ctBuildDir, ctWebDir,
+    monitorInfraConstants, monitorInfraUtils, monitorInfraParsers,
+    mnPageLoader,qePageLoader;
 
 /**
  * ctBaseDir: Apps Root directory.
@@ -45,6 +47,10 @@ function getControllerAppPaths (ctBaseDir, ctBuildDir) {
         'controller-view-config': ctWebDir + '/common/ui/js/controller.view.config',
         'controller-init': ctWebDir + '/common/ui/js/controller.init',
 
+        'monitor-infra-module': ctWebDir + '/monitor/infrastructure/common/ui/js/monitor.infra.module',
+        'nm-module': ctWebDir + '/monitor/networking/ui/js/nm.module',
+        'qe-module': ctWebDir + '/reports/qe/ui/js/qe.module',
+
         //TODO: Only commons controller level definations should be created in this file.
         /**
          * following files should be accessed like the following from where they're referenced.
@@ -55,12 +61,13 @@ function getControllerAppPaths (ctBaseDir, ctBuildDir) {
         'traceflow-model': ctWebDir + '/monitor/infrastructure/underlay/ui/js/models/TraceFlowTabModel',
         'underlay-graph-model' : ctWebDir + '/monitor/infrastructure/underlay/ui/js/models/UnderlayGraphModel',
         'monitor-infra-confignode-model' : ctWebDir + '/monitor/infrastructure/common/ui/js/models/ConfigNodeListModel',
+        'monitor-infra-confignode-charts-model': ctWebDir + '/monitor/infrastructure/common/ui/js/models/ConfigNodeChartsModel',
         'monitor-infra-analyticsnode-model' : ctWebDir + '/monitor/infrastructure/common/ui/js/models/AnalyticsNodeListModel',
         'monitor-infra-databasenode-model' : ctWebDir + '/monitor/infrastructure/common/ui/js/models/DatabaseNodeListModel',
         'monitor-infra-controlnode-model' : ctWebDir + '/monitor/infrastructure/common/ui/js/models/ControlNodeListModel',
         'monitor-infra-vrouter-model' : ctWebDir + '/monitor/infrastructure/common/ui/js/models/VRouterListModel',
         'monitor-infra-utils' : ctWebDir + '/monitor/infrastructure/common/ui/js/utils/monitor.infra.utils',
-        'confignode-scatterchart-view': ctWebDir + '/monitor/infrastructure/common/ui/js/views/ConfigNodeScatterChartView',
+        'confignode-chart-view': ctWebDir + '/monitor/infrastructure/common/ui/js/views/ConfigNodeChartsView',
         'controlnode-scatterchart-view': ctWebDir + '/monitor/infrastructure/common/ui/js/views/ControlNodeScatterChartView',
         'dbnode-scatterchart-view': ctWebDir + '/monitor/infrastructure/common/ui/js/views/DatabaseNodeScatterChartView',
         'analyticsnode-scatterchart-view': ctWebDir + '/monitor/infrastructure/common/ui/js/views/AnalyticsNodeScatterChartView',

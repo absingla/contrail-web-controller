@@ -62,15 +62,42 @@ define([
 
 
         this.FILTERS_INSTANCE_LIST_INTERFACES= [
-            'UveVMInterfaceAgent:virtual_network', 'UveVMInterfaceAgent:ip6_address', 'UveVMInterfaceAgent:ip_address',
-            'UveVMInterfaceAgent:gateway', 'UveVMInterfaceAgent:ip6_active', 'UveVMInterfaceAgent:vm_name', 'UveVMInterfaceAgent:if_stats',
-            'UveVMInterfaceAgent:in_bw_usage', 'UveVMInterfaceAgent:out_bw_usage', "UveVMInterfaceAgent:mac_address",
-            'UveVMInterfaceAgent:uuid', 'UveVMInterfaceAgent:vm_uuid', 'UveVMInterfaceAgent:active', 'UveVMInterfaceAgent:is_health_check_active',
-            'UveVMInterfaceAgent:health_check_instance_list', 'UveVMInterfaceAgent:floating_ips', 'UveVMInterfaceAgent:fip_agg_stats'
+            //Generic Details
+            'UveVMInterfaceAgent:vm_name',
+            'UveVMInterfaceAgent:uuid',
+            'UveVMInterfaceAgent:vm_uuid',
+            'UveVMInterfaceAgent:mac_address',
+            'UveVMInterfaceAgent:active',
+            'UveVMInterfaceAgent:is_health_check_active',
+            //Networking
+            'UveVMInterfaceAgent:virtual_network',
+            'UveVMInterfaceAgent:ip6_address',
+            'UveVMInterfaceAgent:ip_address',
+            'UveVMInterfaceAgent:ip6_active',
+            'UveVMInterfaceAgent:floating_ips',
+            'UveVMInterfaceAgent:fip_agg_stats',
+            //Commenting out
+            // 'UveVMInterfaceAgent:gateway',
+            // 'UveVMInterfaceAgent:in_bw_usage',
+            // 'UveVMInterfaceAgent:out_bw_usage',
+            // 'UveVMInterfaceAgent:health_check_instance_list',
+            // 'UveVMInterfaceAgent:if_stats',
+
+            // 'UveVMInterfaceAgent:virtual_network', 'UveVMInterfaceAgent:ip6_address', 'UveVMInterfaceAgent:ip_address',
+            // 'UveVMInterfaceAgent:gateway', 'UveVMInterfaceAgent:ip6_active', 'UveVMInterfaceAgent:vm_name', 'UveVMInterfaceAgent:if_stats',
+            // 'UveVMInterfaceAgent:in_bw_usage', 'UveVMInterfaceAgent:out_bw_usage', "UveVMInterfaceAgent:mac_address",
+            // 'UveVMInterfaceAgent:uuid', 'UveVMInterfaceAgent:vm_uuid', 'UveVMInterfaceAgent:active', 'UveVMInterfaceAgent:is_health_check_active',
+            // 'UveVMInterfaceAgent:health_check_instance_list', 'UveVMInterfaceAgent:floating_ips', 'UveVMInterfaceAgent:fip_agg_stats'
         ];
 
-        this.FILTERS_COLUMN_VM = ['UveVirtualMachineAgent:interface_list', 'UveVirtualMachineAgent:vrouter', 'UveVirtualMachineAgent:fip_stats_list',
-            'UveVirtualMachineAgent:cpu_info', 'UveVirtualMachineAgent:if_bmap_list', 'UveVirtualMachineAgent:cpu_info', 'UveVirtualMachineAgent:vm_name', 'UveVirtualMachineAgent:uuid'
+        this.FILTERS_COLUMN_VM = [
+            'UveVirtualMachineAgent:vm_name',
+            'UveVirtualMachineAgent:uuid',
+            'UveVirtualMachineAgent:vrouter',
+            'UveVirtualMachineAgent:cpu_info',
+            'UveVirtualMachineAgent:interface_list',
+            'UveVirtualMachineAgent:fip_stats_list',
+            'UveVirtualMachineAgent:if_bmap_list',
             //'VirtualMachineStats:if_stats'
         ];
 
@@ -240,6 +267,12 @@ define([
         this.TRACEFLOW_MAXATTEMPTS = 3;
         this.TRACEFLOW_INTERVAL = 5;
         this.UNDERLAY_FLOW_INFO_TEMPLATE = "flow-info-template";
+
+        //Config Summary page Constants
+        this.CONFIGNODESTATS_BUCKET_DURATION = 240000000;
+        this.CONFIGNODE_COLORS = ['#b0c8c3', '#bf94e0', '#5d6e7e', '#b2a198', '#eccc9b'];
+        this.CONFIGNODE_FAILEDREQUESTS_TITLE = 'Failed Requests';
+        this.CONFIGNODE_FAILEDREQUESTS_COLOR = '#d95436';
 
         this.getProjectsURL = function (domainObj, dropdownOptions) {
             /* Default: get projects from keystone or API Server as specified in
@@ -653,7 +686,6 @@ define([
         // FIP Config Constants
         this.URL_CFG_FIP_DETAILS =
             '/api/tenants/config/floating-ips';
-        this.FLOATING_IP_PORT_DELIMITER = ";";
 
         // Service Template Config Constants
         this.URL_CFG_SVC_TEMPLATE_DETAILS =
@@ -764,6 +796,8 @@ define([
         this.URL_GET_CONFIG_DETAILS = "/api/tenants/config/get-config-details";
         this.URL_CREATE_CONFIG_OBJECT = "/api/tenants/config/create-config-object";
         this.URL_UPDATE_CONFIG_OBJECT = "/api/tenants/config/update-config-object";
+
+        this.MULTISELECT_VALUE_SEPARATOR = ";;";
     };
 
     //str will be [0-9]+(m|h|s|d)
