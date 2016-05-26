@@ -3,7 +3,6 @@
  */
 
 define([
-    'joint.contrail',
     'controller-constants',
     'controller-labels',
     'controller-utils',
@@ -12,8 +11,7 @@ define([
     'controller-graph-config',
     'controller-parsers',
     'controller-view-config'
-], function (Joint, Constants, Labels, Utils, Messages, GridConfig, GraphConfig, Parsers, ViewConfig) {
-    joint = Joint;
+], function (Constants, Labels, Utils, Messages, GridConfig, GraphConfig, Parsers, ViewConfig) {
     ctwc = new Constants();
     ctwl = new Labels();
     ctwu = new Utils;
