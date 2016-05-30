@@ -2,11 +2,9 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 
-define([
-    'underscore',
-    'knockout',
-    'query-form-model'
-], function (_, Knockout, QueryFormModel) {
+define(function (require) {
+    var QueryFormModel = require('query-form-model')
+
     var StatQueryFormModel = QueryFormModel.extend({
 
         defaultSelectFields: [],
@@ -24,13 +22,6 @@ define([
             var tableName = this.table_name();
 
             return !(tableName === null || tableName === '');
-        },
-
-        onChangeTime: function () {
-            if(this.table_type() === 'STAT') {
-                this.setTableValues();
-            }
-            this.setTableFieldValues();
         }
     });
 

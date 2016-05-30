@@ -1,15 +1,14 @@
 /*
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
+/**
+ * widget config view
+ */
 define(function (require) {
-    var _ = require('underscore')
     var Knockback = require('knockback')
     var QueryFormView = require('query-form-view')
 
-    /**
-     * renders Widget as defined in loaded json
-     */
-    var WidgetConfigView = QueryFormView.extend({
+    var WidgetQueryConfigView = QueryFormView.extend({
         events: {
             'click #save_query': 'onChange'
         },
@@ -19,7 +18,8 @@ define(function (require) {
 
             var elementId = self.attributes.elementId
             self.renderView4Config(self.$el, self.model, self.getViewConfig(), null,null,null, function () {
-                Knockback.applyBindings(self.model, document.getElementById(elementId))
+                //TODO use widgetID
+                Knockback.applyBindings(self.model, self.$el[0])
             });
         },
 
@@ -34,7 +34,7 @@ define(function (require) {
                                 {
                                     elementId: 'time_range', view: "FormDropdownView",
                                     viewConfig: {
-                                        path: 'time_range', dataBindValue: 'time_range', class: "span3",
+                                        path: 'time_range', dataBindValue: 'time_range', class: "span6",
                                         elementConfig: {dataTextField: "text", dataValueField: "id", data: cowc.TIMERANGE_DROPDOWN_VALUES}}
                                 },
                                 {
@@ -66,7 +66,6 @@ define(function (require) {
                                         path: 'table_name',
                                         dataBindValue: 'table_name',
                                         dataBindOptionList: 'table_name_data_object',
-                                        class: "span6",
                                         elementConfig: {
                                             defaultValueId: 0, allowClear: false, placeholder: cowl.QE_SELECT_STAT_TABLE,
                                             dataTextField: "name", dataValueField: "name",
@@ -125,13 +124,6 @@ define(function (require) {
                                             }
                                         ]
                                     }
-                                }, {
-                                    elementId: "yAxisLabel", view: "FormInputView",
-                                    viewConfig: {
-                                        label: "Y Axis Label",
-                                        path: "yAxisLabel",
-                                        dataBindValue: "yAxisLabel"
-                                    }
                                 }
                             ]
                         },
@@ -172,5 +164,5 @@ define(function (require) {
         }
     });
 
-    return WidgetConfigView;
+    return WidgetQueryConfigView;
 });

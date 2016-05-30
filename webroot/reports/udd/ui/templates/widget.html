@@ -1,13 +1,17 @@
-<div id="{{ widgetId }}" class="panel panel-default">
-  <div class="panel-heading"><span class="title">{{ title }}</span>
-    <div class="close fa fa-close pull-right"></div>
-    <div class="config icon-gear pull-right"></div>
-  </div>
-  <div class="front">
-    <div class="panel-body"></div>
-  </div>
-  <div class="back hide">
-    <div class="panel-body">
+<div id="{{ id }}" class="widget panel panel-default">
+    <div class="panel-heading"><span class="title">{{ title }}</span>
+        <div class="close fa fa-close pull-right"></div>
+        <div class="config icon-gear pull-right"></div>
     </div>
-  </div>
+    <div id="{{ id }}Content" class="front panel-body"></div>
+    <div class="back panel-body hide">
+        <ul class="nav nav-pills" data-tabs="tabs">
+            <li data-id="{{ id }}DataConfig">Data source config</li>
+            <li data-id="{{ id }}ChartConfig">Chart config</li>
+        </ul>
+        <div class="tabs">
+            <div id="{{ id }}DataConfig" style="display:none;"></div>
+            <div id="{{ id }}ChartConfig"></div>
+        </div>
+    </div>
 </div>

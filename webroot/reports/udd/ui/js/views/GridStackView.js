@@ -6,12 +6,10 @@
  * Utilizes grid layout from gridstack jquery module
  */
 define(function (require) {
+    var _ = require('lodash')
     var GridStack = require('/assets/gridstack/js/gridstack.js')
     var WidgetsCollection = require('/reports/udd/ui/js/models/WidgetsCollection.js')
     var ContrailView = require('contrail-view')
-
-    var $ = require('jquery')
-    var _ = require('lodash')
 
     var GridStackView = ContrailView.extend({
         initialize: function (p) {
@@ -26,8 +24,6 @@ define(function (require) {
                 verticalMargin: 8,
                 cellHeight: 60
             }
-            self.widgets = {}
-
             var viewConfig = self.attributes.viewConfig;
 
             self.model = new WidgetsCollection()
@@ -49,11 +45,9 @@ define(function (require) {
 
         render: function () {
             var self = this
-
             self.$el.html(self.template({width: self.p.width}))
             self.initLayout()
             self.model.fetch()
-
             return self
         },
 
@@ -80,13 +74,21 @@ define(function (require) {
 
         // *Add a single widget to the area by creating a view for it
         onModelAdded: function (model) {
+            $m = model
             var self = this
-            self.grid.addWidget(self.widgetTemplate(model.toJSON()), model.get('x'), model.get('y'), model.get('width'), model.get('height'))
+            var id = model.get('widgetId')
+            var widgetConfig = model.get('widgetConfig')
+            widgetConfig.id = id
+            self.grid.addWidget(self.widgetTemplate(widgetConfig),
+                                widgetConfig.x,
+                                widgetConfig.y,
+                                widgetConfig.width,
+                                widgetConfig.height)
 
-            var el = self.$('#' + model.get('widgetId'))
+            var el = self.$('#' + id)
             self.renderView4Config(el, model, {
                 view: "WidgetView",
-                elementId: model.get('widgetId'),
+                elementId: id,
                 viewPathPrefix: "reports/udd/ui/js/views/",
                 viewConfig: {}
             }, null, null, null, function () {

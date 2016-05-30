@@ -52,24 +52,24 @@
 
 #content-container .area .grid-stack .widget.grid-stack-item,
 #content-container .area .grid-stack .widget.grid-stack-item .placeholder-content {
-  padding: 0 8px; }
+  margin: 0 8px; }
 
-#content-container .area .grid-stack .widget .panel {
-  position: relative;
-  height: 100%; }
-  #content-container .area .grid-stack .widget .panel .panel-heading {
+  #content-container .area .grid-stack .widget.panel .panel-heading {
     height: 36px; }
-    #content-container .area .grid-stack .widget .panel .panel-heading .close, #content-container .area .grid-stack .widget .panel .panel-heading .config {
+    #content-container .area .grid-stack .widget.panel .panel-heading .close, #content-container .area .grid-stack .widget.panel .panel-heading .config {
       margin-left: 16px;
       color: #898989;
       opacity: 1; }
-    #content-container .area .grid-stack .widget .panel .panel-heading input {
+    #content-container .area .grid-stack .widget.panel .panel-heading input {
       position: absolute;
       top: 5px; }
-    #content-container .area .grid-stack .panel .back .panel-footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%; }
+    #content-container .area .grid-stack .widget.panel ul.nav-pills {
+      text-align: center;
+    }
+      #content-container .area .grid-stack .widget.panel ul.nav-pills li {
+        float: none;
+        display: inline-block;
+      }
 
 #content-container .chart {
   width: 100%;

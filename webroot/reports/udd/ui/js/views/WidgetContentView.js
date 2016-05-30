@@ -2,7 +2,6 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 define(function (require) {
-    var _ = require('underscore')
     var ContrailView = require('contrail-view')
     var StatQueryFormModel = require('reports/udd/ui/js/models/StatQueryFormModel')
 
