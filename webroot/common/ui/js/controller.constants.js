@@ -69,25 +69,18 @@ define([
             'UveVMInterfaceAgent:mac_address',
             'UveVMInterfaceAgent:active',
             'UveVMInterfaceAgent:is_health_check_active',
+            'UveVMInterfaceAgent:health_check_instance_list',
+            'UveVMInterfaceAgent:gateway',
+            'UveVMInterfaceAgent:in_bw_usage',
+            'UveVMInterfaceAgent:out_bw_usage',
+            'UveVMInterfaceAgent:if_stats',
             //Networking
             'UveVMInterfaceAgent:virtual_network',
             'UveVMInterfaceAgent:ip6_address',
             'UveVMInterfaceAgent:ip_address',
             'UveVMInterfaceAgent:ip6_active',
             'UveVMInterfaceAgent:floating_ips',
-            'UveVMInterfaceAgent:fip_agg_stats',
-            //Commenting out
-            // 'UveVMInterfaceAgent:gateway',
-            // 'UveVMInterfaceAgent:in_bw_usage',
-            // 'UveVMInterfaceAgent:out_bw_usage',
-            // 'UveVMInterfaceAgent:health_check_instance_list',
-            // 'UveVMInterfaceAgent:if_stats',
-
-            // 'UveVMInterfaceAgent:virtual_network', 'UveVMInterfaceAgent:ip6_address', 'UveVMInterfaceAgent:ip_address',
-            // 'UveVMInterfaceAgent:gateway', 'UveVMInterfaceAgent:ip6_active', 'UveVMInterfaceAgent:vm_name', 'UveVMInterfaceAgent:if_stats',
-            // 'UveVMInterfaceAgent:in_bw_usage', 'UveVMInterfaceAgent:out_bw_usage', "UveVMInterfaceAgent:mac_address",
-            // 'UveVMInterfaceAgent:uuid', 'UveVMInterfaceAgent:vm_uuid', 'UveVMInterfaceAgent:active', 'UveVMInterfaceAgent:is_health_check_active',
-            // 'UveVMInterfaceAgent:health_check_instance_list', 'UveVMInterfaceAgent:floating_ips', 'UveVMInterfaceAgent:fip_agg_stats'
+            'UveVMInterfaceAgent:fip_agg_stats'
         ];
 
         this.FILTERS_COLUMN_VM = [
