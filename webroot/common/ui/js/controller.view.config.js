@@ -256,7 +256,8 @@ define([
                             modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
                             parseFn: ctwp.parseCPUMemLineChartData,
                             chartOptions: {
-                                forceY1: [0, 0.5],
+                                forceY1: [0, undefined],
+                                forceY2: [0, undefined],
                                 xAccessor: 'x',
                                 xFormatter: function(value) {
                                     return d3.time.format("%H:%M")(value);
