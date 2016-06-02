@@ -471,6 +471,8 @@ define(
                         obj['nodeAlerts'] = infraMonitorAlertUtils
                                                 .processAnalyticsNodeAlerts(obj);
                         var alarms = getValueByJsonPath(d,'value;UVEAlarms;alarms',[]);
+                        alarms = coreAlarmUtils.
+                            checkAndAddAnalyticsDownOrAlarmProcessDownAlarms(d,alarms);
                         if(cowu.getAlarmsFromAnalytics) {
                             obj['alerts'] = coreAlarmUtils.getAlertsFromAnalytics(
                                                             {
@@ -897,7 +899,10 @@ define(
 
                 };
                 this.parseConfigNodeRequestForDonutChart = function (apiStats, reqType) {
-                    var cf = crossfilter(apiStats), parsedData = [];
+                    var cf = crossfilter(apiStats),
+                        parsedData = [],
+                        colors = monitorInfraConstants.CONFIGNODE_COLORS;
+
                     if (!$.isArray(reqType)) {
                         reqType = [reqType];
                     }
@@ -914,7 +919,8 @@ define(
                     $.each(sourceGrpData, function (key, value){
                         parsedData.push({
                             label: value['key'],
-                            value: value['value']
+                            value: value['value'],
+                            color: colors[key]
                         });
                     });
                     return parsedData;
