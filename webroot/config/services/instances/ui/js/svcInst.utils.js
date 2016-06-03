@@ -360,9 +360,9 @@ define([
             return {
                 rowActions: [
                     {onClick: "function() {$root.addPortTuple();}",
-                     iconClass: 'icon-plus'},
+                     iconClass: 'fa fa-plus'},
                     {onClick: "deletePortTuple()",
-                     iconClass: 'icon-minus'}
+                     iconClass: 'fa fa-minus'}
                 ],
                 columns: [{
                     elementId: 'portTupleDisplayName',
@@ -647,13 +647,13 @@ define([
                                     onClick: "function() {\
                                         $root.addPropSvcHealthChk();\
                                     }",
-                                    iconClass: 'icon-plus'
+                                    iconClass: 'fa fa-plus'
                                 },
                                 {
                                     onClick: "function() {\
                                         $root.deleteSvcInstProperty($data, this);\
                                     }",
-                                    iconClass: 'icon-minus'
+                                    iconClass: 'fa fa-minus'
                                 }],
                                 gridActions: [{
                                     onClick: "function() {\
@@ -729,13 +729,13 @@ define([
                                     onClick: "function() {\
                                         $root.addPropIntfRtTable();\
                                     }",
-                                    iconClass: 'icon-plus'
+                                    iconClass: 'fa fa-plus'
                                 },
                                 {
                                     onClick: "function() {\
                                         $root.deleteSvcInstProperty($data, this);\
                                     }",
-                                    iconClass: 'icon-minus'
+                                    iconClass: 'fa fa-minus'
                                 }],
                                 gridActions: [{
                                     onClick: "function() {\
@@ -821,13 +821,13 @@ define([
                                     onClick: "function() {\
                                         $root.addPropStaticRtTable();\
                                     }",
-                                    iconClass: 'icon-plus'
+                                    iconClass: 'fa fa-plus'
                                 },
                                 {
                                     onClick: "function() {\
                                         $root.deleteSvcInstProperty($data, this);\
                                     }",
-                                    iconClass: 'icon-minus'
+                                    iconClass: 'fa fa-minus'
                                 }],
                                 gridActions: [{
                                     onClick: "function() {\
@@ -904,13 +904,13 @@ define([
                                     onClick: "function() {\
                                         $root.addPropRtPolicy();\
                                     }",
-                                    iconClass: 'icon-plus'
+                                    iconClass: 'fa fa-plus'
                                 },
                                 {
                                     onClick: "function() {\
                                         $root.deleteSvcInstProperty($data, this);\
                                     }",
-                                    iconClass: 'icon-minus'
+                                    iconClass: 'fa fa-minus'
                                 }],
                                 gridActions: [{
                                     onClick: "function() {\
@@ -988,12 +988,12 @@ define([
                                 }],
                                 rowActions: [{
                                  onClick: "function() { $root.addAAP(); }",
-                                iconClass: 'icon-plus',
+                                iconClass: 'fa fa-plus',
                                 },
                                 {
                                     onClick:
                                     "function() { $root.deleteSvcInstProperty($data, this);}",
-                                     iconClass: 'icon-minus'
+                                     iconClass: 'fa fa-minus'
                                 }],
                                 gridActions: [{
                                     onClick: "function() { addAAP(); }",
@@ -1069,13 +1069,13 @@ define([
                                     onClick: "function() {\
                                         $root.addPropRtAggregate();\
                                     }",
-                                    iconClass: 'icon-plus'
+                                    iconClass: 'fa fa-plus'
                                 },
                                 {
                                     onClick: "function() {\
                                         $root.deleteSvcInstProperty($data, this);\
                                     }",
-                                    iconClass: 'icon-minus'
+                                    iconClass: 'fa fa-minus'
                                 }],
                                 gridActions: [{
                                     onClick: "function() {\

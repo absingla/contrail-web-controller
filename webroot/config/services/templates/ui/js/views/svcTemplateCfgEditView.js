@@ -330,11 +330,11 @@ define([
                                                          {onClick: "function() {\
                                                              $root.addSvcTemplateInterface();\
                                                              }",
-                                                             iconClass: 'icon-plus'},
+                                                             iconClass: 'fa fa-plus'},
                                                          {onClick: "function() {\
                                                              $root.deleteSvcTemplateInterface($root, $data, this);\
                                                             }",
-                                                          iconClass: 'icon-minus'}
+                                                          iconClass: 'fa fa-minus'}
                                                      ],
                                                      gridActions: [
                                                          {onClick: "function() {\
@@ -394,11 +394,11 @@ define([
                                                          {onClick: "function() {\
                                                              $root.addSvcTemplateInterface();\
                                                              }",
-                                                             iconClass: 'icon-plus'},
+                                                             iconClass: 'fa fa-plus'},
                                                          {onClick: "function() {\
                                                              $root.deleteSvcTemplateInterface($root, $data, this);\
                                                             }",
-                                                          iconClass: 'icon-minus'}
+                                                          iconClass: 'fa fa-minus'}
                                                      ],
                                                      gridActions: [
                                                          {onClick: "function() {\

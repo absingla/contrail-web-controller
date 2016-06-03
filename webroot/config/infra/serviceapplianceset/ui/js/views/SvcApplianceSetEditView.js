@@ -177,9 +177,9 @@ define([
                             }],
                             rowActions: [
                                 {onClick: "function() { $root.addKeyValuePair(); }",
-                                 iconClass: 'icon-plus'},
+                                 iconClass: 'fa fa-plus'},
                                 {onClick: "function() { $root.deleteKeyValuePair($data, this); }",
-                                 iconClass: 'icon-minus'}
+                                 iconClass: 'fa fa-minus'}
                             ],
                             gridActions: [
                                 {onClick: "function() { addKeyValuePair(); }",

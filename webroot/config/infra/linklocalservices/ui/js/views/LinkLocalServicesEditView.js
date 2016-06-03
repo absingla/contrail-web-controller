@@ -247,9 +247,9 @@ define([
                                     }],
                                     rowActions: [
                                          {onClick: "function() { $root.addAddress(); }",
-                                         iconClass: 'icon-plus'},
+                                         iconClass: 'fa fa-plus'},
                                         {onClick: "function() { $root.deleteAddress($data, this); }",
-                                         iconClass: 'icon-minus'}
+                                         iconClass: 'fa fa-minus'}
                                     ],
                                     gridActions: [
                                         {onClick: "function() { addAddress(); }", buttonTitle: ""}

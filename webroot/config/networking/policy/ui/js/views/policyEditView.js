@@ -374,10 +374,10 @@ define([
                             rows:[{
                                rowActions: [
                                    {onClick: "function() { $root.addRule(); }",
-                                   iconClass: 'icon-plus'},
+                                   iconClass: 'fa fa-plus'},
                                    {onClick:
                                    "function() { $root.deleteRules($data, this); }",
-                                    iconClass: 'icon-minus'}
+                                    iconClass: 'fa fa-minus'}
                                ],
                             columns: [
                                 {

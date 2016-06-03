@@ -130,7 +130,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_SVC_HEALTH_CHK_TITLE_DELETE,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "linkElementId": "linkSvcHealthChkDelete",
                 "onClick": function () {
                     var gridElId = '#' + ctwl.CFG_SVC_HEALTH_CHK_GRID_ID;
@@ -148,7 +148,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_SVC_HEALTH_CHK_TITLE_CREATE,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     svcHealthChkEditView.model = new SvcHealthChkModel();
 

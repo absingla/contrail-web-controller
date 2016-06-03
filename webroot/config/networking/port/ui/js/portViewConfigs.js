@@ -112,12 +112,12 @@
                      }],
                      rowActions: [{
                          onClick: "function() { $root.addFixedIP(); }",
-                         iconClass: 'icon-plus',
+                         iconClass: 'fa fa-plus',
                      },
                      {
                          onClick:
                          "function() { $root.deleteFixedIP($data, this);}",
-                          iconClass: 'icon-minus'
+                          iconClass: 'fa fa-minus'
                      }],
                      gridActions: [{
                          name:"fixedIPAddBtn",
@@ -167,12 +167,12 @@
                          }],
                          rowActions: [{
                           onClick: "function() { $root.addAAP(); }",
-                         iconClass: 'icon-plus',
+                         iconClass: 'fa fa-plus',
                          },
                          {
                              onClick:
                              "function() { $root.deleteAAP($data, this);}",
-                              iconClass: 'icon-minus'
+                              iconClass: 'fa fa-minus'
                          }],
                          gridActions: [{
                              onClick: "function() { addAAP(); }",
@@ -468,12 +468,12 @@
                                      }],
                                      rowActions: [{
                                          onClick: "function() { $root.addPortBinding(); }",
-                                         iconClass: 'icon-plus',
+                                         iconClass: 'fa fa-plus',
                                          },
                                          {
                                          onClick:
                                          "function() { $root.deletePortBinding($data, this); }",
-                                         iconClass: 'icon-minus',
+                                         iconClass: 'fa fa-minus',
                                          visible : "hideDeleteButtonPortBinding"
                                      }],
                                      gridActions: [{
@@ -752,12 +752,12 @@
                                          }],
                                          rowActions: [{
                                              onClick: "function() { $root.addDHCP(); }",
-                                             iconClass: 'icon-plus',
+                                             iconClass: 'fa fa-plus',
                                              },
                                              {
                                              onClick:
                                              "function() { $root.deleteDHCP($data, this); }",
-                                             iconClass: 'icon-minus'
+                                             iconClass: 'fa fa-minus'
                                          }],
                                          gridActions: [{
                                              onClick: "function() { addDHCP(); }",
@@ -832,12 +832,12 @@
                                          }],
                                          rowActions: [{
                                              onClick: "function() { $root.addFatFlow(); }",
-                                             iconClass: 'icon-plus',
+                                             iconClass: 'fa fa-plus',
                                              },
                                              {
                                              onClick:
                                              "function() { $root.deleteFatFlow($data, this); }",
-                                             iconClass: 'icon-minus'
+                                             iconClass: 'fa fa-minus'
                                          }],
                                          gridActions: [{
                                              onClick: "function() { addFatFlow(); }",

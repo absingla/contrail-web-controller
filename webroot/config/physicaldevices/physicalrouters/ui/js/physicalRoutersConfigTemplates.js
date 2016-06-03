@@ -391,12 +391,12 @@ define([
                              {
                                     onClick: "function() {\
                                     $root.addPort(); }",
-                                    iconClass: 'icon-plus'
+                                    iconClass: 'fa fa-plus'
                                 },
                                 {
                                     onClick: "function() {\
                                     $root.deletePort($data, this); }",
-                                    iconClass: 'icon-minus'
+                                    iconClass: 'fa fa-minus'
                                 }
                             ],
                             gridActions: [

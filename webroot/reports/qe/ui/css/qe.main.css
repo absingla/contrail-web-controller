@@ -66,10 +66,10 @@ textarea[name="select"] {
 .or-clause-item .new-or-text {
     padding: 0 5px;
 }
-.or-clause-item .icon-remove{
+.or-clause-item .fa-remove{
     color:#aaa;
 }
-.and-clause-item .icon-remove{
+.and-clause-item .fa-remove{
     font-size:11px;
 }
 a.selectAllLink{

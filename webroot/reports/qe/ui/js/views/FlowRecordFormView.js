@@ -291,7 +291,7 @@ define([
             actionCell = [
                 {
                     title: 'Analyze Session',
-                    iconClass: 'icon-external-link-sign',
+                    iconClass: 'fa fa-external-link-square',
                     onClick: function (e, targetElement, selRowDataItem) {
                         self.renderSessionAnalyzer(selRowDataItem);
                     }
@@ -302,7 +302,7 @@ define([
         return {
             elementId: queryResultGridId,
             title: cowl.TITLE_RESULTS,
-            iconClass: 'icon-table',
+            iconClass: 'fa fa-table',
             view: 'QueryResultGridView',
             tabConfig: {
                 activate: function (event, ui) {
@@ -339,7 +339,7 @@ define([
         return [{
             elementId: cowl.QE_SESSION_ANALYZER_VIEW_ID + '-' +queryId + '-' + selectedFlowRecord.cgrid,
             title: cowl.TITLE_SESSION_ANALYZER,
-            iconClass: 'icon-bar-chart',
+            iconClass: 'fa fa-bar-chart-o',
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewPathPrefix: 'controller-basedir/reports/qe/ui/js/views/',
             view: 'SessionAnalyzerView',

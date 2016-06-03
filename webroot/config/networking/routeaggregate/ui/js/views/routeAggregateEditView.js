@@ -154,13 +154,13 @@ define([
                                                             {
                                                                 onClick: "function() {\
                                                                 $root.addRoute(); }",
-                                                                iconClass: 'icon-plus'
+                                                                iconClass: 'fa fa-plus'
                                                             },
                                                             {
                                                                 onClick: "function() {\
                                                                 $root.deleteRoute($data, this)\
                                                                 ;}",
-                                                                iconClass: 'icon-minus'
+                                                                iconClass: 'fa fa-minus'
                                                             }
                                                         ],
                                                         gridActions: [

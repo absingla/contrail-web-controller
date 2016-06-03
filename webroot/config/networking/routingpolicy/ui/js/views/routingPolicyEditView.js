@@ -176,11 +176,11 @@ define([
                             },
                             rowActions: [
                                 {
-                                    onClick: 'addTermAtIndex()', iconClass: 'icon-plus',
+                                    onClick: 'addTermAtIndex()', iconClass: 'fa fa-plus',
                                     viewConfig: {width: 20}
                                 },
                                 {
-                                    onClick: "deleteTerm()", iconClass: 'icon-remove',
+                                    onClick: "deleteTerm()", iconClass: 'fa fa-remove',
                                     viewConfig: {width: 20}
                                 }
                             ],
@@ -198,11 +198,11 @@ define([
                                                     {
                                                         rowActions: [
                                                             {
-                                                                onClick: "deleteFromTerm()", iconClass: 'icon-remove',
+                                                                onClick: "deleteFromTerm()", iconClass: 'fa fa-remove',
                                                                 viewConfig: {width: 20}
                                                             },
                                                             {
-                                                                onClick: "addFromTermAtIndex()", iconClass: 'icon-plus',
+                                                                onClick: "addFromTermAtIndex()", iconClass: 'fa fa-plus',
                                                                 viewConfig: {width: 20}
                                                             }
                                                         ],
@@ -275,11 +275,11 @@ define([
                                                     {
                                                         rowActions: [
                                                             {
-                                                                onClick: "deleteThenTerm()", iconClass: 'icon-remove',
+                                                                onClick: "deleteThenTerm()", iconClass: 'fa fa-remove',
                                                                 viewConfig: {width: 20}
                                                             },
                                                             {
-                                                                onClick: "addThenTermAtIndex()", iconClass: 'icon-plus',
+                                                                onClick: "addThenTermAtIndex()", iconClass: 'fa fa-plus',
                                                                 viewConfig: {width: 20}
                                                             }
                                                         ],

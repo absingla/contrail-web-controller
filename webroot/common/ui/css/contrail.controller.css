@@ -439,9 +439,9 @@ td.action-cell a{color:#787878;}
 #PolicyRules .custom-combobox-input:focus{
     outline:none;
 }
-#PolicyRules .custom-combobox-input+span i.icon-caret-down{
+#PolicyRules .custom-combobox-input+span i.fa-caret-down{
     display:none;
 }
-#PolicyRules .custom-combobox-input:focus +span i.icon-caret-down{
+#PolicyRules .custom-combobox-input:focus +span i.fa-caret-down{
     display:block;
 }

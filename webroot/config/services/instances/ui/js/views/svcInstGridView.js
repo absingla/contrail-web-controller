@@ -1219,7 +1219,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_DEL_SERVICE_INSTANCES,
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnActionDelSvcInst',
                 "onClick": function() {
                     svcInstModel = new SvcInstModel({
@@ -1240,7 +1240,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_CREATE_SERVICE_INSTANCE,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function() {
                     svcInstModel = new SvcInstModel({
                         svcInstanceDataObj: svcInstanceDataObj

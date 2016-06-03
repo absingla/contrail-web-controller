@@ -109,7 +109,7 @@ define([
                 id: 'fc-badge', field:"", name:"", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: { allow: false },
                 formatter: function(r, c, v, cd, dc){
                     return '<span class="label-icon-badge label-icon-badge-' + dc.key +
-                        ' icon-badge-color-' + r + ' " data-color_key="' + r + '"><i class="icon-sign-blank"></i></span>';
+                        ' icon-badge-color-' + r + ' " data-color_key="' + r + '"><i class="fa fa-square"></i></span>';
                 },
                 events: {
                     onClick: function(e, dc) {

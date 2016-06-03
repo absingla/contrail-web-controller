@@ -199,12 +199,12 @@ define(['underscore', 'config/infra/bgp/ui/js/bgpFormatters'],
                                         rowActions: [
                                             {
                                                 onClick: "function() { $root.addPeer(); }",
-                                                iconClass: 'icon-plus'
+                                                iconClass: 'fa fa-plus'
                                             },
                                             {
                                                 onClick: "function() {\
                                                 $root.deletePeer($data, this); }",
-                                                iconClass: 'icon-minus'
+                                                iconClass: 'fa fa-minus'
                                             }
                                         ],
                                         columns: [
@@ -381,13 +381,13 @@ define(['underscore', 'config/infra/bgp/ui/js/bgpFormatters'],
                                                             {
                                                                 onClick: "function() {\
                                                                 ($parent.addFamilyAttrs())($root,$parentContext.$index, $data, $rawData); }",
-                                                                iconClass: 'icon-plus'
+                                                                iconClass: 'fa fa-plus'
                                                             },
                                                             {
                                                                 onClick: "function() {\
                                                                 ($parent.deleteFamilyAttrs())($data, this)\
                                                                 ;}",
-                                                                iconClass: 'icon-minus'
+                                                                iconClass: 'fa fa-minus'
                                                             }
                                                         ],
                                                         gridActions: [

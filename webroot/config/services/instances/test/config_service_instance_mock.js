@@ -567,17 +567,17 @@ function ServiceInstanceMockData(){
            domStr+= '<h4 class="smaller span12">';
            domStr+= '<span>';
            domStr+= '<span>';
-           domStr+= '<i class="icon-list-alt blue"></i>';
+           domStr+= '<i class="fa fa-list-alt blue"></i>';
            domStr+= '<span id="vnc-console-title">VNC Console</span>';
            domStr+= '</span>';
            domStr+= '<div class="widget-toolbar pull-right">';
            domStr+= '<a data-action="close-hide">';
-           domStr+= '<i class="icon-remove"></i>';
+           domStr+= '<i class="fa fa-remove"></i>';
            domStr+= '</a>';
            domStr+= '</div>';
            domStr+= '<div class="widget-toolbar pull-right">';
            domStr+= '<a data-action="collapse">';
-           domStr+= '<i class="icon-chevron-down"></i>';
+           domStr+= '<i class="fa fa-chevron-down"></i>';
            domStr+= '</a>';
            domStr+= '</div>';
            domStr+= '<span id="consoleText" class="smaller text-center pull-right"></span>';
@@ -599,7 +599,7 @@ function ServiceInstanceMockData(){
 	var domStr = SIMock.getdomData();
 	    domStr += '<div id="windowCreateSvcInstances" class="modal modal-700 hide" tabindex="-1">';
         domStr += '<div class="modal-header">';
-        domStr += '<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></button>';
+        domStr += '<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-remove"></i></button>';
         domStr += '<h6 class="modal-header-title"></h6>';
         domStr += '</div>';
         domStr += '<div class="modal-body">';
@@ -639,7 +639,7 @@ function ServiceInstanceMockData(){
 
         domStr += '<div id="confirmDelete" class="modal modal-420 hide" tabindex="-1">';
         domStr += '<div class="modal-header">';
-        domStr += '<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></button>';
+        domStr += '<button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-remove"></i></button>';
         domStr += '<h6 class="modal-header-title"></h6>';
         domStr += '</div>';
         domStr += '<div class="modal-body">';

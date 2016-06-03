@@ -354,7 +354,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_DEL_SVC_APPLIANCE,
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnActionDelSecGrp',
                 "onClick": function() {
                      var svcApplianceModel = new SvcApplianceModel();
@@ -374,7 +374,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_CREATE_SVC_APPLIANCE,
-                "iconClass": 'icon-plus',
+                "iconClass": 'fa fa-plus',
                 "onClick": function() {
                     var svcApplianceModel = new SvcApplianceModel({
                         service_template: viewConfig.svcApplData.svcApplSetSvcTmpl

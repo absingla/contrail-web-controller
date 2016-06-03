@@ -177,7 +177,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_REMOVE,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "onClick": function () {
                     var dataItem =
                         $("#"+gridElId).data('contrailGrid').getCheckedRows();
@@ -198,7 +198,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_ADD_POLICY,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
 
                     var policyModel = new PolicyModel();

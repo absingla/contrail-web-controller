@@ -271,11 +271,11 @@ define([
                                                          {onClick: "function() {\
                                                              $root.addTenantDNS();\
                                                              }",
-                                                             iconClass: 'icon-plus'},
+                                                             iconClass: 'fa fa-plus'},
                                                          {onClick: "function() {\
                                                              $root.deleteTenantDNS($data, this);\
                                                             }",
-                                                          iconClass: 'icon-minus'}
+                                                          iconClass: 'fa fa-minus'}
                                                      ],
                                                      gridActions: [
                                                          {onClick: "function() {\

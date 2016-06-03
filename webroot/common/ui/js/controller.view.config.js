@@ -519,7 +519,7 @@ define([
                 controlPanelConfig: {
                     filter: {
                         enable: true,
-                        iconClass: 'icon-filter',
+                        iconClass: 'fa fa-filter',
                         title: 'Filter',
                         viewConfig: getControlPanelFilterConfig()
                     },
@@ -1001,14 +1001,14 @@ define([
                     items: [
                         {
                             text: 'Source Port',
-                            labelCssClass: 'icon-circle default',
+                            labelCssClass: 'fa fa-circle default',
                             events: {
                                 click: function (event) {}
                             }
                         },
                         {
                             text: 'Destination Port',
-                            labelCssClass: 'icon-circle medium',
+                            labelCssClass: 'fa fa-circle medium',
                             events: {
                                 click: function (event) {}
                             }
@@ -1021,7 +1021,7 @@ define([
                     items: [
                         {
                             text: 'Flow Count',
-                            labelCssClass: 'icon-circle',
+                            labelCssClass: 'fa fa-circle',
                             events: {
                                 click: function (event) {}
                             }

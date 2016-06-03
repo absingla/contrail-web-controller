@@ -313,7 +313,7 @@ define([
         return {
             elementId: queryResultGridId,
             title: cowl.TITLE_RESULTS,
-            iconClass: 'icon-table',
+            iconClass: 'fa fa-table',
             view: 'QueryResultGridView',
             tabConfig: {
                 activate: function (event, ui) {
@@ -342,7 +342,7 @@ define([
         statChartTabViewConfig.push({
             elementId: queryResultChartId,
             title: cowl.TITLE_CHART,
-            iconClass: 'icon-bar-chart',
+            iconClass: 'fa fa-bar-chart-o',
             view: "QueryResultLineChartView",
             tabConfig: {
                 activate: function (event, ui) {

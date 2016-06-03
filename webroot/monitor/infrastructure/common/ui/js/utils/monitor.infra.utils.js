@@ -381,10 +381,10 @@ define([
 
         self.getGridPaginationControls = function() {
             return [
-                        '<a class="widget-toolbar-icon"><i class="icon-step-forward"></i></a>',
-                        '<a class="widget-toolbar-icon"><i class="icon-forward"></i></a>',
-                        '<a class="widget-toolbar-icon"><i class="icon-backward"></i></a>',
-                        '<a class="widget-toolbar-icon"><i class="icon-step-backward"></i></a>'
+                        '<a class="widget-toolbar-icon"><i class="fa fa-step-forward"></i></a>',
+                        '<a class="widget-toolbar-icon"><i class="fa fa-forward"></i></a>',
+                        '<a class="widget-toolbar-icon"><i class="fa fa-backward"></i></a>',
+                        '<a class="widget-toolbar-icon"><i class="fa fa-step-backward"></i></a>'
                     ];
         }
 
@@ -1546,7 +1546,7 @@ define([
                             {
                                 type: 'link',
                                 text: 'View',
-                                iconClass: 'icon-external-link'
+                                iconClass: 'fa fa-external-link'
                                 // callback: onScatterChartClick
                             }
                         ]
@@ -1580,7 +1580,7 @@ define([
                             {
                                 type: 'link',
                                 text: 'View',
-                                iconClass: 'icon-external-link',
+                                iconClass: 'fa fa-external-link',
                                 callback: cfg.onClickHandler
                             }
                         ]
@@ -1751,12 +1751,12 @@ define([
         self.bindPaginationListeners = function(cfg) {
             var cfg = ifNull(cfg,{});
             var gridSel = cfg['gridSel'];
-            gridSel.find('i.icon-forward').parent().click(function() {
+            gridSel.find('i.fa-forward').parent().click(function() {
                 controlNodePrevNextClick(cfg['obj'], { gridSel: gridSel,
                     getUrlFn: cfg['getUrlFn'], step: 'forward',
                     parseFn: cfg['parseFn']});
             });
-            gridSel.find('i.icon-backward').parent().click(function() {
+            gridSel.find('i.fa-backward').parent().click(function() {
                 controlNodePrevNextClick(cfg['obj'], { gridSel: gridSel,
                     getUrlFn: cfg['getUrlFn'], step: 'backward',
                     parseFn: cfg['parseFn']});
@@ -1794,7 +1794,7 @@ define([
             var cfg = ifNull(cfg,{});
             var gridSel = cfg['gridSel'];
             var paginationInfo;
-            gridSel.find('i.icon-step-forward').parent().click(function() {
+            gridSel.find('i.fa-step-forward').parent().click(function() {
                 paginationInfo = cfg['paginationInfoFn']();
                 //Ignore if already on first page
                 if(paginationInfo['last_page'] == '') {
@@ -1808,7 +1808,7 @@ define([
                     parseFn: cfg['parseFn']
                 });
             });
-            gridSel.find('i.icon-forward').parent().click(function() {
+            gridSel.find('i.fa-forward').parent().click(function() {
                 paginationInfo = cfg['paginationInfoFn']();
                 //Ignore if already on first page
                 if(paginationInfo['next_page'] == '') {
@@ -1822,7 +1822,7 @@ define([
                     parseFn: cfg['parseFn']
                 });
             });
-            gridSel.find('i.icon-step-backward').parent().click(function() {
+            gridSel.find('i.fa-step-backward').parent().click(function() {
                 paginationInfo = cfg['paginationInfoFn']();
                 //Ignore if already on last page
                 if(paginationInfo['first_page'] == '') {
@@ -1836,7 +1836,7 @@ define([
                     parseFn: cfg['parseFn']
                 });
             });
-            gridSel.find('i.icon-backward').parent().click(function() {
+            gridSel.find('i.fa-backward').parent().click(function() {
                 paginationInfo = cfg['paginationInfoFn']();
                 //Ignore if already on last page
                 if(paginationInfo['prev_page'] == '') {
@@ -2169,28 +2169,28 @@ define([
                    title : 'Node Color',
                    items : [ {
                        text : 'Critical',
-                       labelCssClass : 'icon-circle error',
+                       labelCssClass : 'fa-circle error',
                        events : {
                            click : function(event) {
                            }
                        }
                    },{
                        text : 'Error',
-                       labelCssClass : 'icon-circle warning',
+                       labelCssClass : 'fa-circle warning',
                        events : {
                            click : function(event) {
                            }
                        }
                    },{
                        text : 'Intialized',
-                       labelCssClass : 'icon-circle medium',
+                       labelCssClass : 'fa-circle medium',
                        events : {
                            click : function(event) {
                            }
                        }
                    },{
                        text : 'Up',
-                       labelCssClass : 'icon-circle okay',
+                       labelCssClass : 'fa-circle okay',
                        events : {
                            click : function(event) {
                            }
@@ -2202,7 +2202,7 @@ define([
                     items: [
                         {
                             text: 'Bandwidth',
-                            labelCssClass: 'icon-circle',
+                            labelCssClass: 'fa-circle',
                             events: {
                                 click: function (event) {}
                             }

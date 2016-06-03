@@ -180,7 +180,7 @@ define([
                                     view: "FormButtonView",
                                     viewConfig: {
                                         label: "Search",
-                                        iconClass: "icon-search",
+                                        iconClass: "fa fa-search",
                                         class: 'display-inline-block margin-0-10-0-0',
                                         elementConfig: {
                                             btnClass: 'btn-primary'

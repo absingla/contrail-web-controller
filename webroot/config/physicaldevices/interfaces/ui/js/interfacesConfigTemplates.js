@@ -301,7 +301,7 @@ define([
                                                 onClick: "function() {\
                                                 $root.deleteServer($data, this)\
                                                 ;}",
-                                                iconClass: 'icon-minus'
+                                                iconClass: 'fa fa-minus'
                                             }
                                         ],
                                         gridActions: [

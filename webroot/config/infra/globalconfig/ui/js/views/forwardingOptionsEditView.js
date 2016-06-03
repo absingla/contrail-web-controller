@@ -156,9 +156,9 @@ define([
                                     }],
                                     rowActions: [
                                         { onClick: "function() { $root.addEncapPriOrders($data, this); }",
-                                          iconClass: 'icon-plus'},
+                                          iconClass: 'fa fa-plus'},
                                         { onClick: "function() {$root.deleteEncapPriOrders($data, this); }",
-                                          iconClass: 'icon-minus'}
+                                          iconClass: 'fa fa-minus'}
                                     ],
                                 }
                             }

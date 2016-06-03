@@ -245,10 +245,10 @@ define([
                                 // onSelectAcl(model.attributes.acl_uuid);
                                 onSelectAcl(model.get('acl_uuid'));
                             });
-                        gridSel.find('i.icon-forward').parent().click(function() {
+                        gridSel.find('i.fa-forward').parent().click(function() {
                             onNextClick();
                         });
-                        gridSel.find('i.icon-backward').parent().click(function() {
+                        gridSel.find('i.fa-backward').parent().click(function() {
                             onPrevClick();
                         });
                     });

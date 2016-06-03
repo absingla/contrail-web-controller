@@ -101,11 +101,11 @@ define([
                     autoRefresh: false,
                     checkboxSelectable: {
                         onNothingChecked: function(e){
-                            $('.icon-trash').parent().addClass(
+                            $('.fa-trash').parent().addClass(
                                                          'disabled-link');
                         },
                         onSomethingChecked: function(e){
-                            $('.icon-trash').parent().removeClass(
+                            $('.fa-trash').parent().removeClass(
                                                          'disabled-link');
                         }
                     },
@@ -182,7 +182,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_LOGICAL_ROUTER_DELETE,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "onClick": function () {
                     var dataItem =
                         $("#"+gridElId).data('contrailGrid').getCheckedRows();
@@ -203,7 +203,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_ADD_LOGICAL_ROUTER,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     var logicalRouterModel = new LogicalRouterModel();
                     logicalRouterCreateEditView.model = logicalRouterModel;

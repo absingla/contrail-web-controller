@@ -318,7 +318,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_DEL_SVC_APPLIANCE_SET,
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnActionDelSecGrp',
                 "onClick": function() {
                      var svcApplianceSetModel = new SvcApplianceSetModel();
@@ -338,7 +338,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_CREATE_SVC_APPLIANCE_SET,
-                "iconClass": 'icon-plus',
+                "iconClass": 'fa fa-plus',
                 "onClick": function() {
                     svcApplianceSetModel = new SvcApplianceSetModel();
                     svcApplianceSetEditView.model = svcApplianceSetModel;

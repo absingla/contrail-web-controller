@@ -278,12 +278,12 @@ define([
                                                          if (!isVCenter())\
                                                              $root.addSubnet();\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          if (!isVCenter())\
                                                          $root.deleteSubnet($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  columns: [
                                                     {
@@ -490,11 +490,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addHostRoute();\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          $root.deleteHostRoute($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  gridActions: [
                                                      {onClick: "function() {\
@@ -852,11 +852,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addSubnetDNS();\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                     {onClick: "function() {\
                                                          $root.deleteSubnetDNS($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'
+                                                      iconClass: 'fa fa-minus'
                                                     }
                                                  ],
                                                  gridActions: [
@@ -946,11 +946,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addFipPool();\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          $root.deleteFipPool($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  gridActions: [
                                                      {onClick: "function() {\
@@ -1028,11 +1028,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addRouteTarget('user_created_route_targets');\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          $root.deleteRouteTarget($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  gridActions: [
                                                      {onClick: "function() {\
@@ -1110,11 +1110,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addRouteTarget('user_created_export_route_targets');\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          $root.deleteRouteTarget($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  gridActions: [
                                                      {onClick: "function() {\
@@ -1192,11 +1192,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addRouteTarget('user_created_import_route_targets');\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          $root.deleteRouteTarget($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  gridActions: [
                                                      {onClick: "function() {\

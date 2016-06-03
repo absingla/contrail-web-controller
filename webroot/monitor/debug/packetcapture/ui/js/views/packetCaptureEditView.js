@@ -303,13 +303,13 @@ define([
                                                {
                                                    onClick: "function() {\
                                                    $root.addRule(); }",
-                                                   iconClass: 'icon-plus'
+                                                   iconClass: 'fa fa-plus'
                                                },
                                                {
                                                    onClick: "function() {\
                                                    $root.deleteRule($data, this)\
                                                    ;}",
-                                                   iconClass: 'icon-minus'
+                                                   iconClass: 'fa fa-minus'
                                                }
                                            ],
                                            gridActions: [

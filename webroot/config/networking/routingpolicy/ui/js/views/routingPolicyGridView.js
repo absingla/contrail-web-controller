@@ -167,7 +167,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_REMOVE_GRID,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "linkElementId": "btnDeleteRoutingPolicy",
                 "onClick": function () {
                     var dataItem =
@@ -190,7 +190,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_ROUTING_ADD_POLICY,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     var routingPolicyModel = new RoutingPolicyModel();
                     routingPolicyEditView.model = routingPolicyModel;

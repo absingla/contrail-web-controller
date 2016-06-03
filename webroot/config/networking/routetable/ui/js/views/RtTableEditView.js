@@ -223,13 +223,13 @@ define([
                             columns: getRouteTableColViewConfigs(),
                             rowActions: [
                                 { onClick: "function() { $root.addRtTable($data, this); }",
-                                  iconClass: 'icon-plus'},
+                                  iconClass: 'fa fa-plus'},
                                 { onClick: "function() { $root.deleteRtTable($data, this); }",
-                                  iconClass: 'icon-minus'},
+                                  iconClass: 'fa fa-minus'},
                             ],
                             gridActions: [
                                 { onClick: "function() { $root.addRtTable(); }",
-                                  iconClass: 'icon-plus',
+                                  iconClass: 'fa fa-plus',
                                   buttonTitle: ''}
                             ]
                         }

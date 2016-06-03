@@ -299,11 +299,11 @@ define([
                                                 {onClick: "function() {\
                                                     $root.addRouteTarget('user_created_configured_route_target_list');\
                                                     }",
-                                                 iconClass: 'icon-plus'},
+                                                 iconClass: 'fa fa-plus'},
                                                 {onClick: "function() {\
                                                     $root.deleteRouteTarget($data, this);\
                                                    }",
-                                                 iconClass: 'icon-minus'}
+                                                 iconClass: 'fa fa-minus'}
                                             ],
                                             gridActions: [
                                                 {onClick: "function() {\

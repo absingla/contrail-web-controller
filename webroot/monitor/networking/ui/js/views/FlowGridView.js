@@ -104,7 +104,7 @@ define([
         var headerActionConfig = [
             {
                 type: 'checked-multiselect',
-                iconClass: 'icon-filter',
+                iconClass: 'fa fa-filter',
                 placeholder: ctwl.TITLE_FILTER_BY_PROTOCOL,
                 elementConfig: {
                     elementId: ctwl.PROJECT_FILTER_PROTOCOL_MULTISELECT_ID,
