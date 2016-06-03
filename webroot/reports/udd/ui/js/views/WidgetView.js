@@ -25,8 +25,8 @@ define(function (require) {
 
         initialize: function (p) {
             var self = this
-            self.dataModel = self.model.get('dataModel')
-            self.chartModel = self.model.get('chartModel')
+            self.dataConfigModel = self.model.get('dataConfigModel')
+            self.contentConfigModel = self.model.get('contentConfigModel')
             self.titleTemplate = contrail.getTemplate4Id('widget-title-edit-template')
         },
 
@@ -35,41 +35,41 @@ define(function (require) {
                 config;
 
             // render widget content (chart) on the front
-            config = self.getWidgetContentConfig()
+            config = self.getWidgetContentVC()
             self.renderView4Config(self.$(self.selectors.front), self.model, config);
 
             // render data source config (query) on the back
-            config = self.getWidgetQueryConfig()
-            self.renderView4Config(self.$('#' + config.elementId), self.dataModel, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
+            config = self.getWidgetDataVC()
+            self.renderView4Config(self.$('#' + config.elementId), self.dataConfigModel, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
 
             // render chart view config
-            config = self.getWidgetChartConfig()
-            self.renderView4Config(self.$('#' + config.elementId), self.chartModel, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
+            config = self.getWidgetContentConfigVC()
+            self.renderView4Config(self.$('#' + config.elementId), self.contentConfigModel, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
             return self
         },
 
-        getWidgetContentConfig: function () {
+        getWidgetContentVC: function () {
             var self = this
-            var config = self.model.get('widgetContentConfig');
+            var widgetContentConfig = self.model.get('widgetContentConfig')
+            var config = widgetContentConfig['contentView']
             config.elementId = self.model.get('widgetId') + 'Content'
             return config
         },
 
-        getWidgetQueryConfig: function () {
+        getWidgetDataVC: function () {
             var self = this
-            var config = self.model.get('dataConfig');
+            var widgetContentConfig = self.model.get('widgetContentConfig')
+            var config = widgetContentConfig['dataConfigView'];
             config.elementId = self.model.get('widgetId') + 'DataConfig'
             return config
         },
 
-        getWidgetChartConfig: function () {
+        getWidgetContentConfigVC: function () {
             var self = this
-            var contentConfig = self.model.get('widgetContentConfig');
-            return {
-                view: contentConfig.configView,
-                viewPathPrefix: contentConfig.viewPathPrefix,
-                elementId: self.model.get('widgetId') + 'ChartConfig',
-            }
+            var widgetContentConfig = self.model.get('widgetContentConfig')
+            var config = widgetContentConfig['contentConfigView'];
+            config.elementId = self.model.get('widgetId') + 'ChartConfig'
+            return config
         },
 
         remove: function () {
@@ -111,7 +111,7 @@ define(function (require) {
         },
         onConfigChange: function () {
             var self = this
-            config = self.getWidgetContentConfig()
+            config = self.getWidgetContentVC()
             self.renderView4Config(self.$(self.selectors.front), self.model, config);
             self.flipCard()
         },

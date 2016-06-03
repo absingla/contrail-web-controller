@@ -1,29 +1,37 @@
-[{
-  "widgetId": "udd0",
-  "widgetConfig": {
-    "title": "Query Count Time Series",
-    "x": 0,
-    "y": 0,
-    "width": 1,
-    "height": 6
-  },
-  "widgetContentConfig": {
-    "view": "WidgetLineChartView",
-    "configView": "WidgetChartConfigView",
-    "viewPathPrefix": "reports/udd/ui/js/views/",
-    "viewConfig": {
-      "color": "1f77b4",
-      "yAxisLabel": "Query Count",
-      "yAxisValue": "COUNT(query_stats)"
-    }
-  },
-  "dataConfig": {
-    "view": "WidgetQueryConfigView",
-    "viewPathPrefix": "reports/udd/ui/js/views/",
-    "viewConfig": {
-        "table_name": "StatTable.QueryPerfInfo.query_stats",
-        "select": "T=, COUNT(query_stats)",
-        "time_range": 3600
+[
+  {
+    "widgetId": "udd0",
+    "widgetConfig": {
+      "title": "Query Count Time Series",
+      "x": 0,
+      "y": 0,
+      "width": 1,
+      "height": 6
+    },
+    "widgetContentConfig": {
+      "contentView": {
+        "view": "WidgetLineChartView",
+        "viewPathPrefix": "reports/udd/ui/js/views/",
+        "viewConfig": {
+          "color": "1f77b4",
+          "yAxisLabel": "Query Count",
+          "yAxisValue": "COUNT(query_stats)"
+        }
+      },
+      "contentConfigView": {
+        "view": "WidgetLineChartConfigView",
+        "viewPathPrefix": "reports/udd/ui/js/views/",
+        "viewConfig": {}
+      },
+      "dataConfigView": {
+        "view": "WidgetQueryConfigView",
+        "viewPathPrefix": "reports/udd/ui/js/views/",
+        "viewConfig": {
+          "table_name": "StatTable.QueryPerfInfo.query_stats",
+          "select": "T=, COUNT(query_stats)",
+          "time_range": 3600
+        }
+      }
     }
   }
-}]
+]

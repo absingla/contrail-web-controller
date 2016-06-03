@@ -21,8 +21,8 @@ define(function (require) {
         },
         constructor: function (p) {
             var self = this
-            p.dataModel = new StatQueryFormModel(p.dataConfig.viewConfig)
-            p.chartModel = new Backbone.Model(p.widgetContentConfig.viewConfig)
+            p.dataConfigModel = new StatQueryFormModel(p.widgetContentConfig.dataConfigView.viewConfig)
+            p.contentConfigModel = new Backbone.Model(p.widgetContentConfig.contentView.viewConfig)
             Backbone.Model.apply(self, arguments);
         }
     })
