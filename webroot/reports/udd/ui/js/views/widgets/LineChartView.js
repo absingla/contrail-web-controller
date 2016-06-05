@@ -21,7 +21,7 @@ define(function (require) {
         getContentViewConfig: function () {
             var self = this
             var dataConfigModel = self.model.get('dataConfigModel')
-            var contentConfigModel = self.model.get('contentConfigModel')
+            var contentConfigModel = self.model.get('contentConfigModel').model()
             var queryRequestPostData = dataConfigModel.getQueryRequestPostData(+ new Date)
 
             var queryResultRemoteConfig = {

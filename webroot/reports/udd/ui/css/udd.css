@@ -52,8 +52,12 @@
 
 #content-container .area .grid-stack .widget.grid-stack-item,
 #content-container .area .grid-stack .widget.grid-stack-item .placeholder-content {
+  overflow: auto;
   margin: 0 8px; }
-
+    #content-container .area .grid-stack .widget.grid-stack-item > .ui-resizable-se {
+      right: 5px;
+      bottom: 5px;
+    }
   #content-container .area .grid-stack .widget.panel .panel-heading {
     height: 36px; }
     #content-container .area .grid-stack .widget.panel .panel-heading .close, #content-container .area .grid-stack .widget.panel .panel-heading .config {
@@ -63,6 +67,9 @@
     #content-container .area .grid-stack .widget.panel .panel-heading input {
       position: absolute;
       top: 5px; }
+    #content-container .area .grid-stack .widget.panel .panel-body {
+      padding: 10px;
+    }
     #content-container .area .grid-stack .widget.panel .back.panel-body .tabs .chart-config {
       display: none;
     }

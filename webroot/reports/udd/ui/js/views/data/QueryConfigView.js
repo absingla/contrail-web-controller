@@ -18,7 +18,6 @@ define(function (require) {
 
             var elementId = self.attributes.elementId
             self.renderView4Config(self.$el, self.model, self.getViewConfig(), null,null,null, function () {
-                //TODO use widgetID
                 Knockback.applyBindings(self.model, self.$el[0])
             });
         },
@@ -36,8 +35,7 @@ define(function (require) {
                                     viewConfig: {
                                         path: 'time_range', dataBindValue: 'time_range', class: "span6",
                                         elementConfig: {dataTextField: "text", dataValueField: "id", data: cowc.TIMERANGE_DROPDOWN_VALUES}}
-                                },
-                                {
+                                }, {
                                     elementId: 'from_time', view: "FormDateTimePickerView",
                                     viewConfig: {
                                         style: 'display: none;',
@@ -45,8 +43,7 @@ define(function (require) {
                                         elementConfig: qewu.getFromTimeElementConfig('from_time', 'to_time'),
                                         visible: "time_range() == -1"
                                     }
-                                },
-                                {
+                                }, {
                                     elementId: 'to_time', view: "FormDateTimePickerView",
                                     viewConfig: {
                                         style: 'display: none;',
@@ -56,8 +53,7 @@ define(function (require) {
                                     }
                                 }
                             ]
-                        },
-                        {
+                        }, {
                             columns: [
                                 {
                                     elementId: 'table_name', view: "FormComboboxView",
@@ -73,8 +69,7 @@ define(function (require) {
                                     }
                                 }
                             ]
-                        },
-                        {
+                        }, {
                             viewConfig: {
                                 visible: 'isTableNameAvailable()'
                             },
@@ -82,7 +77,7 @@ define(function (require) {
                                 {
                                     elementId: 'select', view: "FormTextAreaView",
                                     viewConfig: {
-                                        path: 'select', dataBindValue: 'select', class: "span9",
+                                        path: 'select', dataBindValue: 'select', class: "span6",
                                         editPopupConfig: {
                                             renderEditFn: function(event) {
                                                 var tableName = self.model.table_name();
@@ -95,7 +90,7 @@ define(function (require) {
                                     elementId: 'time-granularity-section',
                                     view: "FormCompositeView",
                                     viewConfig: {
-                                        class: "span3",
+                                        class: "span6",
                                         style: 'display: none;',
                                         path: 'time_granularity',
                                         label: 'Time Granularity',
@@ -110,8 +105,7 @@ define(function (require) {
                                                     class: "span4",
                                                     elementConfig: {min: 1}
                                                 }
-                                            },
-                                            {
+                                            }, {
                                                 elementId: 'time_granularity_unit', view: "FormDropdownView",
                                                 viewConfig: {
                                                     label: false,
@@ -126,8 +120,7 @@ define(function (require) {
                                     }
                                 }
                             ]
-                        },
-                        {
+                        }, {
                             columns: [
                                 {
                                     elementId: 'save_query', view: "FormButtonView", label: "Save Query",
@@ -138,8 +131,7 @@ define(function (require) {
                                             btnClass: 'btn-primary'
                                         }
                                     }
-                                },
-                                {
+                                }, {
                                     elementId: 'reset_query', view: "FormButtonView", label: "Reset",
                                     viewConfig: {
                                         label: "Reset",
@@ -153,7 +145,7 @@ define(function (require) {
                         }
                     ]
                 }
-            };
+            }
         },
 
         onChange: function () {
