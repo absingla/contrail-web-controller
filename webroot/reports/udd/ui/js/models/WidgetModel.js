@@ -21,6 +21,11 @@ define(function (require) {
         },
         constructor: function (p) {
             var self = this
+            if (!p || !p.dataConfig || !p.widgetContentConfig) {
+                p.dataConfig = _.extend({}, self.dataSources.query)
+                p.widgetContentConfig = _.extend({}, self.chartViews.line)
+            }
+            self.id = self.id || qewu.generateQueryUUID()
             p.dataModel = new StatQueryFormModel(p.dataConfig.viewConfig)
             p.chartModel = new Backbone.Model(p.widgetContentConfig.viewConfig)
             Backbone.Model.apply(self, arguments);

@@ -10,7 +10,7 @@ define(function (require) {
 
     var WidgetChartConfigView = ContrailView.extend({
         events: {
-            'click #update_widget': 'onChange'
+            'click .update_widget': 'onChange'
         },
 
         initialize: function () {

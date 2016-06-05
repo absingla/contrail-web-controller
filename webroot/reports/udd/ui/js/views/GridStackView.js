@@ -63,7 +63,7 @@ define(function (require) {
 
         add: function () {
             var self = this
-            self.model.set({width: 3})
+            self.model.set({width: self.p.width})
         },
 
         clear: function () {
@@ -77,7 +77,7 @@ define(function (require) {
             $m = model
             var self = this
             var id = model.get('widgetId')
-            var widgetConfig = model.get('widgetConfig')
+            var widgetConfig = model.get('widgetConfig') || {}
             widgetConfig.id = id
             self.grid.addWidget(self.widgetTemplate(widgetConfig),
                                 widgetConfig.x,
@@ -115,9 +115,10 @@ define(function (require) {
             var widget = _.find(self.childViewMap, function (w) {
                 return w.$el[0] === ui.element[0]
             })
-            var chart = widget.childViewMap['widgetContentView'].childViewMap['undefined'].childViewMap
-            var chartType = Object.keys(chart)[0]
-            chart[chartType].chartModel.update()
+            var viewId = widget.getWidgetContentConfig().elementId
+            var chartView = widget.childViewMap[viewId].childViewMap
+            var chartType = Object.keys(chartView)[0]
+            chartView[chartType].chartModel.update()
         }
     })
     return GridStackView;

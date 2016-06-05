@@ -5,13 +5,13 @@
     </div>
     <div id="{{ id }}Content" class="front panel-body"></div>
     <div class="back panel-body hide">
-        <ul class="nav nav-pills" data-tabs="tabs">
-            <li data-id="{{ id }}DataConfig">Data source config</li>
-            <li data-id="{{ id }}ChartConfig">Chart config</li>
+        <ul class="nav nav-pills">
+            <li><a data-id="{{ id }}DataConfig">Data source config</a></li>
+            <li><a data-id="{{ id }}ChartConfig">Chart config</a></li>
         </ul>
         <div class="tabs">
-            <div id="{{ id }}DataConfig" style="display:none;"></div>
-            <div id="{{ id }}ChartConfig"></div>
+            <div id="{{ id }}DataConfig" class="data-config"></div>
+            <div id="{{ id }}ChartConfig" class="chart-config"></div>
         </div>
     </div>
 </div>

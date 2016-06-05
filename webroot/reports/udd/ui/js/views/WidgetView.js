@@ -106,8 +106,8 @@ define(function (require) {
         subscribeConfigChange: function (id) {
             var self = this
             // update widget content on it's config change
-            var widgetQueryConfigView = self.childViewMap[id]
-            widgetQueryConfigView.on('change', self.onConfigChange.bind(self))
+            var widgetConfigView = self.childViewMap[id]
+            widgetConfigView.on('change', self.onConfigChange.bind(self))
         },
         onConfigChange: function () {
             var self = this

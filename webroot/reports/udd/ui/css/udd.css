@@ -63,6 +63,9 @@
     #content-container .area .grid-stack .widget.panel .panel-heading input {
       position: absolute;
       top: 5px; }
+    #content-container .area .grid-stack .widget.panel .back.panel-body .tabs .chart-config {
+      display: none;
+    }
     #content-container .area .grid-stack .widget.panel ul.nav-pills {
       text-align: center;
     }
