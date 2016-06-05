@@ -25,51 +25,59 @@ define(function (require) {
 
         initialize: function (p) {
             var self = this
-            self.dataModel = self.model.get('dataModel')
-            self.chartModel = self.model.get('chartModel')
+            
             self.titleTemplate = contrail.getTemplate4Id('widget-title-edit-template')
         },
 
         render: function () {
             var self = this,
-                config;
+                element,
+                model,
+                config,
+                onAllViewsRenderComplete;
 
             // render widget content (chart) on the front
-            config = self.getWidgetContentConfig()
-            self.renderView4Config(self.$(self.selectors.front), self.model, config);
+            element = self.$(self.selectors.front)
+            model = self.model
+            config = self.getContentVC()
+            self.renderView4Config(element, model, config)
 
             // render data source config (query) on the back
-            config = self.getWidgetQueryConfig()
-            self.renderView4Config(self.$('#' + config.elementId), self.dataModel, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
+            config = self.getDataVC()
+            element = self.$('#' + config.elementId)
+            model = self.model.get('dataConfigModel')
+            self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
 
-            // render chart view config
-            config = self.getWidgetChartConfig()
-            self.renderView4Config(self.$('#' + config.elementId), self.chartModel, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
+            // render chart view config on the back
+            config = self.getContentConfigVC()
+            element = self.$('#' + config.elementId)
+            model = self.model.get('contentConfigModel')
+            self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
             return self
         },
 
-        getWidgetContentConfig: function () {
+        getContentVC: function () {
             var self = this
-            var config = self.model.get('widgetContentConfig');
-            config.elementId = self.model.get('widgetId') + 'Content'
+            var contentConfig = self.model.get('contentConfig')
+            var config = contentConfig['contentView']
+            config.elementId = self.model.get('id') + 'Content'
             return config
         },
 
-        getWidgetQueryConfig: function () {
+        getDataVC: function () {
             var self = this
-            var config = self.model.get('dataConfig');
-            config.elementId = self.model.get('widgetId') + 'DataConfig'
+            var contentConfig = self.model.get('contentConfig')
+            var config = contentConfig['dataConfigView'];
+            config.elementId = self.model.get('id') + 'DataConfig'
             return config
         },
 
-        getWidgetChartConfig: function () {
+        getContentConfigVC: function () {
             var self = this
-            var contentConfig = self.model.get('widgetContentConfig');
-            return {
-                view: contentConfig.configView,
-                viewPathPrefix: contentConfig.viewPathPrefix,
-                elementId: self.model.get('widgetId') + 'ChartConfig',
-            }
+            var contentConfig = self.model.get('contentConfig')
+            var config = contentConfig['contentConfigView'];
+            config.elementId = self.model.get('id') + 'ChartConfig'
+            return config
         },
 
         remove: function () {
@@ -88,7 +96,7 @@ define(function (require) {
 
         editTitle: function (e) {
             var self = this
-            var title = self.model.get('widgetConfig').title
+            var title = self.model.get('config').title
             self.$('.title').remove()
             self.$(self.selectors.heading).prepend(self.titleTemplate({title: title}))
             self.$(self.selectors.titleInput).focus()
@@ -106,12 +114,13 @@ define(function (require) {
         subscribeConfigChange: function (id) {
             var self = this
             // update widget content on it's config change
-            var widgetConfigView = self.childViewMap[id]
-            widgetConfigView.on('change', self.onConfigChange.bind(self))
+            var configView = self.childViewMap[id]
+            configView.on('change', self.onConfigChange.bind(self))
         },
+
         onConfigChange: function () {
             var self = this
-            config = self.getWidgetContentConfig()
+            config = self.getContentVC()
             self.renderView4Config(self.$(self.selectors.front), self.model, config);
             self.flipCard()
         },

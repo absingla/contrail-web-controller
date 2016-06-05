@@ -6,28 +6,16 @@ define(function (require) {
     var StatQueryFormModel = require('reports/udd/ui/js/models/StatQueryFormModel')
 
     var WidgetModel = Backbone.Model.extend({
-        chartViews: {
-            line: {
-                view: "WidgetLineChartView",
-                configView: "WidgetChartConfigView",
-                viewPathPrefix: "reports/udd/ui/js/views/",
-            }
-        },
-        dataSources: {
-            query: {
-                view: "WidgetQueryConfigView",
-                viewPathPrefix: "reports/udd/ui/js/views/",
-            }
-        },
         constructor: function (p) {
             var self = this
-            if (!p || !p.dataConfig || !p.widgetContentConfig) {
-                p.dataConfig = _.extend({}, self.dataSources.query)
-                p.widgetContentConfig = _.extend({}, self.chartViews.line)
-            }
-            self.id = self.id || qewu.generateQueryUUID()
-            p.dataModel = new StatQueryFormModel(p.dataConfig.viewConfig)
-            p.chartModel = new Backbone.Model(p.widgetContentConfig.viewConfig)
+            //if (!p || !p.dataConfig || !p.contentConfig) {
+                //p.dataConfig = _.extend({}, self.dataSources.query)
+                //p.contentConfig = _.extend({}, self.chartViews.line)
+            //}
+            //self.id = self.id || qewu.generateQueryUUID()
+
+            p.dataConfigModel = new StatQueryFormModel(p.contentConfig.dataConfigView.viewConfig)
+            p.contentConfigModel = new Backbone.Model(p.contentConfig.contentView.viewConfig)
             Backbone.Model.apply(self, arguments);
         }
     })

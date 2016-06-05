@@ -8,7 +8,7 @@ define(function (require) {
     var Knockback = require('knockback')
     var QueryFormView = require('query-form-view')
 
-    var WidgetQueryConfigView = QueryFormView.extend({
+    var QueryConfigView = QueryFormView.extend({
         events: {
             'click #save_query': 'onChange'
         },
@@ -164,5 +164,5 @@ define(function (require) {
         }
     });
 
-    return WidgetQueryConfigView;
+    return QueryConfigView;
 });

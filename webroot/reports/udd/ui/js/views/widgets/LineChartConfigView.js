@@ -8,7 +8,7 @@ define(function (require) {
     var ContrailView = require('contrail-view')
     var Knockback = require('knockback')
 
-    var WidgetChartConfigView = ContrailView.extend({
+    var WidgetLineChartConfigView = ContrailView.extend({
         events: {
             'click .update_widget': 'onChange'
         },
@@ -31,5 +31,5 @@ define(function (require) {
             this.trigger('change')
         }
     })
-    return WidgetChartConfigView;
+    return WidgetLineChartConfigView;
 })

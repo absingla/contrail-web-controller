@@ -5,9 +5,9 @@
  * widget content view
  */
 define(function (require) {
-    var ContrailView = require('contrail-view')
+    var WidgetContentView = require('reports/udd/ui/js/views/WidgetContentView')
 
-    var WidgetLineChartView = ContrailView.extend({
+    var LineChartView = WidgetContentView.extend({
         render: function () {
             var self = this
 
@@ -20,9 +20,9 @@ define(function (require) {
 
         getContentViewConfig: function () {
             var self = this
-            var dataModel = self.model.get('dataModel')
-            var chartModel = self.model.get('chartModel')
-            var queryRequestPostData = dataModel.getQueryRequestPostData(+ new Date)
+            var dataConfigModel = self.model.get('dataConfigModel')
+            var contentConfigModel = self.model.get('contentConfigModel')
+            var queryRequestPostData = dataConfigModel.getQueryRequestPostData(+ new Date)
 
             var queryResultRemoteConfig = {
                 url: "/api/qe/query",
@@ -48,19 +48,19 @@ define(function (require) {
                         if (responseArray.length == 0) {
                             return [];
                         }
-                        var queryCount = {values: [], color: chartModel.get('color')},
+                        var queryCount = {values: [], color: contentConfigModel.get('color')},
                             chartData = [queryCount];
 
                         for (var i = 0; i < responseArray.length; i++) {
                             var ts = Math.floor(responseArray[i]["T="] / 1000);
-                            queryCount.values.push({x: ts, y: responseArray[i][chartModel.get('yAxisValue')]});
+                            queryCount.values.push({x: ts, y: responseArray[i][contentConfigModel.get('yAxisValue')]});
                         }
                         return chartData;
                     },
                     chartOptions: {
                         axisLabelDistance: 5,
                         height: 300,
-                        yAxisLabel: chartModel.get('yAxisLabel'),
+                        yAxisLabel: contentConfigModel.get('yAxisLabel'),
                         forceY: [0, 10],
                         yFormatter: function (d) {
                             return d;
@@ -71,5 +71,5 @@ define(function (require) {
         }
     });
 
-    return WidgetLineChartView;
+    return LineChartView;
 });
