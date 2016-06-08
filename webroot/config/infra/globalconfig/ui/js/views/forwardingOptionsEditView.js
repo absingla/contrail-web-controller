@@ -130,6 +130,7 @@ define([
                                     path: 'encapPriorityOrders',
                                     collection: 'encapPriorityOrders',
                                     validation: 'encapPriorityOrdersValidation',
+                                    templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
                                     class: "span12",
                                     columns: [{
                                         elementId: 'encapsulation_priorities',
@@ -155,11 +156,15 @@ define([
                                         }
                                     }],
                                     rowActions: [
-                                        { onClick: "function() { $root.addEncapPriOrders($data, this); }",
+                                        { onClick: "function() { $root.addEncapPriOrders($data, true); }",
                                           iconClass: 'fa fa-plus'},
                                         { onClick: "function() {$root.deleteEncapPriOrders($data, this); }",
                                           iconClass: 'fa fa-minus'}
                                     ],
+                                    gridActions: [{
+                                        onClick: "function() { $root.addEncapPriOrders($data, false); }",
+                                        iconClass: 'icon-plus'
+                                    }]
                                 }
                             }
                         ]
