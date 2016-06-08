@@ -225,7 +225,7 @@ define([
                 realign: {
                     iconClass: function (graphView) {
                         var rankDir = graphView.model.rankDir;
-                        return ((rankDir == ctwc.GRAPH_DIR_TB) ? 'fa fa-align-left' : 'fa fa-align-center');
+                        return ((rankDir == ctwc.GRAPH_DIR_TB) ? 'fa fa-bars fa-rotate-90' : 'fa fa-bars');
                     },
                     title: 'Change Direction',
                     events: {
@@ -234,16 +234,16 @@ define([
                                 connectedGraphModel = connectedGraphView.model;
 
                             setLoadingScreen(connectedGraphModel);
-                            if ($(self).find('i').hasClass('fa-align-left')) {
-                                $(self).find('i').removeClass('fa-align-left').toggleClass('fa-spin fa-spinner');
+                            if ($(self).find('i').hasClass('fa-rotate-90')) {
+                                $(self).find('i').removeClass('fa-rotate-90').toggleClass('fa-spin fa-spinner');
                                 setTimeout(function () {
                                     connectedGraphModel.reLayoutGraph(ctwc.GRAPH_DIR_LR);
                                     //Hack to set width for Webkit browser
                                     var width = $(connectedSelectorId + ' svg').attr('width');
                                     $(connectedSelectorId + ' svg').attr('width', width);
                                 }, 200)
-                            } else if ($(self).find('i').hasClass('fa-align-center')) {
-                                $(self).find('i').removeClass('fa-align-center').toggleClass('fa-spin fa-spinner');
+                            } else if ($(self).find('i').hasClass('fa-bars')) {
+                                $(self).find('i').removeClass('fa-bars').toggleClass('fa-spin fa-spinner');
                                 setTimeout(function () {
                                     connectedGraphModel.reLayoutGraph(ctwc.GRAPH_DIR_TB);
                                     var width = $(connectedSelectorId + ' svg').attr('width');
