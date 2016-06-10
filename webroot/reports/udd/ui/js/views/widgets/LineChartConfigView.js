@@ -1,9 +1,6 @@
 /*
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
-/**
- * widget config view
- */
 define(function (require) {
     var ContrailView = require('contrail-view')
     var Knockback = require('knockback')
@@ -24,7 +21,7 @@ define(function (require) {
 
             self.renderView4Config(self.$el, self.model, self.getViewConfig(), null,null,null, function () {
                 Knockback.applyBindings(self.model, self.$el[0])
-            });
+            })
         },
 
         getViewConfig: function () {
@@ -66,7 +63,7 @@ define(function (require) {
                                         path: 'yAxisValue',
                                         dataBindValue: 'yAxisValue',
                                         class: 'span9',
-                                        elementConfig: {dataTextField: 'text', dataValueField: 'id', data: self.model.model().get('yAxisValues')}}
+                                        elementConfig: {data: self.model.model().get('yAxisValues')}}
                                 }
                             ]
                         }, {

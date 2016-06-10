@@ -2,7 +2,6 @@
   "contentViewList": {
     "LineChartView": {
       "label": "Line Chart",
-      "dataConfigViews": ["QueryConfigView"],
       "contentView": {
         "view": "LineChartView",
         "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
@@ -19,8 +18,10 @@
       }
     }
   },
-  "dataViewList": {
+  "dataSourceList": {
     "QueryConfigView": {
+      "contentViews": ["LineChartView"],
+      "contentView": "LineChartView",
       "label": "Query",
       "view": "QueryConfigView",
       "viewPathPrefix": "reports/udd/ui/js/views/data/",

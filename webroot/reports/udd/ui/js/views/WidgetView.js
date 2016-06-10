@@ -6,6 +6,7 @@
  */
 define(function (require) {
     var ContrailView = require('contrail-view')
+    var Knockback = require('knockback')
 
     var WidgetView = ContrailView.extend({
         selectors: {
@@ -53,7 +54,54 @@ define(function (require) {
             element = self.$('#' + config.elementId)
             model = self.model.get('contentConfigModel')
             self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
+
+            config = self.getViewConfig()
+            element = self.$('.data-source')
+            model = self.model.get('viewsModel')
+            self.renderView4Config(element, model, config, null, null, null, function () {
+                Knockback.applyBindings(model, element[0])
+            })
             return self
+        },
+
+        getViewConfig: function () {
+            var self = this
+            var dataConfigViewName = self.model.get('viewsModel').dataConfigView()
+            return {
+                view: "SectionView",
+                viewConfig: {
+                    rows: [
+                        {
+                            columns: [
+                                {
+                                    elementId: 'dataConfigView', view: 'FormDropdownView',
+                                    viewConfig: {
+                                        label: 'Data Source',
+                                        path: 'dataConfigView',
+                                        dataBindValue: 'dataConfigView',
+                                        class: 'span6',
+                                        elementConfig: {
+                                            dataTextField: 'text', dataValueField: 'id',
+                                            data: self.model.getDataSourceList()
+                                        }
+                                    }
+                                }, {
+                                    elementId: 'contentView', view: 'FormDropdownView',
+                                    viewConfig: {
+                                        label: 'Content View',
+                                        path: 'contentView',
+                                        dataBindValue: 'contentView',
+                                        class: 'span6',
+                                        elementConfig: {
+                                            data: self.model.getContentViews4DataSource(dataConfigViewName)
+                                        }
+                                    }
+                                }
+                            ]
+                    }
+                    ]
+                }
+            }
         },
 
         getContentVC: function () {
@@ -76,7 +124,7 @@ define(function (require) {
             var self = this
             var contentConfig = self.model.get('contentConfig')
             var config = contentConfig['contentConfigView'];
-            config.elementId = self.model.get('id') + 'ChartConfig'
+            config.elementId = self.model.get('id') + 'ContentConfig'
             return config
         },
 

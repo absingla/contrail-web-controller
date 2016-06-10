@@ -1,9 +1,6 @@
 /*
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
-/**
- * widget config view
- */
 define(function (require) {
     var Knockback = require('knockback')
     var QueryFormView = require('query-form-view')
@@ -19,7 +16,7 @@ define(function (require) {
             var elementId = self.attributes.elementId
             self.renderView4Config(self.$el, self.model, self.getViewConfig(), null,null,null, function () {
                 Knockback.applyBindings(self.model, self.$el[0])
-            });
+            })
         },
 
         getViewConfig: function () {
