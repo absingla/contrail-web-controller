@@ -2,7 +2,7 @@
   {
     "id": "udd0",
     "config": {
-      "title": "Query Count Time Series",
+      "title": "Query Count Max Time Series",
       "x": 0,
       "y": 0,
       "width": 1,
@@ -13,9 +13,9 @@
         "view": "LineChartView",
         "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
         "viewConfig": {
-          "color": "1f77b4",
-          "yAxisLabel": "Query Count",
-          "yAxisValue": "COUNT(query_stats)"
+          "color": "red",
+          "yAxisLabel": "Max time",
+          "yAxisValue": "MAX(query_stats.time)"
         }
       },
       "contentConfigView": {

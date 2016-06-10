@@ -5,15 +5,19 @@
 define(function (require) {
     var StatQueryFormModel = require('reports/udd/ui/js/models/StatQueryFormModel')
     var ContrailModel = require('contrail-model')
+    var defaultConfig = JSON.parse(require('text!reports/udd/data/default.config.json'))
 
     var WidgetModel = Backbone.Model.extend({
         constructor: function (p) {
             var self = this
-            //if (!p || !p.dataConfig || !p.contentConfig) {
-                //p.dataConfig = _.extend({}, self.dataSources.query)
-                //p.contentConfig = _.extend({}, self.chartViews.line)
-            //}
-            //self.id = self.id || qewu.generateQueryUUID()
+            p = p || {}
+            p.contentConfig = p.contentConfig || {}
+            p.contentConfig.contentView = p.contentConfig.contentView || _.extend({}, defaultConfig.contentViewList['LineChartView'].contentView)
+            p.contentConfig.contentConfigView = p.contentConfig.contentConfigView || _.extend({}, defaultConfig.contentViewList['LineChartView'].contentConfigView)
+            p.contentConfig.dataConfigView = p.contentConfig.dataConfigView || _.extend({}, defaultConfig.dataViewList['QueryConfigView'])
+                
+            p.id = p.id || 'w' + qewu.generateQueryUUID()
+            p.title = p.id
 
             p.dataConfigModel = new StatQueryFormModel(p.contentConfig.dataConfigView.viewConfig)
             p.contentConfigModel = new ContrailModel(p.contentConfig.contentView.viewConfig)

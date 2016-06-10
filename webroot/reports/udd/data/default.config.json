@@ -3,14 +3,19 @@
     "LineChartView": {
       "label": "Line Chart",
       "dataConfigViews": ["QueryConfigView"],
-      "contentConfigView": {
-        "view": "LineChartConfigView",
-        "viewPathPrefix": "reports/udd/ui/js/views/widgets",
+      "contentView": {
+        "view": "LineChartView",
+        "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
         "viewConfig": {
           "color": "1f77b4",
           "yAxisLabel": "Query Count",
           "yAxisValue": "COUNT(query_stats)"
         }
+      },
+      "contentConfigView": {
+        "view": "LineChartConfigView",
+        "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
+        "viewConfig": {}
       }
     }
   },

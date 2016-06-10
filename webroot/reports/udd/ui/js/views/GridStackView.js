@@ -63,7 +63,7 @@ define(function (require) {
 
         add: function () {
             var self = this
-            self.model.set({width: self.p.width})
+            self.model.set({config: {width: self.p.width, height: 6}})
         },
 
         clear: function () {

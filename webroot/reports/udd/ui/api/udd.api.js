@@ -11,7 +11,7 @@ var uddapi = module.exports,
     _ = require('underscore');
 
 
-function createWidget(req, res) {
+function createWidget (req, res) {
     // TODO: Implement create new widget function
     commonUtils.handleJSONResponse(null, res, {});
 }
