@@ -18,6 +18,13 @@ define(function (require) {
             p.dataConfigModel = new StatQueryFormModel(p.contentConfig.dataConfigView.viewConfig)
             p.contentConfigModel = new ContrailModel(p.contentConfig.contentView.viewConfig)
             Backbone.Model.apply(self, arguments);
+
+            // update yAxisValue based on contentConfigModel select field
+            p.dataConfigModel.model().on('change', function () {
+                var select = p.dataConfigModel.select()
+                var yAxisValues = _.without(select.split(', '), 'T=', 'T')
+                p.contentConfigModel.model().set('yAxisValues', yAxisValues)
+            })
         }
     })
     return WidgetModel

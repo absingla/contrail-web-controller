@@ -28,7 +28,7 @@
         "viewPathPrefix": "reports/udd/ui/js/views/data/",
         "viewConfig": {
           "table_name": "StatTable.QueryPerfInfo.query_stats",
-          "select": "T=, COUNT(query_stats)",
+          "select": "T=, COUNT(query_stats), MAX(query_stats.time), MIN(query_stats.time)",
           "time_range": 3600
         }
       }

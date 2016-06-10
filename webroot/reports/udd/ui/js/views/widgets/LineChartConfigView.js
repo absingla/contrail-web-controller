@@ -28,6 +28,7 @@ define(function (require) {
         },
 
         getViewConfig: function () {
+            var self = this
             return {
                 view: 'SectionView',
                 viewConfig: {
@@ -59,13 +60,13 @@ define(function (require) {
                         }, {
                             columns: [
                                 {
-                                    elementId: 'yAxisValue', view: 'FormInputView',
+                                    elementId: 'yAxisValue', view: 'FormDropdownView',
                                     viewConfig: {
                                         label: 'y Axis Value',
                                         path: 'yAxisValue',
                                         dataBindValue: 'yAxisValue',
                                         class: 'span9',
-                                    }
+                                        elementConfig: {dataTextField: 'text', dataValueField: 'id', data: self.model.model().get('yAxisValues')}}
                                 }
                             ]
                         }, {

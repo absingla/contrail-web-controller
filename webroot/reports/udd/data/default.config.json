@@ -16,7 +16,6 @@
   },
   "dataViewList": {
     "QueryConfigView": {
-      "contentViews": ["LineChartView"],
       "label": "Query",
       "view": "QueryConfigView",
       "viewPathPrefix": "reports/udd/ui/js/views/data/",
