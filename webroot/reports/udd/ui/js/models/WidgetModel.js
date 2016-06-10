@@ -45,6 +45,38 @@ define(function (require) {
 
         getContentViews4DataSource: function (dataSourceName) {
             return defaultConfig.dataSourceList[dataSourceName].contentViews
+        },
+
+        toJSON: function () {
+            var self = this
+            var attrs = self.attributes
+            var contentConfigModel = attrs.contentConfigModel.model().toJSON()
+            var dataConfigModel = attrs.dataConfigModel.model().toJSON()
+
+            return {
+                config: attrs.config,
+                contentConfig: {
+                    contentView: {
+                        view: attrs.contentConfig.contentView.view,
+                        viewPathPrefix: attrs.contentConfig.contentView.viewPathPrefix,
+                        viewConfig: {
+                            color: contentConfigModel.color,
+                            yAxisLabel: contentConfigModel.yAxisLabel,
+                            yAxisValue: contentConfigModel.yAxisValue,
+                        },
+                    },
+                    contentConfigView: defaultConfig.contentViewList[attrs.contentConfig.contentView.view],
+                    dataConfigView: {
+                        view: attrs.contentConfig.dataConfigView.view,
+                        viewPathPrefix: attrs.contentConfig.dataConfigView.viewPathPrefix,
+                        viewConfig: {
+                            table_name: dataConfigModel.table_name,
+                            select: dataConfigModel.select,
+                            time_range: dataConfigModel.time_range,
+                        }
+                    }
+                }
+            }
         }
     })
     return WidgetModel

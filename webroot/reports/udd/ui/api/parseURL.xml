@@ -14,17 +14,24 @@
         <path>./cdb.api</path>
     </require>
     <item>
-        <url>/api/cassandra/query</url>
-        <method>post</method>
+        <url>/api/udd/widget/:id</url>
+        <method>put</method>
         <timeout>600</timeout>
-        <feature>query-engine</feature> <!-- TODO: Create a new feature role for CDB -->
-        <callback>cdbapi.runQuery</callback>
+        <feature>query-engine</feature>
+        <callback>uddapi.createWidget</callback>
     </item>
     <item>
-        <url>/api/udd/widget/create</url>
+        <url>/api/udd/widget</url>
+        <method>get</method>
+        <timeout>600</timeout>
+        <feature>query-engine</feature>
+        <callback>uddapi.getWidgets</callback>
+    </item>
+    <item>
+        <url>/api/udd/widget/:id</url>
         <method>post</method>
         <timeout>600</timeout>
-        <feature>query-engine</feature> <!-- TODO: Create a new feature role for UDD -->
-        <callback>uddapi.createWidget</callback>
+        <feature>query-engine</feature>
+        <callback>uddapi.updateWidget</callback>
     </item>
 </urlLists>

@@ -26,7 +26,7 @@ define([
                 elementId: 'gridStackView',
                 viewPathPrefix: "reports/udd/ui/js/views/",
                 viewConfig: {
-                    dataUrl: '/reports/udd/data/networking-udd.json'
+                    dataUrl: '/api/udd/widget/',
                 }
             }
         }

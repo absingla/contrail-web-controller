@@ -13,8 +13,7 @@
       },
       "contentConfigView": {
         "view": "LineChartConfigView",
-        "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
-        "viewConfig": {}
+        "viewPathPrefix": "reports/udd/ui/js/views/widgets/"
       }
     }
   },

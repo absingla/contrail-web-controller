@@ -8,12 +8,20 @@ var uddapi = module.exports,
     global = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/global'),
     config = process.mainModule.exports["config"],
     qs = require('querystring'),
-    _ = require('underscore');
+    _ = require('lodash')
 
+var cassandra = require('cassandra-driver'),
+    client = new cassandra.Client({ contactPoints: config.cassandra.server_ips });
 
 function createWidget (req, res) {
-    // TODO: Implement create new widget function
-    commonUtils.handleJSONResponse(null, res, {});
+    req.param('id')
+    console.log(req.body)
+    commonUtils.handleJSONResponse(null, res, {})
 }
 
-exports.createWidget = createWidget;
+function getWidgets (req, res) {
+    commonUtils.handleJSONResponse(null, res, {})
+}
+
+exports.createWidget = createWidget
+exports.getWidgets = getWidgets

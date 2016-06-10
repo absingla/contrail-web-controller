@@ -171,6 +171,7 @@ define(function (require) {
             config = self.getContentVC()
             self.renderView4Config(self.$(self.selectors.front), self.model, config);
             self.flipCard()
+            self.model.save()
         },
 
         changeTab: function (e) {
@@ -178,17 +179,6 @@ define(function (require) {
             self.$('.tabs>div').hide()
             var id = self.$(e.target).data('id')
             self.$('#' + id).show()
-        },
-
-        //TODO move to WidgetConfigView
-        updateSaveBtn: function () {
-            var self = this
-            self.$('.save').toggleClass('disabled', !self.model.provider.isDirty())
-        },
-
-        saveConfig: function () {
-            var self = this
-            self.chart.model.save()
         }
     })
     return WidgetView;
