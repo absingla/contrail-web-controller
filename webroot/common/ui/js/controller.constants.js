@@ -236,6 +236,12 @@ define([
         this.OBJECT_SHARED_TABLE = "obj_shared_table";
         this.OBJECT_UUID_TABLE = "obj_uuid_table";
 
+        /*
+         * Setting/Introspect
+         */
+        this.TMPL_INTROSPECT_PAGE = "introspect-page-template";
+
+
         // Underlay constants
         this.UNDERLAY_TOPOLOGY_CACHE = "underlayTopology";
         this.UNDERLAY_TABS_VIEW_ID = 'underlayTabsView';

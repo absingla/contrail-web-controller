@@ -922,24 +922,123 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                     </items>
                 </item>
-                <!-- <item>
-                  <label>Analytics DB</label>
-                  <iconClass>icon-contrail-analytics-db</iconClass>
-                  <items>
-                      <item>
-                          <hash>setting_analyticsdb_usage</hash>
-                          <label>Usage</label>
-                          <resources>
-                              <resource>
-                                  <rootDir>/setting/analytics_db</rootDir>
-                                  <view>usage.view</view>
-                                  <js>usage.js</js>
-                                  <class>dbUsageObj</class>
-                              </resource>
-                          </resources>
-                      </item>
-                  </items>
-                </item> -->
+                <item>
+                    <label>Introspect</label>
+                    <iconClass>icon-code</iconClass>
+                    <resources>
+                        <resource>
+                            <rootDir>setting/introspect/ui</rootDir>
+                            <css>contrail.introspect.css</css>
+                        </resource>
+                    </resources>
+                    <init>/setting/introspect/ui/js/introspect.init.js</init>
+                    <items>
+                        <item>
+                            <hash>setting_introspect_control</hash>
+                            <label>Control</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderControlIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <port>8083</port>
+                                <type>control</type>
+                            </queryParams>
+                            <searchStrings>Control</searchStrings>
+                        </item>
+                        <item>
+                            <hash>setting_introspect_vrouter-agent</hash>
+                            <label>Vrouter Agent</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderVrouterAgentIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <port>8085</port>
+                                <type>vrouter-agent</type>
+                            </queryParams>
+                            <searchStrings>Vrouter Agent</searchStrings>
+                        </item>
+                        <item>
+                            <hash>setting_introspect_schema</hash>
+                            <label>Schema</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderSchemaIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <port>8087</port>
+                                <type>schema</type>
+                            </queryParams>
+                            <searchStrings>Schema</searchStrings>
+                        </item>
+                        <item>
+                            <hash>setting_introspect_svc-monitor</hash>
+                            <label>Svc Monitor</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderSchemaIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <port>8088</port>
+                                <type>svc-monitor</type>
+                            </queryParams>
+                            <searchStrings>Svc Monitor</searchStrings>
+                        </item>
+                        <item>
+                            <hash>setting_introspect_collector</hash>
+                            <label>Collector</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderSchemaIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <port>8089</port>
+                                <type>collector</type>
+                            </queryParams>
+                            <searchStrings>Collector</searchStrings>
+                        </item>
+                        <item>
+                            <hash>setting_introspect_analytics-api</hash>
+                            <label>Analytics API</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderSchemaIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <port>8090</port>
+                                <type>analytics-api</type>
+                            </queryParams>
+                            <searchStrings>Analytics API</searchStrings>
+                        </item>
+                        <item>
+                            <hash>setting_introspect_query-engine</hash>
+                            <label>Query Engine</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderSchemaIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <port>8091</port>
+                                <type>query-engine</type>
+                            </queryParams>
+                            <searchStrings>Query Engine</searchStrings>
+                        </item>
+                        <item>
+                            <hash>setting_introspect_dns</hash>
+                            <label>DNS</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderSchemaIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <port>8092</port>
+                                <type>dns</type>
+                            </queryParams>
+                            <searchStrings>DNS</searchStrings>
+                        </item>
+                    </items>
+                </item>
             </items>
         </item>
         <item>
