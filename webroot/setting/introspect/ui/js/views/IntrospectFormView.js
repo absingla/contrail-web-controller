@@ -7,8 +7,9 @@ define([
     'underscore',
     'knockback',
     'contrail-view',
-    'controller-basedir/setting/introspect/ui/js/models/IntrospectFormModel'
-], function (_, Knockback, ContrailView, IntrospectFormModel) {
+    'controller-basedir/setting/introspect/ui/js/models/IntrospectPrimaryFormModel',
+    'controller-basedir/setting/introspect/ui/js/models/IntrospectSecondaryFormModel'
+], function (_, Knockback, ContrailView, IntrospectPrimaryFormModel, IntrospectSecondaryFormModel) {
     var IntrospectFormView = ContrailView.extend({
         el: $(contentContainer),
 
@@ -19,28 +20,66 @@ define([
                 hashParams = layoutHandler.getURLHashParams(),
                 introspectType = hashParams['type'],
                 introspectFormId = '#introspect-' + introspectType + '-form',
-                introspectId = 'introspect-' + introspectType,
                 introspectPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_INTROSPECT_PAGE),
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null;
 
-            self.model = new IntrospectFormModel(hashParams);
+            self['primary'] = {};
+            self['primary']['model'] = new IntrospectPrimaryFormModel(hashParams, self);
             self.$el.append(introspectPageTmpl({introspectPrefix: introspectType}));
 
-            self.renderView4Config($(introspectFormId), self.model, getIntrospectFormViewConfig(), 'runIntrospectValidation', null, modelMap, function () {
-                self.model.showErrorAttr(introspectId, false);
-                Knockback.applyBindings(self.model, document.getElementById(introspectId));
-                kbValidation.bind(self);
-                $("#submit_introspect").on('click', function() {
-                    if (self.model.model().isValid(true, 'runIntrospectValidation')) {
-                        self.renderIntrospectResult();
-                    }
-                });
-            });
+            self.renderIntrospectPrimaryForm();
 
             if (widgetConfig !== null) {
-                self.renderView4Config($(introspectFormId), self.model, widgetConfig, null, null, null);
+                self.renderView4Config($(introspectFormId), self['primary']['model'], widgetConfig, null, null, null);
             }
 
+        },
+
+        renderIntrospectPrimaryForm: function() {
+            var self = this,
+                viewConfig = self.attributes.viewConfig,
+                modelMap = contrail.handleIfNull(self.modelMap, {}),
+                hashParams = layoutHandler.getURLHashParams(),
+                introspectType = hashParams['type'],
+                introspectPrimaryFormId = '#introspect-' + introspectType + '-primary-form',
+                introspectPrimaryId = 'introspect-' + introspectType + '-primary-container';
+
+            self.renderView4Config($(introspectPrimaryFormId), self['primary']['model'], getIntrospectPrimaryFormViewConfig(), 'runIntrospectValidation', null, modelMap, function () {
+                self['primary']['model'].showErrorAttr(introspectPrimaryId, false);
+                Knockback.applyBindings(self['primary']['model'], document.getElementById(introspectPrimaryId));
+                kbValidation.bind(self['primary']);
+            });
+        },
+
+        renderIntrospectSecondaryForm: function(moduleIntrospectFormData) {
+            var self = this,
+                modelMap = contrail.handleIfNull(self.modelMap, {}),
+                hashParams = layoutHandler.getURLHashParams(),
+                introspectType = hashParams['type'],
+                introspectSecondaryFormId = '#introspect-' + introspectType + '-secondary-form',
+                introspectSecondaryId = 'introspect-' + introspectType + '-secondary-container',
+                secondaryModelData = getSecondaryModelData(moduleIntrospectFormData);
+
+            self['secondary'] = {};
+            self['secondary']['model'] = new IntrospectSecondaryFormModel(secondaryModelData);
+
+            self.renderView4Config($(introspectSecondaryFormId), self['secondary']['model'],
+                getIntrospectSecondaryFormViewConfig(moduleIntrospectFormData), null, null, modelMap, function () {
+
+                if(contrail.checkIfKnockoutBindingExist(introspectSecondaryId)) {
+                    ko.cleanNode(document.getElementById(introspectSecondaryId));
+                    kbValidation.unbind(self['secondary']);
+                }
+
+                Knockback.applyBindings(self['secondary']['model'], document.getElementById(introspectSecondaryId));
+                kbValidation.bind(self['secondary']);
+
+                $("#submit_introspect").on('click', function() {
+                    // if (self['primary']['model'].model().isValid(true, 'runIntrospectValidation')) {
+                        self.renderIntrospectResult();
+                    // }
+                });
+            });
         },
 
         renderIntrospectResult: function() {
@@ -50,29 +89,25 @@ define([
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
                 introspectType = hashParams['type'],
-                introspectFormModel = self.model,
                 introspectFormId = '#introspect-' + introspectType + '-form',
                 introspectResultId = '#introspect-' + introspectType + '-results',
-                modelAttributes = introspectFormModel.model().attributes,
-                ipAddress = modelAttributes.ip_address,
-                port = modelAttributes.port,
-                moduleIntrospect = modelAttributes.module_introspect;
+                primaryModelAttributes = self['primary']['model'].model()['attributes'],
+                secondaryModelAttributes = self['secondary']['model'].model()['attributes'],
+                ipAddress = primaryModelAttributes.ip_address,
+                port = primaryModelAttributes.port,
+                moduleIntrospect = primaryModelAttributes.module_introspect;
 
             if (widgetConfig !== null) {
                 $(introspectFormId).parents('.widget-box').data('widget-action').collapse();
             }
 
             self.renderView4Config($(introspectResultId), self.model,
-                getIntrospectResultTabViewConfig(ipAddress, port, moduleIntrospect, introspectType), null, null, modelMap, null);
+                getIntrospectResultTabViewConfig(ipAddress, port, moduleIntrospect, introspectType, secondaryModelAttributes), null, null, modelMap, null);
 
         }
-
-
     });
 
-    function getIntrospectFormViewConfig() {
-        var self = this;
-
+    function getIntrospectPrimaryFormViewConfig() {
         return {
             view: "SectionView",
             viewConfig: {
@@ -117,36 +152,103 @@ define([
                             }
                         ]
                     },
-                    {
-                        columns: [
-                            {
-                                elementId: 'submit_introspect', view: "FormButtonView", label: "Submit",
-                                viewConfig: {
-                                    class: 'display-inline-block margin-5-10-0-0',
-                                    // disabled: 'is_request_in_progress()',
-                                    elementConfig: {
-                                        btnClass: 'btn-primary'
-                                    }
-                                }
-                            },
-                            // {
-                            //     elementId: 'reset_query', view: "FormButtonView", label: "Reset",
-                            //     viewConfig: {
-                            //         label: "Reset",
-                            //         class: 'display-inline-block margin-5-10-0-0',
-                            //         elementConfig: {
-                            //             onClick: "reset"
-                            //         }
-                            //     }
-                            // }
-                        ]
-                    }
+                    // {
+                    //     columns: [
+                    //         {
+                    //             elementId: 'submit_introspect', view: "FormButtonView", label: "Submit",
+                    //             viewConfig: {
+                    //                 class: 'display-inline-block margin-5-10-0-0',
+                    //                 // disabled: 'is_request_in_progress()',
+                    //                 elementConfig: {
+                    //                     btnClass: 'btn-primary'
+                    //                 }
+                    //             }
+                    //         },
+                    //         // {
+                    //         //     elementId: 'reset_query', view: "FormButtonView", label: "Reset",
+                    //         //     viewConfig: {
+                    //         //         label: "Reset",
+                    //         //         class: 'display-inline-block margin-5-10-0-0',
+                    //         //         elementConfig: {
+                    //         //             onClick: "reset"
+                    //         //         }
+                    //         //     }
+                    //         // }
+                    //     ]
+                    // }
                 ]
             }
         };
     }
 
-    function getIntrospectResultTabViewConfig(ipAddress, port, moduleIntrospect, introspectType) {
+    function getIntrospectSecondaryFormViewConfig(moduleIntrospectFormData) {
+        var row, columns, i = 0,
+            isNewRow, elementName,
+            secondaryFormConfig = [];
+
+        _.each(moduleIntrospectFormData, function(value, key) {
+            if (['type', 'errors', 'locks'].indexOf(key) === -1) {
+                isNewRow = ((i % 3) == 0) ? true : false;
+                elementName = key;
+                if (isNewRow) {
+                    row = {columns: []};
+                    secondaryFormConfig.push(row);
+                }
+                row['columns'].push({
+                    elementId: elementName, view: "FormInputView",
+                    viewConfig: {path: elementName, dataBindValue: elementName, class: "span4"}
+                });
+
+                i++;
+            }
+        });
+
+        secondaryFormConfig.push({
+            columns: [
+                {
+                    elementId: 'submit_introspect', view: "FormButtonView", label: "Submit",
+                    viewConfig: {
+                        class: 'display-inline-block margin-5-10-0-0',
+                        // disabled: 'is_request_in_progress()',
+                        elementConfig: {
+                            btnClass: 'btn-primary'
+                        }
+                    }
+                },
+                // {
+                //     elementId: 'reset_query', view: "FormButtonView", label: "Reset",
+                //     viewConfig: {
+                //         label: "Reset",
+                //         class: 'display-inline-block margin-5-10-0-0',
+                //         elementConfig: {
+                //             onClick: "reset"
+                //         }
+                //     }
+                // }
+            ]
+        });
+
+        return {
+            view: "SectionView",
+            viewConfig: {
+                rows: secondaryFormConfig
+            }
+        };
+    }
+
+    function getSecondaryModelData(moduleIntrospectFormData) {
+        var modelData = {};
+
+        _.each(moduleIntrospectFormData, function(value, key) {
+            if (['type', 'errors', 'locks'].indexOf(key) === -1) {
+                modelData[key] = null;
+            }
+        });
+
+        return modelData;
+    }
+
+    function getIntrospectResultTabViewConfig(ipAddress, port, moduleIntrospect, introspectType, secondaryModelAttributes) {
         return {
             elementId: 'introspect-' + introspectType + '-results',
             view: "IntrospectTabsView",
@@ -155,9 +257,22 @@ define([
             viewConfig: {
                 ip_address: ipAddress,
                 port: port,
-                module_introspect: moduleIntrospect
+                module_introspect: moduleIntrospect,
+                params: formatParams(secondaryModelAttributes)
             }
         };
+    }
+
+    function formatParams(params) {
+        var paramsData = {};
+
+        _.each(params, function(value, key) {
+            if (['type', 'errors', 'locks'].indexOf(key) === -1) {
+                paramsData[key] = value;
+            }
+        });
+
+        return paramsData;
     }
 
     return IntrospectFormView;

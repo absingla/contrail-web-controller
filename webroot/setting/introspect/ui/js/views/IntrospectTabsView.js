@@ -7,7 +7,7 @@ define([
     'underscore',
     'contrail-view'
 ], function (_, ContrailView) {
-    var IntrospectTabsView = ContrailView.extend({
+    var IntrospectResultTabsView = ContrailView.extend({
         el: $(contentContainer),
 
         render: function() {
@@ -15,18 +15,18 @@ define([
                 viewConfig = self.attributes.viewConfig,
                 ipAddress = viewConfig.ip_address,
                 port = viewConfig.port,
-                moduleIntrospect = viewConfig.module_introspect;
-
-            var x2js = new X2JS()
+                moduleIntrospect = viewConfig.module_introspect,
+                params = viewConfig.params,
+                url = '/proxy?proxyURL=http://' + ipAddress + ':' + port + '/Snh_' +
+                    moduleIntrospect + '?' + $.param(params);
 
             $.ajax({
-                url: '/proxy?proxyURL=http://' + ipAddress + ':' + port + '/Snh_' + moduleIntrospect,
+                url: url,
                 cache: true,
                 dataType: 'xml',
                 success: function (xml) {
-                    var json = x2js.xml2json(xml);
-
-                    console.log(json)
+                    var x2js = new X2JS(),
+                        json = x2js.xml2json(xml);
 
                     self.renderIntrospectTabs(xml, json);
                 },
@@ -49,7 +49,7 @@ define([
 
     function getIntrospectTabViewConfig(xml, json) {
         return {
-            elementId: 'tabs-aaa',
+            elementId: 'introspect-result-tabs',
             view: "TabsView",
             viewConfig: {
                 theme: cowc.TAB_THEME_WIDGET_CLASSIC,
@@ -94,11 +94,6 @@ define([
             view: 'IntrospectXSLGridView',
             viewPathPrefix: "setting/introspect/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
-            tabConfig: {
-                activate: function (event, ui) {
-
-                }
-            },
             viewConfig: {
                 xmlData: xml
             }
@@ -114,11 +109,6 @@ define([
             view: 'IntrospectJSONView',
             viewPathPrefix: "setting/introspect/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
-            tabConfig: {
-                activate: function (event, ui) {
-
-                }
-            },
             viewConfig: {
                 jsonData: json
             }
@@ -545,5 +535,5 @@ define([
     }
 
 
-    return IntrospectTabsView;
+    return IntrospectResultTabsView;
 });

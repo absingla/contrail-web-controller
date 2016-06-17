@@ -20,41 +20,30 @@ define([
             introspectType = hashParams['type'];
 
         return {
-            view: "SectionView",
+            elementId: 'introspect-' + hashParams['type'],
+            view: "IntrospectFormView",
+            viewPathPrefix: "setting/introspect/ui/js/views/",
+            app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: {
-                rows: [
-                    {
-                        columns: [
-                            {
-                                elementId: 'introspect-' + hashParams['type'],
-                                view: "IntrospectFormView",
-                                viewPathPrefix: "setting/introspect/ui/js/views/",
-                                app: cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {
-                                    widgetConfig: {
-                                        elementId: cowl.QE_FLOW_SERIES_ID + '-widget',
-                                        view: "WidgetView",
-                                        viewConfig: {
-                                            header: {
-                                                title: cowl.get(introspectType) + ' ' + ctwl.TITLE_INTROSPECT,
-                                                iconClass: "icon-search"
-                                            },
-                                            controls: {
-                                                top: {
-                                                    default: {
-                                                        collapseable: true
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
+                widgetConfig: {
+                    elementId: 'introspect-' + hashParams['type'] + '-widget',
+                    view: "WidgetView",
+                    viewConfig: {
+                        header: {
+                            title: cowl.get(introspectType) + ' ' + ctwl.TITLE_INTROSPECT,
+                            iconClass: "icon-search"
+                        },
+                        controls: {
+                            top: {
+                                default: {
+                                    collapseable: true
                                 }
                             }
-                        ]
+                        }
                     }
-                ]
+                }
             }
-        }
+        };
     };
 
     return IntrospectView;

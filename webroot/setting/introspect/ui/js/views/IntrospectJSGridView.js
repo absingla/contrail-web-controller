@@ -65,7 +65,6 @@ define([
                 dataSource: {data: gridConfig['data']}
             }
         };
-
     }
 
     function getJsonTitle(json) {
