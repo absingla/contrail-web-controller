@@ -8,35 +8,58 @@ define(function (require) {
     var defaultConfig = JSON.parse(require('text!reports/udd/data/default.config.json'))
 
     var WidgetModel = Backbone.Model.extend({
-        constructor: function (p) {
+        initialize: function (p) {
             var self = this
-            p = p || {}
-            p.contentConfig = p.contentConfig || {}
-            p.contentConfig.contentView = p.contentConfig.contentView || _.extend({}, defaultConfig.contentViewList['LineChartView'].contentView)
-            p.contentConfig.contentConfigView = p.contentConfig.contentConfigView || _.extend({}, defaultConfig.contentViewList['LineChartView'].contentConfigView)
-            p.contentConfig.dataConfigView = p.contentConfig.dataConfigView || _.extend({}, defaultConfig.dataSourceList['QueryConfigView'])
-                
-            p.id = p.id || 'w' + qewu.generateQueryUUID()
-            p.config = p.config || {}
-            p.config.title = p.config.title || p.id
+            var attrs = self.attributes
+            if (!p || !p.id) {
+                p = p || {}
+                self.id = qewu.generateQueryUUID().slice(0, 36)
+                attrs.config = p.config || {}
+                attrs.id = self.id
+                attrs.config.title = self.id
+                    
+                attrs.contentConfig = {}
+                attrs.contentConfig.contentView = _.extend({}, defaultConfig.contentViewList['LineChartView'].contentView)
+                attrs.contentConfig.contentConfigView = _.extend({}, defaultConfig.contentViewList['LineChartView'].contentConfigView)
+                attrs.contentConfig.dataConfigView = _.extend({}, defaultConfig.dataSourceList['QueryConfigView'])
+            }
 
             var views = {
-                contentView: p.contentConfig.contentView.view,
-                dataConfigView: p.contentConfig.dataConfigView.view,
+                contentView: attrs.contentConfig.contentView.view,
+                dataConfigView: attrs.contentConfig.dataConfigView.view,
             }
-            p.viewsModel = new ContrailModel(views)
+            attrs.viewsModel = new ContrailModel(views)
 
             // TODO this model should be configurable
-            p.dataConfigModel = new StatQueryFormModel(p.contentConfig.dataConfigView.viewConfig)
-            p.contentConfigModel = new ContrailModel(p.contentConfig.contentView.viewConfig)
-            Backbone.Model.apply(self, arguments);
+            attrs.dataConfigModel = new StatQueryFormModel(attrs.contentConfig.dataConfigView.viewConfig)
+            attrs.contentConfigModel = new ContrailModel(attrs.contentConfig.contentView.viewConfig)
 
             // update yAxisValue based on contentConfigModel select field
-            p.dataConfigModel.model().on('change', function () {
-                var select = p.dataConfigModel.select()
+            attrs.dataConfigModel.model().on('change', function () {
+                var select = attrs.dataConfigModel.select()
+                if (_.isEmpty(select)) return
                 var yAxisValues = _.without(select.split(', '), 'T=', 'T')
-                p.contentConfigModel.model().set('yAxisValues', yAxisValues)
+                attrs.contentConfigModel.model().set('yAxisValues', yAxisValues)
             })
+        },
+
+        parse: function (data) {
+            // on successful model save
+            if (data.result) return
+
+            data.contentConfig.contentView.viewConfig = JSON.parse(data.contentConfig.contentView.viewConfig)
+            data.contentConfig.dataConfigView.viewConfig = JSON.parse(data.contentConfig.dataConfigView.viewConfig)
+            return data
+        },
+        /*
+         * TODO
+         */
+        validate: function () {
+            var self = this
+            var config = self.attributes.config
+            var validConfig = !!config.title
+            return !validConfig || !self.attributes.dataConfigModel.select() || !self.attributes.contentConfigModel.model().get('yAxisValue')
+            //return !(validConfig && self.attributes.dataConfigModel.model().isValid() && self.attributes.contentConfigModel.model().isValid())
         },
 
         getDataSourceList: function () {
@@ -53,30 +76,36 @@ define(function (require) {
             var contentConfigModel = attrs.contentConfigModel.model().toJSON()
             var dataConfigModel = attrs.dataConfigModel.model().toJSON()
 
-            return {
-                config: attrs.config,
-                contentConfig: {
+            var result = {
+                config: {
+                    title: attrs.config.title
+                },
+                "\"contentConfig\"": {
                     contentView: {
                         view: attrs.contentConfig.contentView.view,
-                        viewPathPrefix: attrs.contentConfig.contentView.viewPathPrefix,
-                        viewConfig: {
+                        "\"viewPathPrefix\"": attrs.contentConfig.contentView.viewPathPrefix,
+                        "\"viewConfig\"": JSON.stringify({
                             color: contentConfigModel.color,
                             yAxisLabel: contentConfigModel.yAxisLabel,
                             yAxisValue: contentConfigModel.yAxisValue,
-                        },
+                        }),
                     },
-                    contentConfigView: defaultConfig.contentViewList[attrs.contentConfig.contentView.view],
+                    contentConfigView: {
+                        view: attrs.contentConfig.contentConfigView.view,
+                        "\"viewPathPrefix\"": attrs.contentConfig.contentConfigView.viewPathPrefix,
+                    },
                     dataConfigView: {
                         view: attrs.contentConfig.dataConfigView.view,
-                        viewPathPrefix: attrs.contentConfig.dataConfigView.viewPathPrefix,
-                        viewConfig: {
+                        "\"viewPathPrefix\"": attrs.contentConfig.dataConfigView.viewPathPrefix,
+                        "\"viewConfig\"": JSON.stringify({
                             table_name: dataConfigModel.table_name,
                             select: dataConfigModel.select,
                             time_range: dataConfigModel.time_range,
-                        }
+                        })
                     }
                 }
             }
+            return result
         }
     })
     return WidgetModel

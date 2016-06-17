@@ -7,6 +7,10 @@ define(function (require) {
     var WidgetsCollection = Backbone.Collection.extend({
         initialize: function (options) {
             this.model = Widget
+        },
+
+        parse: function (response) {
+            return  response && response.result ? response.result.rows : []
         }
     })
     return WidgetsCollection

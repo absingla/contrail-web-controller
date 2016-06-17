@@ -29,9 +29,9 @@
     </item>
     <item>
         <url>/api/udd/widget/:id</url>
-        <method>post</method>
+        <method>delete</method>
         <timeout>600</timeout>
         <feature>query-engine</feature>
-        <callback>uddapi.updateWidget</callback>
+        <callback>uddapi.removeWidget</callback>
     </item>
 </urlLists>

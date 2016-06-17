@@ -7,8 +7,8 @@
         "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
         "viewConfig": {
           "color": "1f77b4",
-          "yAxisLabel": "Query Count",
-          "yAxisValue": "COUNT(query_stats)"
+          "yAxisLabel": "",
+          "yAxisValue": ""
         }
       },
       "contentConfigView": {
@@ -25,8 +25,6 @@
       "view": "QueryConfigView",
       "viewPathPrefix": "reports/udd/ui/js/views/data/",
       "viewConfig": {
-        "table_name": "StatTable.QueryPerfInfo.query_stats",
-        "select": "T=, COUNT(query_stats)",
         "time_range": 3600
       }
     }

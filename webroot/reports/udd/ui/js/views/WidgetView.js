@@ -28,6 +28,8 @@ define(function (require) {
             var self = this
             
             self.titleTemplate = contrail.getTemplate4Id('widget-title-edit-template')
+            //rerender on contentView change
+            self.listenTo(self.model.get('dataConfigModel').model(), 'change', self.renderContentConfigView.bind(self))
         },
 
         render: function () {
@@ -37,23 +39,16 @@ define(function (require) {
                 config,
                 onAllViewsRenderComplete;
 
-            // render widget content (chart) on the front
-            element = self.$(self.selectors.front)
-            model = self.model
-            config = self.getContentVC()
-            self.renderView4Config(element, model, config)
+            // show config by default for widget with no data source selected
+            if (self.model.isValid()) self.renderContentView()
+            else self.flipCard()
 
             // render data source config (query) on the back
             config = self.getDataVC()
             element = self.$('#' + config.elementId)
             model = self.model.get('dataConfigModel')
             self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
-
-            // render chart view config on the back
-            config = self.getContentConfigVC()
-            element = self.$('#' + config.elementId)
-            model = self.model.get('contentConfigModel')
-            self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
+            self.renderContentConfigView()
 
             config = self.getViewConfig()
             element = self.$('.data-source')
@@ -62,6 +57,26 @@ define(function (require) {
                 Knockback.applyBindings(model, element[0])
             })
             return self
+        },
+
+        renderContentView: function () {
+            var self = this
+            // render widget content (chart) on the front
+            var element = self.$(self.selectors.front)
+            var config = self.getContentVC()
+            self.renderView4Config(element, self.model, config)
+        },
+        // render content config view on the back
+        renderContentConfigView: function () {
+            var self = this
+            //TODO make validation real
+            if (!self.model.get('dataConfigModel').select()) return
+            var config = self.getContentConfigVC()
+            var element = self.$('#' + config.elementId)
+            var model = self.model.get('contentConfigModel')
+            //TODO do not full rerender on select change - yAxisValue dropdown should be updated alone
+            if (element.html()) return //Knockback.ko.cleanNode(element[0])
+            self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
         },
 
         getViewConfig: function () {
@@ -132,12 +147,13 @@ define(function (require) {
             var self = this
             self.model.destroy()
         },
-
         /*
-         * toggle between chart and config view
+         * toggle between content and its config views
          */
         flipCard: function () {
             var self = this
+            var showFront = self.$(self.selectors.back).is(':visible')
+            if (showFront && !self.model.isValid()) return
             self.$(self.selectors.front).toggle()
             self.$(self.selectors.back).toggle()
         },
@@ -154,7 +170,9 @@ define(function (require) {
         onTitleChange: function (e) {
             var self = this
             var newTitle = self.$(self.selectors.titleInput).val()
-            self.model.set('title', newTitle)
+            var config = self.model.get('config')
+            config.title = newTitle
+            self.model.set('config', config)
             self.$(self.selectors.titleInput).remove()
             self.$(self.selectors.heading).prepend(self.titleTemplate({title: newTitle}))
         },
@@ -168,10 +186,11 @@ define(function (require) {
 
         onConfigChange: function () {
             var self = this
-            config = self.getContentVC()
-            self.renderView4Config(self.$(self.selectors.front), self.model, config);
-            self.flipCard()
-            self.model.save()
+            if (self.model.isValid()) {
+                self.renderContentView()
+                self.flipCard()
+                self.model.save()
+            }
         },
 
         changeTab: function (e) {

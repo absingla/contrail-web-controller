@@ -64,6 +64,13 @@
       margin-left: 16px;
       color: #898989;
       opacity: 1; }
+      #content-container .area .grid-stack .widget.panel .panel-heading .close {
+        font-size: 12px;
+        line-height: 14px;
+      }
+          #content-container .area .grid-stack .widget.panel .panel-heading .close:hover {
+            color: red;
+          }
     #content-container .area .grid-stack .widget.panel .panel-heading input {
       position: absolute;
       top: 5px; }

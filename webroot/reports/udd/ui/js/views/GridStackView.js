@@ -74,7 +74,6 @@ define(function (require) {
 
         // *Add a single widget to the area by creating a view for it
         onModelAdded: function (model) {
-            $m = model
             var self = this
             var id = model.get('id')
             var widgetConfig = model.get('config') || {}
@@ -116,7 +115,9 @@ define(function (require) {
                 return w.$el[0] === ui.element[0]
             })
             var viewId = widget.getContentVC().elementId
-            var chartView = widget.childViewMap[viewId].childViewMap
+            var widgetContentView = widget.childViewMap[viewId]
+            if (!widgetContentView) return
+            var chartView = widgetContentView.childViewMap
             var chartType = Object.keys(chartView)[0]
             chartView[chartType].chartModel.update()
         }
