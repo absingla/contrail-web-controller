@@ -18,16 +18,16 @@ define([
                 viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectFeatureType = hashParams['type'],
+                introspectNode = hashParams['type'],
                 introspectPort = viewConfig.port,
                 introspectType = viewConfig.type,
-                introspectFormId = '#introspect-' + introspectFeatureType + '-' + introspectType + '-form',
+                introspectFormId = '#introspect-' + introspectNode + '-' + introspectType + '-form',
                 introspectPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_INTROSPECT_PAGE),
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null;
 
             self['primary'] = {};
-            self['primary']['model'] = new IntrospectPrimaryFormModel({port: introspectPort}, self);
-            self.$el.append(introspectPageTmpl({type: introspectType, feature: introspectFeatureType}));
+            self['primary']['model'] = new IntrospectPrimaryFormModel({port: introspectPort, node: introspectNode}, self);
+            self.$el.append(introspectPageTmpl({type: introspectType, feature: introspectNode}));
 
             self.renderIntrospectPrimaryForm();
 
@@ -41,11 +41,11 @@ define([
                 viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectFeatureType = hashParams['type'],
+                introspectNode = hashParams['type'],
                 introspectPort = viewConfig.port,
                 introspectType = viewConfig.type,
-                introspectPrimaryFormId = '#introspect-' + introspectFeatureType + '-' + introspectType + '-primary-form',
-                introspectPrimaryId = 'introspect-' + introspectFeatureType + '-' + introspectType + '-primary-container';
+                introspectPrimaryFormId = '#introspect-' + introspectNode + '-' + introspectType + '-primary-form',
+                introspectPrimaryId = 'introspect-' + introspectNode + '-' + introspectType + '-primary-container';
 
             self.renderView4Config($(introspectPrimaryFormId), self['primary']['model'], getIntrospectPrimaryFormViewConfig(), 'runIntrospectValidation', null, modelMap, function () {
                 self['primary']['model'].showErrorAttr(introspectPrimaryId, false);
@@ -59,11 +59,11 @@ define([
                 viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectFeatureType = hashParams['type'],
+                introspectNode = hashParams['type'],
                 introspectPort = viewConfig.port,
                 introspectType = viewConfig.type,
-                introspectSecondaryFormId = '#introspect-' + introspectFeatureType + '-' + introspectType + '-secondary-form',
-                introspectSecondaryId = 'introspect-' + introspectFeatureType + '-' + introspectType + '-secondary-container',
+                introspectSecondaryFormId = '#introspect-' + introspectNode + '-' + introspectType + '-secondary-form',
+                introspectSecondaryId = 'introspect-' + introspectNode + '-' + introspectType + '-secondary-container',
                 secondaryModelData = getSecondaryModelData(moduleIntrospectFormData);
 
             self['secondary'] = {};
@@ -94,11 +94,11 @@ define([
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectFeatureType = hashParams['type'],
+                introspectNode = hashParams['type'],
                 introspectPort = viewConfig.port,
                 introspectType = viewConfig.type,
-                introspectFormId = '#introspect-' + introspectFeatureType + '-' + introspectType + '-form',
-                introspectResultId = '#introspect-' + introspectFeatureType + '-' + introspectType + '-results',
+                introspectFormId = '#introspect-' + introspectNode + '-' + introspectType + '-form',
+                introspectResultId = '#introspect-' + introspectNode + '-' + introspectType + '-results',
                 primaryModelAttributes = self['primary']['model'].model()['attributes'],
                 secondaryModelAttributes = self['secondary']['model'].model()['attributes'],
                 ipAddress = primaryModelAttributes.ip_address,
@@ -124,11 +124,12 @@ define([
                             {
                                 elementId: 'ip_address', view: "FormDropdownView",
                                 viewConfig: {
-                                    path: 'ip_address', dataBindValue: 'ip_address', class: "span4",
+                                    path: 'ip_address', class: "span4",
+                                    dataBindValue: 'ip_address',
+                                    dataBindOptionList: "ip_address_option_list()",
                                     elementConfig: {
                                         dataTextField: "text", dataValueField: "id",
-                                        placeholder: 'Select IP Address',
-                                        data: [{id: '10.84.11.2', text: '10.84.11.2'}]
+                                        placeholder: 'Select IP Address'
                                     }}
                             },
                             {
@@ -158,31 +159,7 @@ define([
                                 }
                             }
                         ]
-                    },
-                    // {
-                    //     columns: [
-                    //         {
-                    //             elementId: 'submit_introspect', view: "FormButtonView", label: "Submit",
-                    //             viewConfig: {
-                    //                 class: 'display-inline-block margin-5-10-0-0',
-                    //                 // disabled: 'is_request_in_progress()',
-                    //                 elementConfig: {
-                    //                     btnClass: 'btn-primary'
-                    //                 }
-                    //             }
-                    //         },
-                    //         // {
-                    //         //     elementId: 'reset_query', view: "FormButtonView", label: "Reset",
-                    //         //     viewConfig: {
-                    //         //         label: "Reset",
-                    //         //         class: 'display-inline-block margin-5-10-0-0',
-                    //         //         elementConfig: {
-                    //         //             onClick: "reset"
-                    //         //         }
-                    //         //     }
-                    //         // }
-                    //     ]
-                    // }
+                    }
                 ]
             }
         };
@@ -216,6 +193,7 @@ define([
                     elementId: 'submit_introspect', view: "FormButtonView", label: "Submit",
                     viewConfig: {
                         class: 'display-inline-block margin-5-10-0-0',
+                        label: 'Submit',
                         elementConfig: {
                             btnClass: 'btn-primary'
                         }
