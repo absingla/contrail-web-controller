@@ -58,9 +58,7 @@ define([
             body: {
                 options: {
                     forceFitColumns: false,
-                    checkboxSelectable: false,
-                    detail: {template: '<pre>{{{formatGridJSON2HTML this ["toString"]}}}</pre>'},
-
+                    checkboxSelectable: false
                 },
                 dataSource: {data: gridConfig['data']}
             }

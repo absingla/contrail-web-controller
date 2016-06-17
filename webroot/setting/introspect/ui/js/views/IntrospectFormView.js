@@ -18,21 +18,22 @@ define([
                 viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectType = hashParams['type'],
-                introspectFormId = '#introspect-' + introspectType + '-form',
+                introspectFeatureType = hashParams['type'],
+                introspectPort = viewConfig.port,
+                introspectType = viewConfig.type,
+                introspectFormId = '#introspect-' + introspectFeatureType + '-' + introspectType + '-form',
                 introspectPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_INTROSPECT_PAGE),
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null;
 
             self['primary'] = {};
-            self['primary']['model'] = new IntrospectPrimaryFormModel(hashParams, self);
-            self.$el.append(introspectPageTmpl({introspectPrefix: introspectType}));
+            self['primary']['model'] = new IntrospectPrimaryFormModel({port: introspectPort}, self);
+            self.$el.append(introspectPageTmpl({type: introspectType, feature: introspectFeatureType}));
 
             self.renderIntrospectPrimaryForm();
 
             if (widgetConfig !== null) {
                 self.renderView4Config($(introspectFormId), self['primary']['model'], widgetConfig, null, null, null);
             }
-
         },
 
         renderIntrospectPrimaryForm: function() {
@@ -40,9 +41,11 @@ define([
                 viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectType = hashParams['type'],
-                introspectPrimaryFormId = '#introspect-' + introspectType + '-primary-form',
-                introspectPrimaryId = 'introspect-' + introspectType + '-primary-container';
+                introspectFeatureType = hashParams['type'],
+                introspectPort = viewConfig.port,
+                introspectType = viewConfig.type,
+                introspectPrimaryFormId = '#introspect-' + introspectFeatureType + '-' + introspectType + '-primary-form',
+                introspectPrimaryId = 'introspect-' + introspectFeatureType + '-' + introspectType + '-primary-container';
 
             self.renderView4Config($(introspectPrimaryFormId), self['primary']['model'], getIntrospectPrimaryFormViewConfig(), 'runIntrospectValidation', null, modelMap, function () {
                 self['primary']['model'].showErrorAttr(introspectPrimaryId, false);
@@ -53,11 +56,14 @@ define([
 
         renderIntrospectSecondaryForm: function(moduleIntrospectFormData) {
             var self = this,
+                viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectType = hashParams['type'],
-                introspectSecondaryFormId = '#introspect-' + introspectType + '-secondary-form',
-                introspectSecondaryId = 'introspect-' + introspectType + '-secondary-container',
+                introspectFeatureType = hashParams['type'],
+                introspectPort = viewConfig.port,
+                introspectType = viewConfig.type,
+                introspectSecondaryFormId = '#introspect-' + introspectFeatureType + '-' + introspectType + '-secondary-form',
+                introspectSecondaryId = 'introspect-' + introspectFeatureType + '-' + introspectType + '-secondary-container',
                 secondaryModelData = getSecondaryModelData(moduleIntrospectFormData);
 
             self['secondary'] = {};
@@ -88,13 +94,14 @@ define([
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectType = hashParams['type'],
-                introspectFormId = '#introspect-' + introspectType + '-form',
-                introspectResultId = '#introspect-' + introspectType + '-results',
+                introspectFeatureType = hashParams['type'],
+                introspectPort = viewConfig.port,
+                introspectType = viewConfig.type,
+                introspectFormId = '#introspect-' + introspectFeatureType + '-' + introspectType + '-form',
+                introspectResultId = '#introspect-' + introspectFeatureType + '-' + introspectType + '-results',
                 primaryModelAttributes = self['primary']['model'].model()['attributes'],
                 secondaryModelAttributes = self['secondary']['model'].model()['attributes'],
                 ipAddress = primaryModelAttributes.ip_address,
-                port = primaryModelAttributes.port,
                 moduleIntrospect = primaryModelAttributes.module_introspect;
 
             if (widgetConfig !== null) {
@@ -102,7 +109,7 @@ define([
             }
 
             self.renderView4Config($(introspectResultId), self.model,
-                getIntrospectResultTabViewConfig(ipAddress, port, moduleIntrospect, introspectType, secondaryModelAttributes), null, null, modelMap, null);
+                getIntrospectResultTabViewConfig(ipAddress, introspectPort, moduleIntrospect, introspectType, secondaryModelAttributes), null, null, modelMap, null);
 
         }
     });
@@ -209,22 +216,11 @@ define([
                     elementId: 'submit_introspect', view: "FormButtonView", label: "Submit",
                     viewConfig: {
                         class: 'display-inline-block margin-5-10-0-0',
-                        // disabled: 'is_request_in_progress()',
                         elementConfig: {
                             btnClass: 'btn-primary'
                         }
                     }
-                },
-                // {
-                //     elementId: 'reset_query', view: "FormButtonView", label: "Reset",
-                //     viewConfig: {
-                //         label: "Reset",
-                //         class: 'display-inline-block margin-5-10-0-0',
-                //         elementConfig: {
-                //             onClick: "reset"
-                //         }
-                //     }
-                // }
+                }
             ]
         });
 

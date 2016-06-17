@@ -21,8 +21,25 @@ define([
         };
 
         this.renderView = function (renderFn, hashParams, view) {
+
             $(contentContainer).empty();
-            this.introspectView.renderIntrospect({hashParams: hashParams});
+            switch (renderFn) {
+                case 'renderControlNodeIntrospect':
+                    this.introspectView.renderControlNodeIntrospect({hashParams: hashParams});
+                    break;
+
+                case 'renderVirtualRouterIntrospect':
+                    this.introspectView.renderVirtualRouterIntrospect({hashParams: hashParams});
+                    break;
+
+                case 'renderConfigNodeIntrospect':
+                    this.introspectView.renderConfigNodeIntrospect({hashParams: hashParams});
+                    break;
+
+                case 'renderAnalyticsNodeIntrospect':
+                    this.introspectView.renderAnalyticsNodeIntrospect({hashParams: hashParams});
+                    break;
+            }
         };
 
         this.updateViewByHash = function (currPageQueryStr) {
