@@ -86,7 +86,7 @@ define(function (require) {
 
         onChange: function () {
             var self = this
-            self.trigger('change)
+            self.trigger('change')
         }
     })
     return LineChartConfigView;

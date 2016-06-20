@@ -7,8 +7,7 @@ var uddapi = module.exports,
     messages = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/messages'),
     global = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/global'),
     config = process.mainModule.exports["config"],
-    qs = require('querystring'),
-    _ = require('lodash')
+    qs = require('querystring')
 
 var cassandra = require('cassandra-driver'),
     client = new cassandra.Client({ contactPoints: config.cassandra.server_ips, keyspace: 'widgets' })
