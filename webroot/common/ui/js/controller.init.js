@@ -3,7 +3,6 @@
  */
 
 define([
-    'joint.contrail',
     'controller-constants',
     'controller-labels',
     'controller-utils',
@@ -12,8 +11,7 @@ define([
     'controller-graph-config',
     'controller-parsers',
     'controller-view-config'
-], function (Joint, Constants, Labels, Utils, Messages, GridConfig, GraphConfig, Parsers, ViewConfig) {
-    joint = Joint;
+], function (Constants, Labels, Utils, Messages, GridConfig, GraphConfig, Parsers, ViewConfig) {
     ctwc = new Constants();
     ctwl = new Labels();
     ctwu = new Utils;
@@ -23,7 +21,8 @@ define([
     ctwp = new Parsers();
     ctwvc = new ViewConfig();
 
-    var deferredObj = contentHandler.initFeatureAppDefObjMap[FEATURE_PCK_WEB_CONTROLLER];
+    //deferredObj reading from global variable 
+    var deferredObj = globalObj['initFeatureAppDefObjMap'][FEATURE_PCK_WEB_CONTROLLER];
 
     if(contrail.checkIfExist(deferredObj)) {
         deferredObj.resolve()

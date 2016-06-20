@@ -27,7 +27,8 @@ and need to add the iconClass tag wherever we need to show some icons
                     <init>/monitor/infrastructure/common/ui/js/monitor.infra.init.js</init>
                     <resources>
                         <resource>
-                            <rootDir>/monitor/infra/common/ui</rootDir>
+                            <rootDir>/monitor/infrastructure/common/ui</rootDir>
+                            <css>monitor.infra.css</css>
                         </resource>
                     </resources>
                     <iconClass>icon-desktop</iconClass>
@@ -64,7 +65,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                 <tab>vRouters</tab>
                             </queryParams>
                         </item>
-                        <item>
+                        <!--<item>
                             <hash>mon_infra_mx</hash>
                             <label>MX Visualisation</label>
                             <resources>
@@ -75,7 +76,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <class>mxRenderer</class>
                                 </resource>
                             </resources>
-                        </item>
+                        </item>-->
                         <item>
                             <hash>mon_infra_underlay</hash>
                             <label>Physical Topology</label>
@@ -318,6 +319,12 @@ and need to add the iconClass tag wherever we need to show some icons
         <item>
             <name>configure</name>
             <label>Configure</label>
+            <resources>
+                <resource>
+                    <rootDir>/common/ui</rootDir>
+                    <css>contrail.controller.css</css>
+                </resource>
+            </resources>
             <iconClass>icon-wrench</iconClass>
             <items>
                 <item>
@@ -468,6 +475,7 @@ and need to add the iconClass tag wherever we need to show some icons
                         </roles>
                         <orchModels>
                             <model>openstack</model>
+                            <model>vcenter</model>
                         </orchModels>
                     </access>
                     <iconClass>icon-tasks</iconClass>
@@ -849,6 +857,12 @@ and need to add the iconClass tag wherever we need to show some icons
         <item>
             <label>Setting</label>
             <name>setting</name>
+            <resources>
+                <resource>
+                    <rootDir>/common/ui</rootDir>
+                    <css>contrail.controller.css</css>
+                </resource>
+            </resources>
             <iconClass>icon-cog</iconClass>
             <access>
                 <roles>
@@ -908,24 +922,67 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                     </items>
                 </item>
-                <!-- <item>
-                  <label>Analytics DB</label>
-                  <iconClass>icon-contrail-analytics-db</iconClass>
-                  <items>
-                      <item>
-                          <hash>setting_analyticsdb_usage</hash>
-                          <label>Usage</label>
-                          <resources>
-                              <resource>
-                                  <rootDir>/setting/analytics_db</rootDir>
-                                  <view>usage.view</view>
-                                  <js>usage.js</js>
-                                  <class>dbUsageObj</class>
-                              </resource>
-                          </resources>
-                      </item>
-                  </items>
-                </item> -->
+                <item>
+                    <label>Introspect</label>
+                    <iconClass>icon-code</iconClass>
+                    <resources>
+                        <resource>
+                            <rootDir>setting/introspect/ui</rootDir>
+                            <css>contrail.introspect.css</css>
+                        </resource>
+                    </resources>
+                    <init>/setting/introspect/ui/js/introspect.init.js</init>
+                    <items>
+                        <item>
+                            <hash>setting_introspect_control</hash>
+                            <label>Control Nodes</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderControlNodeIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <node>control</node>
+                            </queryParams>
+                            <searchStrings>Control Node</searchStrings>
+                        </item>
+                        <item>
+                            <hash>setting_introspect_vrouter</hash>
+                            <label>Virtual Router</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderVirtualRouterIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <node>vrouter</node>
+                            </queryParams>
+                            <searchStrings>Virtual Router</searchStrings>
+                        </item>
+                        <item>
+                            <hash>setting_introspect_config</hash>
+                            <label>Config Nodes</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderConfigNodeIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <node>config</node>
+                            </queryParams>
+                            <searchStrings>Config Node</searchStrings>
+                        </item>
+                        <item>
+                            <hash>setting_introspect_analytics</hash>
+                            <label>Analytics Nodes</label>
+                            <loader>
+                                <class>introspectPageLoader</class>
+                                <function>renderAnalyticsNodeIntrospect</function>
+                            </loader>
+                            <queryParams>
+                                <node>analytics</node>
+                            </queryParams>
+                            <searchStrings>Analytics Node</searchStrings>
+                        </item>
+                    </items>
+                </item>
             </items>
         </item>
         <item>
@@ -933,6 +990,11 @@ and need to add the iconClass tag wherever we need to show some icons
             <name>query</name>
             <iconClass>icon-search</iconClass>
             <resources>
+                <resource>
+                    <rootDir>/common/ui</rootDir>
+                    <template>controller.tmpl</template>
+                    <css>contrail.controller.css</css>
+                </resource>
                 <resource>
                     <rootDir>/reports/qe/ui</rootDir>
                     <css>qe.main.css</css>

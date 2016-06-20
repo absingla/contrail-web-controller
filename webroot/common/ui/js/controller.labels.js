@@ -472,6 +472,8 @@ define([
             "control_node_alarms_grid_view_id";
         this.CONTROL_NODE_ALARMS_GRID_SECTION_ID =
             "control_node_alarms_grid_section_id";
+        this.CONTROLNODE_ROUTER_TITLE =
+            "Search Routes"
 
         //vRouter summary page labels
         this.VROUTER_VIEWPATH_PREFIX =
@@ -998,6 +1000,12 @@ define([
         this.CDB_LABEL_KEY_VALUES = "keyvalues";
         this.CDB_LABEL_KEY = "key";
         //Config DB Labels - End
+
+        /*
+         * Settings/Introspect
+         */
+
+        this.TITLE_INTROSPECT = "Introspect";
 
         /* Service Appliance */
         this.TITLE_SVC_APPLIANCE = 'Service Appliance';

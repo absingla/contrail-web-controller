@@ -1,10 +1,8 @@
 define([
     'underscore',
     'contrail-list-model',
-    'core-basedir/js/views/LoginWindowView',
-    'core-basedir/js/models/LoginWindowModel',
-    'monitor/infrastructure/common/ui/js/views/MonitorInfraObjectLogsPopUpView'
-], function (_, ContrailListModel, LoginWindowView, LoginWindowModel, MonitorInfraObjectLogsPopUpView) {
+    'core-alarm-utils'
+], function (_, ContrailListModel,coreAlarmUtils) {
     var MonitorInfraUtils = function () {
         var self = this;
         var noDataStr = monitorInfraConstants.noDataStr;
@@ -1478,28 +1476,30 @@ define([
         }
 
         self.onStatusLinkClick = function (nodeIp) {
-            var loginWindow = new LoginWindowView();
             var leftColumnContainer = '#left-column-container';
-            loginWindow.model = new LoginWindowModel();
-            loginWindow.renderLoginWindow({
-                data:{
-                    ip: nodeIp
-                },
-                callback : function (response) {
-                    var htmlString = '<pre>' +
-                        response + '</pre>';
-                    $('.contrail-status-view')
-                        .html(htmlString);
-                    $(leftColumnContainer)
-                        .find('.widget-box')
-                        .find('.list-view').hide();
-                    $(leftColumnContainer)
-                        .find('.widget-box')
-                        .find('.advanced-view').hide();
-                    $(leftColumnContainer)
-                        .find('.widget-box')
-                        .find('.contrail-status-view').show();
-                }
+            require(['core-basedir/js/views/LoginWindowView','loginwindow-model'],function(LoginWindowView,LoginWindowModel) {
+                var loginWindow = new LoginWindowView();
+                loginWindow.model = new LoginWindowModel();
+                loginWindow.renderLoginWindow({
+                    data:{
+                        ip: nodeIp
+                    },
+                    callback : function (response) {
+                        var htmlString = '<pre>' +
+                            response + '</pre>';
+                        $('.contrail-status-view')
+                            .html(htmlString);
+                        $(leftColumnContainer)
+                            .find('.widget-box')
+                            .find('.list-view').hide();
+                        $(leftColumnContainer)
+                            .find('.widget-box')
+                            .find('.advanced-view').hide();
+                        $(leftColumnContainer)
+                            .find('.widget-box')
+                            .find('.contrail-status-view').show();
+                    }
+                });
             });
         }
 
@@ -1748,7 +1748,48 @@ define([
             }
             gridHeaderTextElem.find('span').text(pageInfoTitle);
         }
-
+        self.bindPaginationListeners = function(cfg) {
+            var cfg = ifNull(cfg,{});
+            var gridSel = cfg['gridSel'];
+            gridSel.find('i.icon-forward').parent().click(function() {
+                controlNodePrevNextClick(cfg['obj'], { gridSel: gridSel,
+                    getUrlFn: cfg['getUrlFn'], step: 'forward',
+                    parseFn: cfg['parseFn']});
+            });
+            gridSel.find('i.icon-backward').parent().click(function() {
+                controlNodePrevNextClick(cfg['obj'], { gridSel: gridSel,
+                    getUrlFn: cfg['getUrlFn'], step: 'backward',
+                    parseFn: cfg['parseFn']});
+            });
+        }
+        function controlNodePrevNextClick(obj,cfg) {
+            var gridSel = $(cfg['gridSel']);
+            if(gridSel.length == 0) {
+                return;
+            }
+            var newAjaxConfig = "";
+            var cfg = ifNull(cfg,{});
+            var parseFn = cfg['parseFn'];
+            var getUrlFn = ifNull(cfg['getUrlFn'],$.noop);
+            var gridInst = gridSel.data('contrailGrid');
+            var urlObj = getUrlFn(cfg.step);
+            if(urlObj !== undefined){
+                newAjaxConfig = {
+                            url: urlObj,
+                            type:'Get'
+                    };
+                if(gridInst != null) {
+                    $.ajax(newAjaxConfig).done(function(response) {
+                        var retData = response;
+                        if(typeof(parseFn) == 'function') {
+                            retData = parseFn(response);
+                        }
+                        if(gridInst._dataView != null)
+                            gridInst._dataView.setData(retData);
+                    });
+                }
+          }
+        }
         self.bindGridPrevNextListeners = function(cfg) {
             var cfg = ifNull(cfg,{});
             var gridSel = cfg['gridSel'];
@@ -1953,7 +1994,7 @@ define([
                     fromTimeUTC:'now-2h',
                     toTimeUTC:'now',
                     async:true,
-                    queryId: qewu.generateQueryUUID(),
+                    queryId: generateQueryUUID(),
                     reRunTimeRange:600,
                     select:'Source, T, cpu_info.cpu_share, cpu_info.mem_res, cpu_info.module_id',
                     groupFields:['Source'],
@@ -2200,11 +2241,13 @@ define([
             };
         }
         self.showObjLogs = function (objId,type) {
-            var monInfraObjLogsView = new MonitorInfraObjectLogsPopUpView ();
-            monInfraObjLogsView.render ({
-                                        type: type,
-                                        objId: objId
-                                    });
+            require(['monitor/infrastructure/common/ui/js/views/MonitorInfraObjectLogsPopUpView'],function(MonitorInfraObjectLogsPopUpView) {
+                var monInfraObjLogsView = new MonitorInfraObjectLogsPopUpView ();
+                monInfraObjLogsView.render ({
+                                            type: type,
+                                            objId: objId
+                                        });
+            });
         };
 
         self.purgeAnalyticsDB = function (purgePercentage) {
@@ -2260,6 +2303,49 @@ define([
                     }
             );
         };
+
+        /*
+         * This function adds the legend to the component
+         * which accepts
+         * colors - checks the color object if it is not there
+         *          takes the color from the data
+         * cssClass - any custom css to the legend
+         * label - label for the legend
+         * clickFn - Handler for the click event
+         */
+        self.addLegendToSummaryPageCharts = function (options) {
+            var container = options['container'],
+                data = options['data'],
+                color = options['colors'],
+                offset = options['offset'] != null ? options['offset'] : 0,
+                label = options['label'],
+                cssClass = options['cssClass'] != null ? options['cssClass'] : 'contrail-legend',
+                dataLen = data.length,
+                clickFn = options['clickFn'];
+            if (color != null && !$.isArray(color)) {
+                color = [color];
+            }
+            container.selectAll('g.'+cssClass)
+                .data(data)
+                .enter()
+                .append('g')
+                .attr('transform', function (d, i) {
+                    return 'translate('+ (- ((dataLen - i) * 20 + offset)) +', 0)';
+                }).attr('class', 'contrail-legend '+cssClass)
+                .append('rect')
+                .attr('width', 8)
+                .attr('height', 8)
+                .attr('fill', function (d, i) {
+                    return (color != null && color[i] != null) ? color[i] : d['color'];
+                });
+            container.append('g')
+                .attr('transform', 'translate('+ (- ((dataLen * 20 + 10) + offset))+', 0)')
+                .attr('class', 'contrail-legend '+cssClass)
+                .append('text')
+                .attr('dy', 8)
+                .attr('text-anchor', 'end')
+                .text(label);
+        }
     };
     return MonitorInfraUtils;
 });

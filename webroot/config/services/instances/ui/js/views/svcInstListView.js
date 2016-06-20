@@ -7,19 +7,13 @@ define([
     'contrail-view',
     'contrail-list-model',
     'config/services/instances/ui/js/svcInst.utils'
-], function (_, ContrailView, ContrailListModel, SvcInstUtils) {
-    var gridElId = "#" + ctwl.SERVICE_INSTANCES_GRID_ID;
-    var svcInstObj = {};
-    var svcInstTmplts = [];
-    var that = this;
+], function (_, ContrailView, ContrailListModel, svcInstUtils) {
     var self;
     var chunkCnt = 10;
-    var svcInstUtils = new SvcInstUtils();
     var svcInstTimerLevel = 0;
-    var svcInstTimerArray = [20000, 35000, 45000, 55000, 65000, 75000];
     var svcInstanceTimer = null;
 
-    window.doFetchSvcInst = false;
+    var doFetchSvcInst = false;
 
     var SvcInstListView = ContrailView.extend({
         el: $(contentContainer),
@@ -27,7 +21,17 @@ define([
             self = this;
             var viewConfig = this.attributes.viewConfig;
             self.selectedProject = viewConfig['projectSelectedValueData'];
-            window.projectDomainData = self.selectedProject;
+            self.siSlicedData = [];
+            self.siRefStatusBackupData = [];
+            self.siRefStatusData = [];
+            self.svcInstProjRole = [];
+            self.svcInstanceDataObj = {};
+            self.svcInstanceDataObj.currentProject = self.selectedProject;
+            self.svcInstanceDataObj.imageList = [];
+            self.svcInstanceDataObj.availabilityZoneList = [];
+            self.svcInstanceDataObj.svcTmplsFormatted = [];
+            self.svcInstanceDataObj.hostList = [];
+            self.svcInstanceDataObj.svcInstTmplts = [];
 
             var listModelConfig = {
                 remote: {
@@ -43,11 +47,10 @@ define([
                     }
                 },
                 vlRemoteConfig :{
-                    vlRemoteList : self.getVlRemoteGLConfig(),
+                    vlRemoteList : self.getVlRemoteGLConfig(self.svcInstanceDataObj),
                     completeCallback: function() {
-                        window.hostList = [];
-                        var userRoles = window.svcInstProjRole;
-                        userRoles = null;
+                        self.svcInstanceDataObj.hostList = [];
+                        var userRoles = self.svcInstProjRole;
                         if (null == userRoles) {
                             userRoles = getValueByJsonPath(globalObj,
                                                            'webServerInfo;role',
@@ -60,7 +63,7 @@ define([
                             };
                             contrail.ajaxHandler(ajaxConfig, null,
                                                  function(result) {
-                                window.hostList = result;
+                                self.svcInstanceDataObj.hostList = result;
                             });
                         }
                     }
@@ -75,49 +78,50 @@ define([
         fetchSIStatusWithChunk: function(isRefetch) {
             var dataList = [];
             if (false == isRefetch) {
-                window.siSlicedData.shift();
-                if (!window.siSlicedData.length) {
+                self.siSlicedData.shift();
+                if (!self.siSlicedData.length) {
                     return;
                 }
-                dataList = window.siSlicedData[0];
+                dataList = self.siSlicedData[0];
                 self.fetchSIStatusAndUpdateListModel(dataList);
                 return;
             } else {
-                if (!window.siRefStatusData.length) {
+                if (!self.siRefStatusData.length) {
                     if (true == isRefetch) {
-                        window.siRefStatusData = window.siRefStatusBackupData;
+                        self.siRefStatusData = self.siRefStatusBackupData;
                     } else {
                         return;
                     }
                 }
-                dataList = window.siRefStatusData[0];
+                dataList = self.siRefStatusData[0];
             }
-            if (svcInstTimerLevel < svcInstTimerArray.length) {
+            if (svcInstTimerLevel < svcInstUtils.svcInstTimerArray.length) {
                 svcInstanceTimer = setTimeout(function() {
                     self.fetchSIStatusAndUpdateListModel(dataList, isRefetch);
                     svcInstTimerLevel++;
-                }, svcInstTimerArray[svcInstTimerLevel]);
+                }, svcInstUtils.svcInstTimerArray[svcInstTimerLevel]);
             } else {
-                window.doFetchSvcInst = false;
+                doFetchSvcInst = false;
+                svcInstTimerLevel = 0;
                 return;
             }
         },
         fetchSIStatusAndUpdateListModel: function(listData, isRefetch) {
             var ajaxConfig = {
                 url: ctwc.get(ctwc.URL_GET_SERVICE_INSTS_STATUS,
-                              window.projectDomainData.value),
+                              self.selectedProject.value),
                 type: "POST",
                 data: JSON.stringify(listData)
             };
             contrail.ajaxHandler(ajaxConfig, null, function(result) {
                 self.parseSIStatusToListModel(result, isRefetch);
                 if (true == isRefetch) {
-                    window.siRefStatusData.shift();
+                    self.siRefStatusData.shift();
                 }
             });
         },
         checkIfStatusRefetchNeeded: function() {
-            return window.doFetchSvcInst;
+            return doFetchSvcInst;
         },
         clearSITimer: function() {
             if (null != svcInstanceTimer) {
@@ -130,17 +134,16 @@ define([
                 self.clearSITimer();
                 return;
             }
-            if (!window.siRefStatusData.length) {
+            if (!self.siRefStatusData.length) {
                 return;
             }
             self.clearSITimer();
-            window.siListDataChunked = response;
-            if (svcInstTimerLevel < svcInstTimerArray.length) {
+            if (svcInstTimerLevel < svcInstUtils.svcInstTimerArray.length) {
                 svcInstanceTimer = setTimeout(function() {
-                    self.parseSIStatusToListModel(window.siListDataChunked,
-                                                  window.doFetchSvcInst);
+                    self.parseSIStatusToListModel(response,
+                                                  doFetchSvcInst);
                     svcInstTimerLevel++;
-                }, svcInstTimerArray[svcInstTimerLevel]);
+                }, svcInstUtils.svcInstTimerArray[svcInstTimerLevel]);
             } else {
                 self.clearSITimer();
             }
@@ -152,7 +155,9 @@ define([
                 getValueByJsonPath(response, '0;instTupleVMIMaps', {});
             var novaStatusData = getValueByJsonPath(response, '1', []);
             self.clearSITimer();
-            window.doFetchSvcInst = false;
+            doFetchSvcInst = false;
+            svcInstUtils.svcInstTimerArray = svcInstUtils.svcInstStatusIntervals;
+
             var dataItems = self.contrailListModel.getItems();
             var dataCnt = dataItems.length;
             var tmpSvcInstObjs = {};
@@ -160,10 +165,15 @@ define([
             var vmiToHlthCheckMap = {};
             for (var i = 0; i < uveHlthCheckDataCnt; i++) {
                 var vmiName = uveHlthCheckData[i]['name'];
-                var hlthCheckInstList =
+                var vmiData =
                     getValueByJsonPath(uveHlthCheckData[i],
-                                       'value;UveVMInterfaceAgent', []);
-                vmiToHlthCheckMap[vmiName] = hlthCheckInstList;
+                                       'value;UveVMInterfaceAgent', null);
+                vmiToHlthCheckMap[vmiName] = vmiData;
+            }
+            if (true == svcInstUtils.doFetchSvcInstHlthChk) {
+                svcInstUtils.svcInstTimerArray =
+                    svcInstUtils.healthCheckStatusIntervals;
+                doFetchSvcInst = true;
             }
             for (var instID in instTupleVMIMaps) {
                 for (var portTupleID in instTupleVMIMaps[instID]) {
@@ -200,16 +210,16 @@ define([
                         novaStatusData[i]['VMDetails'];
                     if (('Inactive' != novaStatusData[i]['vmStatus']) &&
                         ('Active' != novaStatusData[i]['vmStatus'])) {
-                        window.doFetchSvcInst = true;
+                        doFetchSvcInst = true;
                     }
                     dataItems[idx]['statusDetails']['healthCheckStatus'] =
                         instTupleVMIMaps[uuid];
                 }
             }
             self.contrailListModel.updateData(dataItems);
-            self.fetchSIStatusWithChunk(window.doFetchSvcInst);
+            self.fetchSIStatusWithChunk(doFetchSvcInst);
         },
-        getVlRemoteGLConfig: function () {
+        getVlRemoteGLConfig: function (selectedProject) {
         var vlRemoteGLConfig = [{
             getAjaxConfig: function (resultJSON) {
                 var postData = [];
@@ -224,20 +234,20 @@ define([
                     var tempArray = responseJSON.slice(i, i + chunkCnt);
                     siSlicedData.push(tempArray);
                 }
-                window.siSlicedData = siSlicedData;
+                self.siSlicedData = siSlicedData;
                 try {
-                    window.siRefStatusData =
+                    self.siRefStatusData =
                         JSON.parse(JSON.stringify(siSlicedData));
-                    window.siRefStatusBackupData =
+                    self.siRefStatusBackupData =
                         JSON.parse(JSON.stringify(siSlicedData));
                 } catch(e) {
-                    window.siRefStatusData = [];
-                    window.siRefStatusBackupData = [];
+                    self.siRefStatusData = [];
+                    self.siRefStatusBackupData = [];
                 }
 
                 var lazyAjaxConfig = {
                     url: ctwc.get(ctwc.URL_GET_SERVICE_INSTS_STATUS,
-                                  window.projectDomainData.value),
+                                  self.selectedProject.value),
                     type: "POST",
                     timeout: 60000,
                     data: JSON.stringify(siSlicedData[0])
@@ -246,7 +256,7 @@ define([
             },
             successCallback: function(response, contrailListModel) {
                 self.parseSIStatusToListModel(response, false);
-                if (!window.siSlicedData.length) {
+                if (!self.siSlicedData.length) {
                     self.checkAndRefreshStatusData(response);
                 }
             },
@@ -264,7 +274,7 @@ define([
                 return lazyAjaxConfig;
             },
             successCallback: function(response, contrailListModel) {
-                window.imageList =
+                self.svcInstanceDataObj.imageList =
                     ((null != response) && (null != response['images'])) ?
                     response['images'] : [];
             }
@@ -278,9 +288,9 @@ define([
                 return lazyAjaxConfig;
             },
             successCallback: function(response, contrailListModel) {
-                window.availabilityZoneList = [];
-                window.availabilityZoneList.push({'text': 'ANY', 'value':
-                                                 'ANY'});
+                self.svcInstanceDataObj.availabilityZoneList = [];
+                self.svcInstanceDataObj.availabilityZoneList.push(
+                    {'text': 'ANY', 'value':'ANY'});
                 if ('availabilityZoneInfo' in response) {
                     var zoneList = response['availabilityZoneInfo'];
                     var len = zoneList.length;
@@ -289,7 +299,7 @@ define([
                             getValueByJsonPath(zoneList[i],
                                                'zoneState;available', false);
                         if (true == znStAvl) {
-                            window.availabilityZoneList.push({'text':
+                            self.svcInstanceDataObj.availabilityZoneList.push({'text':
                                                              zoneList[i]['zoneName'],
                                                              'value':
                                                              zoneList[i]['zoneName']});
@@ -301,27 +311,14 @@ define([
         {
             getAjaxConfig: function(response) {
                 var lazyAjaxConfig = {
-                    url: '/api/service/networking/user-roles?project=' +
-                             getCookie('project'),
-                    type: 'GET'
-                };
-                return lazyAjaxConfig;
-            },
-            successCallback: function(response, contrailListModel) {
-                window.svcInstProjRole = response;
-            }
-        },
-        {
-            getAjaxConfig: function(response) {
-                var lazyAjaxConfig = {
                     url: ctwc.get(ctwc.URL_GET_SERVICE_INST_TMPLTS,
-                                  window.projectDomainData.parentSelectedValueData.value),
+                                  self.selectedProject.parentSelectedValueData.value),
                     type: "GET"
                 };
                 return lazyAjaxConfig;
             },
             successCallback: function(response, contrailListModel) {
-                window.svcTmplsFormatted = [];
+                self.svcInstanceDataObj.svcTmplsFormatted = [];
                 if (('service_templates' in response) &&
                     (response['service_templates'].length > 0)) {
                     var svcTmps = response['service_templates'];
@@ -331,7 +328,7 @@ define([
                     if (!respCnt) {
                         var nullObj =
                             {id: null, text: "No Service template available"};
-                        window.svcTmplsFormatted.push(nullObj);
+                        self.svcInstanceDataObj.svcTmplsFormatted.push(nullObj);
                     }
                     for (var i = 0; i < respCnt; i++) {
                         if ('service-template' in svcTmps[i]) {
@@ -344,8 +341,8 @@ define([
                             svcTmpObjs[svcTmpUUID] = svcTmps[i];
                             var dispStr =
                                 svcInstUtils.svcTemplateFormatter(svcTmps[i]);
-                            window.svcTmplsFormatted.push({id: dispStr, text:
-                                                          dispStr});
+                            self.svcInstanceDataObj.svcTmplsFormatted.push(
+                                {id: dispStr, text: dispStr});
                         }
                     }
                 }
@@ -367,11 +364,9 @@ define([
                     }
                 }
                 self.contrailListModel.updateData(dataItems);
+                self.svcInstanceDataObj.svcInstTmplts = svcTmplObjsByFqn;
                 self.renderView4Config(self.$el, self.contrailListModel,
-                           getSvcInstViewConfig(), null, null,
-                           null, function() {
-                    $(gridElId).data('svcInstTmplts', svcTmplObjsByFqn);
-                });
+                           getSvcInstViewConfig(self.svcInstanceDataObj));
             }
         },
         {
@@ -385,7 +380,7 @@ define([
             },
             successCallback: function(response, contrailListModel) {
                 var roles = getValueByJsonPath(response, 'role', []);
-                window.svcInstProjRole = roles;
+                self.svcInstProjRole = roles;
             }
         }];
         return vlRemoteGLConfig;
@@ -405,7 +400,7 @@ define([
         return retArr;
     }
 
-    var getSvcInstViewConfig = function () {
+    var getSvcInstViewConfig = function (svcInstanceDataObj) {
         return {
             elementId: cowu.formatElementId([ctwl.CONFIG_SERVICE_INSTANCES_SECTION_ID]),
             view: "SectionView",
@@ -424,7 +419,8 @@ define([
                                         options: {
                                             pageSize: 10, pageSizeSelect: [10, 50, 100]
                                         }
-                                    }
+                                    },
+                                    svcInstanceDataObj: svcInstanceDataObj
                                 }
                             }
                         ]

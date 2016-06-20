@@ -27,7 +27,7 @@
                     }
                 }
                 if ('flow_export_rate' == rowData['key']) {
-                    if ((undefined == val) || ("" == val)) {
+                    if ((undefined === val) || (null === val) || ("" === val)) {
                         return "-";
                     } else {
                         return val;
@@ -64,8 +64,14 @@
                     return 'Enabled';
                 }
                 if ('encapsulation_priorities' == rowData['key']) {
+                    if (null == val) {
+                        return '-';
+                    }
                     val = val['encapsulation'];
                     var uiEncap = gcUtils.mapConfigEncapToUIEncap(val);
+                    if ((null == uiEncap) || (!uiEncap.length)) {
+                        return '-';
+                    }
                     var len = uiEncap.length;
                     for (var i = 0; i < len; i++) {
                         dispStr += uiEncap[i] + '<br>';

@@ -24,6 +24,8 @@ var util = require('util');
 var url = require('url');
 var configApiServer = require(process.mainModule.exports["corePath"] +
                               '/src/serverroot/common/configServer.api');
+var jsonDiff      = require(process.mainModule.exports["corePath"] +
+'/src/serverroot/common/jsondiff');
 
 /**
  * Bail out if called directly as "nodejs policyconfig.api.js"
@@ -336,8 +338,8 @@ function setPolicyEntries(polPostData, policyId, appData, callback)
             ruleUIRef['src_addresses'][0]['subnet'] &&
             ruleUIRef['src_addresses'][0]['subnet']['ip_prefix'] &&
             ruleUIRef['src_addresses'][0]['subnet']['ip_prefix'].length) {
-            polPostData['network-policy']['network_policy_entries']
-                ['policy_rule'][i]['src_addresses'][0]['virtual_network'] = null;
+            /*polPostData['network-policy']['network_policy_entries']
+                ['policy_rule'][i]['src_addresses'][0]['virtual_network'] = null;*/
         } else {
             polPostData['network-policy']['network_policy_entries']
                 ['policy_rule'][i]['src_addresses'][0]['subnet'] = null;
@@ -346,18 +348,22 @@ function setPolicyEntries(polPostData, policyId, appData, callback)
             'ip_prefix' in ruleUIRef['dst_addresses'][0]['subnet'] &&
             ruleUIRef['dst_addresses'][0]['subnet']['ip_prefix'] &&
             ruleUIRef['dst_addresses'][0]['subnet']['ip_prefix'].length) {
-            polPostData['network-policy']['network_policy_entries']
-                ['policy_rule'][i]['dst_addresses'][0]['virtual_network'] = null;
+            /*polPostData['network-policy']['network_policy_entries']
+                ['policy_rule'][i]['dst_addresses'][0]['virtual_network'] = null;*/
         } else {
             polPostData['network-policy']['network_policy_entries']
                 ['policy_rule'][i]['dst_addresses'][0]['subnet'] = null;
         }
     }
-
-    configApiServer.apiPut(polPostURL, polPostData, appData,
-        function (error, data) {
-            callback(error, data);
-        });
+    jsonDiff.getJSONDiffByConfigUrl(polPostURL, appData, polPostData,
+        function(err, policyDataDelta){
+            configApiServer.apiPut(polPostURL, policyDataDelta, appData,
+                function (error, data) {
+                    callback(error, data);
+                }
+            );
+        }
+    );
 }
 
 /**

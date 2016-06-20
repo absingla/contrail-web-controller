@@ -27,7 +27,7 @@ define(['underscore', 'contrail-view',
                                view: "WidgetView",
                                viewConfig: {
                                    header: {
-                                       title: 'Request Served',
+                                       title: 'Requests Served',
                                    },
                                    controls: {
                                        top: {
@@ -42,21 +42,22 @@ define(['underscore', 'contrail-view',
                            chartOptions:{
                                brush: false,
                                height: 380,
-                               xAxisLabel: 'Time (hrs)',
-                               yAxisLabel: 'Request Served',
+                               xAxisLabel: 'Time',
+                               yAxisLabel: 'Requests served',
                                yAxisOffset: 25,
                                axisLabelFontSize: 11,
                                tickPadding: 8,
                                margin: {
-                                   left: 45,
-                                   top: 25,
+                                   left: 40,
+                                   top: 35,
                                    right: 0,
                                    bottom: 40
                                },
-                               bucketSize: ctwc.CONFIGNODESTATS_BUCKET_DURATION/(1000 * 1000 * 60),//converting to minutes
+                               bucketSize: monitorInfraConstants.CONFIGNODESTATS_BUCKET_DURATION/(1000 * 1000 * 60),//converting to minutes
                                sliceTooltipFn: function (data) {
-                                   var tooltipConfig = {};
-                                   if (data['name'] != ctwc.CONFIGNODE_FAILEDREQUESTS_TITLE) {
+                                   var tooltipConfig = {},
+                                       time = data['time'];
+                                   if (data['name'] != monitorInfraConstants.CONFIGNODE_FAILEDREQUESTS_TITLE) {
                                        tooltipConfig['title'] = {
                                            name : data['name'],
                                            type : 'Config Node'
@@ -64,6 +65,12 @@ define(['underscore', 'contrail-view',
                                        tooltipConfig['content'] = {
                                            iconClass : false,
                                            info : [{
+                                               label: 'Time',
+                                               value: time
+                                           }, {
+                                               label: 'Requests',
+                                               value: ifNull(data['nodeReqCnt'], '-')
+                                           }, {
                                                label: 'Failed Requests (%)',
                                                value: ifNull(data['reqFailPercent'], '-')
                                            }, {
@@ -79,6 +86,9 @@ define(['underscore', 'contrail-view',
                                        tooltipConfig['content'] = {
                                            iconClass : false,
                                            info : [{
+                                               label: 'Time',
+                                               value: time
+                                           },{
                                                label: 'Total Requests',
                                                value: ifNull(data['totalReqs'], '-')
                                            }, {
@@ -112,41 +122,22 @@ define(['underscore', 'contrail-view',
                                        var legendWrap = d3.select($(svg)[0]).append('g')
                                               .attr('class','legend-wrap')
                                               .attr('transform','translate('+width+',0)')
-                                      //legend for failure requests
-                                      legendWrap.selectAll('.contrail-legend')
-                                          .data([data])
-                                          .enter()
-                                          .append('g')
-                                          .attr('transform','translate('+(-10)+',0)')
-                                          .attr('class', 'contrail-legend')
-                                          .append('rect')
-                                          .style('fill', ctwc.CONFIGNODE_FAILEDREQUESTS_COLOR);
-                                       legendWrap.append('g')
-                                           .attr('class', 'contrail-legend')
-                                           .attr('transform','translate('+(- 20)+',0)')
-                                           .append('text')
-                                           .attr('dy', 8)
-                                           .attr('text-anchor', 'end')
-                                           .text('Failure');
-                                       var legend = legendWrap.selectAll('.contrail-slegend')
-                                              .data(colorCodes)
-                                              .enter()
-                                              .append('g')
-                                              .attr('class','contrail-legend')
-                                              .attr('transform',function (d, i) { return 'translate('+ - (( colorCodes.length - i) * 20 + 70)+',0)';})
-                                       legend.append('rect')
-                                             .style('fill', function (d, i) {
-                                                 return colorCodes[i];
-                                             }).on('click', function () {
-                                                 //need to write the click handler
-                                             });
-                                       legendWrap.append('g')
-                                           .attr('class','contrail-legend')
-                                           .attr('transform','translate('+ (-((colorCodes.length * 20) + 10 + 70)) +',0)')
-                                           .append('text')
-                                           .attr('dy', 8)
-                                           .attr('text-anchor', 'end')
-                                           .text('Config Nodes');
+                                       monitorInfraUtils.addLegendToSummaryPageCharts({
+                                           container: legendWrap,
+                                           cssClass: 'contrail-legend-error',
+                                           data: [data],
+                                           offset: -10,
+                                           colors: monitorInfraConstants.CONFIGNODE_FAILEDREQUESTS_COLOR,
+                                           label: 'Failures',
+                                       });
+                                       monitorInfraUtils.addLegendToSummaryPageCharts({
+                                           container: legendWrap,
+                                           cssClass: 'contrail-legend-stackedbar',
+                                           data: colorCodes,
+                                           offset: 70,
+                                           colors: colorCodes,
+                                           label: 'Config Nodes',
+                                       });
                                    }
                                }
                            },
@@ -163,7 +154,7 @@ define(['underscore', 'contrail-view',
                                view: "WidgetView",
                                viewConfig: {
                                    header: {
-                                       title: 'Response Parameters',
+                                       title: 'Response Statistics',
                                    },
                                    controls: {
                                        top: {
@@ -181,16 +172,27 @@ define(['underscore', 'contrail-view',
                            chartOptions: {
                                y1AxisLabel:ctwl.RESPONSE_TIME,
                                y2AxisLabel:ctwl.RESPONSE_SIZE,
-                               xAxisTicksCnt: 8, //(for every 15 mins, total duration is 2 hrs)
-                               margin: {top: 20, right: 70, bottom: 40, left: 60},
+                               xAxisTicksCnt: 8, //In case of time scale for every 15 mins one tick
+                               margin: {top: 20, right: 50, bottom: 40, left: 50},
                                axisLabelDistance: -10,
+                               y2AxisWidth: 50,
                                //forceY1: [0, 1],
                                focusEnable: false,
                                height: 190,
                                showLegend: true,
-                               xAxisLabel: 'Time (hrs)',
-                               xFormatter: function (xValue) {
-                                   return d3.time.format('%H:%M')(new Date(xValue));
+                               xAxisLabel: 'Time',
+                               xAxisMaxMin: false,
+                               defaultDataStatusMessage: false,
+                               xFormatter: function (xValue, tickCnt) {
+                                   // Same function is called for
+                                   // axis ticks and the tool tip
+                                   // title
+                                   var date = new Date(xValue);
+                                   if (tickCnt != null) {
+                                       var mins = date.getMinutes();
+                                       date.setMinutes(Math.ceil(mins/15) * 15);
+                                   }
+                                   return d3.time.format('%H:%M')(date);
                                },
                                y1Formatter: function (y1Value) {
                                    var formattedValue = Math.round(y1Value) + ' ms';
@@ -231,45 +233,19 @@ define(['underscore', 'contrail-view',
                                            .append('g')
                                            .attr('transform', 'translate('+width+', 0)')
                                            .attr('class', 'contrail-legendWrap');
-                                       //Appending the line chart legend
-                                       legendWrap.selectAll('g')
-                                               .data(lineData)
-                                               .enter()
-                                               .append('g')
-                                               .attr('transform', function (d, i) {
-                                                   return 'translate('+ (- (i + 1) * 20) +', 0)';
-                                               }).attr('class','contrail-legend')
-                                               .append('rect')
-                                               .attr('fill', function (d, i) {
-                                                   return d['color'];
-                                               })
-                                       legendWrap.append('g')
-                                           .attr('transform', 'translate('+ (- ((lineCnt * 20 ) + 10))+', 0)')
-                                           .attr('class', 'contrail-legend')
-                                           .append('text')
-                                           .attr('dy', 8)
-                                           .attr('text-anchor', 'end')
-                                           .text(ctwl.RESPONSE_SIZE);
-                                       //Appending the bar chart legend
-                                       var legend = legendWrap.selectAll('g.contrail-legend-bar')
-                                           .data(barsData)
-                                           .enter()
-                                           .append('g')
-                                           .attr('transform', function (d, i) {
-                                               return 'translate('+ (- (((barsData.length - i) + lineCnt + 1) * 20 + 80) )+', 0)';
-                                           })
-                                           .attr('class', 'contrail-legend')
-                                           .append('rect')
-                                           .attr('fill', function (d, i) {
-                                               return d['color'];
-                                           });
-                                         legendWrap.append('g')
-                                             .attr('transform', 'translate('+(- ((lineCnt + barsCnt + 1) * 20 + 90))+', 0)')
-                                             .attr('class', 'contrail-legend')
-                                             .append('text')
-                                             .attr('text-anchor', 'end')
-                                             .attr('dy', 8)
-                                             .text('Config Nodes');
+                                       monitorInfraUtils.addLegendToSummaryPageCharts({
+                                           container: legendWrap,
+                                           cssClass: 'contrail-legend-line',
+                                           data: lineData,
+                                           label: ctwl.RESPONSE_SIZE
+                                       });
+                                       monitorInfraUtils.addLegendToSummaryPageCharts({
+                                           container: legendWrap,
+                                           cssClass: 'contrail-legend-bar',
+                                           data: barsData,
+                                           offset: 90 + lineCnt * 20,
+                                           label: 'Config Nodes'
+                                       });
                                    }
                                }
                            },
@@ -285,7 +261,7 @@ define(['underscore', 'contrail-view',
                                view: "WidgetView",
                                viewConfig: {
                                    header: {
-                                       title: 'Config Node',
+                                       title: 'Request Statistics',
                                    },
                                    controls: {
                                        top: {
