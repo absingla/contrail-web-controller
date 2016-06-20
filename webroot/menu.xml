@@ -941,7 +941,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                 <function>renderControlNodeIntrospect</function>
                             </loader>
                             <queryParams>
-                                <type>control-node</type>
+                                <node>control</node>
                             </queryParams>
                             <searchStrings>Control Node</searchStrings>
                         </item>
@@ -953,7 +953,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                 <function>renderVirtualRouterIntrospect</function>
                             </loader>
                             <queryParams>
-                                <type>vrouter</type>
+                                <node>vrouter</node>
                             </queryParams>
                             <searchStrings>Virtual Router</searchStrings>
                         </item>
@@ -965,7 +965,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                 <function>renderConfigNodeIntrospect</function>
                             </loader>
                             <queryParams>
-                                <type>config-node</type>
+                                <node>config</node>
                             </queryParams>
                             <searchStrings>Config Node</searchStrings>
                         </item>
@@ -977,7 +977,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                 <function>renderAnalyticsNodeIntrospect</function>
                             </loader>
                             <queryParams>
-                                <type>analytics-node</type>
+                                <node>analytics</node>
                             </queryParams>
                             <searchStrings>Analytics Node</searchStrings>
                         </item>

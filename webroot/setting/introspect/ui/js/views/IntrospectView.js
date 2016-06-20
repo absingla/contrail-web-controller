@@ -30,28 +30,28 @@ define([
 
     function getFeatureIntrospectViewConfig(config, featurePorts) {
         var hashParams = config['hashParams'],
-            introspectType = hashParams['type'];
+            introspectNode = hashParams['node'];
 
         return {
-            elementId: 'introspect-' + introspectType+ '-tabs',
+            elementId: 'introspect-' + introspectNode+ '-tabs',
             view: "TabsView",
             viewConfig: {
                 theme: cowc.TAB_THEME_OVERCAST,
                 active: 0,
-                tabs: getFeatureTabsConfig(featurePorts, introspectType)
+                tabs: getFeatureTabsConfig(featurePorts, introspectNode)
             }
         };
 
         return ;
     }
 
-    function getFeatureTabsConfig(featurePorts, introspectType) {
+    function getFeatureTabsConfig(featurePorts, introspectNode) {
         var tabs = [];
 
         _.each(featurePorts, function(value, key) {
             tabs.push({
-                elementId: 'introspect-' + introspectType + '-' + value,
-                title: value,
+                elementId: 'introspect-' + introspectNode + '-' + value,
+                title: cowl.get(value),
                 view: "IntrospectFormView",
                 viewPathPrefix: "setting/introspect/ui/js/views/",
                 app: cowc.APP_CONTRAIL_CONTROLLER,

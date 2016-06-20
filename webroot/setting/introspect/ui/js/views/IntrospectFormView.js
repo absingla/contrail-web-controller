@@ -18,7 +18,7 @@ define([
                 viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectNode = hashParams['type'],
+                introspectNode = hashParams['node'],
                 introspectPort = viewConfig.port,
                 introspectType = viewConfig.type,
                 introspectFormId = '#introspect-' + introspectNode + '-' + introspectType + '-form',
@@ -41,7 +41,7 @@ define([
                 viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectNode = hashParams['type'],
+                introspectNode = hashParams['node'],
                 introspectPort = viewConfig.port,
                 introspectType = viewConfig.type,
                 introspectPrimaryFormId = '#introspect-' + introspectNode + '-' + introspectType + '-primary-form',
@@ -59,7 +59,7 @@ define([
                 viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectNode = hashParams['type'],
+                introspectNode = hashParams['node'],
                 introspectPort = viewConfig.port,
                 introspectType = viewConfig.type,
                 introspectSecondaryFormId = '#introspect-' + introspectNode + '-' + introspectType + '-secondary-form',
@@ -94,7 +94,7 @@ define([
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
-                introspectNode = hashParams['type'],
+                introspectNode = hashParams['node'],
                 introspectPort = viewConfig.port,
                 introspectType = viewConfig.type,
                 introspectFormId = '#introspect-' + introspectNode + '-' + introspectType + '-form',
@@ -109,7 +109,7 @@ define([
             }
 
             self.renderView4Config($(introspectResultId), self.model,
-                getIntrospectResultTabViewConfig(ipAddress, introspectPort, moduleIntrospect, introspectType, secondaryModelAttributes), null, null, modelMap, null);
+                getIntrospectResultTabViewConfig(introspectNode, ipAddress, introspectPort, moduleIntrospect, introspectType, secondaryModelAttributes), null, null, modelMap, null);
 
         }
     });
@@ -222,13 +222,14 @@ define([
         return modelData;
     }
 
-    function getIntrospectResultTabViewConfig(ipAddress, port, moduleIntrospect, introspectType, secondaryModelAttributes) {
+    function getIntrospectResultTabViewConfig(introspectNode, ipAddress, port, moduleIntrospect, introspectType, secondaryModelAttributes) {
         return {
             elementId: 'introspect-' + introspectType + '-results',
-            view: "IntrospectTabsView",
+            view: "IntrospectResultTabsView",
             viewPathPrefix: "setting/introspect/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: {
+                node: introspectNode,
                 ip_address: ipAddress,
                 port: port,
                 module_introspect: moduleIntrospect,

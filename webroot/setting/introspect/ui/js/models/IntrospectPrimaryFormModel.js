@@ -53,7 +53,7 @@ define([
                 if (!contrail.checkIfExist(uiAddedParameters[node][port])) {
                     uiAddedParameters[node][port] = {};
 
-                    if (node === 'control-node') {
+                    if (node === 'control') {
                         $.ajax({
                             url: '/api/admin/monitor/infrastructure/controlnodes/summary',
                             success: function (response) {
@@ -82,7 +82,7 @@ define([
                             }
                         });
 
-                    } else if (node === 'config-node') {
+                    } else if (node === 'config') {
 
                         $.ajax({
                             url: '/api/admin/monitor/infrastructure/confignodes/summary',
@@ -97,7 +97,7 @@ define([
                             }
                         });
 
-                    } else if (node === 'analytics-node') {
+                    } else if (node === 'analytics') {
 
                         $.ajax({
                             url: '/api/admin/monitor/infrastructure/analyticsnodes/summary',
