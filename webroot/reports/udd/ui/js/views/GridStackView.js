@@ -36,10 +36,9 @@ define(function (require) {
         template: Handlebars.compile(require('text!/reports/udd/ui/templates/layout.html')),
         widgetTemplate: Handlebars.compile(require('text!/reports/udd/ui/templates/widget.html')),
         events: {
-            'change .grid-stack': 'onAddWidget',
+            'change .grid-stack': 'onChange',
             'click .grid-stack-item .close': 'onRemoveWidget',
             'resizestop .grid-stack': 'onResize',
-            'change .grid-stack': 'onChange',
             'click .placeholder': 'add',
         },
         placeholderHTML: Handlebars.compile(require('text!/reports/udd/ui/templates/layoutPlaceholder.html'))(),
@@ -83,7 +82,13 @@ define(function (require) {
                                 widgetConfig.x,
                                 widgetConfig.y,
                                 widgetConfig.width,
-                                widgetConfig.height)
+                                widgetConfig.height,
+                                false,                  // autoposition
+                                1,                      // minWidth
+                                undefined,              // maxWidth
+                                6,                      // minHeight
+                                undefined,              // maxHeight
+                                id)
 
             var el = self.$('#' + id)
             self.renderView4Config(el, model, {
@@ -95,13 +100,6 @@ define(function (require) {
                 self.grid.minWidth(el, 1)
                 self.grid.minHeight(el, 6)
             });
-        },
-
-        onAddWidget: function (event, items) {
-            var self = this
-            if (!event || !event.target.classList.contains('grid-stack')) return
-            if (items.length === 1 && items[0].el.hasClass('placeholder')) return
-            self.grid.move(self.placeholder, 0, Infinity)
         },
 
         onRemoveWidget: function (e) {
@@ -117,7 +115,20 @@ define(function (require) {
             })
             widget.resize()
         },
+
         onChange: function (event, items) {
+            var self = this
+            _.each(items, function (item) {
+                if (!item.id || !item._updating) return
+                var widgetView = self.childViewMap[item.id]
+                if (!widgetView) return
+                var config = widgetView.model.get('config')
+                config.x = item.x
+                config.y = item.y
+                config.width = item.width
+                config.height = item.height
+                widgetView.model.set('config', config)
+            })
         }
     })
     return GridStackView;

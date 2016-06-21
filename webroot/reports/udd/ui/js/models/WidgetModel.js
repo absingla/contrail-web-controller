@@ -82,7 +82,11 @@ define(function (require) {
 
             var result = {
                 config: {
-                    title: attrs.config.title
+                    title: attrs.config.title,
+                    x: attrs.config.x,
+                    y: attrs.config.y,
+                    width: attrs.config.width,
+                    height: attrs.config.height,
                 },
                 "\"contentConfig\"": {
                     contentView: {

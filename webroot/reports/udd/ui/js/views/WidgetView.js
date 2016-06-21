@@ -45,7 +45,7 @@ define(function (require) {
 
             // render data source config (query) on the back
             config = self.getDataVC()
-            element = self.$('#' + config.elementId)
+            element = self.$('.data-config')
             model = self.model.get('dataConfigModel')
             self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
             self.renderContentConfigView()
@@ -72,10 +72,10 @@ define(function (require) {
             //TODO make validation real
             if (!self.model.get('dataConfigModel').select()) return
             var config = self.getContentConfigVC()
-            var element = self.$('#' + config.elementId)
+            var element = self.$('.content-config')
             var model = self.model.get('contentConfigModel')
             //TODO do not full rerender on select change - yAxisValue dropdown should be updated alone
-            if (element.html()) return //Knockback.ko.cleanNode(element[0])
+            if (element.html()) return 
             self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
         },
 
