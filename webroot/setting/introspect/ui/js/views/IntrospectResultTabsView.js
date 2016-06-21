@@ -29,23 +29,21 @@ define([
         fetchIntrospect: function(url) {
             var self = this;
 
-            $.ajax({
-                url: url,
-                cache: true,
-                dataType: 'xml',
-                success: function (xml) {
-                    var x2js = new xml2json(),
-                        json = x2js.xml2json(xml),
-                        data = { xml: xml, json: json };
+            contrail.ajaxHandler({
+                url: url, cache: true, dataType: 'xml'
+            }, function() {
+                self.$el.append('<p class="padding-10-0"><i class="icon-spin icon-spinner"></i> Loading Results.</p>');
+            }, function (xml) {
+                var x2js = new xml2json(),
+                    json = x2js.xml2json(xml),
+                    data = { xml: xml, json: json };
 
-                    self.renderIntrospectTabs(data);
-                },
-                error: function(error) {
-                    if (error.status === 404) {
-                        //TODO
-                    }
+                self.renderIntrospectTabs(data);
+            }, function(error) {
+                if (error.status === 404) {
+                    //TODO
                 }
-            });
+            }, null);
         },
 
         renderIntrospectTabs: function(data) {

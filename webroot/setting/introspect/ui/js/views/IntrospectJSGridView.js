@@ -99,6 +99,9 @@ define([
                     gridColumn['formatter'] = function (r, c, v, cd, dc) {
                         return contrail.formatJSON2HTML(dc[key], 0, [])
                     };
+                    gridColumn['formatter'] = {
+                        format: 'json2html', options: {jsonValuePath: key, htmlValuePath: key + 'HTML', expandLevel: 0}
+                    };
                     gridColumn['hide'] = true;
 
                     hiddenColumnCount++;
