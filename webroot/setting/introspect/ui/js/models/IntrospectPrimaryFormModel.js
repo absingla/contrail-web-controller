@@ -6,8 +6,9 @@
 define([
     'underscore',
     'knockout',
-    'contrail-model'
-], function (_, Knockout, ContrailModel) {
+    'contrail-model',
+    'xml2json'
+], function (_, Knockout, ContrailModel, xml2json) {
     var IntrospectPrimaryFormModel = ContrailModel.extend({
 
         constructor: function (modelData, IntrospectFormView) {
@@ -195,10 +196,14 @@ define([
                     url: '/proxy?proxyURL=http://' + ipAddress + ':' + port + '/' + module + '.xml',
                     dataType: 'xml',
                     success: function (xml) {
-                        var json = $.xml2json(xml);
-                        _.each(json, function (jsonValue, jsonKey) {
-                            moduleIntrospects.push({id: jsonKey, text: jsonKey})
-                            uiAddedParameters[node][port][ipAddress][module][jsonKey] = jsonValue;
+                        var x2js = new xml2json(),
+                            json = x2js.xml2json(xml);
+
+                        _.each(json[module], function (jsonValue, jsonKey) {
+                            if(jsonKey.charAt(0) !== '_') {
+                                moduleIntrospects.push({id: jsonKey, text: jsonKey});
+                                uiAddedParameters[node][port][ipAddress][module][jsonKey] = jsonValue;
+                            }
                         });
 
                         self.module_introspect_option_list(moduleIntrospects);
