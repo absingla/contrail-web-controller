@@ -22,6 +22,13 @@ define([
                 url = '/proxy?proxyURL=http://' + ipAddress + ':' + port + '/Snh_' +
                     moduleIntrospect + '?' + $.param(params);
 
+                self.fetchIntrospect(url);
+
+        },
+
+        fetchIntrospect: function(url) {
+            var self = this;
+
             $.ajax({
                 url: url,
                 cache: true,
@@ -29,10 +36,7 @@ define([
                 success: function (xml) {
                     var x2js = new xml2json(),
                         json = x2js.xml2json(xml),
-                        data = {
-                            xml: xml,
-                            json: json
-                        };
+                        data = { xml: xml, json: json };
 
                     self.renderIntrospectTabs(data);
                 },
@@ -49,11 +53,27 @@ define([
                 viewConfig = self.attributes.viewConfig,
                 node = viewConfig.node,
                 ipAddress = viewConfig.ip_address,
+                moduleIntrospect = viewConfig.module_introspect,
                 port = viewConfig.port,
                 modelMap = contrail.handleIfNull(self.modelMap, {});
 
-            self.renderView4Config(self.$el, self.model,
-                getIntrospectTabViewConfig(data, node, port), null, null, modelMap, null);
+            self.renderView4Config(self.$el, self.model, getIntrospectTabViewConfig(data, node, port), null, null, modelMap, function() {
+                var json = data.json,
+                    jsonKeys = _.keys(json),
+                    moduleItemName =jsonKeys[0];
+
+                if (contrail.checkIfExist(json[moduleItemName]['next_batch'])) {
+                    $('#introspect-result-' + node + '-' + port + '-next-batch-tab-extra-link')
+                        .parent('li').show()
+                        .off('click')
+                        .on('click', function() {
+                            var url = '/proxy?proxyURL=http://' + ipAddress + ':' + port + '/Snh_' +
+                                json[moduleItemName]['next_batch']['_link'] + '?x=' + json[moduleItemName]['__text'];
+
+                            self.fetchIntrospect(url)
+                        });
+                }
+            });
         }
     });
 
@@ -65,16 +85,28 @@ define([
                 theme: cowc.TAB_THEME_WIDGET_CLASSIC,
                 active: 0,
                 tabs: [
-                    getIntrospectJSGridTabViewConfig(data.json),
-                    getIntrospectXSLGridTabViewConfig(data.xml),
-                    getIntrospectJSONTabViewConfig(data.json)
+                    getIntrospectJSGridTabViewConfig(data, node, port),
+                    getIntrospectXSLGridTabViewConfig(data, node, port),
+                    getIntrospectJSONTabViewConfig(data, node, port)
+                ],
+                extra_links: [
+                    {
+                        elementId: 'introspect-result-' + node + '-' + port + '-next-batch',
+                        title: 'Next Batch',
+                        events: {
+                            click: function() {
+                                console.log('here')
+                            }
+                        }
+                    }
                 ]
             }
         }
     }
 
-    function getIntrospectJSGridTabViewConfig(json) {
-        var gridId = 'tabs-grid';
+    function getIntrospectJSGridTabViewConfig(data, node, port) {
+        var json = data.json,
+            gridId = 'introspect-result-' + node + '-' + port + '-js-grid';
 
         return {
             elementId: gridId,
@@ -95,12 +127,13 @@ define([
         }
     }
 
-    function getIntrospectXSLGridTabViewConfig(xml) {
-        var gridId = 'tabs-xsl-grid';
+    function getIntrospectXSLGridTabViewConfig(data, node, port) {
+        var xml = data.xml,
+            gridId = 'introspect-result-' + node + '-' + port + '-xsl-grid';
 
         return {
             elementId: gridId,
-            title: 'XSL',
+            title: 'XSL Grid',
             view: 'IntrospectXSLGridView',
             viewPathPrefix: "setting/introspect/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
@@ -110,11 +143,12 @@ define([
         }
     }
 
-    function getIntrospectJSONTabViewConfig(json) {
-        var gridId = 'tabs-json-grid';
+    function getIntrospectJSONTabViewConfig(data, node, port) {
+        var json = data.json,
+            jsonId = 'introspect-result-' + node + '-' + port + '-json';
 
         return {
-            elementId: gridId,
+            elementId: jsonId,
             title: 'JSON',
             view: 'IntrospectJSONView',
             viewPathPrefix: "setting/introspect/ui/js/views/",

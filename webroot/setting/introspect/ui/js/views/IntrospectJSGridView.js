@@ -23,10 +23,7 @@ define([
     });
 
     function getIntrospectJSGridViewConfig(jsonData) {
-        var queryResultGridId = cowl.QE_QUERY_RESULT_GRID_ID;
-
         return {
-            elementId: 'asdasdasdasd',
             title: cowl.TITLE_RESULTS,
             view: "GridView",
             viewConfig: {
@@ -93,7 +90,7 @@ define([
 
                 if (contrail.checkIfExist(value['_link'])) {
                     gridColumn['formatter'] = function (r, c, v, cd, dc) {
-                        return '<a href="#" class="inline-link" data-link="' + value['_link'] + '" ' +
+                        return '<a class="introspect-link" data-link="' + value['_link'] + '" ' +
                             'x="' + value['__text'] + '">' + value['__text'] + '</a>';
                     };
                 }
