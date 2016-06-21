@@ -1001,6 +1001,12 @@ define([
         this.CDB_LABEL_KEY = "key";
         //Config DB Labels - End
 
+        /*
+         * Settings/Introspect
+         */
+
+        this.TITLE_INTROSPECT = "Introspect";
+
         /* Service Appliance */
         this.TITLE_SVC_APPLIANCE = 'Service Appliance';
         this.CONFIG_SVC_APPLIANCE_PAGE_ID = 'config-svc-appliance-page';
