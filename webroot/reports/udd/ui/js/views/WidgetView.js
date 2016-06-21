@@ -167,6 +167,14 @@ define(function (require) {
             return true
         },
 
+        resize: function () {
+            var self = this
+            var viewId = self.getContentVC().elementId
+            var widgetContentView = self.childViewMap[viewId]
+            if (!widgetContentView) return
+            else widgetContentView.resize()
+        },
+
         onTitleChange: function (e) {
             var self = this
             var newTitle = self.$(self.selectors.titleInput).val()

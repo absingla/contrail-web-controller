@@ -68,6 +68,13 @@ define(function (require) {
                     }
                 }
             }
+        },
+
+        resize: function () {
+            var self = this
+            setTimeout(function () {
+                self.childViewMap['lineWithFocusChart'].chartModel.update()
+            }, 100)
         }
     });
 

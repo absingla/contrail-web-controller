@@ -115,15 +115,7 @@ define(function (require) {
             var widget = _.find(self.childViewMap, function (w) {
                 return w.$el[0] === ui.element[0]
             })
-            var viewId = widget.getContentVC().elementId
-            var widgetContentView = widget.childViewMap[viewId]
-            if (!widgetContentView) return
-            var chartView = widgetContentView.childViewMap
-            var chartType = Object.keys(chartView)[0]
-            setTimeout(function () {
-                chartView[chartType].chartModel.update()
-            }, 100)
-            console.log('resize')
+            widget.resize()
         },
         onChange: function (event, items) {
         }
