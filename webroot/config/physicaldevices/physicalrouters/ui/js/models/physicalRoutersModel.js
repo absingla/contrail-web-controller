@@ -6,6 +6,7 @@ define([
     'contrail-model',
     'config/physicaldevices/physicalrouters/ui/js/models/servicePortsModel'
 ], function (_, ContrailModel, ServicePortModel) {
+    var self;
     var PhysicalRouterModel = ContrailModel.extend({
         defaultConfig: {
             'uuid' : null,
@@ -62,6 +63,7 @@ define([
             /*
                 Populating ServicePortModel from junosServicePorts
              */
+            self = this;
             var ports = getValueByJsonPath(modelConfig,
                 'physical_router_junos_service_ports;service_port', []),
                 portModels = [], portModel,
@@ -287,7 +289,7 @@ define([
                             split(cowc.DROPDOWN_VALUE_SEPARATOR);
                         var vnRefs = [];
                         for(var i = 0; i < arr.length; i++) {
-                            var fqName = arr[i].split(' ');
+                            var fqName = arr[i].split(':');
                             vnRefs.push({"to":fqName});
                         }
                         postObject["physical-router"]["virtual_network_refs"] =
@@ -518,7 +520,7 @@ define([
         },
         getVirtualRouterDetails : function(vRouterName) {
             var vRouterMap =
-                getValueByJsonPath(window.physicalRouter, "globalVRoutersMap", {});
+                getValueByJsonPath(self.physicalRouterData, "globalVRoutersMap", {});
             return (vRouterMap[vRouterName.trim()])? vRouterMap[vRouterName.trim()] : '';
         },
         /*Populates the post obj with the required fields for creating
@@ -758,7 +760,7 @@ define([
                      if(value === 'Embedded') {
                          var name = getValueByJsonPath(finalObj, 'name', '');
                          var vRouterMap =
-                             getValueByJsonPath(window.physicalRouter, 'globalVRoutersMap', []);
+                             getValueByJsonPath(self.physicalRouterData, 'globalVRoutersMap', []);
                          var currentVirtualRouter =
                              vRouterMap[name.trim()] ? vRouterMap[name.trim()] : '';
                          if(currentVirtualRouter &&

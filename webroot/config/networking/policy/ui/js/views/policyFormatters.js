@@ -215,7 +215,7 @@ define([
             var labelName = ' network ';
             if (isSet(nets) && nets.length > 0) {
                 for (var i = 0; i < nets.length; i++) {
-                    var net_disp = "";
+                    var net_disp = "", networkStr;
                     var net = nets[i];
                     if (isSet(net)) {
                         if (isSet(net["security_group"])) {
@@ -223,17 +223,30 @@ define([
                         }
                         if (isSet(net["subnet"]) &&
                             isSet(net["subnet"]["ip_prefix"]) &&
-                            isSet(net["subnet"]["ip_prefix_len"])) {
+                            isSet(net["subnet"]["ip_prefix_len"]) &&
+                            isSet(net["virtual_network"])) {
                             labelName = ' ';
+                            networkStr =  net["virtual_network"].split(":");
+                            if(networkStr.length === 3) {
+                                if(networkStr[0] === domain &&
+                                    networkStr[1] === project) {
+                                    networkStr = networkStr[2];
+                                } else {
+                                    networkStr = networkStr[0] + ":" +
+                                        networkStr[1] + ":" + networkStr[2];
+                                }
+                            }
                             net_disp +=
-                                self.policyRuleFormat(
+                                self.policyRuleFormat(networkStr +
+                                    ctwc.VN_SUBNET_DELIMITER +
                                     net["subnet"]["ip_prefix"] + "/" +
                                     net["subnet"]["ip_prefix_len"]);
-                        }
-                        if (isSet(net["virtual_network"])) {
-                            labelName = ' network ';
-                            net_disp += self.prepareFQN(domain, project,
-                                             net["virtual_network"]);
+                        } else {
+                            if (isSet(net["virtual_network"])) {
+                                labelName = ' network ';
+                                net_disp += self.prepareFQN(domain, project,
+                                                 net["virtual_network"]);
+                            }
                         }
                         if(isSet(net["network_policy"])) {
                             labelName = ' policy ';
@@ -409,6 +422,35 @@ define([
                 result[0]["end_port"] = parseInt("-1");
             }
             return result;
+        };
+
+        this.parseVNSubnet =  function(vnSubnetStr) {
+            var vnSubnetObj = { vn: "", subnet: "", recursiveCnt: 0};
+            if(vnSubnetStr) {
+                this.parseVNSubnetRecursive(vnSubnetStr, vnSubnetObj);
+            }
+            return vnSubnetObj
+        };
+
+        this.parseVNSubnetRecursive =  function(vnSubnetStr, vnSubnetObj) {
+            var vnSubnetArr1, vnSubnetArr2, vnSubnetArr2Str;
+            vnSubnetArr1 = vnSubnetStr.split(ctwc.VN_SUBNET_DELIMITER);
+            if(vnSubnetArr1.length > 1 && vnSubnetObj.recursiveCnt < 3) {
+                vnSubnetObj.recursiveCnt = vnSubnetObj.recursiveCnt + 1;
+                if(vnSubnetObj.vn === ""){
+                    vnSubnetObj.vn = vnSubnetArr1[0];
+                } else {
+                    vnSubnetObj.vn +=
+                        ctwc.VN_SUBNET_DELIMITER + vnSubnetArr1[0];
+                }
+                vnSubnetArr2 = vnSubnetArr1.slice(1, vnSubnetArr1.length);
+                vnSubnetArr2Str = vnSubnetArr2.join(ctwc.VN_SUBNET_DELIMITER);
+                if(isIPv4(vnSubnetArr2Str) || isIPv6(vnSubnetArr2Str)) {
+                    vnSubnetObj.subnet = vnSubnetArr2Str;
+                } else {
+                    this.parseVNSubnetRecursive(vnSubnetArr2Str, vnSubnetObj)
+                }
+            }
         };
     }
     return PolicyFormatters;

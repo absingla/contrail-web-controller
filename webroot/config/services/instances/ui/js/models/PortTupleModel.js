@@ -6,11 +6,9 @@
 define([
     'underscore',
     'contrail-model',
-    'config/services/instances/ui/js/models/InterfaceTypesModel',
-    'config/services/instances/ui/js/svcInst.utils'
-], function (_, ContrailModel, InterfaceTypesModel, SvcInstUtils) {
+    'config/services/instances/ui/js/models/InterfaceTypesModel'
+], function (_, ContrailModel, InterfaceTypesModel) {
     var gridElId = "#" + ctwl.SERVICE_INSTANCES_GRID_ID;
-    var svcInstUtils = new SvcInstUtils();
     var InterfacesModel = ContrailModel.extend({
 
         defaultConfig: {
@@ -61,8 +59,8 @@ define([
                 }
                 var vnName = vnVmis[intfType];
                 var vmiList = [];
-                if (window.vnVmiMaps[vnName]) {
-                    vmiList = window.vnVmiMaps[vnName];
+                if (modelConfig.vnVmiMaps[vnName]) {
+                    vmiList = modelConfig.vnVmiMaps[vnName];
                 }
                 var vmi = vmiObj['fq_name'].join(':') + "~~" + vmiObj['uuid'];
                 var propModel =
@@ -78,8 +76,8 @@ define([
                 for (var i = 0; i < intfCnt; i++) {
                     var vnName = vnVmis[intfTypes[i]];
                     var vmiList = [];
-                    if (window.vnVmiMaps[vnName]) {
-                        vmiList = window.vnVmiMaps[vnName];
+                    if (modelConfig.vnVmiMaps[vnName]) {
+                        vmiList = modelConfig.vnVmiMaps[vnName];
                     }
                     var propModel =
                         new InterfaceTypesModel({interfaceType: intfTypes[i],

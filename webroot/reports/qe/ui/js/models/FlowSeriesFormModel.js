@@ -5,9 +5,10 @@
 define([
     'underscore',
     'knockout',
-    'query-form-model'
-], function (_, Knockout, QueryFormModel) {
-    var FlowSeriesFormModel = QueryFormModel.extend({
+    'query-form-model',
+    'core-basedir/js/common/qe.model.config'
+], function (_, Knockout, QueryFormModel,qewmc) {
+    var FormSeriesFormModel = QueryFormModel.extend({
 
         defaultSelectFields: ['flow_class_id', 'direction_ing'],
 

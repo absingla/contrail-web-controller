@@ -39,6 +39,12 @@ define([
 
         this.HOST_DPDK = 'HOST_DPDK';
 
+        //Config Summary page Constants
+        this.CONFIGNODESTATS_BUCKET_DURATION = 150000000;
+        this.CONFIGNODE_COLORS = ['#b0c8c3', '#bf94e0', '#5d6e7e', '#b2a198', '#eccc9b'];
+        this.CONFIGNODE_FAILEDREQUESTS_TITLE = 'Failed Requests';
+        this.CONFIGNODE_FAILEDREQUESTS_COLOR = '#d95436';
+
         this.monitorInfraUrls = {
                 TENANT_API_URL              : "/api/tenant/get-data",
 
@@ -105,6 +111,19 @@ define([
                                             this.UVEModuleIds['SERVICE_MONITOR'],
                                             this.UVEModuleIds['SCHEMA']];
         this.defaultIntrospectPort = '8085';
+        this.controlRouteAddressFamily = [{ id:"enet", text:"enet" },
+                                          { id:"ermvpn", text:"ermvpn" },
+                                          { id:"evpn", text:"evpn" },
+                                          { id:"inet", text:"inet" },
+                                          { id:"inetvpn", text:"inetvpn" },
+                                          { id:"inet6", text:"inet6" },
+                                          { id:"l3vpn", text:"l3vpn" },
+                                          { id:"rtarget", text:"rtarget" }];
+        this.controlRouteProtocol = [{ id:"XMPP", text:"XMPP" },
+                                     { id:"BGP", text:"BGP" },
+                                     { id:"ServiceChain", text:"ServiceChain" },
+                                     { id:"Static", text:"Static" },
+                                     { id:"Local", text:"Local" }];
 
     };
 

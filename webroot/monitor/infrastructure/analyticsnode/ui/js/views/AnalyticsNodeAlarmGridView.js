@@ -5,8 +5,10 @@
 define([
     'underscore',
     'contrail-view',
-    'contrail-list-model'
-], function (_, ContrailView, ContrailListModel) {
+    'contrail-list-model',
+    'core-alarm-utils',
+    'core-alarm-parsers'
+], function (_, ContrailView, ContrailListModel,coreAlarmUtils,coreAlarmParsers) {
     var hostname;
     var AnalyticsNodeAlarmGridView = ContrailView.extend({
         el: $(contentContainer),
@@ -24,6 +26,27 @@ define([
                             type: "GET",
                         },
                         dataParser: parseAlarms
+                    },
+                    vlRemoteConfig : {
+                        vlRemoteList : [{
+                            getAjaxConfig : function() {
+                                return {
+                                    url:contrail.format(
+                                            monitorInfraConstants.
+                                            monitorInfraUrls['ANALYTICS_DETAILS'], hostname)
+                                };
+                            },
+                            successCallback : function(response, contrailListModel) {
+                                response = [{
+                                    name:hostname,
+                                    value:response
+                                }];
+                                coreAlarmUtils
+                                    .parseAndAddDerivedAnalyticsAlarms(
+                                        response, contrailListModel);
+                            }
+                        }
+                        ]
                     },
                     cacheConfig: {
                     }

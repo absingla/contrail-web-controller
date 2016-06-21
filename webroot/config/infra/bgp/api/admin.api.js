@@ -42,13 +42,12 @@ var rest = require(process.mainModule.exports["corePath"] + '/src/serverroot/com
     request = require('request'),
     jsonDiff = require(process.mainModule.exports["corePath"] +
                        '/src/serverroot/common/jsondiff'),
-    opServer;
+    opApiServer = require(process.mainModule.exports["corePath"] +
+                          '/src/serverroot/common/opServer.api');
 
 var parser = null;
 var bgpHeader = {};
 bgpHeader['X-Tenant-Name'] = 'default-project';
-
-opServer = rest.getAPIServer({apiName:global.label.OPS_API_SERVER, server:config.analytics.server_ip, port:config.analytics.server_port });
 
 if (!module.parent) {
 	logutils.logger.warn(util.format(messages.warn.invalid_mod_call, module.filename));
@@ -556,86 +555,48 @@ function updateBGPRouterInternal(req, res, id, bgpUpdates, appData) {
 				commonUtils.handleJSONResponse(error, res, null);
                                 return;
 			} else {
-				/*var bgpActJSON = commonUtils.cloneObj(bgpJSON);
-				updateBGPJSON(bgpJSON, bgpUpdates);
-				logutils.logger.debug("updateBGPRouter JSON: " + JSON.stringify(bgpUpdates));*/
-				configApiServer.apiPut(url, bgpUpdates, appData, function (error, data) {
-					if (error) {
-						error = new appErrors.RESTServerError(messages.error.update_bgpr);
-						commonUtils.handleJSONResponse(error, res, null);
-                                                return;
-					}
-					try {
-						/*var oldJSON = bgpActJSON["bgp-router"]["bgp_router_refs"];
-						oldJSON = oldJSON != null ? oldJSON : [];
-						var newJSON = bgpJSON["bgp-router"]["bgp_router_refs"];
-						newJSON = newJSON != null ? newJSON : [];
-						var bgpPeersDelta = jsonDiff.getConfigArrayDelta('bgp-router', oldJSON, newJSON);
-						var bgpPeers = bgpPeersDelta != null ? bgpPeersDelta["addedList"] : false;
-						if (bgpPeers && bgpPeers.length > 0) {
-							var bgpPeerObj = {};
-							for (var i = 0; i < bgpPeers.length; i++) {
-                                bgpPeerObj["to"] = bgpUpdates["bgp-router"]["fq_name"];
-                                bgpPeerObj["href"] = bgpUpdates["bgp-router"].href;
-                                bgpPeerObj['attr'] = prepareBGPPeerAttrJSON(bgpUpdates);
-								bgpPeerUUIDs.push({'uuid': bgpPeers[i].uuid, 'appData': appData,
-										   'bgpPeerObj': bgpPeerObj});
-							}
-							async.mapSeries(bgpPeerUUIDs, addBGPPeerCB, function(err, data) {
-								if (prouterParams != null) {
-									var bgpFqName = bgpUpdates["bgp-router"]["fq_name"];
-									if ((bgpJSON["bgp-router"]["physical_router_back_refs"] != null) &&
-									    (bgpJSON["bgp-router"]["physical_router_back_refs"][0] != null) &&
-		    							    (bgpJSON["bgp-router"]["physical_router_back_refs"][0]['to'][1] != null)) {
-										prouterParams['oldProuter'] = bgpJSON["bgp-router"]["physical_router_back_refs"][0]['uuid'];
-									}
-									updatePhysicalRouters(err,data,appData,bgpFqName,prouterParams, function(err, data) {
-                                        commonUtils.handleJSONResponse(err, res, data);
-                                        return;
-                                     });
-								} else {
-								    commonUtils.handleJSONResponse(err, res, data);
-								}
-	
-							});
-							
-						} else {
-		                    if(prouterParams != null){
-		                            var bgpFqName = bgpUpdates["bgp-router"]["fq_name"];
-		                            if ((bgpJSON["bgp-router"]["physical_router_back_refs"] != null) &&
-	                                        (bgpJSON["bgp-router"]["physical_router_back_refs"][0] != null) &&
-	                                            (bgpJSON["bgp-router"]["physical_router_back_refs"][0]['to'][1] != null)) {
-	                                        prouterParams['oldProuter'] = bgpJSON["bgp-router"]["physical_router_back_refs"][0]['uuid'];
+			    jsonDiff.getJSONDiffByConfigUrl(url, appData, bgpUpdates,
+			        function(err, bgpUpdatesDelta){
+				        configApiServer.apiPut(url, bgpUpdatesDelta,
+				                appData, function (error, data) {
+                            if (error) {
+                                error = new appErrors.RESTServerError(
+                                    messages.error.update_bgpr);
+                                commonUtils.handleJSONResponse(error,
+                                    res, null);
+                                    return;
+                            }
+                            try {
+		                        if(prouterParams != null){
+		                                var bgpFqName =
+		                                    bgpUpdates["bgp-router"]["fq_name"],
+		                                    prUUID = commonUtils.
+		                                       getValueByJsonPath(bgpJSON,
+		                                           "bgp-router;physical_router_back_refs;0;uuid",
+		                                           null);
+		                                if (prUUID != null) {
+	                                            prouterParams['oldProuter'] =
+	                                                prUUID;
 	                                    }
-		                            updatePhysicalRouters(error,data,appData,bgpFqName,prouterParams, function(error, data) {
-		                                commonUtils.handleJSONResponse(error, res, data);
-		                                return;
-		                            });
-		                    } else {
-		                        commonUtils.handleJSONResponse(error, res, data);
-		                    }
-						}*/
-		                if(prouterParams != null){
-		                        var bgpFqName = bgpUpdates["bgp-router"]["fq_name"];
-		                        if ((bgpJSON["bgp-router"]["physical_router_back_refs"] != null) &&
-	                                    (bgpJSON["bgp-router"]["physical_router_back_refs"][0] != null) &&
-	                                        (bgpJSON["bgp-router"]["physical_router_back_refs"][0]['to'][1] != null)) {
-	                                    prouterParams['oldProuter'] = bgpJSON["bgp-router"]["physical_router_back_refs"][0]['uuid'];
-	                                }
-		                        updatePhysicalRouters(error,appData,bgpFqName,prouterParams, function(error, data) {
-		                            commonUtils.handleJSONResponse(error, res, data);
-		                            return;
-		                        });
-		                } else {
-		                    commonUtils.handleJSONResponse(error, res, data);
-		                }
-					} catch (e) {
-						logutils.logger.error(e.stack);
-						// TODO: On error all changes should be rolled back.s
-						commonUtils.handleJSONResponse(null, res, data);
-					}
-				
-				}, bgpHeader);
+		                                updatePhysicalRouters(error,appData,
+		                                    bgpFqName,prouterParams,
+		                                    function(error, data) {
+		                                        commonUtils.handleJSONResponse(
+		                                                error, res, data);
+		                                        return;
+		                                    }
+		                                );
+		                        } else {
+		                            commonUtils.handleJSONResponse(error,
+		                                res, data);
+		                        }
+                            } catch (e) {
+                                logutils.logger.error(e.stack);
+                                // TODO: On error all changes should be rolled back.s
+                                commonUtils.handleJSONResponse(null, res, data);
+                            }  
+                        }, bgpHeader);
+			        });
 			}
 		});
 }
@@ -663,39 +624,41 @@ adminapi.updateBGPRouter = function (req, res, appData) {
 };
 
 // Handle request to get JSON of all analysers.
-adminapi.getAnalyzers = function (req, res) {
+adminapi.getAnalyzers = function (req, res, appData) {
 	var url = '/analyzers';
 	logutils.logger.debug('getAnalyzers: ' + url);
-	opServer.authorize(function () {
-		opServer.api.get(url, function (error, data) {
+		opApiServer.apiGet(url, appData, function (error, data) {
 			if (error) {
 				commonUtils.handleResponse(error, res, '');
 			} else {
 				commonUtils.handleJSONResponse(null, res, data['analyzers']);
 			}
 		});
-	});
 };
 
 // Handle request to get JSON of an analyzer with a given name.
-adminapi.getAnalyzer = function (req, res) {
+adminapi.getAnalyzer = function (req, res, appData) {
 	var name = req.param('name'),
 		url = '/analyzers?name=' + name,
-		mirrorUrls = [],
+        dataObjArr = [],
 		mUrl, mirrorsJSON;
 	logutils.logger.debug('getAnalyzer: ' + url);
-	opServer.authorize(function () {
-		opServer.api.get(url, function (error, analyzerJSON) {
+		opApiServer.apiGet(url, appData, function (error, analyzerJSON) {
 			if (error) {
 				commonUtils.handleResponse(error, res, '');
 			} else {
 				mirrorsJSON = analyzerJSON.analyzer.mirrors;
 				for (i = 0; i < mirrorsJSON.length; i += 1) {
 					mUrl = '/mirrors?name=' + mirrorsJSON[i].name;
+                    commonUtils.createReqObj(dataObjArr, mUrl,
+                                             global.HTTP_REQUEST_GET, null,
+                                             null, null, appData);
 					logutils.logger.debug('getMirror: ', mUrl);
-					mirrorUrls[i] = mUrl;
 				}
-				async.map(mirrorUrls, commonUtils.getJsonViaInternalApi(opServer.api, true), function (err, results) {
+                async.map(dataObjArr,
+                          commonUtils.getAPIServerResponse(opApiServer.apiGet,
+                                                           true),
+                          function (err, results) {
 					var i;
 					if (!err) {
 						for (i = 0; i < mirrorsJSON.length; i += 1) {
@@ -708,47 +671,41 @@ adminapi.getAnalyzer = function (req, res) {
 				});
 			}
 		});
-	});
 };
 
 // Handle request to get JSON of all mirrors.
-adminapi.getMirrors = function (req, res) {
+adminapi.getMirrors = function (req, res, appData) {
 	var url = '/mirrors';
 	logutils.logger.debug('getMirrors: ' + url);
-	opServer.authorize(function () {
-		opServer.api.get(url, function (error, data) {
+		opApiServer.apiGet(url, appData, function (error, data) {
 			if (error) {
 				commonUtils.handleResponse(error, res, '');
 			} else {
 				commonUtils.handleJSONResponse(null, res, data['mirrors']);
 			}
 		});
-	});
 };
 
 // Handle request to get JSON of a mirror with a given name.
-adminapi.getMirror = function (req, res) {
+adminapi.getMirror = function (req, res, appData) {
 	var name = req.param('name');
 	var url = '/mirrors?name=' + name;
 	logutils.logger.debug('getMirror: ' + url);
-	opServer.authorize(function () {
-		opServer.api.get(url, function (error, data) {
+		opApiServer.apiGet(url, appData, function (error, data) {
 			if (error) {
 				commonUtils.handleResponse(error, res, '');
 			} else {
 				commonUtils.handleJSONResponse(null, res, data);
 			}
 		});
-	});
 };
 
 // Handle request to add analyser.
-adminapi.addAnalyzer = function (req, res) {
+adminapi.addAnalyzer = function (req, res, appData) {
 	var analyzerName = req.param('analyzerName');
 	var url = '/request-analyzer/' + analyzerName;
 	logutils.logger.debug("addAnalyser: " + url);
-	opServer.authorize(function () {
-		opServer.api.get(url, function (error, data) {
+		opApiServer.apiGet(url, appData, function (error, data) {
 			if (error || data['status'] != "pass") {
 				if (data && data['error']) {
 					error = new appErrors.RESTServerError(data['error']);
@@ -760,16 +717,14 @@ adminapi.addAnalyzer = function (req, res) {
 				commonUtils.handleJSONResponse(null, res, data);
 			}
 		});
-	});
 };
 
 // Handle request to delete analyzer.
-adminapi.deleteAnalyzer = function (req, res) {
+adminapi.deleteAnalyzer = function (req, res, appData) {
 	var analyzerName = req.param('name');
 	var url = '/delete-analyzer/' + analyzerName;
 	logutils.logger.debug("deleteAnalyzer: " + url);
-	opServer.authorize(function () {
-		opServer.api.get(url, function (error, data) {
+		opApiServer.apiGet(url, appData, function (error, data) {
 			if (error || data['status'] != "pass") {
 				if (data && data['error']) {
 					error = new appErrors.RESTServerError(data['error']);
@@ -781,7 +736,6 @@ adminapi.deleteAnalyzer = function (req, res) {
 				commonUtils.handleJSONResponse(null, res, data);
 			}
 		});
-	});
 };
 
 /**
@@ -869,14 +823,13 @@ function validateAddMirrorReq(reqQuery) {
 };
 
 // Handle request to add mirror.
-adminapi.addMirror = function (req, res) {
+adminapi.addMirror = function (req, res, appData) {
 	var mirrorName = req.param('mirror_name'),
 		url;
 	validateAddMirrorReq(req.query);
 	url = '/request-mirroring/' + mirrorName + '?' + qs.stringify(req.query);
 	logutils.logger.debug("addMirror: " + url);
-	opServer.authorize(function () {
-		opServer.api.get(url, function (error, data) {
+		opApiServer.apiGet(url, appData, function (error, data) {
 			if (error || data['status'] != "pass") {
 				if (data && data['error']) {
 					error = new appErrors.RESTServerError(data['error']);
@@ -888,16 +841,14 @@ adminapi.addMirror = function (req, res) {
 				commonUtils.handleJSONResponse(null, res, data);
 			}
 		});
-	});
 };
 
 // Handle request to delete mirror.
-adminapi.deleteMirror = function (req, res) {
+adminapi.deleteMirror = function (req, res, appData) {
 	var mirrorName = req.param('name');
 	var url = '/delete-mirroring/' + mirrorName;
 	logutils.logger.debug("deleteMirror: " + url);
-	opServer.authorize(function () {
-		opServer.api.get(url, function (error, data) {
+		opApiServer.apiGet(url, appData, function (error, data) {
 			if (error || data['status'] != "pass") {
 				if (data && data['error']) {
 					error = new appErrors.RESTServerError(data['error']);
@@ -909,7 +860,6 @@ adminapi.deleteMirror = function (req, res) {
 				commonUtils.handleJSONResponse(null, res, data);
 			}
 		});
-	});
 };
 
 // Handle request to get a JSON of all virtual networks.

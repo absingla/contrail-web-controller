@@ -4,6 +4,7 @@
 
 define(function (require) {
     var QueryFormModel = require('query-form-model')
+    var qewmc = require('core-basedir/js/common/qe.model.config')
 
     var StatQueryFormModel = QueryFormModel.extend({
 

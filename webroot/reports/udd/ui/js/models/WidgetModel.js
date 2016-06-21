@@ -6,6 +6,7 @@ define(function (require) {
     var StatQueryFormModel = require('reports/udd/ui/js/models/StatQueryFormModel')
     var ContrailModel = require('contrail-model')
     var defaultConfig = JSON.parse(require('text!reports/udd/data/default.config.json'))
+    var qewu = require('core-basedir/js/common/qe.utils')
 
     var WidgetModel = Backbone.Model.extend({
         initialize: function (p) {

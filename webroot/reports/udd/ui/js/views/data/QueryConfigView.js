@@ -4,6 +4,7 @@
 define(function (require) {
     var Knockback = require('knockback')
     var QueryFormView = require('query-form-view')
+    var qewu = require('core-basedir/js/common/qe.utils')
 
     var QueryConfigView = QueryFormView.extend({
         events: {

@@ -3,7 +3,9 @@
  */
 
 define([
-    'underscore'
+    'underscore',
+    'core-bundle',
+    'nonamd-libs'
 ], function (_) {
     var CTConstants = function () {
 
@@ -69,25 +71,18 @@ define([
             'UveVMInterfaceAgent:mac_address',
             'UveVMInterfaceAgent:active',
             'UveVMInterfaceAgent:is_health_check_active',
+            'UveVMInterfaceAgent:health_check_instance_list',
+            'UveVMInterfaceAgent:gateway',
+            'UveVMInterfaceAgent:in_bw_usage',
+            'UveVMInterfaceAgent:out_bw_usage',
+            'UveVMInterfaceAgent:if_stats',
             //Networking
             'UveVMInterfaceAgent:virtual_network',
             'UveVMInterfaceAgent:ip6_address',
             'UveVMInterfaceAgent:ip_address',
             'UveVMInterfaceAgent:ip6_active',
             'UveVMInterfaceAgent:floating_ips',
-            'UveVMInterfaceAgent:fip_agg_stats',
-            //Commenting out
-            // 'UveVMInterfaceAgent:gateway',
-            // 'UveVMInterfaceAgent:in_bw_usage',
-            // 'UveVMInterfaceAgent:out_bw_usage',
-            // 'UveVMInterfaceAgent:health_check_instance_list',
-            // 'UveVMInterfaceAgent:if_stats',
-
-            // 'UveVMInterfaceAgent:virtual_network', 'UveVMInterfaceAgent:ip6_address', 'UveVMInterfaceAgent:ip_address',
-            // 'UveVMInterfaceAgent:gateway', 'UveVMInterfaceAgent:ip6_active', 'UveVMInterfaceAgent:vm_name', 'UveVMInterfaceAgent:if_stats',
-            // 'UveVMInterfaceAgent:in_bw_usage', 'UveVMInterfaceAgent:out_bw_usage', "UveVMInterfaceAgent:mac_address",
-            // 'UveVMInterfaceAgent:uuid', 'UveVMInterfaceAgent:vm_uuid', 'UveVMInterfaceAgent:active', 'UveVMInterfaceAgent:is_health_check_active',
-            // 'UveVMInterfaceAgent:health_check_instance_list', 'UveVMInterfaceAgent:floating_ips', 'UveVMInterfaceAgent:fip_agg_stats'
+            'UveVMInterfaceAgent:fip_agg_stats'
         ];
 
         this.FILTERS_COLUMN_VM = [
@@ -154,7 +149,7 @@ define([
         this.TMPL_FORM_RESULT = 'form-result-page-template';
         this.TMPL_SESSION_ANALYZER = "session-analyzer-view-template";
 
-        this.DEFAULT_DOMAIN = "default-domain";
+        this.COOKIE_DOMAIN = contrail.getCookie(cowc.COOKIE_DOMAIN);
         this.UCID_PREFIX_MN = "monitor-networking";
         this.UCID_PREFIX_BREADCRUMB = "breadcrumb";
         this.UCID_PREFIX_GRAPHS = "graphs";
@@ -168,8 +163,10 @@ define([
         this.UCID_ALL_VN_LIST = this.UCID_PREFIX_MN_LISTS + "all-virtual-networks";
         this.UCID_ALL_VM_LIST = this.UCID_PREFIX_MN_LISTS + "all-virtual-machines";
         this.UCID_ALL_INTERFACES_LIST = this.UCID_PREFIX_MN_LISTS + "all-interfaces";
-        this.UCID_DEFAULT_DOMAIN_VN_LIST = this.UCID_PREFIX_MN_LISTS + this.DEFAULT_DOMAIN + ":virtual-networks";
-        this.UCID_DEFAULT_DOMAIN_PROJECT_LIST = this.UCID_PREFIX_MN_LISTS + this.DEFAULT_DOMAIN + ":projects";
+        this.UCID_COOKIE_DOMAIN_VN_LIST = this.UCID_PREFIX_MN_LISTS +
+            this.COOKIE_DOMAIN + ":virtual-networks";
+        this.UCID_COOKIE_DOMAIN_PROJECT_LIST = this.UCID_PREFIX_MN_LISTS +
+            this.COOKIE_DOMAIN + ":projects";
 
         this.UCID_BC_ALL_DOMAINS = this.UCID_PREFIX_BREADCRUMB + ':all-domains';
         this.UCID_BC_ALL_SA_SETS = this.UCID_PREFIX_BREADCRUMB + ':all-sa-sets';
@@ -239,6 +236,36 @@ define([
         this.OBJECT_SHARED_TABLE = "obj_shared_table";
         this.OBJECT_UUID_TABLE = "obj_uuid_table";
 
+        /*
+         * Setting/Introspect
+         */
+        this.TMPL_INTROSPECT_PAGE = "introspect-page-template";
+        this.INTROSPECT_CONTROL_NODE_PORTS = {
+            8083: 'control',
+            8092: 'dns',
+            8101: 'control-nodemgr'
+        };
+        this.INTROSPECT_VIRTUAL_ROUTER_PORTS = {
+            8085: 'vrouter-agent',
+            8102: 'vrouter-nodemgr'
+        };
+        this.INTROSPECT_CONFIG_NODE_PORTS = {
+            // 5998: '',
+            // 8082: '',
+            8084: 'api',
+            8087: 'schema',
+            8088: 'svc-monitor',
+            8096: 'device-manager',
+            8100: 'config-nodemgr',
+        };
+        this.INTROSPECT_ANALYTICS_NODE_PORTS = {
+            // 8081: '',
+            8089: 'collector',
+            8090: 'analytics-api',
+            8091: 'query-engine',
+            8104: 'analytics-nodemgr',
+        };
+
         // Underlay constants
         this.UNDERLAY_TOPOLOGY_CACHE = "underlayTopology";
         this.UNDERLAY_TABS_VIEW_ID = 'underlayTabsView';
@@ -267,12 +294,6 @@ define([
         this.TRACEFLOW_MAXATTEMPTS = 3;
         this.TRACEFLOW_INTERVAL = 5;
         this.UNDERLAY_FLOW_INFO_TEMPLATE = "flow-info-template";
-
-        //Config Summary page Constants
-        this.CONFIGNODESTATS_BUCKET_DURATION = 240000000;
-        this.CONFIGNODE_COLORS = ['#b0c8c3', '#bf94e0', '#5d6e7e', '#b2a198', '#eccc9b'];
-        this.CONFIGNODE_FAILEDREQUESTS_TITLE = 'Failed Requests';
-        this.CONFIGNODE_FAILEDREQUESTS_COLOR = '#d95436';
 
         this.getProjectsURL = function (domainObj, dropdownOptions) {
             /* Default: get projects from keystone or API Server as specified in
@@ -722,6 +743,9 @@ define([
         this.PORT_GRID_ID = "port-grid-id";
         this.PORT_PREFIX_ID = "Ports";
         this.TEXT_PORT = 'port';
+
+        /* Policy */
+        this.VN_SUBNET_DELIMITER = ":";
 
         /* BGP as a Service */
         this.CONFIG_BGP_AS_A_SERVICE_LIST_ID = "config-bgp-as-a-service-list";
