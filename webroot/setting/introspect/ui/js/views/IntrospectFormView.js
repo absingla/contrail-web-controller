@@ -54,6 +54,46 @@ define([
             });
         },
 
+        hideIntrospectStatus: function() {
+            var self = this,
+                viewConfig = self.attributes.viewConfig,
+                hashParams = layoutHandler.getURLHashParams(),
+                introspectNode = hashParams['node'],
+                introspectType = viewConfig.type,
+                introspectFormStatusId = '#introspect-' + introspectNode + '-' + introspectType + '-form-status';
+
+            $(introspectFormStatusId)
+                .hide()
+                .find('.alert').hide();
+        },
+
+        renderIntrospectErrorStatus: function(errorText) {
+            var self = this,
+                viewConfig = self.attributes.viewConfig,
+                hashParams = layoutHandler.getURLHashParams(),
+                introspectNode = hashParams['node'],
+                introspectType = viewConfig.type,
+                introspectFormStatusId = '#introspect-' + introspectNode + '-' + introspectType + '-form-status';
+
+            $(introspectFormStatusId)
+                .show()
+                .find('.alert-error').show()
+                .find('.error-text').html(errorText);
+        },
+
+        renderIntrospectEmptyStatus: function(emptyText) {
+            var self = this,
+                viewConfig = self.attributes.viewConfig,
+                hashParams = layoutHandler.getURLHashParams(),
+                introspectNode = hashParams['node'],
+                introspectType = viewConfig.type,
+                introspectFormStatusId = '#introspect-' + introspectNode + '-' + introspectType + '-form-status';
+
+            $(introspectFormStatusId)
+                .show()
+                .find('.alert-info').show().html(emptyText);
+        },
+
         renderIntrospectSecondaryForm: function(moduleIntrospectFormData) {
             var self = this,
                 viewConfig = self.attributes.viewConfig,

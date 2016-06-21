@@ -95,13 +95,11 @@ define([
                     };
                 }
 
-                if (value['_type'] == 'list' || value['_type'] == 'struct') {
-                    gridColumn['formatter'] = function (r, c, v, cd, dc) {
-                        return contrail.formatJSON2HTML(dc[key], 0, [])
-                    };
+                if (_.contains(['list', 'struct', 'sandesh'], value['_type'])) {
                     gridColumn['formatter'] = {
                         format: 'json2html', options: {jsonValuePath: key, htmlValuePath: key + 'HTML', expandLevel: 0}
                     };
+                    gridColumn['width'] = 250;
                     gridColumn['hide'] = true;
 
                     hiddenColumnCount++;
