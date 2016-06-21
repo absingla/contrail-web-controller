@@ -133,7 +133,7 @@ define([
 
         return {
             elementId: gridId,
-            title: 'XSL',
+            title: 'XSL Grid',
             view: 'IntrospectXSLGridView',
             viewPathPrefix: "setting/introspect/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,

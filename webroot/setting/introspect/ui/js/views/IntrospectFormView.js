@@ -158,6 +158,7 @@ define([
                                 elementId: 'module_introspect', view: "FormDropdownView",
                                 viewConfig: {
                                     path: 'module_introspect', class: "span4",
+                                    label: 'Introspect',
                                     dataBindValue: 'module_introspect', dataBindOptionList: "module_introspect_option_list()",
                                     elementConfig: {
                                         dataTextField: "text", dataValueField: "id",
