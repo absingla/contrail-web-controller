@@ -15,7 +15,7 @@ define(function (require) {
         initialize: function (p) {
             var self = this
             self.p = {
-                animate: true,
+                animate: false,
                 width: 2,
                 float: false,
                 removeTimeout: 100,
@@ -39,6 +39,7 @@ define(function (require) {
             'change .grid-stack': 'onAddWidget',
             'click .grid-stack-item .close': 'onRemoveWidget',
             'resizestop .grid-stack': 'onResize',
+            'change .grid-stack': 'onChange',
             'click .placeholder': 'add',
         },
         placeholderHTML: Handlebars.compile(require('text!/reports/udd/ui/templates/layoutPlaceholder.html'))(),
@@ -119,7 +120,12 @@ define(function (require) {
             if (!widgetContentView) return
             var chartView = widgetContentView.childViewMap
             var chartType = Object.keys(chartView)[0]
-            chartView[chartType].chartModel.update()
+            setTimeout(function () {
+                chartView[chartType].chartModel.update()
+            }, 100)
+            console.log('resize')
+        },
+        onChange: function (event, items) {
         }
     })
     return GridStackView;

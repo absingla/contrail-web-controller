@@ -46,7 +46,10 @@ define(function (require) {
 
         parse: function (data) {
             // on successful model save
-            if (data.result) return
+            if (data.result) {
+                if (data.error) console.log(data)
+                return
+            }
 
             data.contentConfig.contentView.viewConfig = JSON.parse(data.contentConfig.contentView.viewConfig)
             data.contentConfig.dataConfigView.viewConfig = JSON.parse(data.contentConfig.dataConfigView.viewConfig)
