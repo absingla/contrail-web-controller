@@ -62,8 +62,13 @@ define(function (require) {
                                         label: 'y Axis Value',
                                         path: 'yAxisValue',
                                         dataBindValue: 'yAxisValue',
+                                        dataBindOptionList: 'yAxisValues',
                                         class: 'span9',
-                                        elementConfig: {data: self.model.model().get('yAxisValues')}}
+                                        elementConfig: {
+                                            placeholder: 'Select Y Axis Value',
+                                            defaultValueId: 0
+                                        }
+                                    }
                                 }
                             ]
                         }, {
@@ -86,7 +91,7 @@ define(function (require) {
 
         onChange: function () {
             var self = this
-            self.trigger('change)
+            self.trigger('change')
         }
     })
     return LineChartConfigView;
