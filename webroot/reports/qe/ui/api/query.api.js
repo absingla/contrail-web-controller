@@ -26,33 +26,31 @@ var redisServerPort = (config.redis_server_port) ? config.redis_server_port : gl
 
 var redisClient = redisUtils.createRedisClient(redisServerPort, redisServerIP, global.QE_DFLT_REDIS_DB);
 
-var opServer = rest.getAPIServer({apiName: global.label.OPS_API_SERVER, server: config.analytics.server_ip, port: config.analytics.server_port});
-
 if (!module.parent) {
     logutils.logger.warn(util.format(messages.warn.invalid_mod_call, module.filename));
     process.exit(1);
 }
 
-function runGETQuery(req, res) {
+function runGETQuery(req, res, appData) {
     var reqQuery = req.query;
-    runQuery(req, res, reqQuery);
+    runQuery(req, res, reqQuery, appData);
 }
 
-function runPOSTQuery(req, res) {
+function runPOSTQuery(req, res, appData) {
     var queryReqObj = req.body;
-    runQuery(req, res, queryReqObj);
+    runQuery(req, res, queryReqObj, appData);
 }
 
 // Handle request to get list of all tables.
-function getTables(req, res) {
+function getTables(req, res, appData) {
     var opsUrl = global.GET_TABLES_URL;
-    sendCachedJSON4Url(opsUrl, res, 3600);
+    sendCachedJSON4Url(opsUrl, res, 3600, appData);
 };
 
 // Handle request to get table schema.
-function getTableSchema(req, res) {
+function getTableSchema(req, res, appData) {
     var opsUrl = global.GET_TABLE_INFO_URL + '/' + req.param('tableName') + '/schema';
-    sendCachedJSON4Url(opsUrl, res, 3600);
+    sendCachedJSON4Url(opsUrl, res, 3600, appData);
 };
 
 // Handle request to get columns values.
@@ -73,7 +71,7 @@ function getTableColumnValues(req, res, appData) {
         setMicroTimeRange(objectQuery, startTime, endTime);
         queryOptions = {queryId: null, async: false, status: "run", queryJSON: objectQuery, errorMessage: ""};
 
-        executeQuery(res, queryOptions);
+        executeQuery(res, queryOptions, appData);
     }
 };
 
@@ -182,7 +180,7 @@ function getCurrentTime(req, res) {
     commonUtils.handleJSONResponse(null, res, {currentTime: currentTime});
 };
 
-function runQuery(req, res, queryReqObj) {
+function runQuery(req, res, queryReqObj, appData) {
     var queryId = queryReqObj['queryId'],
         chunk = queryReqObj['chunk'], chunkSize = parseInt(queryReqObj['chunkSize']),
         sort = queryReqObj['sort'], cachedResultConfig;
@@ -199,20 +197,20 @@ function runQuery(req, res, queryReqObj) {
             } else if (exists == 1) {
                 returnCachedQueryResult(res, cachedResultConfig, handleQueryResponse);
             } else {
-                runNewQuery(req, res, queryId, queryReqObj);
+                runNewQuery(req, res, queryId, queryReqObj, appData);
             }
         });
     } else {
-        runNewQuery(req, res, null, queryReqObj);
+        runNewQuery(req, res, null, queryReqObj, appData);
     }
 };
 
-function runNewQuery(req, res, queryId, queryReqObj) {
+function runNewQuery(req, res, queryId, queryReqObj, appData) {
     var queryOptions = getQueryOptions(queryReqObj),
         queryJSON = getQueryJSON4Table(queryReqObj);
 
     queryOptions.queryJSON = queryJSON;
-    executeQuery(res, queryOptions);
+    executeQuery(res, queryOptions, appData);
 };
 
 function getQueryOptions(queryReqObj) {
@@ -236,14 +234,13 @@ function getQueryOptions(queryReqObj) {
     return queryOptions;
 };
 
-function executeQuery(res, queryOptions) {
+function executeQuery(res, queryOptions, appData) {
     var queryJSON = queryOptions.queryJSON,
         async = queryOptions.async, asyncHeader = {"Expect": "202-accepted"};
 
-    opServer.authorize(function () {
         logutils.logger.debug("Query sent to Opserver at " + new Date() + ' ' + JSON.stringify(queryJSON));
         queryOptions['startTime'] = new Date().getTime();
-        opServer.api.post(global.RUN_QUERY_URL, queryJSON, function (error, jsonData) {
+        opApiServer.apiPost(global.RUN_QUERY_URL, queryJSON, appData, function (error, jsonData) {
             if (error) {
                 logutils.logger.error('Error Run Query: ' + error.stack);
                 commonUtils.handleJSONResponse(error, res, null);
@@ -251,14 +248,13 @@ function executeQuery(res, queryOptions) {
                 initPollingConfig(queryOptions, queryJSON.start_time, queryJSON.end_time)
                 queryOptions['url'] = jsonData['href'];
                 queryOptions['opsQueryId'] = parseOpsQueryIdFromUrl(jsonData['href']);
-                setTimeout(fetchQueryResults, 3000, res, jsonData, queryOptions);
-                queryOptions['intervalId'] = setInterval(fetchQueryResults, queryOptions.pollingInterval, res, jsonData, queryOptions);
+                setTimeout(fetchQueryResults, 3000, res, jsonData, queryOptions, appData);
+                queryOptions['intervalId'] = setInterval(fetchQueryResults, queryOptions.pollingInterval, res, jsonData, queryOptions, appData);
                 queryOptions['timeoutId'] = setTimeout(stopFetchQueryResult, queryOptions.pollingTimeout, queryOptions);
             } else {
                 processQueryResults(res, jsonData, queryOptions);
             }
         }, async ? asyncHeader : {});
-    });
 };
 
 function initPollingConfig(options, fromTime, toTime) {
@@ -293,12 +289,11 @@ function initPollingConfig(options, fromTime, toTime) {
     }
 };
 
-function fetchQueryResults(res, jsonData, queryOptions) {
+function fetchQueryResults(res, jsonData, queryOptions, appData) {
     var queryId = queryOptions['queryId'], chunkSize = queryOptions['chunkSize'],
         queryJSON = queryOptions['queryJSON'], progress;
 
-    opServer.authorize(function () {
-        opServer.api.get(jsonData['href'], function (error, queryResults) {
+        opApiServer.apiGet(jsonData['href'], appData, function (error, queryResults) {
             progress = queryResults['progress'];
             queryOptions['counter'] += 1;
             if (error) {
@@ -326,7 +321,7 @@ function fetchQueryResults(res, jsonData, queryOptions) {
                     updateQueryStatus(queryOptions);
                     commonUtils.handleJSONResponse(null, res, {status: "queued", data: []});
                 }
-                fetchQueryResults(res, jsonData, queryOptions);
+                fetchQueryResults(res, jsonData, queryOptions, appData);
             } else if (progress == null || progress === 'undefined') {
                 processQueryResults(res, queryResults, queryOptions);
                 //TODO: Query should be marked complete
@@ -340,21 +335,18 @@ function fetchQueryResults(res, jsonData, queryOptions) {
                 commonUtils.handleJSONResponse(null, res, {status: "queued", data: []});
             }
         });
-    });
 };
 
-function sendCachedJSON4Url(opsUrl, res, expireTime) {
+function sendCachedJSON4Url(opsUrl, res, expireTime, appData) {
     redisClient.get(opsUrl, function (error, cachedJSONStr) {
         if (error || cachedJSONStr == null) {
-            opServer.authorize(function () {
-                opServer.api.get(opsUrl, function (error, jsonData) {
+                opApiServer.apiGet(opsUrl, appData, function (error, jsonData) {
                     if (!jsonData) {
                         jsonData = [];
                     }
                     redisClient.setex(opsUrl, expireTime, JSON.stringify(jsonData));
                     commonUtils.handleJSONResponse(error, res, jsonData);
                 });
-            });
         } else {
             commonUtils.handleJSONResponse(null, res, JSON.parse(cachedJSONStr));
         }

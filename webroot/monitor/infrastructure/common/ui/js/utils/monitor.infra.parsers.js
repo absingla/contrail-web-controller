@@ -471,6 +471,8 @@ define(
                         obj['nodeAlerts'] = infraMonitorAlertUtils
                                                 .processAnalyticsNodeAlerts(obj);
                         var alarms = getValueByJsonPath(d,'value;UVEAlarms;alarms',[]);
+                        alarms = coreAlarmUtils.
+                            checkAndAddAnalyticsDownOrAlarmProcessDownAlarms(d,alarms);
                         if(cowu.getAlarmsFromAnalytics) {
                             obj['alerts'] = coreAlarmUtils.getAlertsFromAnalytics(
                                                             {
@@ -786,13 +788,6 @@ define(
                             y0: y0,
                             y1: y0 += totalFailedReqs
                         });
-                        parsedData.push({
-                            colorCodes: colorCodes,
-                            counts: counts,
-                            total: totalFailedReqs,
-                            timestampExtent: timestampExtent,
-                            date: new Date(i / 1000)
-                        });
                         for(var j=0,len=reqCntData.length;j<len;j++) {
                             var nodeName = reqCntData[j]['key'];
                             var nodeReqCnt = reqCntData[j]['value'];
@@ -802,32 +797,33 @@ define(
                                 failedReqPerNodePercent = Math.round((failedReqPerNode/nodeReqCnt) * 100);
                             }
                             var avgResTime = Math.round((ifNull(resTimeNodeMap[nodeName], 0)/nodeReqCnt)) / 1000; //Converting to millisecs
-                            var toTime = new XDate(timestampExtent[0]/1000).toString('yyyy-MM-dd HH:mm');
-                            var fromTime = new XDate(timestampExtent[1]/1000).toString('yyyy-MM-dd HH:mm');
+                            var fromTime = new XDate((timestampExtent[0]/1000)).toString('HH:mm');
+                            var toTime = new XDate((timestampExtent[1]/1000)).toString('HH:mm');
                             counts.push({
                                 name: nodeName,
                                 color: colorCodes[j],
                                 avgResTime: contrail.format('{0} {1}', avgResTime, 'ms'),
                                 nodeReqCnt: nodeReqCnt,
                                 reqFailPercent: failedReqPerNodePercent,
-                                bucketDuration: contrail.format('{1} - {0}', fromTime, toTime),
+                                time: contrail.format('{0}', fromTime),
                                 y0:y0,
                                 y1:y0 += nodeReqCnt
                             });
-                            parsedData.push({
-                                counts: counts,
-                                total: totalReqs,
-                                timestampExtent: timestampExtent,
-                                date: new Date(i / 1000)
-                            });
                         }
+                        parsedData.push({
+                            colorCodes: colorCodes,
+                            counts: counts,
+                            total: totalReqs,
+                            timestampExtent: timestampExtent,
+                            date: new Date(i / 1000)
+                        });
                     }
                     return parsedData;
                 };
                 this.parseConfigNodeResponseStackedChartData = function (apiStats) {
-                    var buckets = this.bucketizeConfigNodeStats(apiStats, 600000000);
-                    var colors = monitorInfraConstants.CONFIGNODE_COLORS;
                     var cf = crossfilter(apiStats);
+                    var buckets = this.bucketizeConfigNodeStats(apiStats, 240000000);
+                    var colors = monitorInfraConstants.CONFIGNODE_COLORS;
                     var tsDim = cf.dimension(function (d) {return d.T});
                     var sourceDim = cf.dimension(function (d) {return d.Source});
                     var sourceGroupedData = sourceDim.group().all();
@@ -897,7 +893,9 @@ define(
 
                 };
                 this.parseConfigNodeRequestForDonutChart = function (apiStats, reqType) {
-                    var cf = crossfilter(apiStats), parsedData = [];
+                    var cf = crossfilter(apiStats),
+                        parsedData = [],
+                        colors = monitorInfraConstants.CONFIGNODE_COLORS;
                     if (!$.isArray(reqType)) {
                         reqType = [reqType];
                     }
@@ -914,7 +912,8 @@ define(
                     $.each(sourceGrpData, function (key, value){
                         parsedData.push({
                             label: value['key'],
-                            value: value['value']
+                            value: value['value'],
+                            color: colors[key]
                         });
                     });
                     return parsedData;

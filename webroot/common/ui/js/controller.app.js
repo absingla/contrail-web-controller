@@ -28,10 +28,6 @@ if (typeof ctBaseDir !== 'undefined') {
         'monitor-infra-module' : [
             'monitor-infra-utils','monitor-infra-constants','monitor-infra-parsers'
         ],
-        'nm-module' : [
-            // 'geometry','vectorizer','joint.layout.DirectedGraph','joint',
-            'contrail-graph-model','graph-view','core-basedir/js/handlers/GraphLayoutHandler'
-        ]
     }
     if(globalObj['env'] == "prod")
         bundles = controllerBundles;
@@ -88,7 +84,7 @@ function getControllerAppPaths (ctBaseDir, ctBuildDir,env) {
             'monitor-infra-controlnode-model' : ctWebDir + '/monitor/infrastructure/common/ui/js/models/ControlNodeListModel',
             'monitor-infra-vrouter-model' : ctWebDir + '/monitor/infrastructure/common/ui/js/models/VRouterListModel',
             'monitor-infra-utils' : ctWebDir + '/monitor/infrastructure/common/ui/js/utils/monitor.infra.utils',
-            'confignode-scatterchart-view': ctWebDir + '/monitor/infrastructure/common/ui/js/views/ConfigNodeScatterChartView',
+            'confignode-chart-view': ctWebDir + '/monitor/infrastructure/common/ui/js/views/ConfigNodeChartsView',
             'controlnode-scatterchart-view': ctWebDir + '/monitor/infrastructure/common/ui/js/views/ControlNodeScatterChartView',
             'dbnode-scatterchart-view': ctWebDir + '/monitor/infrastructure/common/ui/js/views/DatabaseNodeScatterChartView',
             'analyticsnode-scatterchart-view': ctWebDir + '/monitor/infrastructure/common/ui/js/views/AnalyticsNodeScatterChartView',
