@@ -23,9 +23,7 @@ define([
 
         renderAnalyticsNodeIntrospect: function (viewConfig) {
             this.renderView4Config(this.$el, null, getFeatureIntrospectViewConfig(viewConfig, ctwc.INTROSPECT_ANALYTICS_NODE_PORTS));
-        },
-
-
+        }
     });
 
     function getFeatureIntrospectViewConfig(config, featurePorts) {
@@ -41,8 +39,6 @@ define([
                 tabs: getFeatureTabsConfig(featurePorts, introspectNode)
             }
         };
-
-        return ;
     }
 
     function getFeatureTabsConfig(featurePorts, introspectNode) {

@@ -23,10 +23,7 @@ define([
     });
 
     function getIntrospectJSGridViewConfig(jsonData) {
-        var queryResultGridId = cowl.QE_QUERY_RESULT_GRID_ID;
-
         return {
-            elementId: 'asdasdasdasd',
             title: cowl.TITLE_RESULTS,
             view: "GridView",
             viewConfig: {
@@ -93,15 +90,16 @@ define([
 
                 if (contrail.checkIfExist(value['_link'])) {
                     gridColumn['formatter'] = function (r, c, v, cd, dc) {
-                        return '<a href="#" class="inline-link" data-link="' + value['_link'] + '" ' +
+                        return '<a class="introspect-link" data-link="' + value['_link'] + '" ' +
                             'x="' + value['__text'] + '">' + value['__text'] + '</a>';
                     };
                 }
 
-                if (value['_type'] == 'list' || value['_type'] == 'struct') {
-                    gridColumn['formatter'] = function (r, c, v, cd, dc) {
-                        return contrail.formatJSON2HTML(dc[key], 0, [])
+                if (_.contains(['list', 'struct', 'sandesh'], value['_type'])) {
+                    gridColumn['formatter'] = {
+                        format: 'json2html', options: {jsonValuePath: key, htmlValuePath: key + 'HTML', expandLevel: 0}
                     };
+                    gridColumn['width'] = 250;
                     gridColumn['hide'] = true;
 
                     hiddenColumnCount++;

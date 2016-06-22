@@ -1,4 +1,4 @@
-a.inline-link {
+a.introspect-link {
     color: #3182BD;
 }
 .contrail-introspect-grid {
@@ -88,13 +88,6 @@ a.inline-link {
  * Copyright (c) 2013 Juniper Networks, Inc. All rights reserved.
  */
 
-pre {
-    white-space: pre;
-    min-width: 150px;
-    padding: 3px;
-    margin: 0 0 3px;
-}
-
 .first-cap {
     text-transform:capitalize;
 }
@@ -111,15 +104,6 @@ pre {
     width: auto;
 }
 
-pre{
-    font-size: 12px;
-    border-width: 0;
-    min-width: 125px;
-}
-h4{
-    font-size: 14px;
-    margin: 5px;
-}
 .accordion-heading .accordion-toggle {
     display: block;
     padding: 2px;
