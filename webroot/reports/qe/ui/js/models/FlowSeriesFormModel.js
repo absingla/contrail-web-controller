@@ -8,7 +8,7 @@ define([
     'query-form-model',
     'core-basedir/js/common/qe.model.config'
 ], function (_, Knockout, QueryFormModel,qewmc) {
-    var FormSeriesFormModel = QueryFormModel.extend({
+    var FlowSeriesFormModel = QueryFormModel.extend({
 
         defaultSelectFields: ['flow_class_id', 'direction_ing'],
 
