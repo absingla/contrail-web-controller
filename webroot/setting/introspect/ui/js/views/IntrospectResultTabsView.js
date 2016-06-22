@@ -114,13 +114,17 @@ define([
             app: cowc.APP_CONTRAIL_CONTROLLER,
             tabConfig: {
                 activate: function (event, ui) {
-                    if ($('#' + gridId).data('contrailGrid')) {
-                        $('#' + gridId).data('contrailGrid').refreshView();
-                    }
+                    _.each($('#' + gridId).find('.contrail-grid'), function (gridEl, key) {
+                        if ($(gridEl).data('contrailGrid')) {
+                            $(gridEl).data('contrailGrid').refreshView();
+                        }
+                    });
                 }
             },
             viewConfig: {
-                jsonData: json
+                jsonData: json,
+                node: node,
+                port: port
             }
         }
     }

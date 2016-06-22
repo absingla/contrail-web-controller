@@ -13,32 +13,50 @@ define([
         render: function() {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
+                introspectNode = viewConfig.node,
+                introspectPort = viewConfig.port,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 jsonData = viewConfig.jsonData;
 
             self.renderView4Config(self.$el, null,
-                getIntrospectJSGridViewConfig(jsonData), null, null, modelMap, null);
+                getIntrospectJSGridViewConfig(jsonData, introspectNode, introspectPort), null, null, modelMap, null);
 
         }
     });
 
-    function getIntrospectJSGridViewConfig(jsonData) {
+    function getIntrospectJSGridViewConfig(jsonData, introspectNode, introspectPort) {
+        var sandeshData = parseSandeshData(jsonData),
+            gridViewConfigs = [];
+
+        _.each(sandeshData, function(value, key){
+            gridViewConfigs.push({
+                columns: [
+                    {
+                        elementId: 'introspect-result-js-grid-' + introspectNode  + '-' + introspectPort + '-' + key,
+                        view: "GridView",
+                        viewConfig: {
+                            elementConfig: getIntrospectJSGridConfig(value)
+                        }
+                    }
+                ]
+            })
+        });
+
         return {
-            title: cowl.TITLE_RESULTS,
-            view: "GridView",
+            elementId: 'introspect-js-grids',
+            view: "SectionView",
             viewConfig: {
-                elementConfig: getIntrospectJSGridConfig(jsonData)
+                rows: gridViewConfigs
             }
-        }
+        };
     }
 
-    function getIntrospectJSGridConfig(jsonData) {
+    function getIntrospectJSGridConfig(value) {
 
-        var dataObj = parseDataObject(jsonData),
-            gridConfig = {'data': [], 'columns': [], 'title': ''};
+        var dataObj = parseDataObject(value.data),
+            gridConfig = {'data': [], 'columns': [], 'title': value['title']};
 
         if (dataObj != null && dataObj != undefined) {
-            gridConfig['title'] = getJsonTitle(jsonData);
             gridConfig['columns'] = createGridColumns(dataObj);
             gridConfig['data'] = createGridData(dataObj);
         }
@@ -70,8 +88,7 @@ define([
 
     function createGridColumns(dataObj) {
         var dataLength = dataObj.length,
-            dataRecord = {}, gridColumns = [],
-            hiddenColumnCount = 0;
+            dataRecord = {}, gridColumns = [];
 
         if (!_.isArray(dataObj)) {
             dataRecord = dataObj;
@@ -91,7 +108,7 @@ define([
                 if (contrail.checkIfExist(value['_link'])) {
                     gridColumn['formatter'] = function (r, c, v, cd, dc) {
                         return '<a class="introspect-link" data-link="' + value['_link'] + '" ' +
-                            'x="' + value['__text'] + '">' + value['__text'] + '</a>';
+                            'x="' + dc[key] + '">' + dc[key] + '</a>';
                     };
                 }
 
@@ -99,31 +116,21 @@ define([
                     gridColumn['formatter'] = {
                         format: 'json2html', options: {jsonValuePath: key, htmlValuePath: key + 'HTML', expandLevel: 0}
                     };
-                    gridColumn['width'] = 250;
-                    gridColumn['hide'] = true;
-
-                    hiddenColumnCount++;
                 }
 
                 gridColumns.push(gridColumn);
             }
         });
 
-        if(gridColumns.length === hiddenColumnCount) {
-            _.each(gridColumns, function(value, key) {
-                value['hide'] = false;
-            });
-        }
-
         return gridColumns;
     };
 
     function getColoumnWidth(value, key) {
-        var type = value._type,
+        var type = value['_type'],
             keyLength = key.length,
             headerPixelFactor = 10, strPixelFactor = 15,
             columnWidth = keyLength * headerPixelFactor,
-            maxWidth = 360, minWidth = 60, textValue, textValueLength;
+            maxWidth = 360, minWidth = 80, textValue, textValueLength;
 
         columnWidth = columnWidth < minWidth ? minWidth : columnWidth;
 
@@ -132,8 +139,8 @@ define([
             textValueLength = textValue.length * strPixelFactor;
             columnWidth = (textValueLength > maxWidth) ? maxWidth : ((textValueLength < columnWidth) ? columnWidth : textValueLength);
 
-        } else if (type == 'list' || type == 'struct' || type == undefined) {
-            columnWidth = 240;
+        } else if (_.contains(['list', 'struct', 'sandesh'], type)) {
+            columnWidth = 250;
         }
 
         return columnWidth;
@@ -144,17 +151,17 @@ define([
             gridData = [];
 
         if (!_.isArray(dataObj)) {
-            gridData.push(formatDataObj(dataObj));
+            gridData.push(cleanDataObj(dataObj));
         } else {
             _.each(dataObj, function (value, key) {
-                gridData.push(formatDataObj(value));
+                gridData.push(cleanDataObj(value));
             });
         }
 
         return gridData;
     };
 
-    function formatDataObj(data) {
+    function cleanDataObj(data) {
         var dataObj = $.extend(true, {}, data);
         _.each(dataObj, function (value, key) {
             if (contrail.checkIfExist(value['__text'])) {
@@ -169,19 +176,19 @@ define([
                 } else {
                     delete value['list']['_size'];
                     delete value['list']['_type'];
-                    dataObj[key] = formatDataObj(value['list']);
+                    dataObj[key] = cleanDataObj(value['list']);
                 }
 
             } else if (value['_type'] == 'struct') {
                 delete value['_type'];
                 delete value['_identifier'];
-                dataObj[key] = formatDataObj(value);
+                dataObj[key] = cleanDataObj(value);
 
             } else if (_.isArray(value)) {
-                dataObj[key] = formatDataObj(value);
+                dataObj[key] = cleanDataObj(value);
 
             } else if (_.isObject(value)) {
-                dataObj[key] = formatDataObj(value);
+                dataObj[key] = cleanDataObj(value);
             }
         });
 
@@ -207,14 +214,61 @@ define([
         return word.join(" ");
     };
 
-    function parseDataObject(jsonObject) {
-        while (getTypeFromDataObject(jsonObject) === 'sandesh') {
-            jsonObject = parseDataObjByType(jsonObject, 'sandesh');
+    function parseSandeshData(jsonObject, title) {
+        var keys = _.keys(jsonObject),
+            sandeshKey = null, sandeshObj = {}, sandeshData = [],
+            sandeshTypes = ['list', 'struct'],
+            sandeshTypesLength = 0;
+
+        sandeshKey = keys[0];
+        sandeshObj = jsonObject[sandeshKey];
+
+        if (sandeshObj['_type'] === 'sandesh') {
+            sandeshObj = _.omit(sandeshObj, ['_type', 'more', 'next_batch']);
+            sandeshTypesLength = getLengthOfTypesInSandeshObj(sandeshObj, sandeshTypes);
+
+            if (sandeshTypesLength < sandeshData.length) {
+                sandeshData.push({
+                    title: (contrail.checkIfExist(title) ? title + ' | ' : '') + sandeshKey,
+                    data: sandeshObj
+                });
+            }
+
+            if (sandeshTypesLength > 0) {
+                _.each(sandeshObj, function (value, key) {
+                    if(_.contains(sandeshTypes, value['_type'])) {
+                        sandeshData.push({
+                            title: (contrail.checkIfExist(title) ? title + ' | ' : '') + sandeshKey + ' | ' + key,
+                            data: value
+                        });
+                    }
+                });
+            }
+
+        } else if (sandeshObj['_type'] === 'slist') {
+            sandeshObj = _.omit(sandeshObj, ['_type', 'more', 'next_batch']);
+            _.each(sandeshObj, function(value, key) {
+                var sandeshListObj = {};
+                sandeshListObj[key] = value;
+                sandeshData = sandeshData.concat(parseSandeshData(sandeshListObj, sandeshKey));
+            });
         }
 
-        while (getTypeFromDataObject(jsonObject) === 'slist') {
-            jsonObject = parseDataObjByType(jsonObject, 'slist');
-        }
+        return sandeshData
+    }
+
+    function getLengthOfTypesInSandeshObj(sandeshObj, types) {
+        var typesLength = 0;
+        _.each(sandeshObj, function(value, key) {
+            if(_.contains(types, value['_type'])) {
+                typesLength += 1;
+            }
+        });
+
+        return typesLength;
+    }
+
+    function parseDataObject(jsonObject) {
 
         while (getTypeFromDataObject(jsonObject) === 'list') {
             jsonObject = parseListDataObj(jsonObject);
