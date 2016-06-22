@@ -54,6 +54,46 @@ define([
             });
         },
 
+        hideIntrospectStatus: function() {
+            var self = this,
+                viewConfig = self.attributes.viewConfig,
+                hashParams = layoutHandler.getURLHashParams(),
+                introspectNode = hashParams['node'],
+                introspectType = viewConfig.type,
+                introspectFormStatusId = '#introspect-' + introspectNode + '-' + introspectType + '-form-status';
+
+            $(introspectFormStatusId)
+                .hide()
+                .find('.alert').hide();
+        },
+
+        renderIntrospectErrorStatus: function(errorText) {
+            var self = this,
+                viewConfig = self.attributes.viewConfig,
+                hashParams = layoutHandler.getURLHashParams(),
+                introspectNode = hashParams['node'],
+                introspectType = viewConfig.type,
+                introspectFormStatusId = '#introspect-' + introspectNode + '-' + introspectType + '-form-status';
+
+            $(introspectFormStatusId)
+                .show()
+                .find('.alert-error').show()
+                .find('.error-text').html(errorText);
+        },
+
+        renderIntrospectEmptyStatus: function(emptyText) {
+            var self = this,
+                viewConfig = self.attributes.viewConfig,
+                hashParams = layoutHandler.getURLHashParams(),
+                introspectNode = hashParams['node'],
+                introspectType = viewConfig.type,
+                introspectFormStatusId = '#introspect-' + introspectNode + '-' + introspectType + '-form-status';
+
+            $(introspectFormStatusId)
+                .show()
+                .find('.alert-info').show().html(emptyText);
+        },
+
         renderIntrospectSecondaryForm: function(moduleIntrospectFormData) {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
@@ -70,7 +110,9 @@ define([
             self['secondary']['model'] = new IntrospectSecondaryFormModel(secondaryModelData);
 
             self.renderView4Config($(introspectSecondaryFormId), self['secondary']['model'],
-                getIntrospectSecondaryFormViewConfig(moduleIntrospectFormData), null, null, modelMap, function () {
+                getIntrospectSecondaryFormViewConfig(moduleIntrospectFormData, introspectNode, introspectPort), null, null, modelMap, function () {
+
+                var introspectResultId = '#introspect-' + introspectNode + '-' + introspectType + '-results';
 
                 if(contrail.checkIfKnockoutBindingExist(introspectSecondaryId)) {
                     ko.cleanNode(document.getElementById(introspectSecondaryId));
@@ -80,15 +122,23 @@ define([
                 Knockback.applyBindings(self['secondary']['model'], document.getElementById(introspectSecondaryId));
                 kbValidation.bind(self['secondary']);
 
-                $("#submit_introspect").on('click', function() {
-                    // if (self['primary']['model'].model().isValid(true, 'runIntrospectValidation')) {
-                        self.renderIntrospectResult();
-                    // }
+                $('#submit-introspect' + introspectNode + '-' + introspectPort).on('click', function() {
+                    var params = self['secondary']['model'].model()['attributes'];
+                    self.renderIntrospectResult(params);
                 });
+
+                $(introspectResultId)
+                    .off("click", '.introspect-link')
+                    .on("click", '.introspect-link', function () {
+                        var xmlName = $(this).data('link'),
+                            params = {x: $(this).text()};
+
+                        self.renderIntrospectResult(params);
+                    });
             });
         },
 
-        renderIntrospectResult: function() {
+        renderIntrospectResult: function(params) {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
@@ -100,7 +150,6 @@ define([
                 introspectFormId = '#introspect-' + introspectNode + '-' + introspectType + '-form',
                 introspectResultId = '#introspect-' + introspectNode + '-' + introspectType + '-results',
                 primaryModelAttributes = self['primary']['model'].model()['attributes'],
-                secondaryModelAttributes = self['secondary']['model'].model()['attributes'],
                 ipAddress = primaryModelAttributes.ip_address,
                 moduleIntrospect = primaryModelAttributes.module_introspect;
 
@@ -109,7 +158,7 @@ define([
             }
 
             self.renderView4Config($(introspectResultId), self.model,
-                getIntrospectResultTabViewConfig(introspectNode, ipAddress, introspectPort, moduleIntrospect, introspectType, secondaryModelAttributes), null, null, modelMap, null);
+                getIntrospectResultTabViewConfig(introspectNode, ipAddress, introspectPort, moduleIntrospect, introspectType, params), null, null, modelMap, null);
 
         }
     });
@@ -149,6 +198,7 @@ define([
                                 elementId: 'module_introspect', view: "FormDropdownView",
                                 viewConfig: {
                                     path: 'module_introspect', class: "span4",
+                                    label: 'Introspect',
                                     dataBindValue: 'module_introspect', dataBindOptionList: "module_introspect_option_list()",
                                     elementConfig: {
                                         dataTextField: "text", dataValueField: "id",
@@ -165,13 +215,13 @@ define([
         };
     }
 
-    function getIntrospectSecondaryFormViewConfig(moduleIntrospectFormData) {
+    function getIntrospectSecondaryFormViewConfig(moduleIntrospectFormData, introspectNode, introspectPort) {
         var row, columns, i = 0,
             isNewRow, elementName,
             secondaryFormConfig = [];
 
         _.each(moduleIntrospectFormData, function(value, key) {
-            if (['type', 'errors', 'locks'].indexOf(key) === -1) {
+            if (['_type', 'errors', 'locks'].indexOf(key) === -1) {
                 isNewRow = ((i % 3) == 0) ? true : false;
                 elementName = key;
                 if (isNewRow) {
@@ -190,7 +240,8 @@ define([
         secondaryFormConfig.push({
             columns: [
                 {
-                    elementId: 'submit_introspect', view: "FormButtonView", label: "Submit",
+                    elementId: 'submit-introspect' + introspectNode + '-' + introspectPort,
+                    view: "FormButtonView", label: "Submit",
                     viewConfig: {
                         class: 'display-inline-block margin-5-10-0-0',
                         label: 'Submit',
@@ -214,7 +265,7 @@ define([
         var modelData = {};
 
         _.each(moduleIntrospectFormData, function(value, key) {
-            if (['type', 'errors', 'locks'].indexOf(key) === -1) {
+            if (['_type', 'errors', 'locks'].indexOf(key) === -1) {
                 modelData[key] = null;
             }
         });
@@ -233,21 +284,9 @@ define([
                 ip_address: ipAddress,
                 port: port,
                 module_introspect: moduleIntrospect,
-                params: formatParams(secondaryModelAttributes)
+                params: _.omit(secondaryModelAttributes, ['_type', 'errors', 'locks'])
             }
         };
-    }
-
-    function formatParams(params) {
-        var paramsData = {};
-
-        _.each(params, function(value, key) {
-            if (['type', 'errors', 'locks'].indexOf(key) === -1) {
-                paramsData[key] = value;
-            }
-        });
-
-        return paramsData;
     }
 
     return IntrospectFormView;
