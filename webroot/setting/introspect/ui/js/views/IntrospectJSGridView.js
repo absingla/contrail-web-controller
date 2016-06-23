@@ -72,7 +72,7 @@ define([
             columnHeader: {columns: gridConfig['columns']},
             body: {
                 options: {
-                    forceFitColumns: false,
+                    forceFitColumns: gridConfig['columns'].length < 3 ? true : false,
                     checkboxSelectable: false
                 },
                 dataSource: {data: gridConfig['data']}
@@ -166,9 +166,12 @@ define([
         _.each(dataObj, function (value, key) {
             if (contrail.checkIfExist(value['__text'])) {
                 dataObj[key] = value['__text'];
-
             } else if (value['_type'] == 'string') {
-                dataObj[key] = '-'
+                if (contrail.checkIfExist(value['element'])) {
+                    dataObj[key] = value['element'];
+                } else {
+                    dataObj[key] = '-'
+                }
 
             } else if (value['_type'] == 'list') {
                 if (parseInt(value['list']['_size']) == 0) {
@@ -216,7 +219,7 @@ define([
 
     function parseSandeshData(jsonObject, title) {
         var keys = _.keys(jsonObject),
-            sandeshKey = null, sandeshObj = {}, sandeshData = [],
+            sandeshKey = null, sandeshObj = {}, sandeshObjKeys, sandeshData = [],
             sandeshTypes = ['list', 'struct'],
             sandeshTypesLength = 0;
 
@@ -225,9 +228,10 @@ define([
 
         if (sandeshObj['_type'] === 'sandesh') {
             sandeshObj = _.omit(sandeshObj, ['_type', 'more', 'next_batch']);
+            sandeshObjKeys = _.keys(sandeshObj);
             sandeshTypesLength = getLengthOfTypesInSandeshObj(sandeshObj, sandeshTypes);
 
-            if (sandeshTypesLength < sandeshData.length) {
+            if (sandeshTypesLength < sandeshObjKeys.length) {
                 sandeshData.push({
                     title: (contrail.checkIfExist(title) ? title + ' | ' : '') + sandeshKey,
                     data: sandeshObj
@@ -251,6 +255,12 @@ define([
                 var sandeshListObj = {};
                 sandeshListObj[key] = value;
                 sandeshData = sandeshData.concat(parseSandeshData(sandeshListObj, sandeshKey));
+            });
+        } else {
+
+            sandeshData.push({
+                title: contrail.checkIfExist(title) ? title : '',
+                data: jsonObject
             });
         }
 
