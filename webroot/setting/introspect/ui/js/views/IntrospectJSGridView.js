@@ -54,41 +54,37 @@ define([
     function getIntrospectJSGridConfig(value) {
 
         var dataObj = parseDataObject(value.data),
-            gridConfig = {'data': [], 'columns': [], 'title': value['title']};
+            gridData =  [], gridColumnsObj = {};
 
         if (dataObj != null && dataObj != undefined) {
-            gridConfig['columns'] = createGridColumns(dataObj);
-            gridConfig['data'] = createGridData(dataObj);
+            gridColumnsObj = createGridColumns(dataObj);
+            gridData = createGridData(dataObj);
         }
 
         return {
             header: {
-                title: {text: gridConfig['title']},
+                title: {text: value['title']},
                 defaultControls: {
                     collapseable: false,
                     columnPickable: true
                 }
             },
-            columnHeader: {columns: gridConfig['columns']},
+            columnHeader: {columns: gridColumnsObj['columns']},
             body: {
                 options: {
-                    forceFitColumns: gridConfig['columns'].length < 3 ? true : false,
-                    checkboxSelectable: false
+                    forceFitColumns: gridColumnsObj['columns'].length < 3 ? true : false,
+                    checkboxSelectable: false,
+                    fixedRowHeight: gridColumnsObj['isFixedRowHeight'] ? 30 : false
                 },
-                dataSource: {data: gridConfig['data']}
+                dataSource: {data: gridData}
             }
         };
     }
 
-    function getJsonTitle(json) {
-        var jsonKeys = _.keys(json);
-
-        return jsonKeys[0]
-    }
-
     function createGridColumns(dataObj) {
         var dataLength = dataObj.length,
-            dataRecord = {}, gridColumns = [];
+            dataRecord = {}, gridColumns = [],
+            isFixedRowHeight = true;
 
         if (!_.isArray(dataObj)) {
             dataRecord = dataObj;
@@ -116,13 +112,14 @@ define([
                     gridColumn['formatter'] = {
                         format: 'json2html', options: {jsonValuePath: key, htmlValuePath: key + 'HTML', expandLevel: 0}
                     };
+                    isFixedRowHeight = false;
                 }
 
                 gridColumns.push(gridColumn);
             }
         });
 
-        return gridColumns;
+        return { columns: gridColumns, isFixedRowHeight: isFixedRowHeight };
     };
 
     function getColoumnWidth(value, key) {
@@ -234,7 +231,7 @@ define([
             if (sandeshTypesLength < sandeshObjKeys.length) {
                 sandeshData.push({
                     title: (contrail.checkIfExist(title) ? title + ' | ' : '') + sandeshKey,
-                    data: sandeshObj
+                    data: filterTypesOfSandeshObj(sandeshObj, sandeshTypes)
                 });
             }
 
@@ -278,21 +275,29 @@ define([
         return typesLength;
     }
 
+    function filterTypesOfSandeshObj(sandeshObj, omitTypes) {
+        var filteredSandeshObj = {};
+        _.each(sandeshObj, function(value, key) {
+            if(!_.contains(omitTypes, value['_type'])) {
+                filteredSandeshObj[key] = value;
+            }
+        });
+
+        return filteredSandeshObj;
+    }
+
     function parseDataObject(jsonObject) {
 
-        while (getTypeFromDataObject(jsonObject) === 'list') {
+        while (jsonObject['_type'] === 'list') {
             jsonObject = parseListDataObj(jsonObject);
         }
 
-        while (getTypeFromDataObject(jsonObject) === 'struct') {
+        while (jsonObject['_type'] === 'struct') {
             jsonObject = parseDataObjByType(jsonObject, 'struct');
         }
 
-        for (var key in jsonObject) {
-            if (_.isObject(jsonObject[key]) && !contrail.checkIfExist(jsonObject[key]['_type'])) {
-                jsonObject = jsonObject[key];
-                break;
-            }
+        if (jsonObject['_type'] === 'string' && contrail.checkIfExist(jsonObject['_size']) && contrail.checkIfExist(jsonObject['element'])) {
+            jsonObject = _.map(jsonObject['element'], function(value, key) { return {element: value}; });
         }
 
         return jsonObject;
@@ -300,7 +305,7 @@ define([
 
     function parseDataObjByType(jsonObject, type) {
         for (var key in jsonObject) {
-            if (_.isObject(jsonObject[key]) && jsonObject[key]['_type'] === type) {
+            if (_.isObject(jsonObject[key]) && jsonObject['_type'] === type) {
                 jsonObject = jsonObject[key];
                 break;
             }
@@ -310,25 +315,13 @@ define([
     }
 
     function parseListDataObj(jsonObject) {
-        var keys = _.keys(jsonObject);
-
-        if (jsonObject[keys[0]]['list']['_size'] > 0) {
-            jsonObject = jsonObject[keys[0]]['list'];
+        if (jsonObject['list']['_size'] > 0) {
+            jsonObject = jsonObject['list'];
         } else {
             jsonObject = {};
         }
 
         return jsonObject;
-    }
-
-
-    function getTypeFromDataObject(jsonObject) {
-        var keys = _.keys(jsonObject);
-        if (keys.length > 0) {
-            return contrail.checkIfExist(jsonObject[keys[0]]['_type']) ? jsonObject[keys[0]]['_type'] : false;
-        } else {
-            return false;
-        }
     }
 
     return IntrospectJSGridView;
