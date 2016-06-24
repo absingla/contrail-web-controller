@@ -8,7 +8,8 @@ define(function (require) {
 
     var QueryConfigView = QueryFormView.extend({
         events: {
-            'click #save_query': 'onChange'
+            //TODO: this method results in double event subscription after select field change
+            //'click #save_query': 'onChange',
         },
 
         render: function () {
@@ -17,6 +18,10 @@ define(function (require) {
             var elementId = self.attributes.elementId
             self.renderView4Config(self.$el, self.model, self.getViewConfig(), null,null,null, function () {
                 Knockback.applyBindings(self.model, self.$el[0])
+                //TODO remove this in favor of Backbone delegated events
+                $("#save_query").on('click', function() {
+                    self.onChange()
+                })
             })
         },
 

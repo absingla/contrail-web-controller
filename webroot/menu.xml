@@ -1029,6 +1029,15 @@ and need to add the iconClass tag wherever we need to show some icons
                             </loader>
                             <searchStrings>User-defined Dashboard</searchStrings>
                         </item>
+                        <item>
+                            <hash>query_udd_logs</hash>
+                            <label>Logs</label>
+                            <loader>
+                                <class>uddLoader</class>
+                                <function>renderNetworkingUDD</function>
+                            </loader>
+                            <searchStrings>User-defined Dashboard</searchStrings>
+                        </item>
                     </items>
                 </item>
                 <item>

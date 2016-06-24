@@ -29,6 +29,11 @@ define([
                     dataUrl: '/api/udd/widget/',
                 }
             }
+        },
+
+        destroy: function () {
+            var self = this
+            self.childViewMap['gridStackView'].model.reset()
         }
 
     });

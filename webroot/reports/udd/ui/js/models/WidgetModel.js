@@ -18,7 +18,7 @@ define(function (require) {
                 attrs.config = p.config || {}
                 attrs.id = self.id
                 attrs.config.title = self.id
-                    
+
                 attrs.contentConfig = {}
                 attrs.contentConfig.contentView = _.extend({}, defaultConfig.contentViewList['LineChartView'].contentView)
                 attrs.contentConfig.contentConfigView = _.extend({}, defaultConfig.contentViewList['LineChartView'].contentConfigView)
@@ -34,6 +34,7 @@ define(function (require) {
             // TODO this model should be configurable
             attrs.dataConfigModel = new StatQueryFormModel(attrs.contentConfig.dataConfigView.viewConfig)
             attrs.contentConfigModel = new ContrailModel(attrs.contentConfig.contentView.viewConfig)
+            attrs.contentConfigModel.model().set('yAxisValues', [])
 
             // update yAxisValue based on contentConfigModel select field
             attrs.dataConfigModel.model().on('change', function () {

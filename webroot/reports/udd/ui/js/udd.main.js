@@ -21,7 +21,6 @@ function UDDashboardLoader() {
         });
     };
     this.renderView = function (renderFn, hashParams, view) {
-        $(contentContainer).empty();
         switch (renderFn) {
             case 'renderNetworkingUDD':
                 this.uddView.renderNetworkingUDD({hashParams: hashParams});
@@ -36,6 +35,7 @@ function UDDashboardLoader() {
     };
 
     this.destroy = function () {
-        //TODO: Implement required destroy (if any)
+        var self = this
+        self.uddView.destroy()
     };
 };

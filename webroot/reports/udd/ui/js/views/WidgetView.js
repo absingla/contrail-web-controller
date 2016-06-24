@@ -29,7 +29,7 @@ define(function (require) {
             
             self.titleTemplate = contrail.getTemplate4Id('widget-title-edit-template')
             //rerender on contentView change
-            self.listenTo(self.model.get('dataConfigModel').model(), 'change', self.renderContentConfigView.bind(self))
+            //self.listenTo(self.model.get('dataConfigModel').model(), 'change:select', self.renderContentConfigView.bind(self))
         },
 
         render: function () {
@@ -69,13 +69,9 @@ define(function (require) {
         // render content config view on the back
         renderContentConfigView: function () {
             var self = this
-            //TODO make validation real
-            if (!self.model.get('dataConfigModel').select()) return
             var config = self.getContentConfigVC()
             var element = self.$('.content-config')
             var model = self.model.get('contentConfigModel')
-            //TODO do not full rerender on select change - yAxisValue dropdown should be updated alone
-            if (element.html()) return 
             self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
         },
 
