@@ -22,8 +22,7 @@ define([
                 url = '/proxy?proxyURL=http://' + ipAddress + ':' + port + '/Snh_' +
                     moduleIntrospect + '?' + $.param(params);
 
-                self.fetchIntrospect(url);
-
+            self.fetchIntrospect(url);
         },
 
         fetchIntrospect: function(url) {
@@ -90,12 +89,7 @@ define([
                 extra_links: [
                     {
                         elementId: 'introspect-result-' + node + '-' + port + '-next-batch',
-                        title: 'Next Batch',
-                        events: {
-                            click: function() {
-                                console.log('here')
-                            }
-                        }
+                        title: 'Next Batch'
                     }
                 ]
             }
@@ -139,6 +133,9 @@ define([
             view: 'IntrospectXSLGridView',
             viewPathPrefix: "setting/introspect/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
+            tabConfig: {
+                renderOnActivate: true
+            },
             viewConfig: {
                 xmlData: xml
             }
@@ -155,6 +152,9 @@ define([
             view: 'IntrospectJSONView',
             viewPathPrefix: "setting/introspect/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
+            tabConfig: {
+                renderOnActivate: true
+            },
             viewConfig: {
                 jsonData: json
             }

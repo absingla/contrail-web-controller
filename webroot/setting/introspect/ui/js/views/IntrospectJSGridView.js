@@ -16,11 +16,10 @@ define([
                 introspectNode = viewConfig.node,
                 introspectPort = viewConfig.port,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
-                jsonData = viewConfig.jsonData;
+                jsonData = viewConfig.jsonData,
+                jsGridViewConfig = getIntrospectJSGridViewConfig(jsonData, introspectNode, introspectPort);
 
-            self.renderView4Config(self.$el, null,
-                getIntrospectJSGridViewConfig(jsonData, introspectNode, introspectPort), null, null, modelMap, null);
-
+            self.renderView4Config(self.$el, null, jsGridViewConfig, null, null, modelMap, null);
         }
     });
 
@@ -106,12 +105,15 @@ define([
                         return '<a class="introspect-link" data-link="' + value['_link'] + '" ' +
                             'x="' + dc[key] + '">' + dc[key] + '</a>';
                     };
+                    gridColumn['exportConfig'] = { allow: true };
+
                 }
 
                 if (_.contains(['list', 'struct', 'sandesh'], value['_type'])) {
                     gridColumn['formatter'] = {
                         format: 'json2html', options: {jsonValuePath: key, htmlValuePath: key + 'HTML', expandLevel: 0}
                     };
+                    gridColumn['exportConfig'] = { allow: true, advFormatter: function(dc) { return JSON.stringify(dc[key]);}};
                     isFixedRowHeight = false;
                 }
 
