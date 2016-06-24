@@ -22,30 +22,27 @@ define([
                 url = '/proxy?proxyURL=http://' + ipAddress + ':' + port + '/Snh_' +
                     moduleIntrospect + '?' + $.param(params);
 
-                self.fetchIntrospect(url);
-
+            self.fetchIntrospect(url);
         },
 
         fetchIntrospect: function(url) {
             var self = this;
 
-            $.ajax({
-                url: url,
-                cache: true,
-                dataType: 'xml',
-                success: function (xml) {
-                    var x2js = new xml2json(),
-                        json = x2js.xml2json(xml),
-                        data = { xml: xml, json: json };
+            contrail.ajaxHandler({
+                url: url, cache: true, dataType: 'xml'
+            }, function() {
+                self.$el.append('<p class="padding-10-0"><i class="icon-spin icon-spinner"></i> Loading Results.</p>');
+            }, function (xml) {
+                var x2js = new xml2json(),
+                    json = x2js.xml2json(xml),
+                    data = { xml: xml, json: json };
 
-                    self.renderIntrospectTabs(data);
-                },
-                error: function(error) {
-                    if (error.status === 404) {
-                        //TODO
-                    }
+                self.renderIntrospectTabs(data);
+            }, function(error) {
+                if (error.status === 404) {
+                    //TODO
                 }
-            });
+            }, null);
         },
 
         renderIntrospectTabs: function(data) {
@@ -92,12 +89,7 @@ define([
                 extra_links: [
                     {
                         elementId: 'introspect-result-' + node + '-' + port + '-next-batch',
-                        title: 'Next Batch',
-                        events: {
-                            click: function() {
-                                console.log('here')
-                            }
-                        }
+                        title: 'Next Batch'
                     }
                 ]
             }
@@ -116,13 +108,17 @@ define([
             app: cowc.APP_CONTRAIL_CONTROLLER,
             tabConfig: {
                 activate: function (event, ui) {
-                    if ($('#' + gridId).data('contrailGrid')) {
-                        $('#' + gridId).data('contrailGrid').refreshView();
-                    }
+                    _.each($('#' + gridId).find('.contrail-grid'), function (gridEl, key) {
+                        if ($(gridEl).data('contrailGrid')) {
+                            $(gridEl).data('contrailGrid').refreshView();
+                        }
+                    });
                 }
             },
             viewConfig: {
-                jsonData: json
+                jsonData: json,
+                node: node,
+                port: port
             }
         }
     }
@@ -133,10 +129,13 @@ define([
 
         return {
             elementId: gridId,
-            title: 'XSL',
+            title: 'XSL Grid',
             view: 'IntrospectXSLGridView',
             viewPathPrefix: "setting/introspect/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
+            tabConfig: {
+                renderOnActivate: true
+            },
             viewConfig: {
                 xmlData: xml
             }
@@ -153,6 +152,9 @@ define([
             view: 'IntrospectJSONView',
             viewPathPrefix: "setting/introspect/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
+            tabConfig: {
+                renderOnActivate: true
+            },
             viewConfig: {
                 jsonData: json
             }

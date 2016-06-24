@@ -31,8 +31,12 @@ define([
 
             this.getIpAddressOptionList();
 
-            this.model().on("change:ip_address", this.onChangeIpAddress, this);
-            this.model().on("change:module", this.onChangeModule, this);
+            this.model().on("change:ip_address", function() {
+                this.onChangeIpAddress(IntrospectFormView)
+            }, this);
+            this.model().on("change:module", function() {
+                this.onChangeModule(IntrospectFormView)
+            }, this);
             this.model().on("change:module_introspect", function() {
                 this.onChangeModuleIntrospect(IntrospectFormView)
             }, this);
@@ -122,13 +126,14 @@ define([
             }
         },
 
-        onChangeIpAddress: function() {
+        onChangeIpAddress: function(IntrospectFormView) {
             var self = this,
                 model = self.model(),
                 node = model.attributes.node,
                 ipAddress = model.attributes.ip_address,
                 port = model.attributes.port,
                 uiAddedParameters = model.attributes.ui_added_parameters,
+                url = '/proxy?proxyURL=http://' + ipAddress + ':' + port,
                 modules = [];
 
             if (!contrail.checkIfExist(uiAddedParameters[node][port])) {
@@ -147,34 +152,39 @@ define([
                 self.module_option_list(modules);
 
             } else {
-                $.ajax({
-                    url: '/proxy?proxyURL=http://' + ipAddress + ':' + port,
-                    dataType: 'html',
-                    success: function (html) {
-                        var moduleText;
 
-                        $(html).each(function (key, value) {
-                            if ($(value).is('a')) {
-                                moduleText = $(value).text();
-                                moduleText = moduleText.replace('.xml', '');
-                                modules.push({id: moduleText, text: moduleText});
+                contrail.ajaxHandler({
+                    url: url, dataType: 'html'
+                }, function(){
+                    IntrospectFormView.hideIntrospectStatus();
+                }, function (html) {
+                    var moduleText;
 
-                                uiAddedParameters[node][port][ipAddress][moduleText] = {};
-                            }
-                        });
+                    $(html).each(function (key, value) {
+                        if ($(value).is('a')) {
+                            moduleText = $(value).text();
+                            moduleText = moduleText.replace('.xml', '');
+                            modules.push({id: moduleText, text: moduleText});
 
-                        self.module_option_list(modules);
-                    },
-                    error: function(error) {
-                        if (error.status === 404) {
-                            //TODO
+                            uiAddedParameters[node][port][ipAddress][moduleText] = {};
                         }
+                    });
+
+                    if(modules.length == 0) {
+                        IntrospectFormView.renderIntrospectEmptyStatus('No Module Found.');
+                    }
+
+                    self.module_option_list(modules);
+                },
+                function(error) {
+                    if (error.status === 404) {
+                        IntrospectFormView.renderIntrospectErrorStatus('Unable to fetch ' + url);
                     }
                 });
             }
         },
 
-        onChangeModule: function() {
+        onChangeModule: function(IntrospectFormView) {
             var self = this,
                 model = self.model(),
                 node = model.attributes.node,
@@ -182,6 +192,7 @@ define([
                 port = model.attributes.port,
                 module = model.attributes.module,
                 uiAddedParameters = model.attributes.ui_added_parameters,
+                url = '/proxy?proxyURL=http://' + ipAddress + ':' + port + '/' + module + '.xml',
                 moduleIntrospects = [];
 
             if (!$.isEmptyObject(uiAddedParameters[node][port][ipAddress][module])) {
@@ -192,26 +203,30 @@ define([
                 self.module_introspect_option_list(moduleIntrospects);
 
             } else {
-                $.ajax({
-                    url: '/proxy?proxyURL=http://' + ipAddress + ':' + port + '/' + module + '.xml',
-                    dataType: 'xml',
-                    success: function (xml) {
-                        var x2js = new xml2json(),
-                            json = x2js.xml2json(xml);
 
-                        _.each(json[module], function (jsonValue, jsonKey) {
-                            if(jsonKey.charAt(0) !== '_') {
-                                moduleIntrospects.push({id: jsonKey, text: jsonKey});
-                                uiAddedParameters[node][port][ipAddress][module][jsonKey] = jsonValue;
-                            }
-                        });
+                contrail.ajaxHandler({
+                    url: url, dataType: 'xml'
+                }, function(){
+                    IntrospectFormView.hideIntrospectStatus();
+                }, function (xml) {
+                    var x2js = new xml2json(),
+                        json = x2js.xml2json(xml);
 
-                        self.module_introspect_option_list(moduleIntrospects);
-                    },
-                    error: function (error) {
-                        if (error.status === 404) {
-                            //TODO
+                    _.each(json[module], function (jsonValue, jsonKey) {
+                        if(jsonKey.charAt(0) !== '_') {
+                            moduleIntrospects.push({id: jsonKey, text: jsonKey});
+                            uiAddedParameters[node][port][ipAddress][module][jsonKey] = jsonValue;
                         }
+                    });
+
+                    if(moduleIntrospects.length == 0) {
+                        IntrospectFormView.renderIntrospectEmptyStatus('No Introspect Found.');
+                    }
+
+                    self.module_introspect_option_list(moduleIntrospects);
+                }, function (error) {
+                    if (error.status === 404) {
+                        IntrospectFormView.renderIntrospectErrorStatus('Unable to fetch ' + url);
                     }
                 });
             }
