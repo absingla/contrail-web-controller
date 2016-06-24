@@ -59,8 +59,7 @@ define(function (require) {
 
             $grid.gridstack(self.p)
             self.grid = $grid.data('gridstack')
-            self.placeHolder = self.grid.addWidget(self.placeholderHTML, 0, 1000, self.p.minWidth, 1, true)
-            self.grid.disable(self.placeholder)
+            self.placeHolder = self.$el.append(self.placeholderHTML)
         },
 
         add: function () {
