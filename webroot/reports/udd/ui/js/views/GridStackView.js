@@ -22,7 +22,9 @@ define(function (require) {
                 acceptWidgets: '.grid-stack-item',
                 handle: '.panel-heading',
                 verticalMargin: 8,
-                cellHeight: 60
+                cellHeight: 60,
+                minWidth: 1,
+                minHeight: 6,
             }
             var viewConfig = self.attributes.viewConfig;
 
@@ -57,13 +59,16 @@ define(function (require) {
 
             $grid.gridstack(self.p)
             self.grid = $grid.data('gridstack')
-            self.placeHolder = self.grid.addWidget(self.placeholderHTML, 0, 10, 1, 1, true)
+            self.placeHolder = self.grid.addWidget(self.placeholderHTML, 0, 1000, self.p.minWidth, 1, true)
             self.grid.disable(self.placeholder)
         },
 
         add: function () {
             var self = this
-            self.model.set({config: {width: self.p.width, height: 6}})
+            var x = _.sortBy(_.map(self.model.models, 'attributes.config.x'), function (x) { return Math.max(x) })[0] + self.p.minWidth
+            var y = _.sortBy(_.map(self.model.models, 'attributes.config.y'), function (y) { return Math.max(y) })[0] + self.p.minHeight
+            console.log(x, y)
+            self.model.set({config: {x: x, y: y, width: self.p.width, height: self.p.minHeight}})
         },
 
         clear: function () {
@@ -84,9 +89,9 @@ define(function (require) {
                                 widgetConfig.width,
                                 widgetConfig.height,
                                 false,                  // autoposition
-                                1,                      // minWidth
+                                self.p.minWidth,                      // minWidth
                                 undefined,              // maxWidth
-                                6,                      // minHeight
+                                self.p.minHeight,       // minHeight
                                 undefined,              // maxHeight
                                 id)
 
@@ -97,8 +102,8 @@ define(function (require) {
                 viewPathPrefix: "reports/udd/ui/js/views/",
                 viewConfig: {}
             }, null, null, null, function () {
-                self.grid.minWidth(el, 1)
-                self.grid.minHeight(el, 6)
+                self.grid.minWidth(el, self.p.minWidth)
+                self.grid.minHeight(el, self.p.minHeight)
             });
         },
 
