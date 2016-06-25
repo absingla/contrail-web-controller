@@ -7,7 +7,7 @@ define(function (require) {
 
     var LineChartConfigView = ContrailView.extend({
         events: {
-            'click #update_widget': 'onChange'
+            'click .update-widget': 'onChange'
         },
 
         initialize: function () {
@@ -76,7 +76,7 @@ define(function (require) {
                                 {
                                     elementId: 'update_widget', view: 'FormButtonView', label: 'Update Widget',
                                     viewConfig: {
-                                        class: 'display-inline-block margin-5-10-0-0',
+                                        class: 'update-widget display-inline-block margin-5-10-0-0',
                                         elementConfig: {
                                             btnClass: 'btn-primary'
                                         }

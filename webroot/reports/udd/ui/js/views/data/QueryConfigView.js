@@ -19,7 +19,7 @@ define(function (require) {
             self.renderView4Config(self.$el, self.model, self.getViewConfig(), null,null,null, function () {
                 Knockback.applyBindings(self.model, self.$el[0])
                 //TODO remove this in favor of Backbone delegated events
-                $("#save_query").on('click', function() {
+                $(".save-query").on('click', function() {
                     self.onChange()
                 })
             })
@@ -128,7 +128,7 @@ define(function (require) {
                                 {
                                     elementId: 'save_query', view: "FormButtonView", label: "Save Query",
                                     viewConfig: {
-                                        class: 'display-inline-block margin-5-10-0-0',
+                                        class: 'save-query display-inline-block margin-5-10-0-0',
                                         disabled: 'is_request_in_progress()',
                                         elementConfig: {
                                             btnClass: 'btn-primary'
