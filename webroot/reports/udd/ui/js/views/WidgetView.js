@@ -13,21 +13,20 @@ define(function (require) {
             front: '.front.panel-body',
             back: '.back.panel-body',
             heading: '.panel-heading',
+            title: '.panel-heading>.title',
             titleInput: '.panel-heading>input',
         },
         events: {
             'click .close': 'remove',
             'click .panel-heading .config': 'flipCard',
             'click .title': 'editTitle',
-            'blur .panel-heading>input': 'onTitleChange',
+            'blur .panel-heading>input': 'saveTitle',
             'click .save': 'saveConfig',
             'click .nav-pills': 'changeTab',
         },
 
         initialize: function (p) {
             var self = this
-            
-            self.titleTemplate = contrail.getTemplate4Id('widget-title-edit-template')
             //rerender on contentView change
             //self.listenTo(self.model.get('dataConfigModel').model(), 'change:select', self.renderContentConfigView.bind(self))
         },
@@ -39,6 +38,7 @@ define(function (require) {
                 config,
                 onAllViewsRenderComplete;
 
+            Knockback.applyBindings(self.model.get('configModel'), self.$el.find(self.selectors.heading)[0])
             // show config by default for widget with no data source selected
             if (self.model.isValid()) self.renderContentView()
             else self.flipCard()
@@ -156,11 +156,17 @@ define(function (require) {
 
         editTitle: function (e) {
             var self = this
-            var title = self.model.get('config').title
-            self.$('.title').remove()
-            self.$(self.selectors.heading).prepend(self.titleTemplate({title: title}))
-            self.$(self.selectors.titleInput).focus()
+            self.$(self.selectors.title).hide()
+            var titleInput = self.$(self.selectors.titleInput)
+            titleInput.show()
+            titleInput.focus()
             return true
+        },
+
+        saveTitle: function (e) {
+            var self = this
+            self.$(self.selectors.title).show()
+            self.$(self.selectors.titleInput).hide()
         },
 
         resize: function () {
@@ -169,16 +175,6 @@ define(function (require) {
             var widgetContentView = self.childViewMap[viewId]
             if (!widgetContentView) return
             else widgetContentView.resize()
-        },
-
-        onTitleChange: function (e) {
-            var self = this
-            var newTitle = self.$(self.selectors.titleInput).val()
-            var config = self.model.get('config')
-            config.title = newTitle
-            self.model.set('config', config)
-            self.$(self.selectors.titleInput).remove()
-            self.$(self.selectors.heading).prepend(self.titleTemplate({title: newTitle}))
         },
 
         subscribeConfigChange: function (id) {

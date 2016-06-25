@@ -64,10 +64,14 @@ define(function (require) {
 
         add: function () {
             var self = this
-            var x = _.sortBy(_.map(self.model.models, 'attributes.config.x'), function (x) { return Math.max(x) })[0] + self.p.minWidth
-            var y = _.sortBy(_.map(self.model.models, 'attributes.config.y'), function (y) { return Math.max(y) })[0] + self.p.minHeight
+            // place widget last
+            var cellsX = _.map(self.model.models, function (m) { return m.attributes.configModel.x()})
+            var cellsY = _.map(self.model.models, function (m) { return m.attributes.configModel.y()})
+            function getMax(value) { return Math.max(value) }
+            var x = _.isEmpty(cellsX) ? 0 : _.sortBy(cellsX, getMax)[0] + self.p.minWidth
+            var y = _.isEmpty(cellsY) ? 0 : _.sortBy(cellsY, getMax)[0] || 0 + self.p.minHeight
             console.log(x, y)
-            self.model.set({config: {x: x, y: y, width: self.p.width, height: self.p.minHeight}})
+            self.model.add({config: {x: x, y: y, width: self.p.width, height: self.p.minHeight}})
         },
 
         clear: function () {
@@ -80,7 +84,7 @@ define(function (require) {
         onModelAdded: function (model) {
             var self = this
             var id = model.get('id')
-            var widgetConfig = model.get('config') || {}
+            var widgetConfig = model.get('configModel').model().toJSON() || {}
             widgetConfig.id = id
             self.grid.addWidget(self.widgetTemplate(widgetConfig),
                                 widgetConfig.x,
@@ -88,7 +92,7 @@ define(function (require) {
                                 widgetConfig.width,
                                 widgetConfig.height,
                                 false,                  // autoposition
-                                self.p.minWidth,                      // minWidth
+                                self.p.minWidth,        // minWidth
                                 undefined,              // maxWidth
                                 self.p.minHeight,       // minHeight
                                 undefined,              // maxHeight
@@ -100,10 +104,7 @@ define(function (require) {
                 elementId: id,
                 viewPathPrefix: "reports/udd/ui/js/views/",
                 viewConfig: {}
-            }, null, null, null, function () {
-                self.grid.minWidth(el, self.p.minWidth)
-                self.grid.minHeight(el, self.p.minHeight)
-            });
+            })
         },
 
         onRemoveWidget: function (e) {
@@ -119,19 +120,18 @@ define(function (require) {
             })
             widget.resize()
         },
-
+        // update widget model config on gridstack items change
         onChange: function (event, items) {
             var self = this
             _.each(items, function (item) {
-                if (!item.id || !item._updating) return
+                if (!item.id) return
                 var widgetView = self.childViewMap[item.id]
                 if (!widgetView) return
-                var config = widgetView.model.get('config')
-                config.x = item.x
-                config.y = item.y
-                config.width = item.width
-                config.height = item.height
-                widgetView.model.set('config', config)
+                var config = widgetView.model.get('configModel')
+                config.x(item.x)
+                config.y(item.y)
+                config.width(item.width)
+                config.height(item.height)
             })
         }
     })

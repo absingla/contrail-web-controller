@@ -31,6 +31,11 @@ define(function (require) {
             }
             attrs.viewsModel = new ContrailModel(views)
 
+            attrs.configModel = new ContrailModel(attrs.config)
+            // autosave widget gui config
+            attrs.configModel.model().on('change', function () {
+                self.save()
+            })
             // TODO this model should be configurable
             attrs.dataConfigModel = new StatQueryFormModel(attrs.contentConfig.dataConfigView.viewConfig)
             attrs.contentConfigModel = new ContrailModel(attrs.contentConfig.contentView.viewConfig)
@@ -61,8 +66,7 @@ define(function (require) {
          */
         validate: function () {
             var self = this
-            var config = self.attributes.config
-            var validConfig = !!config.title
+            var validConfig = !!self.attributes.configModel.title()
             return !validConfig || !self.attributes.dataConfigModel.select() || !self.attributes.contentConfigModel.model().get('yAxisValue')
             //return !(validConfig && self.attributes.dataConfigModel.model().isValid() && self.attributes.contentConfigModel.model().isValid())
         },
@@ -83,11 +87,11 @@ define(function (require) {
 
             var result = {
                 config: {
-                    title: attrs.config.title,
-                    x: attrs.config.x,
-                    y: attrs.config.y,
-                    width: attrs.config.width,
-                    height: attrs.config.height,
+                    title: attrs.configModel.title(),
+                    x: attrs.configModel.x(),
+                    y: attrs.configModel.y(),
+                    width: attrs.configModel.width(),
+                    height: attrs.configModel.height(),
                 },
                 "\"contentConfig\"": {
                     contentView: {
