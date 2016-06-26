@@ -52,8 +52,9 @@ define(function (require) {
 
         parse: function (data) {
             // on successful model save
-            if (data.result) {
-                if (data.error) console.log(data)
+            if (data.result) return
+            if (data.error) {
+                console.log(data)
                 return
             }
 

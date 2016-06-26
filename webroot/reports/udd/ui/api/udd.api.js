@@ -10,7 +10,7 @@ var uddapi = module.exports,
     qs = require('querystring')
 
 var cassandra = require('cassandra-driver'),
-    client = new cassandra.Client({ contactPoints: config.cassandra.server_ips, keyspace: 'widgets' })
+    client = new cassandra.Client({ contactPoints: config.cassandra.server_ips, keyspace: 'config_webui' })
 
 function createWidget (req, res) {
     var widget = req.body
@@ -24,7 +24,7 @@ function createWidget (req, res) {
 }
 
 function getWidgets (req, res) {
-    var getWidgetsByUser = 'SELECT * FROM widgets.userwidgets WHERE user_id = ? ALLOW FILTERING'
+    var getWidgetsByUser = 'SELECT * FROM userwidgets WHERE user_id = ? ALLOW FILTERING'
     var userId = req.session.userid
     client.execute(getWidgetsByUser, [userId], function (error, result) {
         commonUtils.handleJSONResponse(null, res, {result: result, error: error})
@@ -32,7 +32,7 @@ function getWidgets (req, res) {
 }
 
 function removeWidget (req, res) {
-    var removeWidgetByUser = 'DELETE from widgets.userwidgets where user_id = ? AND id = ?'
+    var removeWidgetByUser = 'DELETE from userwidgets where user_id = ? AND id = ?'
     var widgetId = req.param('id')
     var userId = req.session.userid
     client.execute(removeWidgetByUser, [userId, widgetId], function (error, result) {
