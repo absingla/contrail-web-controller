@@ -87,6 +87,8 @@ define(function (require) {
             var dataConfigModel = attrs.dataConfigModel.model().toJSON()
 
             var result = {
+                '"dashboardId"': attrs.dashboardId,
+                '"tabId"': attrs.tabId,
                 config: {
                     title: attrs.configModel.title(),
                     x: attrs.configModel.x(),
@@ -94,11 +96,11 @@ define(function (require) {
                     width: attrs.configModel.width(),
                     height: attrs.configModel.height(),
                 },
-                "\"contentConfig\"": {
+                '"contentConfig"': {
                     contentView: {
                         view: attrs.contentConfig.contentView.view,
-                        "\"viewPathPrefix\"": attrs.contentConfig.contentView.viewPathPrefix,
-                        "\"viewConfig\"": JSON.stringify({
+                        '"viewPathPrefix"': attrs.contentConfig.contentView.viewPathPrefix,
+                        '"viewConfig"': JSON.stringify({
                             color: contentConfigModel.color,
                             yAxisLabel: contentConfigModel.yAxisLabel,
                             yAxisValue: contentConfigModel.yAxisValue,
@@ -106,12 +108,12 @@ define(function (require) {
                     },
                     contentConfigView: {
                         view: attrs.contentConfig.contentConfigView.view,
-                        "\"viewPathPrefix\"": attrs.contentConfig.contentConfigView.viewPathPrefix,
+                        '"viewPathPrefix"': attrs.contentConfig.contentConfigView.viewPathPrefix,
                     },
                     dataConfigView: {
                         view: attrs.contentConfig.dataConfigView.view,
-                        "\"viewPathPrefix\"": attrs.contentConfig.dataConfigView.viewPathPrefix,
-                        "\"viewConfig\"": JSON.stringify({
+                        '"viewPathPrefix"': attrs.contentConfig.dataConfigView.viewPathPrefix,
+                        '"viewConfig"': JSON.stringify({
                             table_name: dataConfigModel.table_name,
                             select: dataConfigModel.select,
                             time_range: dataConfigModel.time_range,

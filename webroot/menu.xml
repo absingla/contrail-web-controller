@@ -1025,7 +1025,6 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>Networking</label>
                             <loader>
                                 <class>uddLoader</class>
-                                <function>renderNetworkingUDD</function>
                             </loader>
                             <searchStrings>User-defined Dashboard</searchStrings>
                         </item>
@@ -1034,7 +1033,6 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>Logs</label>
                             <loader>
                                 <class>uddLoader</class>
-                                <function>renderNetworkingUDD</function>
                             </loader>
                             <searchStrings>User-defined Dashboard</searchStrings>
                         </item>

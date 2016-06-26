@@ -5,8 +5,10 @@ define(function (require) {
     var Widget = require('/reports/udd/ui/js/models/WidgetModel.js')
 
     var WidgetsCollection = Backbone.Collection.extend({
-        initialize: function (options) {
+        initialize: function (attrs, options) {
             this.model = Widget
+            options = options || {}
+            this.url = options.url
         },
 
         parse: function (response) {

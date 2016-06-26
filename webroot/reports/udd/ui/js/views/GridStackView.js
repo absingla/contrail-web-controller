@@ -8,7 +8,6 @@
 define(function (require) {
     var _ = require('lodash')
     var GridStack = require('/assets/gridstack/js/gridstack.js')
-    var WidgetsCollection = require('/reports/udd/ui/js/models/WidgetsCollection.js')
     var ContrailView = require('contrail-view')
 
     var GridStackView = ContrailView.extend({
@@ -26,30 +25,27 @@ define(function (require) {
                 minWidth: 1,
                 minHeight: 6,
             }
-            var viewConfig = self.attributes.viewConfig;
 
-            self.model = new WidgetsCollection()
-            self.model.url = viewConfig.dataUrl;
-
-            self.listenTo(self.model, 'add', self.onModelAdded)
+            self.listenTo(self.model, 'add', self.onAdd)
+            //self.listenTo(self.model, 'remove', self.onRemove)
+            //self.listenTo(self.model, 'reset', self.clear)
         },
 
-        id: 'widgets',
+        el: contentContainer,
         template: Handlebars.compile(require('text!/reports/udd/ui/templates/layout.html')),
         widgetTemplate: Handlebars.compile(require('text!/reports/udd/ui/templates/widget.html')),
         events: {
             'change .grid-stack': 'onChange',
-            'click .grid-stack-item .close': 'onRemoveWidget',
             'resizestop .grid-stack': 'onResize',
             'click .placeholder': 'add',
         },
         placeholderHTML: Handlebars.compile(require('text!/reports/udd/ui/templates/layoutPlaceholder.html'))(),
 
-        render: function () {
+        render: function (p) {
             var self = this
+            self.p = _.extend(self.p, p)
             self.$el.html(self.template({width: self.p.width}))
             self.initLayout()
-            self.model.fetch()
             return self
         },
 
@@ -71,7 +67,11 @@ define(function (require) {
             var x = _.isEmpty(cellsX) ? 0 : _.sortBy(cellsX, getMax)[0] + self.p.minWidth
             var y = _.isEmpty(cellsY) ? 0 : _.sortBy(cellsY, getMax)[0] || 0 + self.p.minHeight
             console.log(x, y)
-            self.model.add({config: {x: x, y: y, width: self.p.width, height: self.p.minHeight}})
+            self.model.add({
+                dashboardId: self.p.dashboardId,
+                tabId: self.p.tabId,
+                config: {x: x, y: y, width: self.p.width, height: self.p.minHeight}
+            })
         },
 
         clear: function () {
@@ -81,7 +81,7 @@ define(function (require) {
         },
 
         // *Add a single widget to the area by creating a view for it
-        onModelAdded: function (model) {
+        onAdd: function (model) {
             var self = this
             var id = model.get('id')
             var widgetConfig = model.get('configModel').model().toJSON() || {}
@@ -107,7 +107,7 @@ define(function (require) {
             })
         },
 
-        onRemoveWidget: function (e) {
+        onRemove: function (e) {
             var self = this
             var el = self.$(e.currentTarget).parents('.grid-stack-item')
             self.grid.removeWidget(el)

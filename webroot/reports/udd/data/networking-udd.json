@@ -1,8 +1,8 @@
 [
   {
     "id": "w0BAF4909-6213-4262-85C2-6C1242E2B15B",
-    "dashboardId": "56A8D3B3-56F4-4E7B-8492-75C4B1A58257",
-    "tabId": "793B1146-4ABA-417F-A202-A722D0C5E658",
+    "dashboardId": "udd0",
+    "tabId": "tab1",
     "config": {
       "title": "Query Count Max Time Series",
       "x": 0,
