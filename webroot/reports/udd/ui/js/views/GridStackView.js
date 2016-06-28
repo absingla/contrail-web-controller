@@ -13,7 +13,7 @@ define(function (require) {
     var GridStackView = ContrailView.extend({
         initialize: function (p) {
             var self = this
-            self.p = {
+            self.p = _.extend({
                 animate: false,
                 width: 2,
                 float: false,
@@ -24,14 +24,14 @@ define(function (require) {
                 cellHeight: 60,
                 minWidth: 1,
                 minHeight: 6,
-            }
+            }, self.attributes.viewConfig)
 
             self.listenTo(self.model, 'add', self.onAdd)
-            //self.listenTo(self.model, 'remove', self.onRemove)
+            self.listenTo(self.model, 'remove', self.onRemove)
             //self.listenTo(self.model, 'reset', self.clear)
         },
 
-        el: contentContainer,
+        id: 'widgets',
         template: Handlebars.compile(require('text!/reports/udd/ui/templates/layout.html')),
         widgetTemplate: Handlebars.compile(require('text!/reports/udd/ui/templates/widget.html')),
         events: {
@@ -41,11 +41,13 @@ define(function (require) {
         },
         placeholderHTML: Handlebars.compile(require('text!/reports/udd/ui/templates/layoutPlaceholder.html'))(),
 
-        render: function (p) {
+        render: function () {
             var self = this
-            self.p = _.extend(self.p, p)
             self.$el.html(self.template({width: self.p.width}))
             self.initLayout()
+            _.each(self.model.models, function (model) {
+                self.onAdd(model)
+            })
             return self
         },
 
@@ -107,9 +109,9 @@ define(function (require) {
             })
         },
 
-        onRemove: function (e) {
+        onRemove: function (model) {
             var self = this
-            var el = self.$(e.currentTarget).parents('.grid-stack-item')
+            var el = self.$('#' + model.id)
             self.grid.removeWidget(el)
         },
 
