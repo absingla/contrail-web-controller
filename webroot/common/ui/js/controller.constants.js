@@ -661,7 +661,7 @@ define([
                                               value: "inet6-vpn"
                                           }
                                       ];
-         this.AUTHENTICATION_DATA = [
+        this.AUTHENTICATION_DATA = [
                                         {
                                             text : 'None',
                                             value : 'none'
@@ -671,7 +671,7 @@ define([
                                             value : 'md5'
                                         }
                                     ];
-         this.BGP_AAS_ROUTERS = ["bgpaas-server", "bgpaas-client"];
+        this.BGP_AAS_ROUTERS = ["bgpaas-server", "bgpaas-client"];
 
         //Physical Routers constants
         this.URL_PHYSICAL_ROUTERS_DETAILS_IN_CHUNKS =

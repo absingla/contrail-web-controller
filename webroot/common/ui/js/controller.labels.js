@@ -187,30 +187,22 @@ define([
         this.BOTTOM_CONTENT_CONTAINER = "bottom-content-container";
 
         this.MONITOR_PROJECT_LIST_ID = "monitor-project-list";
-        this.MONITOR_PROJECT_ID = "monitor-project";
         this.MONITOR_PROJECT_VIEW_ID = "monitor-project-view";
         this.MONITOR_PROJECT_PAGE_ID = "monitor-project-page";
         this.MONITOR_PROJECT_LIST_PAGE_ID = "monitor-project-list-page";
-        this.MONITOR_PROJECT_LIST_VIEW_ID = "monitor-project-list-view";
         this.MONITOR_NETWORK_PAGE_ID = "monitor-network-page";
         this.MONITOR_NETWORK_LIST_PAGE_ID = "monitor-network-list-page";
         this.MONITOR_NETWORK_LIST_ID = "monitor-network-list";
-        this.MONITOR_NETWORK_LIST_VIEW_ID = "monitor-network-list-view";
-        this.MONITOR_NETWORK_ID = "monitor-network";
         this.MONITOR_NETWORK_VIEW_ID = "monitor-network-view";
         this.MONITOR_INSTANCE_LIST_ID = "monitor-instance-list";
         this.MONITOR_INTERFACE_LIST_ID = "monitor-interface-list";
         this.MONITOR_INSTANCE_PAGE_ID = "monitor-instance-page";
         this.MONITOR_INSTANCE_LIST_PAGE_ID = "monitor-instances-list-page";
         this.MONITOR_INSTANCE_LIST_VIEW_ID = "monitor-instance-list-view";
-        this.MONITOR_INTERFACE_LIST_VIEW_ID = "monitor-interface-list-view";
         this.MONITOR_INTERFACE_LIST_PAGE_ID = "monitor-interfaces-list-page";
-        this.MONITOR_INSTANCE_ID = "monitor-instance";
         this.MONITOR_INSTANCE_VIEW_ID = "monitor-instance-view";
         this.MONITOR_FLOW_LIST_ID = "monitor-flow-list";
-        this.MONITOR_FLOW_LIST_VIEW_ID = "monitor-flow-list-view";
         this.MONITOR_FLOWS_PAGE_ID = "monitor-flows-page";
-        this.MONITOR_NETWORK_CONFIG_ID = "monitor-network-config";
         this.MONITOR_NETWORK_CONFIG_VIEW_ID = "monitor-network-config-view";
         this.MONITOR_NETWORK_CONFIG_TABS_ID = "monitor-network-config-tabs";
         this.MONITOR_NETWORK_POLICY_DETAILS_ID = "monitor-network-policy-details";
@@ -225,7 +217,6 @@ define([
 
         this.PROJECTS_ID = "projects";
         this.PROJECT_GRAPH_ID = "project-graph";
-        this.PROJECT_DETAILS_ID = "project-details";
         this.PROJECT_TABS_ID = "project-tabs";
         this.PROJECT_INSTANCE_GRID_ID = "project-instance-grid";
         this.PROJECTS_GRID_ID = "projects-grid";
