@@ -117,6 +117,8 @@ define(function (require) {
                             table_name: dataConfigModel.table_name,
                             select: dataConfigModel.select,
                             time_range: dataConfigModel.time_range,
+                            where: dataConfigModel.where,
+                            filters: dataConfigModel.filters,
                         })
                     }
                 }

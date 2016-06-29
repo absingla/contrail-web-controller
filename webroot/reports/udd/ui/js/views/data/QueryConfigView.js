@@ -124,6 +124,55 @@ define(function (require) {
                                 }
                             ]
                         }, {
+                            viewConfig: {
+                                visible: 'show_advanced_options() && isTableNameAvailable()'
+                            },
+                            columns: [
+                                {
+                                    elementId: 'where', view: "FormTextAreaView",
+                                    viewConfig: {
+                                        path: 'where', dataBindValue: 'where', class: "span9", placeHolder: "*",
+                                        editPopupConfig: {
+                                            renderEditFn: function() {
+                                                self.renderWhere({className: cowc.QE_MODAL_CLASS_700});
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }, {
+                            viewConfig: {
+                                visible: 'show_advanced_options() && isTableNameAvailable()'
+                            },
+                            columns: [
+                                {
+                                    elementId: 'filters', view: "FormTextAreaView",
+                                    viewConfig: {
+                                        path: 'filters', dataBindValue: 'filters', class: "span9",
+                                        label: cowl.TITLE_QE_FILTER,
+                                        editPopupConfig: {
+                                            renderEditFn: function() {
+                                                self.renderFilters({className: cowc.QE_MODAL_CLASS_700});
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }, {
+                            viewConfig: {
+                                visible: 'isTableNameAvailable()'
+                            },
+                            columns: [
+                                {
+                                    elementId: 'advanced_options', view: "FormTextView",
+                                    viewConfig: {
+                                        text: 'getAdvancedOptionsText()',
+                                        class: "advanced-options-link",
+                                        click: 'toggleAdvancedFields'
+                                    }
+                                }
+                            ]
+                        }, {
                             columns: [
                                 {
                                     elementId: 'save_query', view: "FormButtonView", label: "Save Query",
