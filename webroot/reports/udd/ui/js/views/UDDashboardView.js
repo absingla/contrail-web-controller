@@ -76,6 +76,7 @@ define([
                 },
                 tabConfig: {
                     activate: function (event, ui) {
+                        //TODO as we don't know the actual content of the widget use view.update()
                         self.$('#' + tabId +' svg').trigger('refresh')
                     },
                     onRemove: function () {
