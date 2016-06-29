@@ -104,8 +104,9 @@ define([
         var hashParams = viewConfig.hashParams,
             customProjectDropdownOptions = {
                 getProjectsFromIdentity: true,
+                defaultValueIndex: 1,
                 childView: {
-                    init: getNetworkListViewConfig(viewConfig),
+                    init: getNetworkListViewConfig(viewConfig)
                 },
                 allDropdownOption: ctwc.ALL_PROJECT_DROPDOWN_OPTION
             },
@@ -152,6 +153,7 @@ define([
     function getInstanceListConfig(viewConfig) {
         var hashParams = viewConfig.hashParams,
             customNetworkDropdownOptions = {
+                defaultValueIndex: 1,
                 childView: {
                     init: getInstanceListViewConfig(viewConfig)
                 },
@@ -159,6 +161,7 @@ define([
             },
             customProjectDropdownOptions = {
                 getProjectsFromIdentity: true,
+                defaultValueIndex: 1,
                 childView: {
                     init: ctwvc.getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
                 },
@@ -176,6 +179,7 @@ define([
     function getInterfaceListConfig(viewConfig) {
         var hashParams = viewConfig.hashParams,
             customNetworkDropdownOptions = {
+                defaultValueIndex: 1,
                 childView: {
                     init: getInterfaceListViewConfig(viewConfig)
                 },
@@ -183,6 +187,7 @@ define([
             },
             customProjectDropdownOptions = {
                 getProjectsFromIdentity: true,
+                defaultValueIndex: 1,
                 childView: {
                     init: ctwvc.getNetworkBreadcrumbDropdownViewConfig(hashParams, customNetworkDropdownOptions),
                 },
