@@ -5,10 +5,12 @@ define(function (require) {
     var Widget = require('/reports/udd/ui/js/models/WidgetModel.js')
 
     var WidgetsCollection = Backbone.Collection.extend({
+
         initialize: function (attrs, options) {
+            var self = this
             options = options || {}
-            this.model = Widget
-            this.url = options.url
+            self.model = Widget
+            self.url = options.url
         },
 
         parse: function (response) {
@@ -21,15 +23,17 @@ define(function (require) {
                 var isValid = dashboardId ? item.get('dashboardId') === dashboardId : true
                 isValid = isValid && (tabId ? item.get('tabId') === tabId : true)
                 return isValid
-            }), {url: this.url})
+            }), {url: self.url})
         },
 
         dashboardIds: function () {
-            return _.uniq(this.pluck('dashboardId'))
+            var self = this
+            return _.uniq(self.pluck('dashboardId'))
         },
 
-        tabIds: function () {
-            return _.uniq(this.pluck('tabId'))
+        tabIds: function (dashboardId) {
+            var self = this
+            return _.uniq(self.filterBy(dashboardId).pluck('tabId'))
         },
     })
     return WidgetsCollection

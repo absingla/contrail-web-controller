@@ -15,6 +15,7 @@ define(function (require) {
             heading: '.panel-heading',
             title: '.panel-heading>.title',
             titleInput: '.panel-heading>input',
+            configTabs: '.tabs>div',
         },
         events: {
             'click .close': 'remove',
@@ -22,7 +23,7 @@ define(function (require) {
             'click .title': 'editTitle',
             'blur .panel-heading>input': 'saveTitle',
             'click .save': 'saveConfig',
-            'click .nav-pills': 'changeTab',
+            'click .nav-pills': 'changeConfigTab',
         },
 
         initialize: function (p) {
@@ -160,7 +161,6 @@ define(function (require) {
             var titleInput = self.$(self.selectors.titleInput)
             titleInput.show()
             titleInput.focus()
-            return true
         },
 
         saveTitle: function (e) {
@@ -193,9 +193,9 @@ define(function (require) {
             }
         },
 
-        changeTab: function (e) {
+        changeConfigTab: function (e) {
             var self = this
-            self.$('.tabs>div').hide()
+            self.$(self.selectors.configTabs).hide()
             var id = self.$(e.target).data('id')
             self.$('#' + id).show()
         }

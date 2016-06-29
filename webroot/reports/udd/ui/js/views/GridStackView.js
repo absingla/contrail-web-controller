@@ -68,7 +68,6 @@ define(function (require) {
             function getMax(value) { return Math.max(value) }
             var x = _.isEmpty(cellsX) ? 0 : _.sortBy(cellsX, getMax)[0] + self.p.minWidth
             var y = _.isEmpty(cellsY) ? 0 : _.sortBy(cellsY, getMax)[0] || 0 + self.p.minHeight
-            console.log(x, y)
             self.model.add({
                 dashboardId: self.p.dashboardId,
                 tabId: self.p.tabId,
