@@ -18,11 +18,7 @@ define(function (require) {
                 attrs.config = p.config || {}
                 attrs.id = self.id
                 attrs.config.title = self.id
-
-                attrs.contentConfig = {}
-                attrs.contentConfig.contentView = _.extend({}, defaultConfig.contentViewList['LineChartView'].contentView)
-                attrs.contentConfig.contentConfigView = _.extend({}, defaultConfig.contentViewList['LineChartView'].contentConfigView)
-                attrs.contentConfig.dataConfigView = _.extend({}, defaultConfig.dataSourceList['QueryConfigView'])
+                attrs.contentConfig = self.getDefaultConfig()
             }
 
             var views = {
@@ -124,6 +120,19 @@ define(function (require) {
                 }
             }
             return result
+        },
+
+        getDefaultConfig: function () {
+            var self = this
+            var config = {}
+            var defaultDataSource = self.getDataSourceList()[0]
+            var defaultDataSourceView = defaultConfig.dataSourceList[defaultDataSource]
+            var defaultContent = self.getContentViews4DataSource(defaultDataSource)[0]
+            var defaultContentView = defaultConfig.contentViewList[defaultContent]
+            config.dataConfigView = _.extend({}, defaultDataSourceView)
+            config.contentView = _.extend({}, defaultContentView.contentView)
+            config.contentConfigView = _.extend({}, defaultContentView.contentConfigView)
+            return config
         }
     })
     return WidgetModel
