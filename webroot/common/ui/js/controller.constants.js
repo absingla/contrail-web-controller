@@ -564,7 +564,8 @@ define([
         this.GLOBAL_BGP_OPTIONS_MAP = [
             {"key": "autonomous_system", "name": "Global ASN"},
             {"key": "ibgp_auto_mesh", "name": "iBGP Auto Mesh"},
-            {"key": "ip_fabric_subnets", "name": "IP Fabric Subnets"}
+            {"key": "ip_fabric_subnets", "name": "IP Fabric Subnets"},
+            {"key": "graceful_restart_params", "name": "Graceful Restart"}
         ];
         this.GLOBAL_BGP_OPTIONS_SECTION_ID = "global-bgp-options-section";
         this.GLOBAL_BGP_OPTIONS_ID = "global-bgp-options";
@@ -660,7 +661,7 @@ define([
                                               value: "inet6-vpn"
                                           }
                                       ];
-         this.AUTHENTICATION_DATA = [
+        this.AUTHENTICATION_DATA = [
                                         {
                                             text : 'None',
                                             value : 'none'
@@ -670,7 +671,7 @@ define([
                                             value : 'md5'
                                         }
                                     ];
-         this.BGP_AAS_ROUTERS = ["bgpaas-server", "bgpaas-client"];
+        this.BGP_AAS_ROUTERS = ["bgpaas-server", "bgpaas-client"];
 
         //Physical Routers constants
         this.URL_PHYSICAL_ROUTERS_DETAILS_IN_CHUNKS =
@@ -787,6 +788,29 @@ define([
         this.CONFIG_DNS_RECORDS_ID = 'config-dns-records';
         this.DNS_RECORDS_GRID_ID = 'dns-records-grid';
         this.DNS_RECORDS_PREFIX_ID = 'dns_record';
+
+        /* RBAC constants */
+        this.RBAC_GLOBAL_PAGE_ID = "config-rbac-global-list";
+        this.CONFIG_RBAC_GLOBAL_SECTION_ID = "config-rbac-global-section";
+        this.CONFIG_RBAC_GLOBAL_ID = "config-rbac-global";
+
+        this.RBAC_DOMAIN_PAGE_ID = "config-rbac-domain-list";
+        this.CONFIG_RBAC_DOMAIN_SECTION_ID = "config-rbac-domain-section";
+        this.CONFIG_RBAC_DOMAIN_ID = "config-rbac-domain";
+
+        this.RBAC_PROJECT_PAGE_ID = "config-rbac-project-list";
+        this.CONFIG_RBAC_PROJECT_SECTION_ID = "config-rbac-project-section";
+        this.CONFIG_RBAC_PROJECT_ID = "config-rbac-project";
+
+        this.RBAC_GRID_ID = "rbac-grid";
+        this.CONFIG_RBAC_LIST_VIEW_ID = "config-rbac-list-view";
+        this.RBAC_ROLE_CRUD_LIST = [
+                                    {text: "Create", value: "C"},
+                                    {text: "Read", value: "R"},
+                                    {text: "Update", value: "U"},
+                                    {text: "Delete", value: "D"}];
+        this.RBAC_ALL_ROLES = "All Roles (*)";
+        this.RBAC_PREFIX_ID = "rbac";
 
         /* Route Aggregate Constants */
         this.CONFIG_ROUTE_AGGREGATE_LIST_ID = "config-route-aggregate-list";
