@@ -1,10 +1,10 @@
 {
   "contentViewList": {
-    "LineChartView": {
-      "label": "Line Chart",
+    "LineWithFocusChartView": {
+      "label": "Line With Focus Chart",
       "contentView": {
-        "view": "LineChartView",
-        "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
+        "view": "LineWithFocusChartView",
+        "viewPathPrefix": "js/views/",
         "viewConfig": {
           "color": "1f77b4",
           "yAxisLabel": "",
@@ -19,8 +19,8 @@
   },
   "dataSourceList": {
     "QueryConfigView": {
-      "contentViews": ["LineChartView"],
-      "contentView": "LineChartView",
+      "contentViews": ["LineWithFocusChartView"],
+      "contentView": "LineWithFocusChartView",
       "label": "Query",
       "view": "QueryConfigView",
       "viewPathPrefix": "reports/udd/ui/js/views/data/",

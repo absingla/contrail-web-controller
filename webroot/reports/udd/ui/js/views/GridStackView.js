@@ -119,7 +119,10 @@ define(function (require) {
             var widget = _.find(self.childViewMap, function (w) {
                 return w.$el[0] === ui.element[0]
             })
-            widget.resize()
+            // pospone resizing due to widget animation
+            setTimeout(function () {
+                widget.resize()
+            }, 100)
         },
         // update widget model config on gridstack items change
         onChange: function (event, items) {
