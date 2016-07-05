@@ -15,11 +15,30 @@
         "view": "LineChartConfigView",
         "viewPathPrefix": "reports/udd/ui/js/views/widgets/"
       }
+    },
+    "LineBarWithFocusChartView": {
+      "label": "Line Bar Chart View",
+      "contentView": {
+        "view": "LineBarWithFocusChartView",
+        "viewPathPrefix": "js/views/",
+        "viewConfig": {
+          "barColor": "1f77b4",
+          "lineColor": "green",
+          "barLabel": "",
+          "barValue": "",
+          "lineLabel": "",
+          "lineValue": ""
+        }
+      },
+      "contentConfigView": {
+        "view": "LineBarChartConfigView",
+        "viewPathPrefix": "reports/udd/ui/js/views/widgets/"
+      }
     }
   },
   "dataSourceList": {
     "QueryConfigView": {
-      "contentViews": ["LineWithFocusChartView"],
+      "contentViews": ["LineBarWithFocusChartView", "LineWithFocusChartView"],
       "contentView": "LineWithFocusChartView",
       "label": "Query",
       "view": "QueryConfigView",

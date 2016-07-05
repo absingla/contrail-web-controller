@@ -96,7 +96,7 @@ define(function (require) {
             var self = this
             return {
                 parserName: 'timeSeriesParser',
-                yAxixDataField: self.model.yAxisValue(),
+                dataField: self.model.yAxisValue(),
             }
         },
 
@@ -109,7 +109,6 @@ define(function (require) {
                     height: 300,
                     yAxisLabel: self.model.yAxisLabel(),
                     colors: [self.model.color()],
-                    //yAxixDataField: self.model.yAxisValue(),
                     forceY: [0, 10],
                     yFormatter: function (d) {
                         return d;

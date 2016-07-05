@@ -3,8 +3,8 @@
  */
 
 define(function (require) {
-    var StatQueryFormModel = require('reports/udd/ui/js/models/StatQueryFormModel')
     var ContrailModel = require('contrail-model')
+    var StatQueryFormModel = require('reports/udd/ui/js/models/StatQueryFormModel')
     var defaultConfig = JSON.parse(require('text!reports/udd/data/default.config.json'))
     var qewu = require('core-basedir/js/common/qe.utils')
 
@@ -32,11 +32,13 @@ define(function (require) {
             attrs.configModel.model().on('change', function () {
                 self.save()
             })
-            // TODO this model should be configurable
+            // TODO this model should be configurable (depend on specific data source)
             attrs.dataConfigModel = new StatQueryFormModel(attrs.contentConfig.dataConfigView.viewConfig)
             attrs.contentConfigModel = new ContrailModel(attrs.contentConfig.contentView.viewConfig)
+            // TODO remove as it is relevant only to some widgets
             attrs.contentConfigModel.model().set('yAxisValues', [])
 
+            // TODO move to specific widget
             // update yAxisValue based on contentConfigModel select field
             attrs.dataConfigModel.model().on('change', function () {
                 var select = attrs.dataConfigModel.select()
@@ -64,7 +66,7 @@ define(function (require) {
         validate: function () {
             var self = this
             var validConfig = !!self.attributes.configModel.title()
-            return !validConfig || !self.attributes.dataConfigModel.select() || !self.attributes.contentConfigModel.model().get('yAxisValue')
+            return !validConfig || !self.attributes.dataConfigModel.select() || !self.attributes.contentConfigModel.model().isValid()
             //return !(validConfig && self.attributes.dataConfigModel.model().isValid() && self.attributes.contentConfigModel.model().isValid())
         },
 
@@ -79,28 +81,23 @@ define(function (require) {
         toJSON: function () {
             var self = this
             var attrs = self.attributes
-            var contentConfigModel = attrs.contentConfigModel.model().toJSON()
-            var dataConfigModel = attrs.dataConfigModel.model().toJSON()
+            var configModel = attrs.configModel
 
             var result = {
                 '"dashboardId"': attrs.dashboardId,
                 '"tabId"': attrs.tabId,
                 config: {
-                    title: attrs.configModel.title(),
-                    x: attrs.configModel.x(),
-                    y: attrs.configModel.y(),
-                    width: attrs.configModel.width(),
-                    height: attrs.configModel.height(),
+                    title: configModel.title(),
+                    x: configModel.x(),
+                    y: configModel.y(),
+                    width: configModel.width(),
+                    height: configModel.height(),
                 },
                 '"contentConfig"': {
                     contentView: {
                         view: attrs.contentConfig.contentView.view,
                         '"viewPathPrefix"': attrs.contentConfig.contentView.viewPathPrefix,
-                        '"viewConfig"': JSON.stringify({
-                            color: contentConfigModel.color,
-                            yAxisLabel: contentConfigModel.yAxisLabel,
-                            yAxisValue: contentConfigModel.yAxisValue,
-                        }),
+                        '"viewConfig"': JSON.stringify(attrs.contentConfigModel.toJSON()),
                     },
                     contentConfigView: {
                         view: attrs.contentConfig.contentConfigView.view,
@@ -109,13 +106,7 @@ define(function (require) {
                     dataConfigView: {
                         view: attrs.contentConfig.dataConfigView.view,
                         '"viewPathPrefix"': attrs.contentConfig.dataConfigView.viewPathPrefix,
-                        '"viewConfig"': JSON.stringify({
-                            table_name: dataConfigModel.table_name,
-                            select: dataConfigModel.select,
-                            time_range: dataConfigModel.time_range,
-                            where: dataConfigModel.where,
-                            filters: dataConfigModel.filters,
-                        })
+                        '"viewConfig"': JSON.stringify(attrs.dataConfigModel.toJSON()),
                     }
                 }
             }
