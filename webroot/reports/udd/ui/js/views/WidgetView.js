@@ -41,8 +41,7 @@ define(function (require) {
 
             Knockback.applyBindings(self.model.get('configModel'), self.$el.find(self.selectors.heading)[0])
             // show config by default for widget with no data source selected
-            if (self.model.isValid()) self.renderContentView()
-            else self.flipCard()
+            if (!self.model.isValid()) self.flipCard()
 
             // render data source config (query) on the back
             config = self.getDataVC()
@@ -60,12 +59,20 @@ define(function (require) {
             return self
         },
 
+        // render widget content (chart) on the front
         renderContentView: function () {
             var self = this
-            // render widget content (chart) on the front
+            var dataConfigModel = self.model.get('dataConfigModel')
+
+            //TODO getParserOptions should be moved to the model:
+            //var contentConfigModel = self.model.get('contentConfigModel')
+            var contentConfigView = self.childViewMap[self.getContentConfigVC().elementId]
+            var parserOptions = contentConfigView.getParserOptions()
+
             var element = self.$(self.selectors.front)
+            var model = dataConfigModel.getDataModel(parserOptions)
             var config = self.getContentVC()
-            self.renderView4Config(element, self.model, config)
+            self.renderView4Config(element, model, config)
         },
         // render content config view on the back
         renderContentConfigView: function () {
@@ -73,7 +80,12 @@ define(function (require) {
             var config = self.getContentConfigVC()
             var element = self.$('.content-config')
             var model = self.model.get('contentConfigModel')
-            self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
+            self.renderView4Config(element, model, config, null, null, null, function () {
+                self.subscribeConfigChange(config.elementId)
+
+                // render Content View only after Content Config view
+                if (self.model.isValid()) self.renderContentView()
+            })
         },
 
         getViewConfig: function () {
@@ -118,10 +130,14 @@ define(function (require) {
 
         getContentVC: function () {
             var self = this
-            var contentConfig = self.model.get('contentConfig')
-            var config = contentConfig['contentView']
-            config.elementId = self.model.get('id') + 'Content'
-            return config
+            var contentConfig = self.model.get('contentConfig')['contentView']
+            var contentConfigView = self.childViewMap[self.getContentConfigVC().elementId]
+            return {
+                view: contentConfig.view,
+                viewPathPrefix: contentConfig.viewPathPrefix,
+                elementId: self.model.get('id') + 'Content',
+                viewConfig: contentConfigView.getViewOptions()
+            }
         },
 
         getDataVC: function () {
@@ -173,7 +189,7 @@ define(function (require) {
             var self = this
             var viewId = self.getContentVC().elementId
             var widgetContentView = self.childViewMap[viewId]
-            if (!widgetContentView) return
+            if (!widgetContentView || !_.isFunction(widgetContentView.resize)) return
             else widgetContentView.resize()
         },
 
@@ -181,6 +197,8 @@ define(function (require) {
             var self = this
             // update widget content on it's config change
             var configView = self.childViewMap[id]
+            //TODO BUG: https://app.asana.com/0/110546790583988/150392415498511
+            configView.off('change')
             configView.on('change', self.onConfigChange.bind(self))
         },
 

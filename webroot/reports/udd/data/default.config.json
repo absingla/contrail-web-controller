@@ -1,30 +1,39 @@
 {
   "contentViewList": {
-    "LineChartView": {
-      "label": "Line Chart",
+    "LineWithFocusChartView": {
+      "label": "Line With Focus Chart",
       "contentView": {
-        "view": "LineChartView",
-        "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
-        "viewConfig": {
-          "color": "1f77b4",
-          "yAxisLabel": "",
-          "yAxisValue": ""
-        }
+        "view": "LineWithFocusChartView",
+        "viewPathPrefix": "js/views/"
       },
       "contentConfigView": {
         "view": "LineChartConfigView",
-        "viewPathPrefix": "reports/udd/ui/js/views/widgets/"
+        "viewPathPrefix": "reports/udd/ui/js/views/contentConfigs/",
+        "model": "reports/udd/ui/js/models/contentConfigs/LineChartConfigModel"
+      }
+    },
+    "LineBarWithFocusChartView": {
+      "label": "Line Bar Chart View",
+      "contentView": {
+        "view": "LineBarWithFocusChartView",
+        "viewPathPrefix": "js/views/"
+      },
+      "contentConfigView": {
+        "view": "LineBarChartConfigView",
+        "viewPathPrefix": "reports/udd/ui/js/views/contentConfigs/",
+        "model": "reports/udd/ui/js/models/contentConfigs/LineBarChartConfigModel"
       }
     }
   },
   "dataSourceList": {
-    "QueryConfigView": {
-      "contentViews": ["LineChartView"],
-      "contentView": "LineChartView",
+    "StatQueryConfigView": {
+      "contentViews": ["LineBarWithFocusChartView", "LineWithFocusChartView"],
+      "contentView": "LineWithFocusChartView",
       "label": "Query",
-      "view": "QueryConfigView",
-      "viewPathPrefix": "reports/udd/ui/js/views/data/",
-      "viewConfig": {
+      "view": "StatQueryConfigView",
+      "viewPathPrefix": "reports/udd/ui/js/views/dataSourceConfigs/",
+      "model": "reports/udd/ui/js/models/dataSourceConfigs/StatQueryConfigModel",
+      "modelConfig": {
         "time_range": 3600
       }
     }

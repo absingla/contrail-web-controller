@@ -100,12 +100,16 @@ define(function (require) {
                                 id)
 
             var el = self.$('#' + id)
-            self.renderView4Config(el, model, {
-                view: "WidgetView",
-                elementId: id,
-                viewPathPrefix: "reports/udd/ui/js/views/",
-                viewConfig: {}
-            })
+            function renderView () {
+                self.renderView4Config(el, model, {
+                    view: "WidgetView",
+                    elementId: id,
+                    viewPathPrefix: "reports/udd/ui/js/views/",
+                    viewConfig: {}
+                })
+            }
+            if (model.ready) renderView()
+            else model.on('ready', renderView)
         },
 
         onRemove: function (model) {
@@ -119,7 +123,10 @@ define(function (require) {
             var widget = _.find(self.childViewMap, function (w) {
                 return w.$el[0] === ui.element[0]
             })
-            widget.resize()
+            // pospone resizing due to widget animation
+            setTimeout(function () {
+                widget.resize()
+            }, 100)
         },
         // update widget model config on gridstack items change
         onChange: function (event, items) {

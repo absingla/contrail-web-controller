@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
+/*
+ * Configuration View for customizing LineWithFocusChartView
+ */
 define(function (require) {
     var ContrailView = require('contrail-view')
     var Knockback = require('knockback')
@@ -87,6 +90,31 @@ define(function (require) {
                     ]
                 }
             };
+        },
+        // TODO move to LineWithFocusChartModel
+        getParserOptions: function () {
+            var self = this
+            return {
+                parserName: 'timeSeriesParser',
+                dataField: self.model.yAxisValue(),
+            }
+        },
+
+        // TODO move to LineWithFocusChartModel
+        getViewOptions: function () {
+            var self = this
+            return {
+                chartOptions: {
+                    axisLabelDistance: 5,
+                    height: 300,
+                    yAxisLabel: self.model.yAxisLabel(),
+                    colors: [self.model.color()],
+                    forceY: [0, 10],
+                    yFormatter: function (d) {
+                        return d;
+                    }
+                }
+            }
         },
 
         onChange: function () {
