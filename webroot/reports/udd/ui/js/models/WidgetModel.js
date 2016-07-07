@@ -4,13 +4,13 @@
 
 define(function (require) {
     var ContrailModel = require('contrail-model')
-    var StatQueryFormModel = require('reports/udd/ui/js/models/StatQueryFormModel')
     var defaultConfig = JSON.parse(require('text!reports/udd/data/default.config.json'))
     var qewu = require('core-basedir/js/common/qe.utils')
 
     var WidgetModel = Backbone.Model.extend({
         initialize: function (p) {
             var self = this
+            self.ready = false
             var attrs = self.attributes
             if (!p || !p.id) {
                 p = p || {}
@@ -32,20 +32,7 @@ define(function (require) {
             attrs.configModel.model().on('change', function () {
                 self.save()
             })
-            // TODO this model should be configurable (depend on specific data source)
-            attrs.dataConfigModel = new StatQueryFormModel(attrs.contentConfig.dataConfigView.viewConfig)
-            attrs.contentConfigModel = new ContrailModel(attrs.contentConfig.contentView.viewConfig)
-            // TODO remove as it is relevant only to some widgets
-            attrs.contentConfigModel.model().set('yAxisValues', [])
-
-            // TODO move to specific widget
-            // update yAxisValue based on contentConfigModel select field
-            attrs.dataConfigModel.model().on('change', function () {
-                var select = attrs.dataConfigModel.select()
-                if (_.isEmpty(select)) return
-                var yAxisValues = _.without(select.split(', '), 'T=', 'T')
-                attrs.contentConfigModel.model().set('yAxisValues', yAxisValues)
-            })
+            require([attrs.contentConfig.dataConfigView.model, attrs.contentConfig.contentConfigView.model], self.onConfigModelsLoaded.bind(self))
         },
 
         parse: function (data) {
@@ -56,8 +43,8 @@ define(function (require) {
                 return
             }
 
-            data.contentConfig.contentView.viewConfig = JSON.parse(data.contentConfig.contentView.viewConfig)
-            data.contentConfig.dataConfigView.viewConfig = JSON.parse(data.contentConfig.dataConfigView.viewConfig)
+            data.contentConfig.contentView.modelConfig = JSON.parse(data.contentConfig.contentView.modelConfig)
+            data.contentConfig.dataConfigView.modelConfig = JSON.parse(data.contentConfig.dataConfigView.modelConfig)
             return data
         },
         /*
@@ -66,8 +53,7 @@ define(function (require) {
         validate: function () {
             var self = this
             var validConfig = !!self.attributes.configModel.title()
-            return !validConfig || !self.attributes.dataConfigModel.select() || !self.attributes.contentConfigModel.model().isValid()
-            //return !(validConfig && self.attributes.dataConfigModel.model().isValid() && self.attributes.contentConfigModel.model().isValid())
+            return !(validConfig && self.attributes.dataConfigModel.model().isValid() && self.attributes.contentConfigModel.model().isValid())
         },
 
         getDataSourceList: function () {
@@ -97,7 +83,8 @@ define(function (require) {
                     contentView: {
                         view: attrs.contentConfig.contentView.view,
                         '"viewPathPrefix"': attrs.contentConfig.contentView.viewPathPrefix,
-                        '"viewConfig"': JSON.stringify(attrs.contentConfigModel.toJSON()),
+                        '"model"': attrs.viewsModel.contentView(),
+                        '"modelConfig"': JSON.stringify(attrs.contentConfigModel.toJSON()),
                     },
                     contentConfigView: {
                         view: attrs.contentConfig.contentConfigView.view,
@@ -106,7 +93,8 @@ define(function (require) {
                     dataConfigView: {
                         view: attrs.contentConfig.dataConfigView.view,
                         '"viewPathPrefix"': attrs.contentConfig.dataConfigView.viewPathPrefix,
-                        '"viewConfig"': JSON.stringify(attrs.dataConfigModel.toJSON()),
+                        '"model"': attrs.viewsModel.dataConfigView(),
+                        '"modelConfig"': JSON.stringify(attrs.dataConfigModel.toJSON()),
                     }
                 }
             }
@@ -124,6 +112,24 @@ define(function (require) {
             config.contentView = _.extend({}, defaultContentView.contentView)
             config.contentConfigView = _.extend({}, defaultContentView.contentConfigView)
             return config
+        },
+
+        onConfigModelsLoaded: function (DataConfigModel, ContentConfigModel) {
+            var self = this
+            var attrs = self.attributes
+            attrs.dataConfigModel = new DataConfigModel(attrs.contentConfig.dataConfigView.modelConfig)
+            attrs.contentConfigModel = new ContentConfigModel(attrs.contentConfig.contentView.modelConfig)
+
+            // TODO move to specific widget
+            // update yAxisValue based on contentConfigModel select field
+            attrs.dataConfigModel.model().on('change', function () {
+                var select = attrs.dataConfigModel.select()
+                if (_.isEmpty(select)) return
+                var yAxisValues = _.without(select.split(', '), 'T=', 'T')
+                attrs.contentConfigModel.model().set('yAxisValues', yAxisValues)
+            })
+            self.ready = true
+            self.trigger('ready')
         }
     })
     return WidgetModel

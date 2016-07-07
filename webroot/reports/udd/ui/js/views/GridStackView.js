@@ -100,12 +100,16 @@ define(function (require) {
                                 id)
 
             var el = self.$('#' + id)
-            self.renderView4Config(el, model, {
-                view: "WidgetView",
-                elementId: id,
-                viewPathPrefix: "reports/udd/ui/js/views/",
-                viewConfig: {}
-            })
+            function renderView () {
+                self.renderView4Config(el, model, {
+                    view: "WidgetView",
+                    elementId: id,
+                    viewPathPrefix: "reports/udd/ui/js/views/",
+                    viewConfig: {}
+                })
+            }
+            if (model.ready) renderView()
+            else model.on('ready', renderView)
         },
 
         onRemove: function (model) {

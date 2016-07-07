@@ -4,46 +4,36 @@
       "label": "Line With Focus Chart",
       "contentView": {
         "view": "LineWithFocusChartView",
-        "viewPathPrefix": "js/views/",
-        "viewConfig": {
-          "color": "1f77b4",
-          "yAxisLabel": "",
-          "yAxisValue": ""
-        }
+        "viewPathPrefix": "js/views/"
       },
       "contentConfigView": {
         "view": "LineChartConfigView",
-        "viewPathPrefix": "reports/udd/ui/js/views/widgets/"
+        "viewPathPrefix": "reports/udd/ui/js/views/contentConfigs/",
+        "model": "reports/udd/ui/js/models/contentConfigs/LineChartConfigModel"
       }
     },
     "LineBarWithFocusChartView": {
       "label": "Line Bar Chart View",
       "contentView": {
         "view": "LineBarWithFocusChartView",
-        "viewPathPrefix": "js/views/",
-        "viewConfig": {
-          "barColor": "1f77b4",
-          "lineColor": "green",
-          "barLabel": "",
-          "barValue": "",
-          "lineLabel": "",
-          "lineValue": ""
-        }
+        "viewPathPrefix": "js/views/"
       },
       "contentConfigView": {
         "view": "LineBarChartConfigView",
-        "viewPathPrefix": "reports/udd/ui/js/views/widgets/"
+        "viewPathPrefix": "reports/udd/ui/js/views/contentConfigs/",
+        "model": "reports/udd/ui/js/models/contentConfigs/LineBarChartConfigModel"
       }
     }
   },
   "dataSourceList": {
-    "QueryConfigView": {
+    "StatQueryConfigView": {
       "contentViews": ["LineBarWithFocusChartView", "LineWithFocusChartView"],
       "contentView": "LineWithFocusChartView",
       "label": "Query",
-      "view": "QueryConfigView",
-      "viewPathPrefix": "reports/udd/ui/js/views/data/",
-      "viewConfig": {
+      "view": "StatQueryConfigView",
+      "viewPathPrefix": "reports/udd/ui/js/views/dataSourceConfigs/",
+      "model": "reports/udd/ui/js/models/dataSourceConfigs/StatQueryConfigModel",
+      "modelConfig": {
         "time_range": 3600
       }
     }
