@@ -5,23 +5,17 @@
 define([
     'underscore',
     'contrail-model',
-    'knockout',
     'config/networking/networks/ui/js/models/subnetModel',
     'config/networking/networks/ui/js/models/hostRouteModel',
     'config/networking/networks/ui/js/models/routeTargetModel',
     'config/networking/networks/ui/js/models/fipPoolModel',
     'config/networking/networks/ui/js/models/subnetDNSModel',
     'config/networking/networks/ui/js/views/vnCfgFormatters'
-], function (_, ContrailModel, Knockout, SubnetModel, HostRouteModel, RouteTargetModel, FipPoolModel,SubnetDNSModel, VNCfgFormatters) {
+], function (_, ContrailModel, SubnetModel, HostRouteModel,
+            RouteTargetModel, FipPoolModel,SubnetDNSModel, VNCfgFormatters) {
     var formatVNCfg = new VNCfgFormatters();
 
     var vnCfgModel = ContrailModel.extend({
-
-        constructor: function (modelData) {
-            this.initModel();
-            ContrailModel.prototype.constructor.call(this, modelData);
-            return this;
-        },
 
         defaultConfig: {
             'name': '',
@@ -78,13 +72,9 @@ define([
             'user_created_sriov_enabled': false , //fake checkbox created for SRIOV
             'pVlanId': null, //fake created for vcenter pvlan
             'sVlanId': null, //fake created for vcenter sec pvlan
+            'qos_config_refs': [],
             'user_created_vxlan_mode': false,
             'disable': false,
-            'ui_added_parameters': {
-                networkPolicyList: ko.observableArray([]),
-                physicalRouterList: ko.observableArray([]),
-                routeTableList: ko.observableArray([])
-            }
         },
 
         formatModelConfig: function (modelConfig) {
@@ -121,27 +111,21 @@ define([
             this.readSRIOV(modelConfig);
             this.readEcmpHashing(modelConfig);
             this.readProperties(modelConfig);
+            this.readQoS(modelConfig);
 
             return modelConfig;
         },
 
-        initModel: function () {
-            var self = this;
-
-            $.ajax('/api/tenants/config/policys').success(function (response) {
-                self.ui_added_parameters().networkPolicyList(formatVNCfg.polMSFormatter(response));
-            });
-            $.ajax('/api/tenants/config/physical-routers-list').success(function (response) {
-                self.ui_added_parameters().physicalRouterList(formatVNCfg.phyRouterMSFormatter(response));
-            });
-
-            $.ajax({
-                url: '/api/tenants/config/get-config-list',
-                type: "POST",
-                data: {'data': [{'type': 'route-tables'}]}
-            }).success(function (response) {
-                self.ui_added_parameters().routeTableList(formatVNCfg.staticRouteMSFormatter(response));
-            });
+        readQoS: function(modelConfig) {
+            var qosToArry = getValueByJsonPath(modelConfig,
+                    "qos_config_refs;0;to", []);
+            if(qosToArry.length === 3){
+                modelConfig["qos_config_refs"] = qosToArry[0] +
+                    cowc.DROPDOWN_VALUE_SEPARATOR + qosToArry[1] +
+                    cowc.DROPDOWN_VALUE_SEPARATOR + qosToArry[2];
+            } else {
+                modelConfig["qos_config_refs"] = "";
+            }
         },
 
         readSubnetHostRoutes: function (modelConfig) {
@@ -762,6 +746,15 @@ define([
             attr['ecmp_hashing_include_fields'] = hashObj;
         },
 
+        getQoS: function(attr) {
+            var qos = getValueByJsonPath(attr, "qos_config_refs", ""),
+                qosList = [];
+            if(qos !== "none" && qos.trim() !== "") {
+                qosList.push({"to": qos.split(cowc.DROPDOWN_VALUE_SEPARATOR)});
+            }
+            attr["qos_config_refs"] = qosList;
+        },
+
         validations: {
             vnCfgConfigValidations: {
                 'display_name': {
@@ -927,6 +920,7 @@ define([
                 this.getRouteTargets(newVNCfgData);
                 this.getSRIOV(newVNCfgData);
                 this.getEcmpHashing(newVNCfgData);
+                this.getQoS(newVNCfgData);
 
                 if (!isVCenter()) {
                     delete newVNCfgData.pVlanId;
