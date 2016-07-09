@@ -22,8 +22,9 @@ define(function (require) {
 
             var elementId = self.attributes.elementId
 
-            self.renderView4Config(self.$el, self.model, self.getViewConfig(), null,null,null, function () {
+            self.renderView4Config(self.$el, self.model, self.getViewConfig(), 'validation', null, null, function () {
                 Knockback.applyBindings(self.model, self.$el[0])
+                kbValidation.bind(self)
             })
         },
 
@@ -120,38 +121,12 @@ define(function (require) {
                 }
             };
         },
-        // TODO move to LineBarChartModel
-        getParserOptions: function () {
-            var self = this
-            return {
-                parserName: 'timeSeriesParser',
-                dataFields: [self.model.barValue(), self.model.lineValue()],
-            }
-        },
-
-        // TODO move to LineBarChartModel
-        getViewOptions: function () {
-            var self = this
-            return {
-                chartOptions: {
-                    axisLabelDistance: 5,
-                    height: 300,
-                    yAxisLabels: [self.model.barLabel(), self.model.lineLabel()],
-                    colors: [self.model.barColor(), self.model.lineColor()],
-                    forceY: [0, 10],
-                    y1Formatter: function (d) {
-                        return d;
-                    },
-                    y2Formatter: function (d) {
-                        return d;
-                    },
-                }
-            }
-        },
 
         onChange: function () {
             var self = this
-            self.trigger('change')
+            if (self.model.model().isValid(true, 'validation')) {
+                self.trigger('change')
+            }
         }
     })
     return LineBarChartConfigView;

@@ -10,13 +10,49 @@ define(function (require) {
           "color": "1f77b4",
           "yAxisLabel": "",
           "yAxisValue": "",
-          "yAxisValues": []
+          "yAxisValues": [],
         },
 
         validations: {
+            validation: {
+                'yAxisValue': {
+                    required: true,
+                    msg: 'Y Axis Value is required',
+                }
+            }
         },
 
         toJSON: function () {
+            var self = this
+            return {
+                "color": self.color(),
+                "yAxisLabel": self.yAxisLabel(),
+                "yAxisValue": self.yAxisValue(),
+            }
+        },
+
+        getParserOptions: function () {
+            var self = this
+            return {
+                parserName: 'timeSeriesParser',
+                dataFields: [self.yAxisValue()],
+            }
+        },
+
+        getViewOptions: function () {
+            var self = this
+            return {
+                chartOptions: {
+                    axisLabelDistance: 5,
+                    height: 300,
+                    yAxisLabels: [self.yAxisLabel()],
+                    colors: [self.color()],
+                    forceY: [0, 10],
+                    y1Formatter: function (d) {
+                        return d;
+                    },
+                }
+            }
         }
     })
 })

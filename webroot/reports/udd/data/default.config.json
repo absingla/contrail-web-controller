@@ -1,5 +1,5 @@
 {
-  "contentViewList": {
+  "contentViews": {
     "LineWithFocusChartView": {
       "label": "Line With Focus Chart",
       "contentView": {
@@ -25,11 +25,11 @@
       }
     }
   },
-  "dataSourceList": {
+  "dataSources": {
     "StatQueryConfigView": {
-      "contentViews": ["LineBarWithFocusChartView", "LineWithFocusChartView"],
+      "contentViews": ["LineWithFocusChartView","LineBarWithFocusChartView"],
       "contentView": "LineWithFocusChartView",
-      "label": "Query",
+      "label": "Query Engine",
       "view": "StatQueryConfigView",
       "viewPathPrefix": "reports/udd/ui/js/views/dataSourceConfigs/",
       "model": "reports/udd/ui/js/models/dataSourceConfigs/StatQueryConfigModel",

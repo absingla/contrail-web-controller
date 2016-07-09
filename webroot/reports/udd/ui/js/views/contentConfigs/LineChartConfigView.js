@@ -22,8 +22,9 @@ define(function (require) {
 
             var elementId = self.attributes.elementId
 
-            self.renderView4Config(self.$el, self.model, self.getViewConfig(), null,null,null, function () {
+            self.renderView4Config(self.$el, self.model, self.getViewConfig(), 'validation', null, null, function () {
                 Knockback.applyBindings(self.model, self.$el[0])
+                kbValidation.bind(self);
             })
         },
 
@@ -91,35 +92,12 @@ define(function (require) {
                 }
             };
         },
-        // TODO move to LineWithFocusChartModel
-        getParserOptions: function () {
-            var self = this
-            return {
-                parserName: 'timeSeriesParser',
-                dataField: self.model.yAxisValue(),
-            }
-        },
-
-        // TODO move to LineWithFocusChartModel
-        getViewOptions: function () {
-            var self = this
-            return {
-                chartOptions: {
-                    axisLabelDistance: 5,
-                    height: 300,
-                    yAxisLabel: self.model.yAxisLabel(),
-                    colors: [self.model.color()],
-                    forceY: [0, 10],
-                    yFormatter: function (d) {
-                        return d;
-                    }
-                }
-            }
-        },
 
         onChange: function () {
             var self = this
-            self.trigger('change')
+            if (self.model.model().isValid(true, 'validation')) {
+                self.trigger('change')
+            }
         }
     })
     return LineChartConfigView;

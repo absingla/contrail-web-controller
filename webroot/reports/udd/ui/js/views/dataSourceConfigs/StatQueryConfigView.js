@@ -9,19 +9,16 @@ define(function (require) {
     var QueryConfigView = QueryFormView.extend({
         events: {
             //TODO: this method results in double event subscription after select field change
-            //'click #save_query': 'onChange',
+            'click #save_query': 'onChange',
         },
 
         render: function () {
             var self = this
 
             var elementId = self.attributes.elementId
-            self.renderView4Config(self.$el, self.model, self.getViewConfig(), null,null,null, function () {
+            self.renderView4Config(self.$el, self.model, self.getViewConfig(), cowc.KEY_RUN_QUERY_VALIDATION, null,null, function () {
                 Knockback.applyBindings(self.model, self.$el[0])
-                //TODO remove this in favor of Backbone delegated events
-                $(".save-query").on('click', function() {
-                    self.onChange()
-                })
+                kbValidation.bind(self);
             })
         },
 

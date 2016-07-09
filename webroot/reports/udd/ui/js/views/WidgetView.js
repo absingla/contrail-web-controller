@@ -17,6 +17,7 @@ define(function (require) {
             titleInput: '.panel-heading>input',
             configTabs: '.tabs>div',
         },
+
         events: {
             'click .close': 'remove',
             'click .panel-heading .config': 'flipCard',
@@ -43,11 +44,7 @@ define(function (require) {
             // show config by default for widget with no data source selected
             if (!self.model.isValid()) self.flipCard()
 
-            // render data source config (query) on the back
-            config = self.getDataVC()
-            element = self.$('.data-config')
-            model = self.model.get('dataConfigModel')
-            self.renderView4Config(element, model, config, null, null, null, self.subscribeConfigChange.bind(self, config.elementId))
+            self.renderDataConfigView()
             self.renderContentConfigView()
 
             config = self.getViewConfig()
@@ -58,7 +55,16 @@ define(function (require) {
             })
             return self
         },
-
+        // render data source config (query) on the back
+        renderDataConfigView: function () {
+            var self = this
+            var config = self.getDataVC()
+            var element = self.$('.data-config')
+            var model = self.model.get('dataConfigModel')
+            self.renderView4Config(element, model, config, null, null, null, function () {
+                self.subscribeConfigChange(config.elementId)
+            })
+        },
         // render widget content (chart) on the front
         renderContentView: function () {
             var self = this
@@ -67,7 +73,7 @@ define(function (require) {
             //TODO getParserOptions should be moved to the model:
             //var contentConfigModel = self.model.get('contentConfigModel')
             var contentConfigView = self.childViewMap[self.getContentConfigVC().elementId]
-            var parserOptions = contentConfigView.getParserOptions()
+            var parserOptions = contentConfigView.model.getParserOptions()
 
             var element = self.$(self.selectors.front)
             var model = dataConfigModel.getDataModel(parserOptions)
@@ -90,7 +96,7 @@ define(function (require) {
 
         getViewConfig: function () {
             var self = this
-            var dataConfigViewName = self.model.get('viewsModel').dataConfigView()
+            var dataConfigViewId = self.model.get('viewsModel').dataConfigView()
             return {
                 view: "SectionView",
                 viewConfig: {
@@ -106,7 +112,7 @@ define(function (require) {
                                         class: 'span6',
                                         elementConfig: {
                                             dataTextField: 'text', dataValueField: 'id',
-                                            data: self.model.getDataSourceList()
+                                            data: self._getViewOptionsList(self.model.getDataSourceList())
                                         }
                                     }
                                 }, {
@@ -117,7 +123,7 @@ define(function (require) {
                                         dataBindValue: 'contentView',
                                         class: 'span6',
                                         elementConfig: {
-                                            data: self.model.getContentViews4DataSource(dataConfigViewName)
+                                            data: self._getViewOptionsList(self.model.getContentViews4DataSource(dataConfigViewId))
                                         }
                                     }
                                 }
@@ -128,6 +134,16 @@ define(function (require) {
             }
         },
 
+        _getViewOptionsList: function (views) {
+            var self = this
+            return _.map(views, function (id) {
+                return {
+                    id: id,
+                    text: self.model.viewLabels[id],
+                }
+            })
+        },
+
         getContentVC: function () {
             var self = this
             var contentConfig = self.model.get('contentConfig')['contentView']
@@ -136,7 +152,7 @@ define(function (require) {
                 view: contentConfig.view,
                 viewPathPrefix: contentConfig.viewPathPrefix,
                 elementId: self.model.get('id') + 'Content',
-                viewConfig: contentConfigView.getViewOptions()
+                viewConfig: contentConfigView.model.getViewOptions()
             }
         },
 

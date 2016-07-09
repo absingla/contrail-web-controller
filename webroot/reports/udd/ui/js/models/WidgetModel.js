@@ -28,11 +28,12 @@ define(function (require) {
             attrs.viewsModel = new ContrailModel(views)
 
             attrs.configModel = new ContrailModel(attrs.config)
-            // autosave widget gui config
+            // autosave widget gui config 
             attrs.configModel.model().on('change', function () {
                 self.save()
             })
             require([attrs.contentConfig.dataConfigView.model, attrs.contentConfig.contentConfigView.model], self.onConfigModelsLoaded.bind(self))
+            self._parseViewLabels()
         },
 
         parse: function (data) {
@@ -43,7 +44,7 @@ define(function (require) {
                 return
             }
 
-            data.contentConfig.contentView.modelConfig = JSON.parse(data.contentConfig.contentView.modelConfig)
+            data.contentConfig.contentConfigView.modelConfig = JSON.parse(data.contentConfig.contentConfigView.modelConfig)
             data.contentConfig.dataConfigView.modelConfig = JSON.parse(data.contentConfig.dataConfigView.modelConfig)
             return data
         },
@@ -53,15 +54,18 @@ define(function (require) {
         validate: function () {
             var self = this
             var validConfig = !!self.attributes.configModel.title()
-            return !(validConfig && self.attributes.dataConfigModel.model().isValid() && self.attributes.contentConfigModel.model().isValid())
+            var validContentConfig = self.attributes.contentConfigModel.model().isValid(true, 'validation')
+            var validDataConfig = self.attributes.dataConfigModel.model().isValid(true, cowc.KEY_RUN_QUERY_VALIDATION)
+            return !(validConfig && validContentConfig && validDataConfig)
+               
         },
 
         getDataSourceList: function () {
-            return _.keys(defaultConfig.dataSourceList)
+            return _.keys(defaultConfig.dataSources)
         },
 
         getContentViews4DataSource: function (dataSourceName) {
-            return defaultConfig.dataSourceList[dataSourceName].contentViews
+            return defaultConfig.dataSources[dataSourceName].contentViews
         },
 
         toJSON: function () {
@@ -80,21 +84,21 @@ define(function (require) {
                     height: configModel.height(),
                 },
                 '"contentConfig"': {
+                    dataConfigView: {
+                        view: attrs.contentConfig.dataConfigView.view,
+                        '"viewPathPrefix"': attrs.contentConfig.dataConfigView.viewPathPrefix,
+                        '"model"': defaultConfig.dataSources[attrs.viewsModel.dataConfigView()].model,
+                        '"modelConfig"': JSON.stringify(attrs.dataConfigModel.toJSON()),
+                    },
                     contentView: {
                         view: attrs.contentConfig.contentView.view,
                         '"viewPathPrefix"': attrs.contentConfig.contentView.viewPathPrefix,
-                        '"model"': attrs.viewsModel.contentView(),
-                        '"modelConfig"': JSON.stringify(attrs.contentConfigModel.toJSON()),
                     },
                     contentConfigView: {
                         view: attrs.contentConfig.contentConfigView.view,
                         '"viewPathPrefix"': attrs.contentConfig.contentConfigView.viewPathPrefix,
-                    },
-                    dataConfigView: {
-                        view: attrs.contentConfig.dataConfigView.view,
-                        '"viewPathPrefix"': attrs.contentConfig.dataConfigView.viewPathPrefix,
-                        '"model"': attrs.viewsModel.dataConfigView(),
-                        '"modelConfig"': JSON.stringify(attrs.dataConfigModel.toJSON()),
+                        '"model"': defaultConfig.contentViews[attrs.viewsModel.contentView()].contentConfigView.model,
+                        '"modelConfig"': JSON.stringify(attrs.contentConfigModel.toJSON()),
                     }
                 }
             }
@@ -105,9 +109,9 @@ define(function (require) {
             var self = this
             var config = {}
             var defaultDataSource = self.getDataSourceList()[0]
-            var defaultDataSourceView = defaultConfig.dataSourceList[defaultDataSource]
+            var defaultDataSourceView = defaultConfig.dataSources[defaultDataSource]
             var defaultContent = self.getContentViews4DataSource(defaultDataSource)[0]
-            var defaultContentView = defaultConfig.contentViewList[defaultContent]
+            var defaultContentView = defaultConfig.contentViews[defaultContent]
             config.dataConfigView = _.extend({}, defaultDataSourceView)
             config.contentView = _.extend({}, defaultContentView.contentView)
             config.contentConfigView = _.extend({}, defaultContentView.contentConfigView)
@@ -118,7 +122,7 @@ define(function (require) {
             var self = this
             var attrs = self.attributes
             attrs.dataConfigModel = new DataConfigModel(attrs.contentConfig.dataConfigView.modelConfig)
-            attrs.contentConfigModel = new ContentConfigModel(attrs.contentConfig.contentView.modelConfig)
+            attrs.contentConfigModel = new ContentConfigModel(attrs.contentConfig.contentConfigView.modelConfig)
 
             // TODO move to specific widget
             // update yAxisValue based on contentConfigModel select field
@@ -130,6 +134,14 @@ define(function (require) {
             })
             self.ready = true
             self.trigger('ready')
+        },
+
+        _parseViewLabels: function () {
+            var self = this
+            self.viewLabels = {}
+            _.each(_.extend({}, defaultConfig.contentViews, defaultConfig.dataSources), function (config, id) {
+                self.viewLabels[id] = config.label
+            })
         }
     })
     return WidgetModel
