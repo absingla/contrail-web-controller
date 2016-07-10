@@ -45,6 +45,30 @@ define([
 
         }, cotc.SEVERITY_MEDIUM));
 
+        //Search
+        bodyTestGroup.registerTest(cotr.test("Search scenario", function () {
+            expect(2);
+            //find the search box
+            var searchBox = $(el).find('.link-searchbox');
+
+            $(searchBox).trigger('click');
+            var inputBox = $(el).find('.input-grid-search');
+            inputBox.val('default-domain:admin:frontend');
+            inputBox.keyup();
+
+            stop();
+            setTimeout(function(){
+                equal($($(el).find('.grid-body .slick-cell')).text().trim().includes("default-domain:admin:frontend"), true,
+                "Custom test to assert 2nd if default-domain:admin:frontend exists");
+                equal($($(el).find('.grid-body .slick-cell')).text().trim().includes("default-domain:admin:backend"), false,
+                    "Custom test to assert 2nd if default-domain:admin:backend should not exist");
+                console.log("the grid is"+$(el).find('.grid-body .slick-cell').text().trim());
+                start();
+            },3000);
+            console.log("Search the box");
+
+        }, cotc.SEVERITY_HIGH));
+
         gridViewCustomTestSuite.run(suiteConfig.groups, suiteConfig.severity);
 
     };
