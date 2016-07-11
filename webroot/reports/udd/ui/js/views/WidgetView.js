@@ -30,7 +30,8 @@ define(function (require) {
         initialize: function (p) {
             var self = this
             //rerender on contentView change
-            //self.listenTo(self.model.get('dataConfigModel').model(), 'change:select', self.renderContentConfigView.bind(self))
+            self.listenTo(self.model, 'change:dataConfigModel', self.renderDataConfigView.bind(self))
+            self.listenTo(self.model, 'change:contentConfigModel', self.renderContentConfigView.bind(self))
         },
 
         render: function () {
@@ -44,6 +45,7 @@ define(function (require) {
             // show config by default for widget with no data source selected
             if (!self.model.isValid()) self.flipCard()
 
+            // first render is executed after self.model 'change' event is triggered
             self.renderDataConfigView()
             self.renderContentConfigView()
 
@@ -58,8 +60,8 @@ define(function (require) {
         // render data source config (query) on the back
         renderDataConfigView: function () {
             var self = this
-            var config = self.getDataVC()
-            var element = self.$('.data-config')
+            var config = self.model.getViewConfig('dataConfigView')
+            var element = self.$('#' + config.elementId)
             var model = self.model.get('dataConfigModel')
             self.renderView4Config(element, model, config, null, null, null, function () {
                 self.subscribeConfigChange(config.elementId)
@@ -68,24 +70,21 @@ define(function (require) {
         // render widget content (chart) on the front
         renderContentView: function () {
             var self = this
+            var parserOptions = self.model.get('contentConfigModel').getParserOptions()
             var dataConfigModel = self.model.get('dataConfigModel')
-
-            //TODO getParserOptions should be moved to the model:
-            //var contentConfigModel = self.model.get('contentConfigModel')
-            var contentConfigView = self.childViewMap[self.getContentConfigVC().elementId]
-            var parserOptions = contentConfigView.model.getParserOptions()
-
-            var element = self.$(self.selectors.front)
             var model = dataConfigModel.getDataModel(parserOptions)
-            var config = self.getContentVC()
+            var config = self.model.getViewConfig('contentView')
+            var element = self.$('#' + config.elementId)
             self.renderView4Config(element, model, config)
         },
         // render content config view on the back
         renderContentConfigView: function () {
             var self = this
-            var config = self.getContentConfigVC()
-            var element = self.$('.content-config')
+            var config = self.model.getViewConfig('contentConfigView')
+            var element = self.$('#' + config.elementId)
             var model = self.model.get('contentConfigModel')
+            var oldView = self.childViewMap[config.elementId]
+            if (oldView) oldView.remove()
             self.renderView4Config(element, model, config, null, null, null, function () {
                 self.subscribeConfigChange(config.elementId)
 
@@ -144,34 +143,6 @@ define(function (require) {
             })
         },
 
-        getContentVC: function () {
-            var self = this
-            var contentConfig = self.model.get('contentConfig')['contentView']
-            var contentConfigView = self.childViewMap[self.getContentConfigVC().elementId]
-            return {
-                view: contentConfig.view,
-                viewPathPrefix: contentConfig.viewPathPrefix,
-                elementId: self.model.get('id') + 'Content',
-                viewConfig: contentConfigView.model.getViewOptions()
-            }
-        },
-
-        getDataVC: function () {
-            var self = this
-            var contentConfig = self.model.get('contentConfig')
-            var config = contentConfig['dataConfigView'];
-            config.elementId = self.model.get('id') + 'DataConfig'
-            return config
-        },
-
-        getContentConfigVC: function () {
-            var self = this
-            var contentConfig = self.model.get('contentConfig')
-            var config = contentConfig['contentConfigView'];
-            config.elementId = self.model.get('id') + 'ContentConfig'
-            return config
-        },
-
         remove: function () {
             var self = this
             self.model.destroy()
@@ -203,7 +174,7 @@ define(function (require) {
 
         resize: function () {
             var self = this
-            var viewId = self.getContentVC().elementId
+            var viewId = self.model.getViewConfig('contentView').elementId
             var widgetContentView = self.childViewMap[viewId]
             if (!widgetContentView || !_.isFunction(widgetContentView.resize)) return
             else widgetContentView.resize()

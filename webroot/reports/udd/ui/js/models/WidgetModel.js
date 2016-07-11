@@ -22,17 +22,18 @@ define(function (require) {
             }
 
             var views = {
-                contentView: attrs.contentConfig.contentView.view,
                 dataConfigView: attrs.contentConfig.dataConfigView.view,
+                contentView: attrs.contentConfig.contentView.view,
             }
             attrs.viewsModel = new ContrailModel(views)
+            attrs.viewsModel.model().on('change', self.changeConfigModel.bind(self))
 
             attrs.configModel = new ContrailModel(attrs.config)
             // autosave widget gui config 
             attrs.configModel.model().on('change', function () {
                 self.save()
             })
-            require([attrs.contentConfig.dataConfigView.model, attrs.contentConfig.contentConfigView.model], self.onConfigModelsLoaded.bind(self))
+            require([attrs.contentConfig.dataConfigView.model, attrs.contentConfig.contentConfigView.model], self._onConfigModelsLoaded.bind(self))
             self._parseViewLabels()
         },
 
@@ -68,6 +69,60 @@ define(function (require) {
             return defaultConfig.dataSources[dataSourceName].contentViews
         },
 
+        getDefaultConfig: function () {
+            var self = this
+            var config = {}
+            var defaultDataSource = self.getDataSourceList()[0]
+            var defaultDataSourceView = defaultConfig.dataSources[defaultDataSource]
+            var defaultContent = self.getContentViews4DataSource(defaultDataSource)[0]
+            var defaultContentView = defaultConfig.contentViews[defaultContent]
+            config.dataConfigView = _.extend({}, defaultDataSourceView)
+            config.contentView = _.extend({}, defaultContentView.contentView)
+            config.contentConfigView = _.extend({}, defaultContentView.contentConfigView)
+            return config
+        },
+
+        getViewConfig: function (viewType) {
+            var self = this
+            var viewsModel = self.get('viewsModel').model()
+            var viewId, viewPathPrefix, viewConfig = {}
+            switch (viewType) {
+                case 'dataConfigView':
+                    viewId = viewsModel.get(viewType)
+                    viewPathPrefix = defaultConfig.dataSources[viewId].viewPathPrefix
+                    break
+                case 'contentView':
+                    viewId = viewsModel.get(viewType)
+                    viewPathPrefix = defaultConfig.contentViews[viewId][viewType].viewPathPrefix
+                    viewConfig = self.get('contentConfigModel').getContentViewOptions()
+                    break
+                case 'contentConfigView':
+                    var contentView = viewsModel.get('contentView')
+                    viewId = defaultConfig.contentViews[contentView][viewType].view
+                    viewPathPrefix = defaultConfig.contentViews[contentView][viewType].viewPathPrefix
+            }
+            return {
+                view: viewId,
+                viewPathPrefix: viewPathPrefix,
+                elementId: self.get('id') + '-' + viewType,
+                viewConfig: viewConfig,
+            }
+        },
+
+        getConfigModelId: function (contentView) {
+            if (!contentView) return
+            var config = defaultConfig.contentViews[contentView]
+            if (config) return config.contentConfigView.model
+            else return defaultConfig.dataSources[contentView].model
+        },
+
+        changeConfigModel: function (viewsModel, viewId) {
+            var self = this
+            if (!viewsModel.changed.contentView) return
+            var contentConfigModel = self.getConfigModelId(viewsModel.changed.contentView)
+            require([null, contentConfigModel], self._onConfigModelsLoaded.bind(self))
+        },
+
         toJSON: function () {
             var self = this
             var attrs = self.attributes
@@ -85,19 +140,19 @@ define(function (require) {
                 },
                 '"contentConfig"': {
                     dataConfigView: {
-                        view: attrs.contentConfig.dataConfigView.view,
-                        '"viewPathPrefix"': attrs.contentConfig.dataConfigView.viewPathPrefix,
-                        '"model"': defaultConfig.dataSources[attrs.viewsModel.dataConfigView()].model,
+                        view: self.getViewConfig('dataConfigView').view,
+                        '"viewPathPrefix"': self.getViewConfig('dataConfigView').viewPathPrefix,
+                        '"model"': self.getConfigModelId(attrs.viewsModel.dataConfigView()),
                         '"modelConfig"': JSON.stringify(attrs.dataConfigModel.toJSON()),
                     },
                     contentView: {
-                        view: attrs.contentConfig.contentView.view,
-                        '"viewPathPrefix"': attrs.contentConfig.contentView.viewPathPrefix,
+                        view: self.getViewConfig('contentView').view,
+                        '"viewPathPrefix"': self.getViewConfig('contentView').viewPathPrefix,
                     },
                     contentConfigView: {
-                        view: attrs.contentConfig.contentConfigView.view,
-                        '"viewPathPrefix"': attrs.contentConfig.contentConfigView.viewPathPrefix,
-                        '"model"': defaultConfig.contentViews[attrs.viewsModel.contentView()].contentConfigView.model,
+                        view: self.getViewConfig('contentConfigView').view,
+                        '"viewPathPrefix"': self.getViewConfig('contentConfigView').viewPathPrefix,
+                        '"model"': self.getConfigModelId(attrs.viewsModel.contentView()),
                         '"modelConfig"': JSON.stringify(attrs.contentConfigModel.toJSON()),
                     }
                 }
@@ -105,35 +160,28 @@ define(function (require) {
             return result
         },
 
-        getDefaultConfig: function () {
-            var self = this
-            var config = {}
-            var defaultDataSource = self.getDataSourceList()[0]
-            var defaultDataSourceView = defaultConfig.dataSources[defaultDataSource]
-            var defaultContent = self.getContentViews4DataSource(defaultDataSource)[0]
-            var defaultContentView = defaultConfig.contentViews[defaultContent]
-            config.dataConfigView = _.extend({}, defaultDataSourceView)
-            config.contentView = _.extend({}, defaultContentView.contentView)
-            config.contentConfigView = _.extend({}, defaultContentView.contentConfigView)
-            return config
-        },
-
-        onConfigModelsLoaded: function (DataConfigModel, ContentConfigModel) {
+        _onConfigModelsLoaded: function (DataConfigModel, ContentConfigModel) {
             var self = this
             var attrs = self.attributes
-            attrs.dataConfigModel = new DataConfigModel(attrs.contentConfig.dataConfigView.modelConfig)
-            attrs.contentConfigModel = new ContentConfigModel(attrs.contentConfig.contentConfigView.modelConfig)
+            if (DataConfigModel) self.set('dataConfigModel', new DataConfigModel(attrs.contentConfig.dataConfigView.modelConfig))
+            if (ContentConfigModel) self.set('contentConfigModel', new ContentConfigModel(attrs.contentConfig.contentConfigView.modelConfig))
 
             // TODO move to specific widget
             // update yAxisValue based on contentConfigModel select field
-            attrs.dataConfigModel.model().on('change', function () {
-                var select = attrs.dataConfigModel.select()
-                if (_.isEmpty(select)) return
-                var yAxisValues = _.without(select.split(', '), 'T=', 'T')
-                attrs.contentConfigModel.model().set('yAxisValues', yAxisValues)
-            })
+            self._updateContentConfigModel()
+            attrs.dataConfigModel.model().on('change', self._updateContentConfigModel.bind(self))
+
             self.ready = true
+            // TODO do not trigger layoutView.renderWidgetView
             self.trigger('ready')
+        },
+
+        _updateContentConfigModel: function () {
+            var self = this, attrs = self.attributes
+            var select = attrs.dataConfigModel.select()
+            if (_.isEmpty(select)) return
+            var yAxisValues = _.without(select.split(', '), 'T=', 'T')
+            attrs.contentConfigModel.model().set('yAxisValues', yAxisValues)
         },
 
         _parseViewLabels: function () {

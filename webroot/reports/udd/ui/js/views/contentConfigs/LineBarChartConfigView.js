@@ -127,6 +127,16 @@ define(function (require) {
             if (self.model.model().isValid(true, 'validation')) {
                 self.trigger('change')
             }
+        },
+
+        remove: function () {
+            var self = this
+            Knockback.release(self.model, self.$el[0])
+            ko.cleanNode(self.$el[0])
+            kbValidation.unbind(self)
+            self.$el.empty().off() // off to unbind the events
+            self.stopListening()
+            return self
         }
     })
     return LineBarChartConfigView;

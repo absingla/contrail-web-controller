@@ -11,28 +11,32 @@
       "height": 6
     },
     "contentConfig": {
-      "contentView": {
-        "view": "LineChartView",
-        "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
-        "viewConfig": {
-          "color": "red",
-          "yAxisLabel": "Max time",
-          "yAxisValue": "MAX(query_stats.time)"
-        }
-      },
-      "contentConfigView": {
-        "view": "LineChartConfigView",
-        "viewPathPrefix": "reports/udd/ui/js/views/widgets/"
-      },
       "dataConfigView": {
         "view": "QueryConfigView",
         "viewPathPrefix": "reports/udd/ui/js/views/data/",
-        "viewConfig": {
+        "model": "reports/udd/ui/js/models/dataSourceConfigs/StatQueryConfigModel",
+        "modelConfig": {
           "table_name": "StatTable.QueryPerfInfo.query_stats",
           "select": "T=, COUNT(query_stats), MAX(query_stats.time), MIN(query_stats.time)",
           "time_range": 3600,
           "where": "(table = StatTable.QueryPerfInfo.query_stats)",
           "filters": "limit: 1000 & sort_fields: SUM(query_stats.time) & sort: asc"
+        }
+      },
+      "contentView": {
+        "view": "LineChartView",
+        "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
+        "model": null,
+        "modelConfig": null
+      },
+      "contentConfigView": {
+        "view": "LineChartConfigView",
+        "viewPathPrefix": "reports/udd/ui/js/views/widgets/",
+        "model": "reports/udd/ui/js/models/contentConfigs/LineChartConfigModel",
+        "modelConfig": {
+          "color": "red",
+          "yAxisLabel": "Max time",
+          "yAxisValue": "MAX(query_stats.time)"
         }
       }
     }

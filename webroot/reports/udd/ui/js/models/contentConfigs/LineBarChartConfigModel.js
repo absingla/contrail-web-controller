@@ -49,7 +49,7 @@ define(function (require) {
             }
         },
 
-        getViewOptions: function () {
+        getContentViewOptions: function () {
             var self = this
             return {
                 chartOptions: {
