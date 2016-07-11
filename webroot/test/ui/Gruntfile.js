@@ -219,6 +219,62 @@ module.exports = function (grunt) {
                 feature: 'reports'
             }
         },
+        logsViewQueryResults: {
+            options: {
+                files: [
+                    {
+                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/LogsViewQueryResults.test.js',
+                        included: false
+                    }
+                ],
+                // preprocessors: {
+                //    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+                // },
+                junitReporter: {
+                    outputDir: __dirname + '/reports/tests/qe/views/',
+                    outputFile: 'logs-view-query-results.xml',
+                    suite: 'logsViewQueryResults',
+                    useBrowserName: false
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/tests/reports/views/logs-view-query-results.html'
+                },
+                coverageReporter: {
+                    type: 'html',
+                    dir: __dirname + '/reports/coverage/reports/views/logsViewQueryResults/',
+                    subdir: browserSubdirFn
+                },
+                feature: 'reports'
+            }
+        },
+        statViewQueryResults: {
+            options: {
+                files: [
+                    {
+                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatsViewQueryResults.test.js',
+                        included: false
+                    }
+                ],
+                // preprocessors: {
+                //    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+                // },
+                junitReporter: {
+                    outputDir: __dirname + '/reports/tests/qe/views/',
+                    outputFile: 'stat-view-query-results.xml',
+                    suite: 'logsViewQueryResults',
+                    useBrowserName: false
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/tests/reports/views/stat-view-query-results.html'
+                },
+                coverageReporter: {
+                    type: 'html',
+                    dir: __dirname + '/reports/coverage/reports/views/statViewQueryResults/',
+                    subdir: browserSubdirFn
+                },
+                feature: 'reports'
+            }
+        },
         networkView: {
             options: {
                 files: [
@@ -1255,6 +1311,14 @@ module.exports = function (grunt) {
             case 'flowViewQueryResults':
                 grunt.task.run('karma:flowViewQueryResults');
                 testDir = 'flowViewQueryResults'
+                break;
+            case 'logsViewQueryResults':
+                grunt.task.run('karma:logsViewQueryResults');
+                testDir = 'logsViewQueryResults'
+                break;
+            case 'statViewQueryResults':
+                grunt.task.run('karma:statViewQueryResults');
+                testDir = 'statViewQueryResults'
                 break;
 
             default :
