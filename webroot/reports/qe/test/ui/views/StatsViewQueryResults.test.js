@@ -28,7 +28,7 @@ define([
         responses.push(cotr.createFakeServerResponse({
             method: "POST",
             url: ctwc.URL_QUERY_RESULT,
-            body: JSON.stringify(TestMockdata.statViewQueryQueueMockData) 
+            body: JSON.stringify(TestMockdata.statViewQueryQueueMockData)
         }));
 
         return responses;
@@ -72,7 +72,6 @@ define([
             // Add necessary timeout for the tab elements to load properly and resolve the promise
             cotc.PAGE_INIT_TIMEOUT * 10
         );
-        debugger;
         $('.grid-action-dropdown').trigger('click');
         $('.tooltip-success').click();
         return;
