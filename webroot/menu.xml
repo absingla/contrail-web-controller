@@ -994,7 +994,7 @@ and need to add the iconClass tag wherever we need to show some icons
                 </item>
                 <item>
                     <label>Introspect</label>
-                    <iconClass>icon-code</iconClass>
+                    <iconClass>fa fa-code</iconClass>
                     <resources>
                         <resource>
                             <rootDir>setting/introspect/ui</rootDir>

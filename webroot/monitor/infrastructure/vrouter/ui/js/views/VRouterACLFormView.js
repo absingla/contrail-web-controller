@@ -169,7 +169,7 @@ define([
                                         label: 'UUID',
                                         path: 'acl_uuid',
                                         dataBindValue: 'acl_uuid',
-                                        class: "span6",
+                                        class: "col-xs-6",
                                     }
                                 }],
                         },

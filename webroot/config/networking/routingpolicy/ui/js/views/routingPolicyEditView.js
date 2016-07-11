@@ -153,7 +153,7 @@ define([
                         elementId: 'routingPolicyname',
                         view: "FormInputView",
                         viewConfig: {
-                            class: "span12",
+                            class: "col-xs-12",
                             placeholder: "Routing Policy Name",
                             disabled: isDisable,
                             path: 'routingPolicyname',

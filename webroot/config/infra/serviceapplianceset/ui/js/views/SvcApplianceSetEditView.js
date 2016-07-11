@@ -112,7 +112,7 @@ define([
                         viewConfig: {
                             path: 'service_appliance_user_credentials.username',
                             label: 'User Name',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue:
                                     'service_appliance_user_credentials().username',
                         }
@@ -123,7 +123,7 @@ define([
                         viewConfig: {
                             path:
                                 'service_appliance_user_credentials.password',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             label: 'Password',
                             dataBindValue:
                                     'service_appliance_user_credentials().password'
@@ -150,7 +150,7 @@ define([
                             collection: 'svcApplProperties',
                             validation: 'svcApplPropValidation',
                             templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
-                            class: 'span12',
+                            class: 'col-xs-12',
                             columns: [{
                                 elementId: 'key',
                                 name: 'Key',
@@ -227,7 +227,7 @@ define([
                                         ' Name',
                                     label: 'Service Appliance Set',
                                     path: 'display_name',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue: 'display_name',
                                 }
                             },
@@ -241,7 +241,7 @@ define([
                                 viewConfig: {
                                     label: 'Load Balancer Driver',
                                     path: 'service_appliance_driver',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue: 'service_appliance_driver',
                                     elementConfig: {
                                         placeholder: 'Select or Enter Load ' +
@@ -268,7 +268,7 @@ define([
                                 elementId: 'service_appliance_ha_mode',
                                 view: 'FormInputView',
                                 viewConfig: {
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     placeholder: 'Enter HA Mode',
                                     path: 'service_appliance_ha_mode',
                                     label: 'HA Mode',

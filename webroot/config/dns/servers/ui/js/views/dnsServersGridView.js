@@ -216,7 +216,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span6',
+                            class: 'col-xs-6',
                             rows: [{
                                 title: ctwl.TITLE_DNS_SERVER,
                                 templateGenerator: 'BlockListTemplateGenerator',

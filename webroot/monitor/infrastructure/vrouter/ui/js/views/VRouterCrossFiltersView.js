@@ -71,7 +71,7 @@ define([
             for(var i=0;i<crossFilterCfg.length;i++) {
                 var currCfg = crossFilterCfg[i];
                 self.$el.find('.charts').append($('<div/>',{
-                    class:'chart span4'
+                    class:'chart col-xs-4'
                 }));
                 self.$el.find('.charts .chart:last').append($('<div/>',{
                     class:'title',

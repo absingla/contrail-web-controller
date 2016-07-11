@@ -147,7 +147,7 @@ define([
                                         label: 'Name',
                                         path: 'vn_name',
                                         dataBindValue: 'vn_name',
-                                        class: "span6",
+                                        class: "col-xs-6",
                                     }
                                 }],
                         },

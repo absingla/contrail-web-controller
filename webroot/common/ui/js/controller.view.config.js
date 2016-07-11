@@ -756,7 +756,7 @@ define([
                             templateGeneratorConfig: {
                                 columns: [
                                     {
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                         rows: [{
                                             title: ctwl.TITLE_INSTANCE_DETAILS,
                                             templateGenerator:
@@ -785,7 +785,7 @@ define([
                                        }]
                                     },
                                     {
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                         rows: [{
                                             title: ctwl.TITLE_CPU_MEMORY_INFO,
                                             templateGenerator: 'BlockListTemplateGenerator',
@@ -817,7 +817,7 @@ define([
                             templateGeneratorConfig: {
                                 columns: [
                                     {
-                                        class: 'span12',
+                                        class: 'col-xs-12',
                                         rows: [{
                                             title: 'Interface Details',
                                             key: 'value.UveVirtualMachineAgent.interface_details',

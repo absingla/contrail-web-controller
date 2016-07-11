@@ -198,7 +198,7 @@ define([
                             disabled: isDisable,
                             placeholder: 'Enter Route Table Name',
                             path: 'display_name',
-                            class: 'span9',
+                            class: 'col-xs-9',
                             dataBindValue: 'display_name',
                             placeHolder: 'Security Group Name',
                         }
@@ -219,7 +219,7 @@ define([
                             collection: 'routes',
                             validation: 'rtTableRoutesValidation',
                             templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
-                            class: "span12",
+                            class: "col-xs-12",
                             columns: getRouteTableColViewConfigs(),
                             rowActions: [
                                 { onClick: "function() { $root.addRtTable($data, this); }",

@@ -38,7 +38,7 @@ define(['underscore', 'contrail-view',
                                    }
                                }
                            },
-                           class: 'span7 confignode-chart',
+                           class: 'col-xs-7 confignode-chart',
                            chartOptions:{
                                brush: false,
                                height: 380,
@@ -165,7 +165,7 @@ define(['underscore', 'contrail-view',
                                    }
                                }
                            },
-                           class: 'span5 confignode-chart',
+                           class: 'col-xs-5 confignode-chart',
                            parseFn: function (response) {
                                return monitorInfraParsers.parseConfigNodeResponseStackedChartData(response);
                            },
@@ -272,7 +272,7 @@ define(['underscore', 'contrail-view',
                                    }
                                }
                            },
-                           class: 'span5 confignode-chart'
+                           class: 'col-xs-5 confignode-chart'
                        }
                    }]
                }]

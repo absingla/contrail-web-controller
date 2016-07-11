@@ -118,7 +118,7 @@ define([
                                         path: "display_name",
                                         dataBindValue: "display_name",
                                         label: "Name",
-                                        class: "span6"
+                                        class: "col-xs-6"
                                     }
                                 }
                             ]

@@ -220,7 +220,7 @@ define([
                                     viewConfig: {
                                         path: 'routing_instance',
                                         dataBindValue: 'routing_instance',
-                                        class: "span6",
+                                        class: "col-xs-6",
                                         elementConfig: {
                                             defaultValueId: 0,
                                             dropdownAutoWidth : false,
@@ -237,7 +237,7 @@ define([
                                         path: 'prefix',
                                         placeHolder:'Prefix',
                                         dataBindValue: 'prefix',
-                                        class: "span2",
+                                        class: "col-xs-2",
                                         elementConfig: {
                                             source : []
                                         }
@@ -250,7 +250,7 @@ define([
                                         path: 'routes_limit',
                                         label: 'Limit',
                                         dataBindValue: 'routes_limit',
-                                        class: "span2",
+                                        class: "col-xs-2",
                                         elementConfig: {
                                             dataTextField: "text",
                                             dataValueField: "value",
@@ -268,7 +268,7 @@ define([
                                     viewConfig: {
                                         path: 'peer_source',
                                         dataBindValue: 'peer_source',
-                                        class: "span2",
+                                        class: "col-xs-2",
                                         elementConfig: {
                                             dataSource: {
                                                 type: 'remote',
@@ -294,7 +294,7 @@ define([
                                     viewConfig: {
                                         path: 'address_family',
                                         dataBindValue: 'address_family',
-                                        class: "span2",
+                                        class: "col-xs-2",
                                         elementConfig: {
                                             data: addressFamilyList
                                         }
@@ -306,7 +306,7 @@ define([
                                     viewConfig: {
                                         path: 'protocol',
                                         dataBindValue: 'protocol',
-                                        class: "span2",
+                                        class: "col-xs-2",
                                         elementConfig: {
                                             data: protocols
                                         }

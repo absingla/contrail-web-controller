@@ -284,7 +284,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span12',
+                            class: 'col-xs-12',
                             rows: [{
                                 title: 'Details',
                                 templateGenerator: 'BlockListTemplateGenerator',

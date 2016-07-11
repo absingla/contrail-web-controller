@@ -33,7 +33,7 @@ define(['underscore', 'config/infra/bgp/ui/js/bgpFormatters'],
                                             dataBindValue:
                                             'bgp_router_parameters().port',
                                             label : 'BGP Port',
-                                            class: 'span6'
+                                            class: 'col-xs-6'
                                         }
                                     },
                                     {
@@ -45,7 +45,7 @@ define(['underscore', 'config/infra/bgp/ui/js/bgpFormatters'],
                                             dataBindValue:
                                             'bgp_router_parameters().source_port',
                                             label : 'Source Port',
-                                            class: 'span6'
+                                            class: 'col-xs-6'
                                         }
                                     }
                                 ]
@@ -63,7 +63,7 @@ define(['underscore', 'config/infra/bgp/ui/js/bgpFormatters'],
                                             dataBindValue:
                                             'bgp_router_parameters().hold_time',
                                             label : 'Hold Time (seconds)',
-                                            class: 'span6'
+                                            class: 'col-xs-6'
                                         }
                                     },
                                     {
@@ -73,7 +73,7 @@ define(['underscore', 'config/infra/bgp/ui/js/bgpFormatters'],
                                             path: "user_created_admin_state",
                                             dataBindValue: "user_created_admin_state",
                                             label: "Admin State",
-                                            class: "span6"
+                                            class: "col-xs-6"
                                         }
                                     }
                                 ]
@@ -89,7 +89,7 @@ define(['underscore', 'config/infra/bgp/ui/js/bgpFormatters'],
                                             dataBindValue:
                                                 'user_created_auth_key_type',
                                             label : 'Authentication Mode',
-                                            class: 'span6',
+                                            class: 'col-xs-6',
                                             elementConfig : {
                                                 dataTextField :
                                                 'text',
@@ -110,7 +110,7 @@ define(['underscore', 'config/infra/bgp/ui/js/bgpFormatters'],
                                             dataBindValue:
                                             'user_created_auth_key',
                                             label : 'Authentication Key',
-                                            class: 'span6'
+                                            class: 'col-xs-6'
                                         }
                                     }
                                 ]
@@ -126,7 +126,7 @@ define(['underscore', 'config/infra/bgp/ui/js/bgpFormatters'],
                                         dataBindValue:
                                         'user_created_physical_router',
                                         label : 'Physical Router',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                         elementConfig : {
                                             dataTextField :
                                             'text',

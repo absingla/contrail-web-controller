@@ -162,7 +162,7 @@ define([
                             viewConfig: {
                                 label: 'Name',
                                 path : 'name',
-                                class: 'span12',
+                                class: 'col-xs-12',
                                 disabled: disableOnEdit,
                                 dataBindValue : 'name',
                                 placeholder: 'Health Check Service Name'
@@ -177,7 +177,7 @@ define([
                             view: "FormDropdownView",
                             viewConfig: {
                                 path : 'service_health_check_properties.monitor_type',
-                                class: 'span6',
+                                class: 'col-xs-6',
                                 dataBindValue :
                                     'service_health_check_properties().monitor_type',
                                 label: 'Protocol',
@@ -198,7 +198,7 @@ define([
                             viewConfig: {
                                 label:'Monitor Target',
                                 path : 'service_health_check_properties.url_path',
-                                class: 'span6',
+                                class: 'col-xs-6',
                                 dataBindValue : 'service_health_check_properties().url_path',
                                 elementConfig: {
                                     placeholder: 'local-ip ' +
@@ -225,7 +225,7 @@ define([
                             viewConfig: {
                                 label:'Delay (secs)',
                                 path : 'service_health_check_properties.delay',
-                                class: 'span6',
+                                class: 'col-xs-6',
                                 dataBindValue : 'service_health_check_properties().delay',
                                 placeholder: 'Delay between Health Check attempts'
                            }
@@ -236,7 +236,7 @@ define([
                                 viewConfig: {
                                     label:'Timeout (secs)',
                                     path : 'service_health_check_properties.timeout',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     dataBindValue : 'service_health_check_properties().timeout',
                                     placeholder: 'Timeout for single Health Check attempt'
                                }
@@ -251,7 +251,7 @@ define([
                             viewConfig: {
                                 label:'Retries',
                                 path : 'service_health_check_properties.max_retries',
-                                class: 'span6',
+                                class: 'col-xs-6',
                                 dataBindValue : 'service_health_check_properties().max_retries',
                                 placeholder: 'Retries to attempt before declaring a failure'
                            }
@@ -263,7 +263,7 @@ define([
                                 path :
                                     'service_health_check_properties.' +
                                     'health_check_type',
-                                class: 'span6',
+                                class: 'col-xs-6',
                                 dataBindValue :
                                     'service_health_check_properties().' +
                                     'health_check_type',

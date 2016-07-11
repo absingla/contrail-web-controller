@@ -102,7 +102,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span6',
+                            class: 'col-xs-6',
                             rows: [{
                                 title: ctwl.SEC_GRP_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',

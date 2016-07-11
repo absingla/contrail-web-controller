@@ -73,7 +73,7 @@ define([
                                 viewConfig: {
                                     path: 'autonomous_system',
                                     dataBindValue: 'autonomous_system',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     placeholder: 'Enter BGP ASN Value'
                                 }
                             },
@@ -84,7 +84,7 @@ define([
                                     label: 'Enable iBGP Auto Mesh',
                                     path: 'ibgp_auto_mesh',
                                     dataBindValue: 'ibgp_auto_mesh',
-                                    class: 'span6'
+                                    class: 'col-xs-6'
                                 }
                             }
                         ]
@@ -143,7 +143,7 @@ define([
                         collection: 'ipFabricSubnets',
                         validation: 'ipFabricSubnetsValidation',
                         templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
-                        class: "span12",
+                        class: "col-xs-12",
                         columns: [{
                             elementId: 'ip_fabric_subnets',
                             name: 'IP Fabric Subnets',
@@ -190,7 +190,7 @@ define([
                                 placeholder : "0 - 600 (0)",
                                 dataBindValue: "graceful_restart_params()." +
                                     "graceful_restart_time",
-                                class: "span6"
+                                class: "col-xs-6"
                             }
                         },
                         {
@@ -204,7 +204,7 @@ define([
                                 dataBindValue:
                                     "graceful_restart_params()." +
                                     "long_lived_graceful_restart_time",
-                                class: "span6"
+                                class: "col-xs-6"
                             }
                         }
                     ]
@@ -221,7 +221,7 @@ define([
                                 placeholder : '0 - 600 (30)',
                                 dataBindValue: "graceful_restart_params()." +
                                     "end_of_rib_receive_time",
-                                class: "span6"
+                                class: "col-xs-6"
                             }
                         }
                     ]

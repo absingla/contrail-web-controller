@@ -202,7 +202,7 @@ define([
                                 label: 'Type',
                                 disabled: isDisable,
                                 path: 'user_created_record_type',
-                                class: 'span12',
+                                class: 'col-xs-12',
                                 dataBindValue: 'user_created_record_type',
                                 elementConfig: {
                                     dataTextField: "text",
@@ -238,7 +238,7 @@ define([
                                 placeholder: 'record_name_placeholder',
                                 label: 'record_name_label',
                                 path: 'virtual_DNS_record_data.record_name',
-                                class: 'span12',
+                                class: 'col-xs-12',
                                 dataBindValue: 'virtual_DNS_record_data().record_name'
                             }
 
@@ -253,7 +253,7 @@ define([
                                 placeholder: 'record_data_placeholder',
                                 label: 'record_data_label',
                                 path: 'virtual_DNS_record_data.record_data',
-                                class: 'span12',
+                                class: 'col-xs-12',
                                 dataBindValue: 'virtual_DNS_record_data().record_data'
                             }
                         }]
@@ -265,7 +265,7 @@ define([
                                 visible: 'user_created_record_type() === "NS"',
                                 label: 'DNS Server',
                                 path: 'virtual_DNS_record_data.record_data',
-                                class: 'span12',
+                                class: 'col-xs-12',
                                 dataBindValue: 'virtual_DNS_record_data().record_data',
                                 elementConfig: {
                                     placeholder: 'Enter Host Name or IP or Select a DNS Server',
@@ -287,7 +287,7 @@ define([
                                 label: 'Class',
                                 disabled: isDisable,
                                 path: 'virtual_DNS_record_data.record_class',
-                                class: 'span12',
+                                class: 'col-xs-12',
                                 dataBindValue: 'virtual_DNS_record_data().record_class',
                                 elementConfig: {
                                     dataTextField: "text",
@@ -307,7 +307,7 @@ define([
                                 label: 'Time To Live',
                                 placeholder: 'TTL (86400 secs)',
                                 path: 'virtual_DNS_record_data.record_ttl_seconds',
-                                class: 'span12',
+                                class: 'col-xs-12',
                                 dataBindValue: 'virtual_DNS_record_data().record_ttl_seconds'
                             }
                         }]
@@ -320,7 +320,7 @@ define([
                                 label: 'MX Preference',
                                 placeholder: 'Enter a MX Preference number (0 - 65535)',
                                 path: 'virtual_DNS_record_data.record_mx_preference',
-                                class: 'span12',
+                                class: 'col-xs-12',
                                 dataBindValue: 'virtual_DNS_record_data().record_mx_preference'
                             }
                         }]

@@ -25,7 +25,7 @@ define(["underscore", "config/rbac/common/ui/js/rbacFormatters"],
                                             placeholder:
                                                 "Enter Object Name or * (All)",
                                             label: "Object",
-                                            class: "span6"
+                                            class: "col-xs-6"
                                         }
                                     },
                                     {
@@ -39,7 +39,7 @@ define(["underscore", "config/rbac/common/ui/js/rbacFormatters"],
                                                 "* (All)",
                                             dataBindValue: "rule_field",
                                             label: "Property",
-                                            class: "span6"
+                                            class: "col-xs-6"
                                         }
                                     }
                                 ]

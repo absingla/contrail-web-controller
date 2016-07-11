@@ -74,7 +74,7 @@ define([
                                     path: 'forwarding_mode',
                                     dataBindValue:
                                         'forwarding_mode',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     elementConfig: {
                                         dataTextField : "text",
                                         dataValueField : "id",
@@ -91,7 +91,7 @@ define([
                                 viewConfig: {
                                     path: 'flow_export_rate',
                                     dataBindValue: 'flow_export_rate',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     placeholder: 'Flow export rate' +
                                             ' in number'
                                 }
@@ -108,7 +108,7 @@ define([
                                     path: 'vxlan_network_identifier_mode',
                                     dataBindValue:
                                         'vxlan_network_identifier_mode',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     elementConfig: {
                                         dataObj: [
                                             {'label': 'Auto Configured',
@@ -131,7 +131,7 @@ define([
                                     collection: 'encapPriorityOrders',
                                     validation: 'encapPriorityOrdersValidation',
                                     templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
-                                    class: "span12",
+                                    class: "col-xs-12",
                                     columns: [{
                                         elementId: 'encapsulation_priorities',
                                         name: 'Encapsulation Priority Order',
@@ -177,7 +177,7 @@ define([
                                 viewConfig: {
                                     label: 'ECMP Hashing Fields',
                                     path: 'ecmp_hashing_include_fields',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue:
                                             'ecmp_hashing_include_fields',
                                     elementConfig: {

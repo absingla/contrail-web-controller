@@ -563,7 +563,7 @@ define([
                                         label : "Management IP",
                                         path: "physical_router_management_ip",
                                         dataBindValue: "physical_router_management_ip",
-                                        class: "span12"
+                                        class: "col-xs-12"
                                     }
                                 }
                             ]
@@ -577,7 +577,7 @@ define([
                                         label : "Netconf Username",
                                         path: "physical_router_user_credentials().username",
                                         dataBindValue: "physical_router_user_credentials().username",
-                                        class: "span6"
+                                        class: "col-xs-6"
                                     }
                                 },
                                 {
@@ -588,7 +588,7 @@ define([
                                          path: "physical_router_user_credentials().password",
                                          type: "password",
                                          dataBindValue: "physical_router_user_credentials().password",
-                                         class: "span6"
+                                         class: "col-xs-6"
                                      }
                                  }
                             ]
@@ -630,7 +630,7 @@ define([
                                         label : "BGP Router",
                                         path: "user_created_bgp_router",
                                         dataBindValue: "user_created_bgp_router",
-                                        class: "span12",
+                                        class: "col-xs-12",
                                         elementConfig: {
                                             allowClear: true,
                                             dataTextField: "text",
@@ -650,7 +650,7 @@ define([
                                         label : "Virtual Networks",
                                         path: "user_created_virtual_network",
                                         dataBindValue: "user_created_virtual_network",
-                                        class: "span12",
+                                        class: "col-xs-12",
                                         elementConfig: {
                                              dataTextField: "text",
                                              dataValueField: "value",

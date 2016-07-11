@@ -315,7 +315,7 @@ define([
                             label: 'Name',
                             disabled: isDisabled,
                             path: 'display_name',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'display_name',
                         }
                     },
@@ -326,7 +326,7 @@ define([
                             disabled: isDisabled,
                             label: 'Service Template',
                             path: 'service_template',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'service_template',
                             elementConfig: {
                                 change: function(data) {
@@ -357,7 +357,7 @@ define([
                             visible: 'showInstCnt',
                             label: 'Number of instance(s)',
                             path: 'no_of_instances',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'no_of_instances'
                         }
                     },
@@ -367,7 +367,7 @@ define([
                         viewConfig: {
                             disabled: 'isHAModeDropDownDisabled',
                             visible: 'showHAMode',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             path: 'user_created_ha_mode',
                             label: 'HA Mode',
                             dataBindValue: 'user_created_ha_mode',
@@ -386,7 +386,7 @@ define([
                         viewConfig: {
                             disabled: isDisabled,
                             visible: 'showAvailibilityZone',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             path: 'availability_zone',
                             dataBindValue: 'availability_zone',
                             elementConfig: {
@@ -431,7 +431,7 @@ define([
                         viewConfig: {
                             disabled: isDisabled,
                             visible: 'showAvailibilityZone',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             path: 'host',
                             dataBindValue: 'host',
                             dataBindOptionList: 'host_list()',

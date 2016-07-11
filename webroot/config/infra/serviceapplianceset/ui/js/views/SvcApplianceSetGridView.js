@@ -189,7 +189,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span8',
+                            class: 'col-xs-8',
                             rows: [{
                                 title: ctwl.SVC_APPLIANCE_SET_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',
@@ -220,7 +220,7 @@ define([
                                     {
                                         key: 'service_template',
                                         label: 'Service Template',
-                                        valueClass: 'span8',
+                                        valueClass: 'col-xs-8',
                                         templateGenerator: 'TextGenerator',
                                         templateGeneratorConfig: {
                                             formatter: 'svcTemplateFormatter'

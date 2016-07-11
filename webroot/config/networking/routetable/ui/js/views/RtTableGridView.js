@@ -127,21 +127,21 @@ define([
                                     {
                                         key: 'display_name',
                                         label: 'Display Name',
-                                        keyClass: 'span3',
+                                        keyClass: 'col-xs-3',
                                         templateGenerator: 'TextGenerator'
                                     },
                                     {
                                         key: 'uuid',
                                         label: 'UUID',
-                                        keyClass: 'span3',
+                                        keyClass: 'col-xs-3',
                                         templateGenerator: 'TextGenerator'
                                     },
                                     {
                                         key: 'route',
                                         templateGenerator: 'TextGenerator',
                                         label: 'Routes',
-                                        keyClass: 'span3',
-                                        valueClass: 'span9',
+                                        keyClass: 'col-xs-3',
+                                        valueClass: 'col-xs-9',
                                         templateGeneratorConfig: {
                                             formatter: 'routetTablesFormatter'
                                         }
