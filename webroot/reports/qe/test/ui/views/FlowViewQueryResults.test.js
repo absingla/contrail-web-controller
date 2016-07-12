@@ -68,7 +68,6 @@ define([
         setTimeout(function () {
                 onAllViewsRenderComplete.notify();
                 defObj.resolve();
-            console.log("now......");
             },
             // Add necessary timeout for the tab elements to load properly and resolve the promise
             cotc.PAGE_INIT_TIMEOUT * 10
