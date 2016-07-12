@@ -45,9 +45,7 @@ define([
         this.LOGS_QUERY_QUEUE_COMMON_TEST_MODULE = 'Logs Query Queue view - Common Tests';
         this.STAT_QUERY_QUEUE_COMMON_TEST_MODULE = 'Stat Query Queue view - Common Tests';
         this.FLOW_VIEW_QUERY_COMMON_TEST_MODULE = 'Flow View Queue Query - Common Tests';
-
-
-
+        
         this.get = function () {
             var args = arguments;
             return args[0].replace(/\{(\d+)\}/g, function (m, n) {
