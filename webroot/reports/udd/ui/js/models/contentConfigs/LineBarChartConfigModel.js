@@ -58,12 +58,8 @@ define(function (require) {
                     yAxisLabels: [self.barLabel(), self.lineLabel()],
                     colors: [self.barColor(), self.lineColor()],
                     forceY: [0, 10],
-                    y1Formatter: function (d) {
-                        return d
-                    },
-                    y2Formatter: function (d) {
-                        return d
-                    },
+                    y1Formatter: cowf.getFormattedValue.bind(cowf, cowc.QUERY_COLUMN_FORMATTER[self.barValue()]),
+                    y2Formatter: cowf.getFormattedValue.bind(cowf, cowc.QUERY_COLUMN_FORMATTER[self.lineValue()]),
                 }
             }
         }

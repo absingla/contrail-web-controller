@@ -4,6 +4,8 @@
 
 define(function (require) {
     var ContrailModel = require('contrail-model')
+    var cowc = require('core-constants')
+    var cofm = require('core-formatters')
 
     return ContrailModel.extend({
         defaultConfig: {
@@ -45,12 +47,10 @@ define(function (require) {
                 chartOptions: {
                     axisLabelDistance: 5,
                     height: 300,
-                    yAxisLabels: [self.yAxisLabel()],
+                    yAxisLabel: self.yAxisLabel(),
                     colors: [self.color()],
                     forceY: [0, 10],
-                    y1Formatter: function (d) {
-                        return d;
-                    },
+                    yFormatter: cowf.getFormattedValue.bind(cowf, cowc.QUERY_COLUMN_FORMATTER[self.yAxisValue()]),
                 }
             }
         }
