@@ -28,7 +28,7 @@ define([
         responses.push(cotr.createFakeServerResponse({
             method: "POST",
             url: ctwc.URL_QUERY_RESULT,
-            body: JSON.stringify(TestMockdata.flowViewQuery)
+            body: JSON.stringify(TestMockdata.getFlowViewQueryMockData())
         }));
 
         return responses;
@@ -77,12 +77,6 @@ define([
         return;
     };
 
-   //  var viewDropDown = $(el).find('.grid-action-dropdown');
-
-   //  $(viewDropDown).trigger('click');
-   // var inputBox = $(el).find('.input-grid-search');
-   // inputBox.val('default-domain:admin:frontend');
-   // inputBox.keyup();
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
 
     cotr.startTestRunner(pageTestConfig);

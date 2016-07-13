@@ -6,11 +6,11 @@ define([
     'co-test-runner',
     'ct-test-utils',
     'ct-test-messages',
-    'reports/qe/test/ui/views/LogsQueryQueueView.mock.data',
+    'reports/qe/test/ui/views/FlowQueryQueueView.mock.data',
     'co-grid-view-test-suite'
 ], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite) {
 
-    var moduleId = cttm.LOGS_VIEW_QUERY_COMMON_TEST_MODULE;
+    var moduleId = cttm.FLOW_QUERY_QUEUE_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
 
@@ -21,13 +21,8 @@ define([
 
         responses.push(cotr.createFakeServerResponse({
             method:"GET",
-            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=lqq'),
-            body: JSON.stringify(TestMockdata.logsQueryQueueMockData)
-        }));
-        responses.push(cotr.createFakeServerResponse({
-            method: "POST",
-            url: ctwc.URL_QUERY_RESULT,
-            body: JSON.stringify(TestMockdata.logsViewQueryMockData)
+            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=fqq'),
+            body: JSON.stringify(TestMockdata.flowsQueryQueueMockData)
         }));
 
         return responses;
@@ -36,7 +31,7 @@ define([
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
-        p: 'query_log_queue',
+        p: 'query_flow_queue',
         q: {
             label: 'Query Queue'
         }
@@ -61,7 +56,6 @@ define([
         };
     };
 
-
     var testInitFn = function (defObj, onAllViewsRenderComplete) {
 
         setTimeout(function () {
@@ -71,14 +65,13 @@ define([
             // Add necessary timeout for the tab elements to load properly and resolve the promise
             cotc.PAGE_INIT_TIMEOUT * 10
         );
-        $('.grid-action-dropdown').trigger('click');
-        $('.tooltip-success').click();
+
+
         return;
     };
 
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
 
     cotr.startTestRunner(pageTestConfig);
-
 
 });
