@@ -1,19 +1,21 @@
 /*
-* Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
-*/
+ * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
+ */
 
 define(function (require) {
     var ContrailModel = require('contrail-model')
+    var cowc = require('core-constants')
+    var cowf = new (require('core-formatters'))
 
     return ContrailModel.extend({
         defaultConfig: {
-            "barColor": "1f77b4",
-            "lineColor": "green",
-            "barLabel": "",
-            "barValue": "",
-            "lineLabel": "",
-            "lineValue": "",
-            "yAxisValues": [],
+            'barColor': '1f77b4',
+            'lineColor': 'green',
+            'barLabel': '',
+            'barValue': '',
+            'lineLabel': '',
+            'lineValue': '',
+            'yAxisValues': [],
         },
 
         validations: {
@@ -25,19 +27,19 @@ define(function (require) {
                 'lineValue': {
                     required: true,
                     msg: 'Line Value is required',
-                }
-            }
+                },
+            },
         },
 
         toJSON: function () {
             var self = this
             return {
-                "barColor": self.barColor(),
-                "lineColor": self.lineColor(),
-                "barLabel": self.barLabel(),
-                "barValue": self.barValue(),
-                "lineLabel": self.lineLabel(),
-                "lineValue": self.lineValue(),
+                'barColor': self.barColor(),
+                'lineColor': self.lineColor(),
+                'barLabel': self.barLabel(),
+                'barValue': self.barValue(),
+                'lineLabel': self.lineLabel(),
+                'lineValue': self.lineValue(),
             }
         },
 
@@ -60,8 +62,8 @@ define(function (require) {
                     forceY: [0, 10],
                     y1Formatter: cowf.getFormattedValue.bind(cowf, cowc.QUERY_COLUMN_FORMATTER[self.barValue()]),
                     y2Formatter: cowf.getFormattedValue.bind(cowf, cowc.QUERY_COLUMN_FORMATTER[self.lineValue()]),
-                }
+                },
             }
-        }
+        },
     })
 })

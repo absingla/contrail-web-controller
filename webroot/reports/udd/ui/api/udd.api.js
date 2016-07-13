@@ -1,23 +1,17 @@
 /* Copyright (c) 2016 Juniper Networks, Inc. All rights reserved. */
 
-var uddapi = module.exports,
-    rest = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/rest.api'),
-    logutils = require(process.mainModule.exports["corePath"] + '/src/serverroot/utils/log.utils'),
-    commonUtils = require(process.mainModule.exports["corePath"] + '/src/serverroot/utils/common.utils'),
-    messages = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/messages'),
-    global = require(process.mainModule.exports["corePath"] + '/src/serverroot/common/global'),
-    config = process.mainModule.exports["config"],
-    qs = require('querystring')
+var commonUtils = require(process.mainModule.exports.corePath + '/src/serverroot/utils/common.utils')
+var config = process.mainModule.exports.config
 
-var cassandra = require('cassandra-driver'),
-    client = new cassandra.Client({ contactPoints: config.cassandra.server_ips, keyspace: 'config_webui' })
+var cassandra = require('cassandra-driver')
+var client = new cassandra.Client({ contactPoints: config.cassandra.server_ips, keyspace: 'config_webui' })
 
 function createWidget (req, res) {
     var widget = req.body
     widget.id = req.param('id')
     widget['"userId"'] = req.session.userid
 
-    var upsertWidget = 'INSERT INTO user_widgets JSON ' + "'"+JSON.stringify(widget)+"';"
+    var upsertWidget = 'INSERT INTO user_widgets JSON ' + "'" + JSON.stringify(widget) + "';"
     client.execute(upsertWidget, function (error, result) {
         commonUtils.handleJSONResponse(null, res, {result: result, error: error})
     })
@@ -34,7 +28,7 @@ function getWidgets (req, res) {
 function removeWidget (req, res) {
     var removeWidgetByUser = 'DELETE from user_widgets where id = ?'
     var widgetId = req.param('id')
-    //var userId = req.session.userid
+    // var userId = req.session.userid
     client.execute(removeWidgetByUser, [widgetId], function (error, result) {
         commonUtils.handleJSONResponse(null, res, {result: result, error: error})
     })

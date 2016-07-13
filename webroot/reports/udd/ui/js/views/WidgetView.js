@@ -27,19 +27,18 @@ define(function (require) {
             'click .nav-pills': 'changeConfigTab',
         },
 
-        initialize: function (p) {
+        initialize: function () {
             var self = this
-            //rerender on contentView change
+            // rerender on contentView change
             self.listenTo(self.model, 'change:dataConfigModel', self.renderDataConfigView.bind(self))
             self.listenTo(self.model, 'change:contentConfigModel', self.renderContentConfigView.bind(self))
         },
 
         render: function () {
-            var self = this,
-                element,
-                model,
-                config,
-                onAllViewsRenderComplete;
+            var self = this
+            var element
+            var model
+            var config
 
             Knockback.applyBindings(self.model.get('configModel'), self.$el.find(self.selectors.heading)[0])
             // show config by default for widget with no data source selected
@@ -97,7 +96,7 @@ define(function (require) {
             var self = this
             var dataConfigViewId = self.model.get('viewsModel').dataConfigView()
             return {
-                view: "SectionView",
+                view: 'SectionView',
                 viewConfig: {
                     rows: [
                         {
@@ -111,9 +110,9 @@ define(function (require) {
                                         class: 'span6',
                                         elementConfig: {
                                             dataTextField: 'text', dataValueField: 'id',
-                                            data: self._getViewOptionsList(self.model.getDataSourceList())
-                                        }
-                                    }
+                                            data: self._getViewOptionsList(self.model.getDataSourceList()),
+                                        },
+                                    },
                                 }, {
                                     elementId: 'contentView', view: 'FormDropdownView',
                                     viewConfig: {
@@ -122,14 +121,14 @@ define(function (require) {
                                         dataBindValue: 'contentView',
                                         class: 'span6',
                                         elementConfig: {
-                                            data: self._getViewOptionsList(self.model.getContentViews4DataSource(dataConfigViewId))
-                                        }
-                                    }
-                                }
-                            ]
-                    }
-                    ]
-                }
+                                            data: self._getViewOptionsList(self.model.getContentViews4DataSource(dataConfigViewId)),
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
             }
         },
 
@@ -158,7 +157,7 @@ define(function (require) {
             self.$(self.selectors.back).toggle()
         },
 
-        editTitle: function (e) {
+        editTitle: function () {
             var self = this
             self.$(self.selectors.title).hide()
             var titleInput = self.$(self.selectors.titleInput)
@@ -166,7 +165,7 @@ define(function (require) {
             titleInput.focus()
         },
 
-        saveTitle: function (e) {
+        saveTitle: function () {
             var self = this
             self.$(self.selectors.title).show()
             self.$(self.selectors.titleInput).hide()
@@ -177,14 +176,14 @@ define(function (require) {
             var viewId = self.model.getViewConfig('contentView').elementId
             var widgetContentView = self.childViewMap[viewId]
             if (!widgetContentView || !_.isFunction(widgetContentView.resize)) return
-            else widgetContentView.resize()
+            widgetContentView.resize()
         },
 
         subscribeConfigChange: function (id) {
             var self = this
             // update widget content on it's config change
             var configView = self.childViewMap[id]
-            //TODO BUG: https://app.asana.com/0/110546790583988/150392415498511
+            // TODO BUG: https://app.asana.com/0/110546790583988/150392415498511
             configView.off('change')
             configView.on('change', self.onConfigChange.bind(self))
         },
@@ -203,7 +202,7 @@ define(function (require) {
             self.$(self.selectors.configTabs).hide()
             var id = self.$(e.target).data('id')
             self.$('#' + id).show()
-        }
+        },
     })
     return WidgetView;
 })

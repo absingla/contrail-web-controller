@@ -3,18 +3,18 @@
 define([
     'underscore',
     'text!reports/udd/ui/templates/udd.tmpl',
-    'reports/udd/ui/js/udd.main'
+    'reports/udd/ui/js/udd.main',
 ], function (_, UDDTemplates) {
-    $("body").append(UDDTemplates);
+    $('body').append(UDDTemplates)
 
-    var initJSpath = pkgBaseDir + '/reports/udd/ui/js/udd.init.js',
-        initStatus = contentHandler.initFeatureModuleMap[initJSpath],
-        deferredObj = initStatus['deferredObj'];
+    var initJSpath = window.pkgBaseDir + '/reports/udd/ui/js/udd.init.js'
+    var initStatus = window.contentHandler.initFeatureModuleMap[initJSpath]
+    var deferredObj = initStatus.deferredObj
 
-    initStatus['isInProgress'] = false;
-    initStatus['isComplete'] = true;
+    initStatus.isInProgress = false
+    initStatus.isComplete = true
 
-    if (contrail.checkIfExist(deferredObj)) {
+    if (window.contrail.checkIfExist(deferredObj)) {
         deferredObj.resolve()
     }
 });

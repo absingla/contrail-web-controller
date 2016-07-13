@@ -3,17 +3,19 @@
  */
 
 define(function (require) {
+    var Backbone = require('backbone')
+    var qewu = require('core-basedir/js/common/qe.utils')
+    var cowc = require('core-constants')
     var ContrailModel = require('contrail-model')
     var defaultConfig = JSON.parse(require('text!reports/udd/data/default.config.json'))
-    var qewu = require('core-basedir/js/common/qe.utils')
 
     var WidgetModel = Backbone.Model.extend({
-        initialize: function (p) {
+        initialize: function (_p) {
             var self = this
             self.ready = false
             var attrs = self.attributes
-            if (!p || !p.id) {
-                p = p || {}
+            if (!_p || !_p.id) {
+                var p = _p || {}
                 self.id = qewu.generateQueryUUID().slice(0, 36)
                 attrs.config = p.config || {}
                 attrs.id = self.id
@@ -29,7 +31,7 @@ define(function (require) {
             attrs.viewsModel.model().on('change', self.changeConfigModel.bind(self))
 
             attrs.configModel = new ContrailModel(attrs.config)
-            // autosave widget gui config 
+            // autosave widget gui config
             attrs.configModel.model().on('change', function () {
                 self.save()
             })
@@ -39,10 +41,10 @@ define(function (require) {
 
         parse: function (data) {
             // on successful model save
-            if (data.result) return
+            if (data.result) return data
             if (data.error) {
-                console.log(data)
-                return
+                console.error(data)
+                return []
             }
 
             data.contentConfig.contentConfigView.modelConfig = JSON.parse(data.contentConfig.contentConfigView.modelConfig)
@@ -58,7 +60,6 @@ define(function (require) {
             var validContentConfig = self.attributes.contentConfigModel.model().isValid(true, 'validation')
             var validDataConfig = self.attributes.dataConfigModel.model().isValid(true, cowc.KEY_RUN_QUERY_VALIDATION)
             return !(validConfig && validContentConfig && validDataConfig)
-               
         },
 
         getDataSourceList: function () {
@@ -85,21 +86,25 @@ define(function (require) {
         getViewConfig: function (viewType) {
             var self = this
             var viewsModel = self.get('viewsModel').model()
-            var viewId, viewPathPrefix, viewConfig = {}
+            var viewId
+            var viewPathPrefix
+            var viewConfig = {}
             switch (viewType) {
-                case 'dataConfigView':
-                    viewId = viewsModel.get(viewType)
-                    viewPathPrefix = defaultConfig.dataSources[viewId].viewPathPrefix
-                    break
-                case 'contentView':
-                    viewId = viewsModel.get(viewType)
-                    viewPathPrefix = defaultConfig.contentViews[viewId][viewType].viewPathPrefix
-                    viewConfig = self.get('contentConfigModel').getContentViewOptions()
-                    break
-                case 'contentConfigView':
-                    var contentView = viewsModel.get('contentView')
-                    viewId = defaultConfig.contentViews[contentView][viewType].view
-                    viewPathPrefix = defaultConfig.contentViews[contentView][viewType].viewPathPrefix
+            case 'dataConfigView':
+                viewId = viewsModel.get(viewType)
+                viewPathPrefix = defaultConfig.dataSources[viewId].viewPathPrefix
+                break
+            case 'contentView':
+                viewId = viewsModel.get(viewType)
+                viewPathPrefix = defaultConfig.contentViews[viewId][viewType].viewPathPrefix
+                viewConfig = self.get('contentConfigModel').getContentViewOptions()
+                break
+            case 'contentConfigView':
+                var contentView = viewsModel.get('contentView')
+                viewId = defaultConfig.contentViews[contentView][viewType].view
+                viewPathPrefix = defaultConfig.contentViews[contentView][viewType].viewPathPrefix
+                break
+            default:
             }
             return {
                 view: viewId,
@@ -110,13 +115,13 @@ define(function (require) {
         },
 
         getConfigModelId: function (contentView) {
-            if (!contentView) return
+            if (!contentView) return ''
             var config = defaultConfig.contentViews[contentView]
             if (config) return config.contentConfigView.model
-            else return defaultConfig.dataSources[contentView].model
+            return defaultConfig.dataSources[contentView].model
         },
 
-        changeConfigModel: function (viewsModel, viewId) {
+        changeConfigModel: function (viewsModel) {
             var self = this
             if (!viewsModel.changed.contentView) return
             var contentConfigModel = self.getConfigModelId(viewsModel.changed.contentView)
@@ -154,8 +159,8 @@ define(function (require) {
                         '"viewPathPrefix"': self.getViewConfig('contentConfigView').viewPathPrefix,
                         '"model"': self.getConfigModelId(attrs.viewsModel.contentView()),
                         '"modelConfig"': JSON.stringify(attrs.contentConfigModel.toJSON()),
-                    }
-                }
+                    },
+                },
             }
             return result
         },
@@ -177,7 +182,8 @@ define(function (require) {
         },
 
         _updateContentConfigModel: function () {
-            var self = this, attrs = self.attributes
+            var self = this
+            var attrs = self.attributes
             var select = attrs.dataConfigModel.select()
             if (_.isEmpty(select)) return
             var yAxisValues = _.without(select.split(', '), 'T=', 'T')
@@ -190,7 +196,7 @@ define(function (require) {
             _.each(_.extend({}, defaultConfig.contentViews, defaultConfig.dataSources), function (config, id) {
                 self.viewLabels[id] = config.label
             })
-        }
+        },
     })
     return WidgetModel
 })

@@ -23,16 +23,28 @@
         "viewPathPrefix": "reports/udd/ui/js/views/contentConfigs/",
         "model": "reports/udd/ui/js/models/contentConfigs/LineBarChartConfigModel"
       }
+    },
+    "LogsView": {
+      "label": "Logs View",
+      "contentView": {
+        "view": "LogsView",
+        "viewPathPrefix": "js/views/"
+      },
+      "contentConfigView": {
+        "view": "LineBarChartConfigView",
+        "viewPathPrefix": "reports/udd/ui/js/views/contentConfigs/",
+        "model": "reports/udd/ui/js/models/contentConfigs/LineBarChartConfigModel"
+      }
     }
   },
   "dataSources": {
-    "StatQueryConfigView": {
+    "QueryConfigView": {
       "contentViews": ["LineWithFocusChartView","LineBarWithFocusChartView"],
       "contentView": "LineWithFocusChartView",
       "label": "Query Engine",
-      "view": "StatQueryConfigView",
+      "view": "QueryConfigView",
       "viewPathPrefix": "reports/udd/ui/js/views/dataSourceConfigs/",
-      "model": "reports/udd/ui/js/models/dataSourceConfigs/StatQueryConfigModel",
+      "model": "reports/udd/ui/js/models/dataSourceConfigs/QueryConfigModel",
       "modelConfig": {
         "time_range": 3600
       }

@@ -5,14 +5,14 @@
 define(function (require) {
     var ContrailModel = require('contrail-model')
     var cowc = require('core-constants')
-    var cofm = require('core-formatters')
+    var cowf = new (require('core-formatters'))
 
     return ContrailModel.extend({
         defaultConfig: {
-          "color": "1f77b4",
-          "yAxisLabel": "",
-          "yAxisValue": "",
-          "yAxisValues": [],
+            'color': '1f77b4',
+            'yAxisLabel': '',
+            'yAxisValue': '',
+            'yAxisValues': [],
         },
 
         validations: {
@@ -20,16 +20,16 @@ define(function (require) {
                 'yAxisValue': {
                     required: true,
                     msg: 'Y Axis Value is required',
-                }
-            }
+                },
+            },
         },
 
         toJSON: function () {
             var self = this
             return {
-                "color": self.color(),
-                "yAxisLabel": self.yAxisLabel(),
-                "yAxisValue": self.yAxisValue(),
+                'color': self.color(),
+                'yAxisLabel': self.yAxisLabel(),
+                'yAxisValue': self.yAxisValue(),
             }
         },
 
@@ -51,8 +51,8 @@ define(function (require) {
                     colors: [self.color()],
                     forceY: [0, 10],
                     yFormatter: cowf.getFormattedValue.bind(cowf, cowc.QUERY_COLUMN_FORMATTER[self.yAxisValue()]),
-                }
+                },
             }
-        }
+        },
     })
 })

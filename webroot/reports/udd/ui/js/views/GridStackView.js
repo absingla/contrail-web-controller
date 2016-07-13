@@ -6,12 +6,12 @@
  * Utilizes grid layout from gridstack jquery module
  */
 define(function (require) {
-    var _ = require('lodash')
+    var Handlebars = window.Handlebars
     var GridStack = require('/assets/gridstack/js/gridstack.js')
     var ContrailView = require('contrail-view')
 
     var GridStackView = ContrailView.extend({
-        initialize: function (p) {
+        initialize: function () {
             var self = this
             self.p = _.extend({
                 animate: false,
@@ -28,7 +28,7 @@ define(function (require) {
 
             self.listenTo(self.model, 'add', self.onAdd)
             self.listenTo(self.model, 'remove', self.onRemove)
-            //self.listenTo(self.model, 'reset', self.clear)
+            // TODO self.listenTo(self.model, 'reset', self.clear)
         },
 
         id: 'widgets',
@@ -65,13 +65,13 @@ define(function (require) {
             // place widget last
             var cellsX = _.map(self.model.models, function (m) { return m.attributes.configModel.x()})
             var cellsY = _.map(self.model.models, function (m) { return m.attributes.configModel.y()})
-            function getMax(value) { return Math.max(value) }
+            function getMax (value) { return Math.max(value) }
             var x = _.isEmpty(cellsX) ? 0 : _.sortBy(cellsX, getMax)[0] + self.p.minWidth
             var y = _.isEmpty(cellsY) ? 0 : _.sortBy(cellsY, getMax)[0] || 0 + self.p.minHeight
             self.model.add({
                 dashboardId: self.p.dashboardId,
                 tabId: self.p.tabId,
-                config: {x: x, y: y, width: self.p.width, height: self.p.minHeight}
+                config: {x: x, y: y, width: self.p.width, height: self.p.minHeight},
             })
         },
 
@@ -102,10 +102,10 @@ define(function (require) {
             var el = self.$('#' + id)
             function renderView () {
                 self.renderView4Config(el, model, {
-                    view: "WidgetView",
+                    view: 'WidgetView',
                     elementId: id,
-                    viewPathPrefix: "reports/udd/ui/js/views/",
-                    viewConfig: {}
+                    viewPathPrefix: 'reports/udd/ui/js/views/',
+                    viewConfig: {},
                 })
             }
             if (model.ready) renderView()
@@ -141,7 +141,7 @@ define(function (require) {
                 config.width(item.width)
                 config.height(item.height)
             })
-        }
+        },
     })
     return GridStackView;
 })

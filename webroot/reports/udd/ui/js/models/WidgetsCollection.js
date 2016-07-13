@@ -2,15 +2,15 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 define(function (require) {
+    var Backbone = require('backbone')
     var Widget = require('/reports/udd/ui/js/models/WidgetModel.js')
 
     var WidgetsCollection = Backbone.Collection.extend({
 
         initialize: function (attrs, options) {
             var self = this
-            options = options || {}
             self.model = Widget
-            self.url = options.url
+            self.url = options ? options.url : ''
         },
 
         parse: function (response) {

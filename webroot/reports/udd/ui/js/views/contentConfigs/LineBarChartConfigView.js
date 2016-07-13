@@ -6,21 +6,17 @@
  */
 define(function (require) {
     var ContrailView = require('contrail-view')
+    var ko = require('knockout')
     var Knockback = require('knockback')
+    var kbValidation = require('validation')
 
     var LineBarChartConfigView = ContrailView.extend({
         events: {
-            'click .update-widget': 'onChange'
-        },
-
-        initialize: function () {
-            var self = this
+            'click .update-widget': 'onChange',
         },
 
         render: function () {
             var self = this
-
-            var elementId = self.attributes.elementId
 
             self.renderView4Config(self.$el, self.model, self.getViewConfig(), 'validation', null, null, function () {
                 Knockback.applyBindings(self.model, self.$el[0])
@@ -29,7 +25,6 @@ define(function (require) {
         },
 
         getViewConfig: function () {
-            var self = this
             return {
                 view: 'SectionView',
                 viewConfig: {
@@ -43,7 +38,7 @@ define(function (require) {
                                         path: 'barColor',
                                         dataBindValue: 'barColor',
                                         class: 'span6',
-                                    }
+                                    },
                                 }, {
                                     elementId: 'lineColor', view: 'FormInputView',
                                     viewConfig: {
@@ -51,9 +46,9 @@ define(function (require) {
                                         path: 'lineColor',
                                         dataBindValue: 'lineColor',
                                         class: 'span6',
-                                    }
-                                }
-                            ]
+                                    },
+                                },
+                            ],
                         }, {
                             columns: [
                                 {
@@ -63,7 +58,7 @@ define(function (require) {
                                         path: 'barLabel',
                                         dataBindValue: 'barLabel',
                                         class: 'span6',
-                                    }
+                                    },
                                 }, {
                                     elementId: 'lineLabel', view: 'FormInputView',
                                     viewConfig: {
@@ -71,9 +66,9 @@ define(function (require) {
                                         path: 'lineLabel',
                                         dataBindValue: 'lineLabel',
                                         class: 'span6',
-                                    }
-                                }
-                            ]
+                                    },
+                                },
+                            ],
                         }, {
                             columns: [
                                 {
@@ -86,9 +81,9 @@ define(function (require) {
                                         class: 'span6',
                                         elementConfig: {
                                             placeholder: 'Select Bar Value',
-                                            defaultValueId: 0
-                                        }
-                                    }
+                                            defaultValueId: 0,
+                                        },
+                                    },
                                 }, {
                                     elementId: 'lineValue', view: 'FormDropdownView',
                                     viewConfig: {
@@ -99,11 +94,11 @@ define(function (require) {
                                         class: 'span6',
                                         elementConfig: {
                                             placeholder: 'Select Bar Value',
-                                            defaultValueId: 1
-                                        }
-                                    }
-                                }
-                            ]
+                                            defaultValueId: 1,
+                                        },
+                                    },
+                                },
+                            ],
                         }, {
                             columns: [
                                 {
@@ -111,14 +106,14 @@ define(function (require) {
                                     viewConfig: {
                                         class: 'update-widget display-inline-block margin-5-10-0-0',
                                         elementConfig: {
-                                            btnClass: 'btn-primary'
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                }
+                                            btnClass: 'btn-primary',
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
             };
         },
 
@@ -137,7 +132,7 @@ define(function (require) {
             self.$el.empty().off() // off to unbind the events
             self.stopListening()
             return self
-        }
+        },
     })
     return LineBarChartConfigView;
 })

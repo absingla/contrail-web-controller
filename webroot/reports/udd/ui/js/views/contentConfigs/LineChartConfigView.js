@@ -6,21 +6,17 @@
  */
 define(function (require) {
     var ContrailView = require('contrail-view')
+    var ko = require('knockout')
     var Knockback = require('knockback')
+    var kbValidation = require('validation')
 
     var LineChartConfigView = ContrailView.extend({
         events: {
-            'click .update-widget': 'onChange'
-        },
-
-        initialize: function () {
-            var self = this
+            'click .update-widget': 'onChange',
         },
 
         render: function () {
             var self = this
-
-            var elementId = self.attributes.elementId
 
             self.renderView4Config(self.$el, self.model, self.getViewConfig(), 'validation', null, null, function () {
                 Knockback.applyBindings(self.model, self.$el[0])
@@ -29,7 +25,6 @@ define(function (require) {
         },
 
         getViewConfig: function () {
-            var self = this
             return {
                 view: 'SectionView',
                 viewConfig: {
@@ -43,9 +38,9 @@ define(function (require) {
                                         path: 'color',
                                         dataBindValue: 'color',
                                         class: 'span9',
-                                    }
-                                }
-                            ]
+                                    },
+                                },
+                            ],
                         }, {
                             columns: [
                                 {
@@ -55,9 +50,9 @@ define(function (require) {
                                         path: 'yAxisLabel',
                                         dataBindValue: 'yAxisLabel',
                                         class: 'span9',
-                                    }
-                                }
-                            ]
+                                    },
+                                },
+                            ],
                         }, {
                             columns: [
                                 {
@@ -70,11 +65,11 @@ define(function (require) {
                                         class: 'span9',
                                         elementConfig: {
                                             placeholder: 'Select Y Axis Value',
-                                            defaultValueId: 0
-                                        }
-                                    }
-                                }
-                            ]
+                                            defaultValueId: 0,
+                                        },
+                                    },
+                                },
+                            ],
                         }, {
                             columns: [
                                 {
@@ -82,14 +77,14 @@ define(function (require) {
                                     viewConfig: {
                                         class: 'update-widget display-inline-block margin-5-10-0-0',
                                         elementConfig: {
-                                            btnClass: 'btn-primary'
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                }
+                                            btnClass: 'btn-primary',
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
             };
         },
 
@@ -108,7 +103,7 @@ define(function (require) {
             self.$el.empty().off() // off to unbind the events
             self.stopListening()
             return self
-        }
+        },
     })
     return LineChartConfigView;
 })
