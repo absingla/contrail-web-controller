@@ -10,7 +10,11 @@ define(function (require) {
         initialize: function () {
             var self = this
             self.model.onDataUpdate.subscribe(function () {
-                self.render()
+                // TODO remove timeout
+                // self.model.isRequestInProgress should return false here
+                setTimeout(function () {
+                    self.render()
+                })
             })
             self.template = window.contrail.getTemplate4Id('logList-template')
         },
@@ -18,6 +22,10 @@ define(function (require) {
         render: function () {
             var self = this
             var list = self.model.getItems()
+            if (self.model.isRequestInProgress()) {
+                self.$el.html(window.cowm.DATA_FETCHING)
+                return
+            }
             self.$el.html(self.template(self._format(list.slice(0, 5))))
         },
 
