@@ -1,13 +1,11 @@
 define(['underscore'], function (_) {
 
     this.getMockData = function(){
-
-        var mockData = [];
+        var mockData = [],
+            ts = 1467997860000000;
         for(var i=0; i<100; i++){
-            var ts = 1467997860000000;
             ts = ts + Math.floor((Math.random() * 999));
-            var data =
-            {
+            var data = {
                 "Category": "__default__",
                 "Level": 6 + (ts%2),
                 "MessageTS": ts,
@@ -77,7 +75,7 @@ define(['underscore'], function (_) {
             "dir": 1
         },
         "chunk": 1,
-        "chunkSize": 1505,
+        "chunkSize": 100,
         "serverSideChunking": true
     }
 
@@ -136,7 +134,7 @@ define(['underscore'], function (_) {
             "progress": 100,
             "status": "completed",
             "tableName": "MessageTable",
-            "count": 1505,
+            "count": 100,
             "timeTaken": 3.211,
             "errorMessage": "",
             "queryReqObj": {
@@ -172,6 +170,7 @@ define(['underscore'], function (_) {
             "opsQueryId": "20fc1c63-478b-11e6-8d2b-00000a541ef9"
         }
     ]
+
     return {
         logsQueryQueueMockData:logsQueryQueueMockData,
         logsViewQueryMockData:logsViewQueryMockData

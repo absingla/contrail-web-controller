@@ -8,7 +8,7 @@ define([
     'ct-test-messages',
     'reports/qe/test/ui/views/LogsQueryQueueView.mock.data',
     'co-grid-view-test-suite'
-], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite) {
+], function (cotc, cotr, cttu, cttm, TestMockdata, GridViewTestSuite) {
 
     var moduleId = cttm.LOGS_QUERY_QUEUE_COMMON_TEST_MODULE;
 
@@ -16,12 +16,10 @@ define([
 
     var fakeServerConfig = cotr.getDefaultFakeServerConfig();
 
-    var fakeServerResponsesConfig = function() {
+    var fakeServerResponsesConfig = function () {
         var responses = [];
-
-
         responses.push(cotr.createFakeServerResponse({
-            method:"GET",
+            method: "GET",
             url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=lqq'),
             body: JSON.stringify(TestMockdata.logsQueryQueueMockData)
         }));
@@ -38,7 +36,7 @@ define([
     };
     pageConfig.loadTimeout = cotc.PAGE_LOAD_TIMEOUT * 5;
 
-    var getTestConfig = function() {
+    var getTestConfig = function () {
         return {
             rootView: qePageLoader.qeView,
             tests: [

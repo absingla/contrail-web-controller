@@ -18,7 +18,7 @@ define([
 
     var fakeServerResponsesConfig = function() {
         var responses = [];
-
+        
         responses.push(cotr.createFakeServerResponse({
             method:"GET",
             url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=lqq'),
@@ -79,6 +79,4 @@ define([
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
 
     cotr.startTestRunner(pageTestConfig);
-
-
 });

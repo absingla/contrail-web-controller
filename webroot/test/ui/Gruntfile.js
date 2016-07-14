@@ -107,174 +107,6 @@ module.exports = function (grunt) {
                 feature: 'nm'
             }
         },
-        flowQueryQueueView: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowQueryQueueView.test.js',
-                        included: false
-                    }
-                ],
-                preprocessors: {
-                    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
-                },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/qe/views/',
-                    outputFile: 'flow-query-queue-view-test-results.xml',
-                    suite: 'flowQueryQueueView',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/reports/views/flow-query-queue-view-test-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/reports/views/flowQueryQueueView/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'reports'
-            }
-        },
-        logsQueryQueueView: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/LogsQueryQueueView.test.js',
-                        included: false
-                    }
-                ],
-                preprocessors: {
-                    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
-                },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/qe/views/',
-                    outputFile: 'logs-query-queue-view-test-results.xml',
-                    suite: 'logsQueryQueueView',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/reports/views/logs-query-queue-view-test-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/reports/views/logsQueryQueueView/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'reports'
-            }
-        },
-        statQueryQueueView: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatQueryQueueView.test.js',
-                        included: false
-                    }
-                ],
-                preprocessors: {
-                    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
-                },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/qe/views/',
-                    outputFile: 'stat-query-queue-view-test-results.xml',
-                    suite: 'statQueryQueueView',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/reports/views/stat-query-queue-view-test-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/reports/views/statQueryQueueView/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'reports'
-            }
-        },
-        flowViewQueryResults: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowViewQueryResults.test.js',
-                        included: false
-                    }
-                ],
-                // preprocessors: {
-                //    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
-                // },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/qe/views/',
-                    outputFile: 'flow-view-query-results.xml',
-                    suite: 'flowViewQueryResults',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/reports/views/flow-view-query-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/reports/views/flowViewQueryResults/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'reports'
-            }
-        },
-        logsViewQueryResults: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/LogsViewQueryResults.test.js',
-                        included: false
-                    }
-                ],
-                // preprocessors: {
-                //    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
-                // },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/qe/views/',
-                    outputFile: 'logs-view-query-results.xml',
-                    suite: 'logsViewQueryResults',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/reports/views/logs-view-query-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/reports/views/logsViewQueryResults/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'reports'
-            }
-        },
-        statViewQueryResults: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatsViewQueryResults.test.js',
-                        included: false
-                    }
-                ],
-                // preprocessors: {
-                //    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
-                // },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/qe/views/',
-                    outputFile: 'stat-view-query-results.xml',
-                    suite: 'logsViewQueryResults',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/reports/views/stat-view-query-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/reports/views/statViewQueryResults/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'reports'
-            }
-        },
         networkView: {
             options: {
                 files: [
@@ -680,6 +512,176 @@ module.exports = function (grunt) {
                 feature: 'ct'
             }
         },
+        //Reports QE Tests
+        flowQueryQueueView: {
+            options: {
+                files: [
+                    {
+                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowQueryQueueView.test.js',
+                        included: false
+                    }
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputDir: __dirname + '/reports/tests/qe/views/',
+                    outputFile: 'flow-query-queue-view-test-results.xml',
+                    suite: 'flowQueryQueueView',
+                    useBrowserName: false
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/tests/reports/views/flow-query-queue-view-test-results.html'
+                },
+                coverageReporter: {
+                    type: 'html',
+                    dir: __dirname + '/reports/coverage/reports/views/flowQueryQueueView/',
+                    subdir: browserSubdirFn
+                },
+                feature: 'reports'
+            }
+        },
+        // flowViewQueryResults: {
+        //     options: {
+        //         files: [
+        //             {
+        //                 pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowViewQueryResults.test.js',
+        //                 included: false
+        //             }
+        //         ],
+        //         preprocessors: {
+        //            'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+        //         },
+        //         junitReporter: {
+        //             outputDir: __dirname + '/reports/tests/qe/views/',
+        //             outputFile: 'flow-view-query-results.xml',
+        //             suite: 'flowViewQueryResults',
+        //             useBrowserName: false
+        //         },
+        //         htmlReporter: {
+        //             outputFile: __dirname + '/reports/tests/reports/views/flow-view-query-results.html'
+        //         },
+        //         coverageReporter: {
+        //             type: 'html',
+        //             dir: __dirname + '/reports/coverage/reports/views/flowViewQueryResults/',
+        //             subdir: browserSubdirFn
+        //         },
+        //         feature: 'reports'
+        //     }
+        // },
+        logsQueryQueueView: {
+            options: {
+                files: [
+                    {
+                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/LogsQueryQueueView.test.js',
+                        included: false
+                    }
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputDir: __dirname + '/reports/tests/qe/views/',
+                    outputFile: 'logs-query-queue-view-test-results.xml',
+                    suite: 'logsQueryQueueView',
+                    useBrowserName: false
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/tests/reports/views/logs-query-queue-view-test-results.html'
+                },
+                coverageReporter: {
+                    type: 'html',
+                    dir: __dirname + '/reports/coverage/reports/views/logsQueryQueueView/',
+                    subdir: browserSubdirFn
+                },
+                feature: 'reports'
+            }
+        },
+        logsViewQueryResults: {
+            options: {
+                files: [
+                    {
+                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/LogsViewQueryResults.test.js',
+                        included: false
+                    }
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputDir: __dirname + '/reports/tests/qe/views/',
+                    outputFile: 'logs-view-query-results.xml',
+                    suite: 'logsViewQueryResults',
+                    useBrowserName: false
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/tests/reports/views/logs-view-query-results.html'
+                },
+                coverageReporter: {
+                    type: 'html',
+                    dir: __dirname + '/reports/coverage/reports/views/logsViewQueryResults/',
+                    subdir: browserSubdirFn
+                },
+                feature: 'reports'
+            }
+        },
+        statQueryQueueView: {
+            options: {
+                files: [
+                    {
+                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatQueryQueueView.test.js',
+                        included: false
+                    }
+                ],
+                preprocessors: {
+                    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputDir: __dirname + '/reports/tests/qe/views/',
+                    outputFile: 'stat-query-queue-view-test-results.xml',
+                    suite: 'statQueryQueueView',
+                    useBrowserName: false
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/tests/reports/views/stat-query-queue-view-test-results.html'
+                },
+                coverageReporter: {
+                    type: 'html',
+                    dir: __dirname + '/reports/coverage/reports/views/statQueryQueueView/',
+                    subdir: browserSubdirFn
+                },
+                feature: 'reports'
+            }
+        },
+        statViewQueryResults: {
+            options: {
+                files: [
+                    {
+                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatsViewQueryResults.test.js',
+                        included: false
+                    }
+                ],
+                preprocessors: {
+                   'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputDir: __dirname + '/reports/tests/qe/views/',
+                    outputFile: 'stat-view-query-results.xml',
+                    suite: 'logsViewQueryResults',
+                    useBrowserName: false
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/tests/reports/views/stat-view-query-results.html'
+                },
+                coverageReporter: {
+                    type: 'html',
+                    dir: __dirname + '/reports/coverage/reports/views/statViewQueryResults/',
+                    subdir: browserSubdirFn
+                },
+                feature: 'reports'
+            }
+        },
+        //Config Tests
         physicalRoutersGridView: {
             options: {
                 files: [

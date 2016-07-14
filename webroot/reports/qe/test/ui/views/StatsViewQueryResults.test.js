@@ -8,7 +8,7 @@ define([
     'ct-test-messages',
     'reports/qe/test/ui/views/StatQueryQueueView.mock.data',
     'co-grid-view-test-suite'
-], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite) {
+], function (cotc, cotr, cttu, cttm, TestMockdata, GridViewTestSuite) {
 
     var moduleId = cttm.LOGS_QUERY_QUEUE_COMMON_TEST_MODULE;
 
@@ -16,11 +16,11 @@ define([
 
     var fakeServerConfig = cotr.getDefaultFakeServerConfig();
 
-    var fakeServerResponsesConfig = function() {
+    var fakeServerResponsesConfig = function () {
         var responses = [];
 
         responses.push(cotr.createFakeServerResponse({
-            method:"GET",
+            method: "GET",
             url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=sqq'),
             body: JSON.stringify(TestMockdata.statQueryQueueMockData)
         }));
@@ -44,7 +44,7 @@ define([
     };
     pageConfig.loadTimeout = cotc.PAGE_LOAD_TIMEOUT * 5;
 
-    var getTestConfig = function() {
+    var getTestConfig = function () {
         return {
             rootView: qePageLoader.qeView,
             tests: [
@@ -77,15 +77,8 @@ define([
         return;
     };
 
-    //  var viewDropDown = $(el).find('.grid-action-dropdown');
-
-    //  $(viewDropDown).trigger('click');
-    // var inputBox = $(el).find('.input-grid-search');
-    // inputBox.val('default-domain:admin:frontend');
-    // inputBox.keyup();
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
 
     cotr.startTestRunner(pageTestConfig);
-
 
 });
