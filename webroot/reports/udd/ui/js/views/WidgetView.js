@@ -62,6 +62,8 @@ define(function (require) {
             var config = self.model.getViewConfig('dataConfigView')
             var element = self.$('#' + config.elementId)
             var model = self.model.get('dataConfigModel')
+            var oldView = self.childViewMap[config.elementId]
+            if (oldView) oldView.remove()
             self.renderView4Config(element, model, config, null, null, null, function () {
                 self.subscribeConfigChange(config.elementId)
             })

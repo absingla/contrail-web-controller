@@ -9,6 +9,7 @@ module.exports = {
         'space-before-function-paren': ['error', 'always'],
         'no-console': ['error', { allow: ['warn', 'error'] }],
         'no-undefined': 0,
+        'camelcase': 0,
     },
     'globals': {
         '_': true,
