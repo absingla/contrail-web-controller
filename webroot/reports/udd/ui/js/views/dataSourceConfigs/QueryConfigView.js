@@ -42,7 +42,7 @@ define(function (require) {
                                         elementConfig: {
                                             dataTextField: 'text',
                                             dataValueField: 'id',
-                                            data: _.keys(cowc.TABLE_QUERY_PREFIXES),
+                                            data: cowc.TABLE_TYPES,
                                         },
                                     },
                                 },

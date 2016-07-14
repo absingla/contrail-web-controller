@@ -16,12 +16,12 @@ define(function (require) {
 
             var defaultOptions = {}
             defaultOptions[cowc.QE_LOG_TABLE_TYPE] = {
-                table_name: cowc.MESSAGE_TABLE,
                 query_prefix: cowc.SYSTEM_LOGS_PREFIX,
-                keywords: '',
-                log_level: '7',
-                limit: cowc.QE_DEFAULT_LIMIT_50K,
+                table_name: cowc.MESSAGE_TABLE,
                 select: cowc.DEFAULT_SL_SELECT_FIELDS,
+                log_level: '7',
+                keywords: '',
+                limit: cowc.QE_DEFAULT_LIMIT_50K,
             }
             defaultOptions[cowc.QE_STAT_TABLE_TYPE] = {
                 query_prefix: cowc.STAT_QUERY_PREFIX,
@@ -36,6 +36,8 @@ define(function (require) {
             var modelData = _.merge(defaultConfig, modelConfig)
             QueryFormModel.prototype.constructor.call(self, modelData, queryReqConfig)
             self.model().on('change:table_type', function (model, table_type) {
+                model.set(defaultOptions[table_type])
+                // TODO select values are not set on first call
                 model.set(defaultOptions[table_type])
             })
 

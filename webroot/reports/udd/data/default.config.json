@@ -31,12 +31,6 @@
       "contentView": {
         "view": "LogsView",
         "viewPathPrefix": "reports/udd/ui/js/views/"
-      },
-      "contentConfigView": {
-        "view": "LogsConfigView",
-        "viewPathPrefix": "reports/udd/ui/js/views/contentConfigs/",
-        "model": "LogsConfigModel",
-        "modelPathPrefix": "reports/udd/ui/js/models/contentConfigs/"
       }
     }
   },
