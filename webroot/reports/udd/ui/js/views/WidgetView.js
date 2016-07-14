@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
+ * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 /**
  * widget container
@@ -62,6 +62,8 @@ define(function (require) {
             var config = self.model.getViewConfig('dataConfigView')
             var element = self.$('#' + config.elementId)
             var model = self.model.get('dataConfigModel')
+            var oldView = self.childViewMap[config.elementId]
+            if (oldView) oldView.remove()
             self.renderView4Config(element, model, config, null, null, null, function () {
                 self.subscribeConfigChange(config.elementId)
             })
@@ -69,7 +71,7 @@ define(function (require) {
         // render widget content (chart) on the front
         renderContentView: function () {
             var self = this
-            var parserOptions = self.model.get('contentConfigModel').getParserOptions()
+            var parserOptions = self.model.get('contentConfigModel') ? self.model.get('contentConfigModel').getParserOptions() : {}
             var dataConfigModel = self.model.get('dataConfigModel')
             var model = dataConfigModel.getDataModel(parserOptions)
             var config = self.model.getViewConfig('contentView')
@@ -80,6 +82,10 @@ define(function (require) {
         renderContentConfigView: function () {
             var self = this
             var config = self.model.getViewConfig('contentConfigView')
+            if (!config.view) {
+                if (self.model.isValid()) self.renderContentView()
+                return
+            }
             var element = self.$('#' + config.elementId)
             var model = self.model.get('contentConfigModel')
             var oldView = self.childViewMap[config.elementId]

@@ -9,7 +9,8 @@
       "contentConfigView": {
         "view": "LineChartConfigView",
         "viewPathPrefix": "reports/udd/ui/js/views/contentConfigs/",
-        "model": "reports/udd/ui/js/models/contentConfigs/LineChartConfigModel"
+        "model": "LineChartConfigModel",
+        "modelPathPrefix": "reports/udd/ui/js/models/contentConfigs/"
       }
     },
     "LineBarWithFocusChartView": {
@@ -21,30 +22,26 @@
       "contentConfigView": {
         "view": "LineBarChartConfigView",
         "viewPathPrefix": "reports/udd/ui/js/views/contentConfigs/",
-        "model": "reports/udd/ui/js/models/contentConfigs/LineBarChartConfigModel"
+        "model": "LineBarChartConfigModel",
+        "modelPathPrefix": "reports/udd/ui/js/models/contentConfigs/"
       }
     },
     "LogsView": {
       "label": "Logs View",
       "contentView": {
         "view": "LogsView",
-        "viewPathPrefix": "js/views/"
-      },
-      "contentConfigView": {
-        "view": "LineBarChartConfigView",
-        "viewPathPrefix": "reports/udd/ui/js/views/contentConfigs/",
-        "model": "reports/udd/ui/js/models/contentConfigs/LineBarChartConfigModel"
+        "viewPathPrefix": "reports/udd/ui/js/views/"
       }
     }
   },
   "dataSources": {
     "QueryConfigView": {
-      "contentViews": ["LineWithFocusChartView","LineBarWithFocusChartView"],
-      "contentView": "LineWithFocusChartView",
+      "contentViews": ["LineWithFocusChartView","LineBarWithFocusChartView", "LogsView"],
       "label": "Query Engine",
       "view": "QueryConfigView",
       "viewPathPrefix": "reports/udd/ui/js/views/dataSourceConfigs/",
-      "model": "reports/udd/ui/js/models/dataSourceConfigs/QueryConfigModel",
+      "model": "QueryConfigModel",
+      "modelPathPrefix": "reports/udd/ui/js/models/dataSourceConfigs/",
       "modelConfig": {
         "time_range": 3600
       }

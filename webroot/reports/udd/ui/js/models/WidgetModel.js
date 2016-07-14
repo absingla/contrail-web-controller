@@ -35,7 +35,10 @@ define(function (require) {
             attrs.configModel.model().on('change', function () {
                 self.save()
             })
-            require([attrs.contentConfig.dataConfigView.model, attrs.contentConfig.contentConfigView.model], self._onConfigModelsLoaded.bind(self))
+            require([self.getConfigModelObj(attrs.contentConfig.dataConfigView.view).path,
+                    self.getConfigModelObj(attrs.contentConfig.contentView.view).path],
+                    self._onConfigModelsLoaded.bind(self)
+                   )
             self._parseViewLabels()
         },
 
@@ -51,14 +54,13 @@ define(function (require) {
             data.contentConfig.dataConfigView.modelConfig = JSON.parse(data.contentConfig.dataConfigView.modelConfig)
             return data
         },
-        /*
-         * TODO
-         */
+
         validate: function () {
             var self = this
-            var validConfig = !!self.attributes.configModel.title()
-            var validContentConfig = self.attributes.contentConfigModel.model().isValid(true, 'validation')
-            var validDataConfig = self.attributes.dataConfigModel.model().isValid(true, cowc.KEY_RUN_QUERY_VALIDATION)
+            var attrs = self.attributes
+            var validConfig = !!attrs.configModel.title()
+            var validContentConfig = attrs.contentConfigModel ? attrs.contentConfigModel.model().isValid(true, 'validation') : true
+            var validDataConfig = attrs.dataConfigModel.model().isValid(true, cowc.KEY_RUN_QUERY_VALIDATION)
             return !(validConfig && validContentConfig && validDataConfig)
         },
 
@@ -92,17 +94,17 @@ define(function (require) {
             switch (viewType) {
             case 'dataConfigView':
                 viewId = viewsModel.get(viewType)
-                viewPathPrefix = defaultConfig.dataSources[viewId].viewPathPrefix
+                viewPathPrefix = _.get(defaultConfig, ['dataSources', viewId, 'viewPathPrefix'])
                 break
             case 'contentView':
                 viewId = viewsModel.get(viewType)
-                viewPathPrefix = defaultConfig.contentViews[viewId][viewType].viewPathPrefix
-                viewConfig = self.get('contentConfigModel').getContentViewOptions()
+                viewPathPrefix = _.get(defaultConfig, ['contentViews', viewId, viewType, 'viewPathPrefix'])
+                viewConfig = self.get('contentConfigModel') ? self.get('contentConfigModel').getContentViewOptions() : {}
                 break
             case 'contentConfigView':
                 var contentView = viewsModel.get('contentView')
-                viewId = defaultConfig.contentViews[contentView][viewType].view
-                viewPathPrefix = defaultConfig.contentViews[contentView][viewType].viewPathPrefix
+                viewId = _.get(defaultConfig, ['contentViews', contentView, viewType, 'view'])
+                viewPathPrefix = _.get(defaultConfig, ['contentViews', contentView, viewType, 'viewPathPrefix'])
                 break
             default:
             }
@@ -114,18 +116,38 @@ define(function (require) {
             }
         },
 
-        getConfigModelId: function (contentView) {
-            if (!contentView) return ''
-            var config = defaultConfig.contentViews[contentView]
-            if (config) return config.contentConfigView.model
-            return defaultConfig.dataSources[contentView].model
+        getConfigModelObj: function (view) {
+            if (!view) return {}
+            var config = defaultConfig.contentViews[view]
+            var modelId = ''
+            var pathPrefix = ''
+            if (config) {
+                modelId = _.get(config, 'contentConfigView.model')
+                pathPrefix = _.get(config, 'contentConfigView.modelPathPrefix')
+            } else {
+                modelId = _.get(defaultConfig, ['dataSources', view, 'model'])
+                pathPrefix = _.get(defaultConfig, ['dataSources', view, 'modelPathPrefix'])
+            }
+            return {
+                id: modelId,
+                path: pathPrefix + modelId,
+                pathPrefix: pathPrefix,
+            }
         },
 
         changeConfigModel: function (viewsModel) {
             var self = this
-            if (!viewsModel.changed.contentView) return
-            var contentConfigModel = self.getConfigModelId(viewsModel.changed.contentView)
-            require([null, contentConfigModel], self._onConfigModelsLoaded.bind(self))
+            var changed = viewsModel.changed
+            var contentConfigModel = {}
+            var dataConfigModel = {}
+            if (changed.dataConfigView) {
+                dataConfigModel = self.getConfigModelObj(changed.dataConfigView)
+                var changeContentView = defaultConfig.dataSources[changed.dataConfigView].contentViews[0]
+                contentConfigModel = self.getConfigModelObj(changeContentView)
+            } else if (changed.contentView) {
+                contentConfigModel = self.getConfigModelObj(changed.contentView)
+            } else return
+            require([dataConfigModel.path, contentConfigModel.path], self._onConfigModelsLoaded.bind(self))
         },
 
         toJSON: function () {
@@ -147,7 +169,8 @@ define(function (require) {
                     dataConfigView: {
                         view: self.getViewConfig('dataConfigView').view,
                         '"viewPathPrefix"': self.getViewConfig('dataConfigView').viewPathPrefix,
-                        '"model"': self.getConfigModelId(attrs.viewsModel.dataConfigView()),
+                        '"model"': self.getConfigModelObj(attrs.viewsModel.dataConfigView()).id,
+                        '"modelPathPrefix"': self.getConfigModelObj(attrs.viewsModel.dataConfigView()).pathPrefix,
                         '"modelConfig"': JSON.stringify(attrs.dataConfigModel.toJSON()),
                     },
                     contentView: {
@@ -157,7 +180,8 @@ define(function (require) {
                     contentConfigView: {
                         view: self.getViewConfig('contentConfigView').view,
                         '"viewPathPrefix"': self.getViewConfig('contentConfigView').viewPathPrefix,
-                        '"model"': self.getConfigModelId(attrs.viewsModel.contentView()),
+                        '"model"': self.getConfigModelObj(attrs.viewsModel.contentView()).id,
+                        '"modelPathPrefix"': self.getConfigModelObj(attrs.viewsModel.contentView()).pathPrefix,
                         '"modelConfig"': JSON.stringify(attrs.contentConfigModel.toJSON()),
                     },
                 },
@@ -168,6 +192,7 @@ define(function (require) {
         _onConfigModelsLoaded: function (DataConfigModel, ContentConfigModel) {
             var self = this
             var attrs = self.attributes
+            if (attrs.dataConfigModel) attrs.dataConfigModel.model().off()
             if (DataConfigModel) self.set('dataConfigModel', new DataConfigModel(attrs.contentConfig.dataConfigView.modelConfig))
             if (ContentConfigModel) self.set('contentConfigModel', new ContentConfigModel(attrs.contentConfig.contentConfigView.modelConfig))
 
@@ -177,7 +202,6 @@ define(function (require) {
             attrs.dataConfigModel.model().on('change', self._updateContentConfigModel.bind(self))
 
             self.ready = true
-            // TODO do not trigger layoutView.renderWidgetView
             self.trigger('ready')
         },
 
@@ -187,7 +211,7 @@ define(function (require) {
             var select = attrs.dataConfigModel.select()
             if (_.isEmpty(select)) return
             var yAxisValues = _.without(select.split(', '), 'T=', 'T')
-            attrs.contentConfigModel.model().set('yAxisValues', yAxisValues)
+            if (attrs.contentConfigModel) attrs.contentConfigModel.model().set('yAxisValues', yAxisValues)
         },
 
         _parseViewLabels: function () {

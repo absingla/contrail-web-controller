@@ -5,6 +5,7 @@ define(function (require) {
     var cowc = require('core-constants')
     var cowl = require('core-labels')
     var qewu = require('core-basedir/js/common/qe.utils')
+    var ko = require('knockout')
     var Knockback = require('knockback')
     var kbValidation = require('validation')
     var QueryFormView = require('query-form-view')
@@ -31,6 +32,22 @@ define(function (require) {
                 viewConfig: {
                     rows: [
                         {
+                            columns: [
+                                {
+                                    elementId: 'table_type', view: 'FormDropdownView',
+                                    viewConfig: {
+                                        path: 'table_type',
+                                        dataBindValue: 'table_type',
+                                        class: 'span6',
+                                        elementConfig: {
+                                            dataTextField: 'text',
+                                            dataValueField: 'id',
+                                            data: cowc.TABLE_TYPES,
+                                        },
+                                    },
+                                },
+                            ],
+                        }, {
                             columns: [
                                 {
                                     elementId: 'time_range', view: 'FormDropdownView',
@@ -67,6 +84,9 @@ define(function (require) {
                                 },
                             ],
                         }, {
+                            viewConfig: {
+                                visible: 'isAttrAvailable("table_type") && table_type() === "STAT"',
+                            },
                             columns: [
                                 {
                                     elementId: 'table_name', view: 'FormComboboxView',
@@ -88,6 +108,30 @@ define(function (require) {
                             ],
                         }, {
                             viewConfig: {
+                                visible: 'isAttrAvailable("table_type") && table_type() === "LOG"',
+                            },
+                            columns: [
+                                {
+                                    elementId: 'log_level', view: 'FormDropdownView',
+                                    viewConfig: { path: 'log_level',
+                                        dataBindValue: 'log_level',
+                                        class: 'span3',
+                                        elementConfig: {
+                                            dataTextField: 'name',
+                                            dataValueField: 'value',
+                                            data: cowc.QE_LOG_LEVELS,
+                                        },
+                                    },
+                                }, {
+                                    elementId: 'keywords', view: 'FormInputView',
+                                    viewConfig: { path: 'keywords',
+                                        dataBindValue: 'keywords',
+                                        class: 'span6',
+                                        placeholder: 'Comma separated keywords' },
+                                },
+                            ],
+                        }, {
+                            viewConfig: {
                                 visible: 'isAttrAvailable("table_name")',
                             },
                             columns: [
@@ -104,8 +148,7 @@ define(function (require) {
                                             },
                                         },
                                     },
-                                },
-                                {
+                                }, {
                                     elementId: 'time-granularity-section', view: 'FormCompositeView',
                                     viewConfig: {
                                         class: 'span6',
@@ -218,6 +261,16 @@ define(function (require) {
                     ],
                 },
             }
+        },
+
+        remove: function () {
+            var self = this
+            Knockback.release(self.model, self.$el[0])
+            kbValidation.unbind(self)
+            self.$el.empty().off() // off to unbind the events
+            ko.cleanNode(self.$el[0])
+            self.stopListening()
+            return self
         },
 
         onChange: function () {

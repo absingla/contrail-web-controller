@@ -109,7 +109,7 @@ define(function (require) {
                 })
             }
             if (model.ready) renderView()
-            else model.on('ready', renderView)
+            else model.once('ready', renderView)
         },
 
         onRemove: function (model) {
