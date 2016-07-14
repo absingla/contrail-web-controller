@@ -20,11 +20,11 @@ define([
         var responses = [];
 
         responses.push(cotr.createFakeServerResponse({
-            method:"GET",
+            method: "GET",
             url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=fqq'),
             body: JSON.stringify(TestMockdata.flowsQueryQueueMockData)
         }));
-        
+
         responses.push(cotr.createFakeServerResponse({
             method: "POST",
             url: ctwc.URL_QUERY_RESULT,

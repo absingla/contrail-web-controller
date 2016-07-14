@@ -4,6 +4,32 @@
 
 define(['underscore'], function (_) {
 
+    var rowsCount = 120, timeStamp = 1468458000000000;
+    this.getMockData = function () {
+
+        var tmpArray = [];
+        for (var i = 0; i < rowsCount; i++) {
+            timeStamp = timeStamp + Math.floor((Math.random() * 999));
+            var skeletonData = {
+                "T": timeStamp,
+                "destip": "10.1.1.3",
+                "destvn": "default-domain:admin:frontend",
+                "direction_ing": 1,
+                "dport": 34911,
+                "flow_class_id": 2030614318697347000,
+                "protocol": 6,
+                "sourceip": "10.2.1.3",
+                "sourcevn": "default-domain:admin:backend",
+                "sport": 9100,
+                "sum(bytes)": 16618,
+                "sum(packets)": 49,
+                "vrouter": "a3s27"
+            };
+            tmpArray.push(skeletonData);
+        }
+
+        return tmpArray;
+    }
     this.flowsQueryQueueMockData = [
         {
             "startTime": 1467997933519,
@@ -40,7 +66,7 @@ define(['underscore'], function (_) {
             "progress": 100,
             "status": "completed",
             "tableName": "FlowSeriesTable",
-            "count": 100,
+            "count": rowsCount,
             "timeTaken": 3.205,
             "errorMessage": "",
             "queryReqObj": {
@@ -73,39 +99,49 @@ define(['underscore'], function (_) {
             },
             "opsQueryId": "1cfb11a1-452f-11e6-add3-00000a540b02"
         }
-    ];
-    
-    this.getFlowSeriesData = function(){
-        var series = [],
-            ts = 1467997860000000;
-        for(var i=0; i<100; i++){
-            ts = ts + Math.floor((Math.random() * 999));
-            var skeletonData = 	{
-                "T": ts ,
-                "destip": "10.1.1.3",
-                "destvn": "default-domain:admin:frontend",
-                "direction_ing": 1,
-                "dport": 34911,
-                "flow_class_id": 2030614318697347000,
-                "protocol": 6,
-                "sourceip": "10.2.1.3",
-                "sourcevn": "default-domain:admin:backend",
-                "sport": 9100,
-                "sum(bytes)": 16618,
-                "sum(packets)": 49,
-                "vrouter": "a3s27"
-            };
-            series.push(skeletonData);
-        }
-        return series;
-    };
+    ],
 
-    this.getFlowViewQueryMockData = {
-        "data": getFlowSeriesData()
-    };
+        this.getFlowViewQueryMockData = {
+            "data": getMockData(),
+            "total": rowsCount,
+            "queryJSON": {
+                "table": "FlowSeriesTable",
+                "start_time": 1468458000000000,
+                "end_time": 1468458600000000,
+                "select_fields": [
+                    "flow_class_id",
+                    "direction_ing",
+                    "T",
+                    "vrouter",
+                    "sourcevn",
+                    "sourceip",
+                    "destvn",
+                    "destip",
+                    "protocol",
+                    "sport",
+                    "dport",
+                    "T=60",
+                    "sum(packets)",
+                    "sum(bytes)"
+                ],
+                "filter": [
+                    []
+                ],
+                "sort_fields": [
+                    "T"
+                ],
+                "sort": "asc",
+                "limit": 150000,
+                "dir": 1
+            },
+            "chunk": 1,
+            "chunkSize": 1980,
+            "serverSideChunking": true
+        }
+
 
     return {
         flowsQueryQueueMockData: flowsQueryQueueMockData,
-        getFlowViewQueryMockData: getFlowViewQueryMockData,
+        getFlowViewQueryMockData: getFlowViewQueryMockData
     };
 });
