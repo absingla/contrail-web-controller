@@ -1359,55 +1359,52 @@ define([
             var introspectPort = options.introspectPort;
             var linkLabel = options.linkLabel;
             var type = options.type;
+            var featurePort = options.featurePort;
 
-            var ipPortsDeferredObj = $.Deferred();
-            self.getServerIpPortsForType (ipPortsDeferredObj,type);
-            ipPortsDeferredObj.done (function (serverDetails) {
-                if (serverDetails != null) {
-                    var cnt = serverDetails.length;
-                    var ipPortList = [];
-                    for (var i = 0 ; i < cnt; i++) {
-                        ipPortList.push({
-                            "ip"   : serverDetails[i]['ip-address'],
-                            "port" : serverDetails[i]['port'],
-                            "isConfig" : true
-                        })
-                    }
-                    var ipDeferredObj = $.Deferred();
-                    self.getReachableIpFromList(ipPortList,
-                                                ipDeferredObj);
-                    ipDeferredObj.done (function (res){
-                        var footerlinks = [];
-                        if (res != null) {
-                            footerlinks.push({
-                              name:'introspect',
-                              onClick: function () {
-                                          monitorInfraUtils.
-                                              onIntrospectLinkClick(res.ip,
-                                                      introspectPort);
-                                    }
-                            });
-                            footerlinks.push({
-                                name: linkLabel,
-                                label: linkLabel,
-                                onClick: function () {
-                                          monitorInfraUtils.
-                                              onConfigLinkClick(res.ip,
-                                                      res.port);
-                                      }
-                            });
-                            footerlinks.push({
-                                name:'status',
-                                onClick : function () {
-                                          monitorInfraUtils.
-                                              onStatusLinkClick(res.ip);
-                                      }
-                            });
-                        }
-                        self.createFooterLinks(parent,footerlinks);
-                    });
+            if (ipList != null) {
+                var cnt = ipList.length;
+                var ipPortList = [];
+                for (var i = 0 ; i < cnt; i++) {
+                    ipPortList.push({
+                        "ip"   : ipList[i],
+                        "port" : featurePort,
+                        "isConfig" : (type == 'ApiServer') ? true : false
+                    })
                 }
-            });
+                var ipDeferredObj = $.Deferred();
+                self.getReachableIpFromList(ipPortList,
+                                            ipDeferredObj);
+                ipDeferredObj.done (function (res){
+                    var footerlinks = [];
+                    if (res != null) {
+                        footerlinks.push({
+                          name:'introspect',
+                          onClick: function () {
+                                      monitorInfraUtils.
+                                          onIntrospectLinkClick(res.ip,
+                                                  introspectPort);
+                                }
+                        });
+                        footerlinks.push({
+                            name: linkLabel,
+                            label: linkLabel,
+                            onClick: function () {
+                                      monitorInfraUtils.
+                                          onConfigLinkClick(res.ip,
+                                                  res.port);
+                                  }
+                        });
+                        footerlinks.push({
+                            name:'status',
+                            onClick : function () {
+                                      monitorInfraUtils.
+                                          onStatusLinkClick(res.ip);
+                                  }
+                        });
+                    }
+                    self.createFooterLinks(parent,footerlinks);
+                });
+            }
         };
 
         /**
@@ -1535,10 +1532,16 @@ define([
             var nodes = currObj['children'];
             //var avgCpu = d3.mean(nodes,function(d){return d.x});
             //var avgMem = d3.mean(nodes,function(d){return d.y});
+            var maxSize = self.vRouterBubbleSizeFn(nodes);
+            var nodeWithMaxSize = _.filter(nodes,function (obj) {
+                return obj['size'] == maxSize;
+            });
             var tooltipContents = [
                 {label:'', value: 'No. of Nodes: ' + nodes.length},
                 {label:'Avg. ' + ctwl.TITLE_CPU, value:$.isNumeric(currObj['x']) ? currObj['x'].toFixed(2)  : currObj['x']},
-                {label:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024* 1024) : currObj['y']}
+                {label:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024* 1024) : currObj['y']},
+                {label: 'Max Throughput (In/Out)', value: formatThroughput(nodeWithMaxSize[0]['inThroughput'])
+                    + ' / ' + formatThroughput(nodeWithMaxSize[0]['outThroughput'])}
             ];
             if(formatType == 'simple') {
                 return tooltipContents;
@@ -1571,6 +1574,13 @@ define([
                 {label: ctwl.TITLE_CPU, value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  : '-'},
                 {label:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
             ];
+            if(currObj['type'] == 'vRouter') {
+                var bandwidthTooltipContent = {
+                    label: 'Throughput (In/Out)',
+                    value: formatThroughput(currObj['inThroughput'])
+                    + ' / ' + formatThroughput(currObj['outThroughput'])};
+                tooltipContents = tooltipContents.concat(bandwidthTooltipContent);
+            }
             //Get tooltipAlerts
             tooltipContents = tooltipContents.concat(self.getTooltipAlerts(currObj));
             var cfg = ifNull(cfg,{});
