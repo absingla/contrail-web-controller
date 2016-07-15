@@ -653,34 +653,34 @@ module.exports = function (grunt) {
                 feature: 'reports'
             }
         },
-        statViewQueryResults: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatsViewQueryResults.test.js',
-                        included: false
-                    }
-                ],
-                preprocessors: {
-                   'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
-                },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/qe/views/',
-                    outputFile: 'stat-view-query-results.xml',
-                    suite: 'logsViewQueryResults',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/reports/views/stat-view-query-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/reports/views/statViewQueryResults/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'reports'
-            }
-        },
+        // statViewQueryResults: {
+        //     options: {
+        //         files: [
+        //             {
+        //                 pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatsViewQueryResults.test.js',
+        //                 included: false
+        //             }
+        //         ],
+        //         preprocessors: {
+        //            'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+        //         },
+        //         junitReporter: {
+        //             outputDir: __dirname + '/reports/tests/qe/views/',
+        //             outputFile: 'stat-view-query-results.xml',
+        //             suite: 'logsViewQueryResults',
+        //             useBrowserName: false
+        //         },
+        //         htmlReporter: {
+        //             outputFile: __dirname + '/reports/tests/reports/views/stat-view-query-results.html'
+        //         },
+        //         coverageReporter: {
+        //             type: 'html',
+        //             dir: __dirname + '/reports/coverage/reports/views/statViewQueryResults/',
+        //             subdir: browserSubdirFn
+        //         },
+        //         feature: 'reports'
+        //     }
+        // },
         //Config Tests
         physicalRoutersGridView: {
             options: {
