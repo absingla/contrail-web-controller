@@ -11,11 +11,6 @@ define(function (require) {
     var QueryFormView = require('query-form-view')
 
     var QueryConfigView = QueryFormView.extend({
-        events: {
-            // TODO: this method results in double event subscription after select field change
-            'click #save_query': 'onChange',
-        },
-
         render: function () {
             var self = this
 
@@ -235,28 +230,6 @@ define(function (require) {
                                     },
                                 },
                             ],
-                        }, {
-                            columns: [
-                                {
-                                    elementId: 'save_query', view: 'FormButtonView', label: 'Save Query',
-                                    viewConfig: {
-                                        class: 'save-query display-inline-block margin-5-10-0-0',
-                                        disabled: 'is_request_in_progress()',
-                                        elementConfig: {
-                                            btnClass: 'btn-primary',
-                                        },
-                                    },
-                                }, {
-                                    elementId: 'reset_query', view: 'FormButtonView', label: 'Reset',
-                                    viewConfig: {
-                                        label: 'Reset',
-                                        class: 'display-inline-block margin-5-10-0-0',
-                                        elementConfig: {
-                                            onClick: 'reset',
-                                        },
-                                    },
-                                },
-                            ],
                         },
                     ],
                 },
@@ -271,13 +244,6 @@ define(function (require) {
             ko.cleanNode(self.$el[0])
             self.stopListening()
             return self
-        },
-
-        onChange: function () {
-            var self = this
-            if (self.model.model().isValid(true, cowc.KEY_RUN_QUERY_VALIDATION)) {
-                self.trigger('change')
-            }
         },
     })
 

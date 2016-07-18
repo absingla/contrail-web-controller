@@ -36,7 +36,6 @@
   },
   "dataSources": {
     "QueryConfigView": {
-      "contentViews": ["LineWithFocusChartView","LineBarWithFocusChartView", "LogsView"],
       "label": "Query Engine",
       "view": "QueryConfigView",
       "viewPathPrefix": "reports/udd/ui/js/views/dataSourceConfigs/",

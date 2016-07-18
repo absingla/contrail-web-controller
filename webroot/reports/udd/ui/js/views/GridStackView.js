@@ -6,6 +6,7 @@
  * Utilizes grid layout from gridstack jquery module
  */
 define(function (require) {
+    var d3 = window.d3
     var Handlebars = window.Handlebars
     var GridStack = require('/assets/gridstack/js/gridstack.js')
     var ContrailView = require('contrail-view')
@@ -65,9 +66,8 @@ define(function (require) {
             // place widget last
             var cellsX = _.map(self.model.models, function (m) { return m.attributes.configModel.x()})
             var cellsY = _.map(self.model.models, function (m) { return m.attributes.configModel.y()})
-            function getMax (value) { return Math.max(value) }
-            var x = _.isEmpty(cellsX) ? 0 : _.sortBy(cellsX, getMax)[0] + self.p.minWidth
-            var y = _.isEmpty(cellsY) ? 0 : _.sortBy(cellsY, getMax)[0] || 0 + self.p.minHeight
+            var x = _.isEmpty(cellsX) ? 0 : _.sortBy(cellsX, d3.max)[0] + self.p.minWidth
+            var y = _.isEmpty(cellsY) ? 0 : _.sortBy(cellsY, d3.max)[0] || 0 + self.p.minHeight
             self.model.add({
                 dashboardId: self.p.dashboardId,
                 tabId: self.p.tabId,
