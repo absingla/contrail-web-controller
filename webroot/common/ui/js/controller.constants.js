@@ -564,8 +564,8 @@ define([
         this.GLOBAL_BGP_OPTIONS_MAP = [
             {"key": "autonomous_system", "name": "Global ASN"},
             {"key": "ibgp_auto_mesh", "name": "iBGP Auto Mesh"},
-            {"key": "ip_fabric_subnets", "name": "IP Fabric Subnets"},
-            {"key": "graceful_restart_params", "name": "Graceful Restart"}
+            {"key": "ip_fabric_subnets", "name": "IP Fabric Subnets"}/*,
+            {"key": "graceful_restart_params", "name": "Graceful Restart"}*/
         ];
         this.GLOBAL_BGP_OPTIONS_SECTION_ID = "global-bgp-options-section";
         this.GLOBAL_BGP_OPTIONS_ID = "global-bgp-options";
@@ -811,6 +811,18 @@ define([
                                     {text: "Delete", value: "D"}];
         this.RBAC_ALL_ROLES = "All Roles (*)";
         this.RBAC_PREFIX_ID = "rbac";
+
+        /* Config Alarm Rule Constants */
+        this.ALARM_PREFIX_ID = "configalarm";
+        this.ALARM_GRID_ID = "config-alarm-grid";
+        this.ALARM_LIST_VIEW_ID = "alarm-list-view";
+        this.CONFIG_ALARM_PROJECT_SECTION_ID = "config-alarm-project-section";
+        this.CONFIG_ALARM_LIST_VIEW_ID = "config-alarm-list-view";
+        this.CONFIG_ALARM_PROJECT_ID = 'config-alarm-project';
+        this.CONFIG_ALARM_GLOBAL_ID = "config-alarm-global";
+        this.CONFIG_ALARM_GLOBAL_SECTION_ID = "config-alarm-global-section";
+        this.CONFIG_ALARM_LIST_ID = "config-alarm-list";
+        this.CONFIG_ALARM_SEVERITY_TEMPLATE = 'config-alarm-severity-template';
 
         /* Route Aggregate Constants */
         this.CONFIG_ROUTE_AGGREGATE_LIST_ID = "config-route-aggregate-list";

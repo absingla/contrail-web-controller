@@ -233,11 +233,18 @@ define([
                                     path: 'network_policy_refs',
                                     class: 'col-xs-12',
                                     dataBindValue: 'network_policy_refs',
-                                    dataBindOptionList: 'ui_added_parameters().networkPolicyList()',
                                     elementConfig: {
                                         placeholder: 'Select Network Policies',
                                         dataTextField: "text",
-                                        dataValueField: "id"
+                                        dataValueField: "id",
+                                        separator: cowc.DROPDOWN_VALUE_SEPARATOR,
+                                        dataSource : {
+                                            type: 'remote',
+                                            url:
+                                            '/api/tenants/config/policys',
+                                            parse:
+                                            formatVNCfg.polMSFormatter,
+                                    }
                                 }
                             }
                         }
@@ -701,11 +708,18 @@ define([
                                                     path: 'physical_router_back_refs',
                                                     class: 'col-xs-6',
                                                     dataBindValue: 'physical_router_back_refs',
-                                                    dataBindOptionList: 'ui_added_parameters().physicalRouterList()',
                                                     elementConfig: {
                                                         placeholder: 'Select Physical Router(s)',
                                                         dataTextField: "text",
-                                                        dataValueField: "id"
+                                                        dataValueField: "id",
+                                                        separator: cowc.DROPDOWN_VALUE_SEPARATOR,
+                                                        dataSource : {
+                                                            type: 'remote',
+                                                            url:
+                                                            '/api/tenants/config/physical-routers-list',
+                                                            parse:
+                                                            formatVNCfg.phyRouterMSFormatter,
+                                                    }
                                                 }
                                             }
                                         },
@@ -717,14 +731,24 @@ define([
                                                     path: 'route_table_refs',
                                                     class: 'col-xs-6',
                                                     dataBindValue: 'route_table_refs',
-                                                    dataBindOptionList: 'ui_added_parameters().routeTableList()',
                                                     elementConfig: {
                                                         placeholder: 'Select Static Route(s)',
                                                         dataTextField: "text",
-                                                        dataValueField: "id"
+                                                        dataValueField: "id",
+                                                        separator: cowc.DROPDOWN_VALUE_SEPARATOR,
+                                                        dataSource : {
+                                                            type: 'remote',
+                                                            requestType: 'POST',
+                                                            postData: JSON.stringify({'data':
+                                                                [{'type':'route-tables'}]}),
+                                                            url:
+                                                            '/api/tenants/config/get-config-list',
+                                                            parse:
+                                                            formatVNCfg.staticRouteMSFormatter,
+                                                    }
                                                 }
                                             }
-                                        }
+                                        },
                                         ]
                                     },
                                     {
@@ -956,6 +980,7 @@ define([
                                                             elementConfig: {
                                                                 dataTextField: "text",
                                                                 dataValueField: "id",
+                                                                separator: cowc.DROPDOWN_VALUE_SEPARATOR,
                                                                 dataSource : {
                                                                     type: 'remote',
                                                                     url:
