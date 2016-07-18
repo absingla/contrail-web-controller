@@ -34,7 +34,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     <iconClass>icon-desktop</iconClass>
                     <access>
                         <roles>
-                            <role>superAdmin</role>
+                            <role>cloudAdmin</role>
                         </roles>
                         <orchModels>
                             <model>openstack</model>
@@ -331,7 +331,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     <label>Infrastructure</label>
                     <access>
                         <roles>
-                            <role>superAdmin</role>
+                            <role>cloudAdmin</role>
                         </roles>
                         <orchModels>
                             <model>openstack</model>
@@ -359,6 +359,14 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <js>globalconfig.main.js</js>
                                     <class>globalConfigPageLoader</class>
                                     <function>renderGlobalConfig</function>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/alarm/common/ui</rootDir>
+                                    <template>ConfigAlarm.tmpl</template>
+                                </resource>
+                                <resource>
+                                     <rootDir>/reports/qe/ui</rootDir>
+                                     <css>qe.main.css</css>
                                 </resource>
                             </resources>
                             <searchStrings>Configure Global Config</searchStrings>
@@ -901,6 +909,45 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                     </items>
                 </item>
+                <item>
+                    <label>Alarms</label>
+                    <access>
+                        <roles>
+                            <role>member</role>
+                        </roles>
+                        <orchModels>
+                            <model>openstack</model>
+                        </orchModels>
+                    </access>
+                    <iconClass>icon-bell-alt</iconClass>
+                    <items>
+                        <item>
+                            <label>Project</label>
+                            <hash>config_alarm_project</hash>
+                               <resources>
+                                   <resource>
+                                       <rootDir>/common/ui</rootDir>
+                                       <js>controller.app.js</js>
+                                   </resource>
+                                   <resource>
+                                       <rootDir>/config/alarm/project/ui</rootDir>
+                                       <js>ConfigAlarmProject.main.js</js>
+                                       <class>configAlarmProjectPageLoader</class>
+                                       <function>renderProjectAlarm</function>
+                                   </resource>
+                                   <resource>
+                                       <rootDir>/config/alarm/common/ui</rootDir>
+                                       <template>ConfigAlarm.tmpl</template>
+                                   </resource>
+                                   <resource>
+                                       <rootDir>/reports/qe/ui</rootDir>
+                                       <css>qe.main.css</css>
+                                   </resource>
+                               </resources>
+                            <searchStrings>Alarm Project</searchStrings>
+                        </item>
+                    </items>
+                </item>
                 <!--
                 <item>
                     <label>IPAM</label>
@@ -936,7 +983,7 @@ and need to add the iconClass tag wherever we need to show some icons
             <iconClass>icon-cog</iconClass>
             <access>
                 <roles>
-                    <role>superAdmin</role>
+                    <role>cloudAdmin</role>
                 </roles>
                 <orchModels>
                     <model>openstack</model>
@@ -1072,7 +1119,7 @@ and need to add the iconClass tag wherever we need to show some icons
             </resources>
             <access>
                 <roles>
-                    <role>superAdmin</role>
+                    <role>cloudAdmin</role>
                 </roles>
                 <orchModels>
                     <model>openstack</model>
