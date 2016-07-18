@@ -400,6 +400,9 @@ define([
         this.CONFIGNODE_SUMMARY_CHART_ID = 'config-nodes-chart';
         this.CONFIGNODE_SUMMARY_LIST_SECTION_ID = 'config-nodes-list-section';
         this.CONFIGNODE_SUMMARY_CHART_SECTION_ID = 'config-nodes-chart-section';
+        //Config node scatter chart
+        this.CONFIGNODE_SUMMARY_SCATTERCHART_ID = 'config-nodes-scatterchart';
+        this.CONFIGNODE_SUMMARY_SCATTERCHART_SECTION_ID = 'config-nodes-scatterchart-section';
         this.CONFIGNODE_DETAILS_PAGE_ID = 'config_nodes_details_pages';
         this.CONFIGNODE_TAB_SECTION_ID = 'config_node_tab_section';
         this.CONFIGNODE_TAB_VIEW_ID = 'config_node_tab';
@@ -977,6 +980,19 @@ define([
             "Delete API Access";
         this.TITLE_EDIT_RBAC = 'Edit API Access';
         this.TITLE_INSERT_RBAC = 'Insert API Access';
+
+        /* Config Alarm labels */
+        this.TITLE_ALARM_RULE = 'Alarm Rules';
+        this.TITLE_EDIT_ALARM_RULE = 'Edit Alarm Rule';
+        this.TITLE_ALARM_RULE_MULTI_DELETE = "Delete Alarm Rules";
+        this.TITLE_ALARM_RULE_DELETE = "Delete Alarm Rule";
+        this.TITLE_CREATE_ALARM_RULE = 'Create Alarm Rule';
+        this.TXT_CONFIG_ALARM_RULE = 'rule';
+        this.CONFIG_ALARM_TEXT_MAP = {
+             2: 'Critical',
+             3: 'Major',
+             4: 'Minor'
+        };
 
         //Config DB Labels - Start
         this.CDB_FQ_TABLE_NAMES_GRID_ID = "cdb-fq-table-names-grid";
