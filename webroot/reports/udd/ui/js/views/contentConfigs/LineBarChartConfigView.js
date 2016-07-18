@@ -11,10 +11,6 @@ define(function (require) {
     var kbValidation = require('validation')
 
     var LineBarChartConfigView = ContrailView.extend({
-        events: {
-            'click .update-widget': 'onChange',
-        },
-
         render: function () {
             var self = this
 
@@ -99,29 +95,10 @@ define(function (require) {
                                     },
                                 },
                             ],
-                        }, {
-                            columns: [
-                                {
-                                    elementId: 'update_widget', view: 'FormButtonView', label: 'Update Widget',
-                                    viewConfig: {
-                                        class: 'update-widget display-inline-block margin-5-10-0-0',
-                                        elementConfig: {
-                                            btnClass: 'btn-primary',
-                                        },
-                                    },
-                                },
-                            ],
                         },
                     ],
                 },
             };
-        },
-
-        onChange: function () {
-            var self = this
-            if (self.model.model().isValid(true, 'validation')) {
-                self.trigger('change')
-            }
         },
 
         remove: function () {

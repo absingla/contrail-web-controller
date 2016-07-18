@@ -5,102 +5,121 @@
  * widget container
  */
 define(function (require) {
+    var cowc = require('core-constants')
     var ContrailView = require('contrail-view')
     var Knockback = require('knockback')
 
     var WidgetView = ContrailView.extend({
         selectors: {
-            front: '.front.panel-body',
-            back: '.back.panel-body',
             heading: '.panel-heading',
+            configTitle: '.config-title',
             title: '.panel-heading>.title',
             titleInput: '.panel-heading>input',
-            configTabs: '.tabs>div',
+            steps: '.panel-body>.step',
+            footer: '.panel-footer',
+            configSelectors: '.panel-body>.config-selectors',
+            dataConfigDropdown: '#dataConfigViewSelector',
+            contentConfigDropdown: '#contentViewSelector',
+            back: '.panel-footer .back',
         },
 
         events: {
             'click .close': 'remove',
-            'click .panel-heading .config': 'flipCard',
+            'click .panel-heading .config': 'toggleConfig',
             'click .title': 'editTitle',
             'blur .panel-heading>input': 'saveTitle',
-            'click .save': 'saveConfig',
-            'click .nav-pills': 'changeConfigTab',
+            'click .panel-footer .submit': 'submit',
+            'click .panel-footer .reset': 'reset',
+            'click .panel-footer .back': 'backStep',
+        },
+
+        steps: {
+            DATA_CONFIG: '.data-config',
+            CONTENT_CONFIG: '.content-config',
+            CONTENT: '.content-view',
         },
 
         initialize: function () {
             var self = this
             // rerender on contentView change
-            self.listenTo(self.model, 'change:dataConfigModel', self.renderDataConfigView.bind(self))
-            self.listenTo(self.model, 'change:contentConfigModel', self.renderContentConfigView.bind(self))
+            self.listenTo(self.model, 'change:dataConfigModel', self._renderDataConfigView.bind(self))
+            self.listenTo(self.model, 'change:contentConfigModel', self._renderContentConfigView.bind(self))
         },
 
         render: function () {
             var self = this
-            var element
-            var model
-            var config
 
             Knockback.applyBindings(self.model.get('configModel'), self.$el.find(self.selectors.heading)[0])
             // show config by default for widget with no data source selected
-            if (!self.model.isValid()) self.flipCard()
+            if (self.model.isValid()) {
+                self.goStep(self.steps.CONTENT)
+            } else self.goStep(self.steps.DATA_CONFIG)
 
-            // first render is executed after self.model 'change' event is triggered
-            self.renderDataConfigView()
-            self.renderContentConfigView()
-
-            config = self.getViewConfig()
-            element = self.$('.data-source')
-            model = self.model.get('viewsModel')
-            self.renderView4Config(element, model, config, null, null, null, function () {
-                Knockback.applyBindings(model, element[0])
-            })
+            self._renderDataConfigView()
+            self._renderContentConfigView()
+            self._renderConfigSelectors()
+            self._renderFooter()
             return self
         },
         // render data source config (query) on the back
-        renderDataConfigView: function () {
+        _renderDataConfigView: function () {
             var self = this
             var config = self.model.getViewConfig('dataConfigView')
             var element = self.$('#' + config.elementId)
             var model = self.model.get('dataConfigModel')
             var oldView = self.childViewMap[config.elementId]
             if (oldView) oldView.remove()
-            self.renderView4Config(element, model, config, null, null, null, function () {
-                self.subscribeConfigChange(config.elementId)
-            })
+            self.renderView4Config(element, model, config)
         },
         // render widget content (chart) on the front
-        renderContentView: function () {
+        _renderContentView: function () {
             var self = this
             var parserOptions = self.model.get('contentConfigModel') ? self.model.get('contentConfigModel').getParserOptions() : {}
             var dataConfigModel = self.model.get('dataConfigModel')
             var model = dataConfigModel.getDataModel(parserOptions)
             var config = self.model.getViewConfig('contentView')
             var element = self.$('#' + config.elementId)
+            if (!model) element.html('No compatible data sources selected')
             self.renderView4Config(element, model, config)
         },
         // render content config view on the back
-        renderContentConfigView: function () {
+        _renderContentConfigView: function () {
             var self = this
             var config = self.model.getViewConfig('contentConfigView')
+            var oldView = self.childViewMap[config.elementId]
+            if (oldView) oldView.remove()
             if (!config.view) {
-                if (self.model.isValid()) self.renderContentView()
+                if (self.model.isValid()) self._renderContentView()
                 return
             }
             var element = self.$('#' + config.elementId)
             var model = self.model.get('contentConfigModel')
-            var oldView = self.childViewMap[config.elementId]
-            if (oldView) oldView.remove()
             self.renderView4Config(element, model, config, null, null, null, function () {
-                self.subscribeConfigChange(config.elementId)
-
                 // render Content View only after Content Config view
-                if (self.model.isValid()) self.renderContentView()
+                // in order for content config model to be already loaded
+                if (self.model.isValid()) self._renderContentView()
             })
+        },
+
+        _renderConfigSelectors: function () {
+            var self = this
+            var config = self.getViewConfig()
+            var element = self.$(self.selectors.configSelectors)
+            var model = self.model.get('viewsModel')
+            self.renderView4Config(element, model, config, null, null, null, function () {
+                Knockback.applyBindings(model, element[0])
+            })
+        },
+
+        _renderFooter: function () {
+            var self = this
+            var config = self.getFooterConfig()
+            var element = self.$(self.selectors.footer)
+            self.renderView4Config(element, null, config)
         },
 
         getViewConfig: function () {
             var self = this
-            var dataConfigViewId = self.model.get('viewsModel').dataConfigView()
             return {
                 view: 'SectionView',
                 viewConfig: {
@@ -108,7 +127,7 @@ define(function (require) {
                         {
                             columns: [
                                 {
-                                    elementId: 'dataConfigView', view: 'FormDropdownView',
+                                    elementId: 'dataConfigViewSelector', view: 'FormDropdownView',
                                     viewConfig: {
                                         label: 'Data Source',
                                         path: 'dataConfigView',
@@ -120,15 +139,53 @@ define(function (require) {
                                         },
                                     },
                                 }, {
-                                    elementId: 'contentView', view: 'FormDropdownView',
+                                    elementId: 'contentViewSelector', view: 'FormDropdownView',
                                     viewConfig: {
                                         label: 'Content View',
                                         path: 'contentView',
                                         dataBindValue: 'contentView',
-                                        class: 'span6',
+                                        class: 'span6 hide',
                                         elementConfig: {
-                                            data: self._getViewOptionsList(self.model.getContentViews4DataSource(dataConfigViewId)),
+                                            data: self._getViewOptionsList(self.model.getContentViewList()),
                                         },
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            }
+        },
+
+        getFooterConfig: function () {
+            return {
+                view: 'SectionView',
+                class: 'panel-footer',
+                viewConfig: {
+                    rows: [
+                        {
+                            columns: [
+                                {
+                                    elementId: 'back', view: 'FormButtonView',
+                                    viewConfig: {
+                                        label: 'Back',
+                                        class: 'back display-inline-block',
+                                    },
+                                }, {
+                                    elementId: 'submit', view: 'FormButtonView',
+                                    viewConfig: {
+                                        label: 'Submit',
+                                        class: 'submit display-inline-block',
+                                        elementConfig: {
+                                            btnClass: 'btn-primary',
+                                        },
+                                    },
+                                }, {
+                                    elementId: 'reset-query', view: 'FormButtonView',
+                                    label: 'Reset',
+                                    viewConfig: {
+                                        label: 'Reset',
+                                        class: 'reset display-inline-block',
                                     },
                                 },
                             ],
@@ -151,16 +208,6 @@ define(function (require) {
         remove: function () {
             var self = this
             self.model.destroy()
-        },
-        /*
-         * toggle between content and its config views
-         */
-        flipCard: function () {
-            var self = this
-            var showFront = self.$(self.selectors.back).is(':visible')
-            if (showFront && !self.model.isValid()) return
-            self.$(self.selectors.front).toggle()
-            self.$(self.selectors.back).toggle()
         },
 
         editTitle: function () {
@@ -185,30 +232,72 @@ define(function (require) {
             widgetContentView.resize()
         },
 
-        subscribeConfigChange: function (id) {
+        goStep: function (step) {
             var self = this
-            // update widget content on it's config change
-            var configView = self.childViewMap[id]
-            // TODO BUG: https://app.asana.com/0/110546790583988/150392415498511
-            configView.off('change')
-            configView.on('change', self.onConfigChange.bind(self))
-        },
+            if (self.currentStep === step) return
+            self.$(self.selectors.steps).hide()
+            self.$(step).show()
+            if (self.currentStep === self.steps.CONTENT || step === self.steps.CONTENT) {
+                self.$(self.selectors.configSelectors).toggle()
+                self.$(self.selectors.footer).toggle()
+            }
 
-        onConfigChange: function () {
+            var configTitle = ''
+            if (step === self.steps.DATA_CONFIG) {
+                configTitle = 'Data Config: '
+                self.$(self.selectors.back).hide()
+                self.$(self.selectors.contentConfigDropdown).hide()
+                self.$(self.selectors.dataConfigDropdown).show()
+            }
+            if (step === self.steps.CONTENT_CONFIG) {
+                configTitle = 'Content View Config: '
+                self.$(self.selectors.back).show()
+                self.$(self.selectors.dataConfigDropdown).hide()
+                self.$(self.selectors.contentConfigDropdown).show()
+            }
+            self.$(self.selectors.configTitle).html(configTitle)
+
+            self.currentStep = step
+        },
+        /* trigger current step model validation
+         * go to next wizard step
+         * if last step - save model and update content view
+         */
+        submit: function () {
             var self = this
-            if (self.model.isValid()) {
-                self.renderContentView()
-                self.flipCard()
+            if (self.currentStep === self.steps.DATA_CONFIG) {
+                if (!self.model.get('dataConfigModel').model().isValid(true, cowc.KEY_RUN_QUERY_VALIDATION)) return
+                self.goStep(self.steps.CONTENT_CONFIG)
+            } else if (self.currentStep === self.steps.CONTENT_CONFIG) {
+                if (!self.model.isValid()) return
+                self._renderContentView()
                 self.model.save()
+                self.goStep(self.steps.CONTENT)
             }
         },
 
-        changeConfigTab: function (e) {
+        toggleConfig: function () {
             var self = this
-            self.$(self.selectors.configTabs).hide()
-            var id = self.$(e.target).data('id')
-            self.$('#' + id).show()
+            if (!self.model.isValid()) return
+            if (self.currentStep === self.steps.DATA_CONFIG || self.currentStep === self.steps.CONTENT_CONFIG) {
+                self._renderContentView()
+                self.goStep(self.steps.CONTENT)
+            } else self.goStep(self.steps.DATA_CONFIG)
+        },
+
+        backStep: function () {
+            var self = this
+            self.goStep(self.steps.DATA_CONFIG)
+        },
+
+        reset: function () {
+            var self = this
+            if (self.currentStep === self.steps.DATA_CONFIG) {
+                self.model.get('dataConfigModel').reset()
+            }
+            var contentConfigModel = self.model.get('contentConfigModel')
+            if (contentConfigModel) contentConfigModel.reset()
         },
     })
-    return WidgetView;
+    return WidgetView
 })

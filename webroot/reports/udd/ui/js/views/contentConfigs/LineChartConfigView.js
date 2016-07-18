@@ -11,10 +11,6 @@ define(function (require) {
     var kbValidation = require('validation')
 
     var LineChartConfigView = ContrailView.extend({
-        events: {
-            'click .update-widget': 'onChange',
-        },
-
         render: function () {
             var self = this
 
@@ -37,19 +33,15 @@ define(function (require) {
                                         label: 'Line Color',
                                         path: 'color',
                                         dataBindValue: 'color',
-                                        class: 'span9',
+                                        class: 'span6',
                                     },
-                                },
-                            ],
-                        }, {
-                            columns: [
-                                {
+                                }, {
                                     elementId: 'yAxisLabel', view: 'FormInputView',
                                     viewConfig: {
                                         label: 'y Axis Label',
                                         path: 'yAxisLabel',
                                         dataBindValue: 'yAxisLabel',
-                                        class: 'span9',
+                                        class: 'span6',
                                     },
                                 },
                             ],
@@ -70,29 +62,10 @@ define(function (require) {
                                     },
                                 },
                             ],
-                        }, {
-                            columns: [
-                                {
-                                    elementId: 'update_widget', view: 'FormButtonView', label: 'Update Widget',
-                                    viewConfig: {
-                                        class: 'update-widget display-inline-block margin-5-10-0-0',
-                                        elementConfig: {
-                                            btnClass: 'btn-primary',
-                                        },
-                                    },
-                                },
-                            ],
                         },
                     ],
                 },
             };
-        },
-
-        onChange: function () {
-            var self = this
-            if (self.model.model().isValid(true, 'validation')) {
-                self.trigger('change')
-            }
         },
 
         remove: function () {

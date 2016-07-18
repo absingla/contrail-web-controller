@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
+ * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 
 define(function (require) {
@@ -46,7 +46,7 @@ define(function (require) {
             // on successful model save
             if (data.result) return data
             if (data.error) {
-                console.error(data)
+                console.error(data.error)
                 return []
             }
 
@@ -68,20 +68,20 @@ define(function (require) {
             return _.keys(defaultConfig.dataSources)
         },
 
-        getContentViews4DataSource: function (dataSourceName) {
-            return defaultConfig.dataSources[dataSourceName].contentViews
+        getContentViewList: function () {
+            return _.keys(defaultConfig.contentViews)
         },
 
         getDefaultConfig: function () {
             var self = this
             var config = {}
-            var defaultDataSource = self.getDataSourceList()[0]
-            var defaultDataSourceView = defaultConfig.dataSources[defaultDataSource]
-            var defaultContent = self.getContentViews4DataSource(defaultDataSource)[0]
-            var defaultContentView = defaultConfig.contentViews[defaultContent]
-            config.dataConfigView = _.extend({}, defaultDataSourceView)
-            config.contentView = _.extend({}, defaultContentView.contentView)
-            config.contentConfigView = _.extend({}, defaultContentView.contentConfigView)
+            var defaultDSViewId = self.getDataSourceList()[0]
+            var defaultDSViewConfig = defaultConfig.dataSources[defaultDSViewId]
+            var defaultContentViewId = self.getContentViewList()[0]
+            var defaultContentViewConfig = defaultConfig.contentViews[defaultContentViewId]
+            config.dataConfigView = _.extend({}, defaultDSViewConfig)
+            config.contentView = _.extend({}, defaultContentViewConfig.contentView)
+            config.contentConfigView = _.extend({}, defaultContentViewConfig.contentConfigView)
             return config
         },
 
@@ -182,7 +182,7 @@ define(function (require) {
                         '"viewPathPrefix"': self.getViewConfig('contentConfigView').viewPathPrefix,
                         '"model"': self.getConfigModelObj(attrs.viewsModel.contentView()).id,
                         '"modelPathPrefix"': self.getConfigModelObj(attrs.viewsModel.contentView()).pathPrefix,
-                        '"modelConfig"': JSON.stringify(attrs.contentConfigModel.toJSON()),
+                        '"modelConfig"': attrs.contentConfigModel ? JSON.stringify(attrs.contentConfigModel.toJSON()) : undefined,
                     },
                 },
             }
@@ -191,10 +191,12 @@ define(function (require) {
 
         _onConfigModelsLoaded: function (DataConfigModel, ContentConfigModel) {
             var self = this
+            var contentConfigModel
             var attrs = self.attributes
             if (attrs.dataConfigModel) attrs.dataConfigModel.model().off()
             if (DataConfigModel) self.set('dataConfigModel', new DataConfigModel(attrs.contentConfig.dataConfigView.modelConfig))
-            if (ContentConfigModel) self.set('contentConfigModel', new ContentConfigModel(attrs.contentConfig.contentConfigView.modelConfig))
+            if (ContentConfigModel) contentConfigModel = new ContentConfigModel(attrs.contentConfig.contentConfigView.modelConfig)
+            self.set('contentConfigModel', contentConfigModel)
 
             // TODO move to specific widget
             // update yAxisValue based on contentConfigModel select field
