@@ -1,29 +1,24 @@
 /*
- * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
+ * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 
-define([
-    'underscore',
-    'contrail-view'
-], function (_, ContrailView) {
-    var UDDashboardView = ContrailView.extend({
-        el: $(contentContainer),
+define(function (require) {
+    var ContrailView = require('contrail-view')
 
-        initialize: function (p) {
-            var self = this
-        },
+    var UDDashboardView = ContrailView.extend({
+        el: $(window.contentContainer),
 
         render: function () {
             var self = this
 
-            //TODO should it be in hashParams?
-            var urlParams = layoutHandler.getURLHashObj()
+            // TODO should it be in hashParams?
+            var urlParams = window.layoutHandler.getURLHashObj()
             // get dashboard and tab ids from url params / loaded widgets or generate default
             self.currentDashboard = urlParams.p.split('_').slice(-1).pop() || self.model.dashboardIds()[0] || 'udd0'
             self.currentTab = urlParams.tab || self.model.tabIds(self.currentDashboard)[0] || 'tab1'
 
             // TODO render dashboards in menu
-            
+
             self.renderView4Config(self.$el, null, self.getViewConfig())
         },
 
@@ -33,7 +28,7 @@ define([
             var tabIds = self.model.tabIds(self.currentDashboard)
             // add default tab
             if (_.isEmpty(tabIds)) tabIds.push(self.currentTab)
-            
+
             var tabs = _.map(tabIds, function (tabId) {
                 return self.getTabViewConfig(tabId)
             })
@@ -55,15 +50,15 @@ define([
                                             this.renderNewTab('widget-layout-tabs-view', [self.getTabViewConfig(title)], true)
                                         },
                                         extendable: true,
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                }
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
             }
         },
-        
+
         getTabViewConfig: function (tabId) {
             var self = this
 
@@ -76,8 +71,8 @@ define([
                 },
                 tabConfig: {
                     activate: function (event, ui) {
-                        //TODO as we don't know the actual content of the widget use view.update()
-                        self.$('#' + tabId +' svg').trigger('refresh')
+                        // TODO as we don't know the actual content of the widget use view.update()
+                        self.$('#' + tabId + ' svg').trigger('refresh')
                     },
                     onRemove: function () {
                         if (this.model.isEmpty()) return true
@@ -99,7 +94,7 @@ define([
             config.model = self.model.filterBy(self.currentDashboard, tabId)
             config.viewConfig.tabId = tabId
             return config
-        }
+        },
     })
 
     return UDDashboardView

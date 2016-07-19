@@ -81,7 +81,7 @@ define(function (require) {
             return false
         },
 
-        // *Add a single widget to the area by creating a view for it
+        // Add a single widget to the area by creating a view for it
         onAdd: function (model) {
             var self = this
             var id = model.get('id')

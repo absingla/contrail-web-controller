@@ -10,6 +10,8 @@ module.exports = {
         'no-console': ['error', { allow: ['warn', 'error'] }],
         'no-undefined': 0,
         'camelcase': 0,
+        'no-unused-vars': ["error", { 'args': 'none' }],
+        'no-alert': 0,
     },
     'globals': {
         '_': true,

@@ -156,8 +156,8 @@ define(function (require) {
             var configModel = attrs.configModel
 
             var result = {
-                '"dashboardId"': attrs.dashboardId,
-                '"tabId"': attrs.tabId,
+                dashboardId: attrs.dashboardId,
+                tabId: attrs.tabId,
                 config: {
                     title: configModel.title(),
                     x: configModel.x(),
@@ -165,24 +165,24 @@ define(function (require) {
                     width: configModel.width(),
                     height: configModel.height(),
                 },
-                '"contentConfig"': {
+                contentConfig: {
                     dataConfigView: {
                         view: self.getViewConfig('dataConfigView').view,
-                        '"viewPathPrefix"': self.getViewConfig('dataConfigView').viewPathPrefix,
-                        '"model"': self.getConfigModelObj(attrs.viewsModel.dataConfigView()).id,
-                        '"modelPathPrefix"': self.getConfigModelObj(attrs.viewsModel.dataConfigView()).pathPrefix,
-                        '"modelConfig"': JSON.stringify(attrs.dataConfigModel.toJSON()),
+                        viewPathPrefix: self.getViewConfig('dataConfigView').viewPathPrefix,
+                        model: self.getConfigModelObj(attrs.viewsModel.dataConfigView()).id,
+                        modelPathPrefix: self.getConfigModelObj(attrs.viewsModel.dataConfigView()).pathPrefix,
+                        modelConfig: JSON.stringify(attrs.dataConfigModel.toJSON()),
                     },
                     contentView: {
                         view: self.getViewConfig('contentView').view,
-                        '"viewPathPrefix"': self.getViewConfig('contentView').viewPathPrefix,
+                        viewPathPrefix: self.getViewConfig('contentView').viewPathPrefix,
                     },
                     contentConfigView: {
                         view: self.getViewConfig('contentConfigView').view,
-                        '"viewPathPrefix"': self.getViewConfig('contentConfigView').viewPathPrefix,
-                        '"model"': self.getConfigModelObj(attrs.viewsModel.contentView()).id,
-                        '"modelPathPrefix"': self.getConfigModelObj(attrs.viewsModel.contentView()).pathPrefix,
-                        '"modelConfig"': attrs.contentConfigModel ? JSON.stringify(attrs.contentConfigModel.toJSON()) : undefined,
+                        viewPathPrefix: self.getViewConfig('contentConfigView').viewPathPrefix,
+                        model: self.getConfigModelObj(attrs.viewsModel.contentView()).id,
+                        modelPathPrefix: self.getConfigModelObj(attrs.viewsModel.contentView()).pathPrefix,
+                        modelConfig: attrs.contentConfigModel ? JSON.stringify(attrs.contentConfigModel.toJSON()) : undefined,
                     },
                 },
             }

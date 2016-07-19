@@ -7,16 +7,20 @@ var cassandra = require('cassandra-driver')
 var client = new cassandra.Client({ contactPoints: config.cassandra.server_ips, keyspace: 'config_webui' })
 
 function createWidget (req, res) {
-    var widget = req.body
-    widget.id = req.param('id')
-    widget['"userId"'] = req.session.userid
+    var w = req.body
+    w.id = req.param('id')
+    w.userId = req.session.userid
 
-    var upsertWidget = 'INSERT INTO user_widgets JSON ' + "'" + JSON.stringify(widget) + "';"
-    client.execute(upsertWidget, function (error, result) {
-        commonUtils.handleJSONResponse(null, res, {result: result, error: error})
-    })
+    var upsertWidget = 'INSERT INTO user_widgets (id, "userId", "dashboardId", "tabId", config, "contentConfig") VALUES (?, ?, ?, ?, ?, ?);'
+    client.execute(upsertWidget,
+        [w.id, w.userId, w.dashboardId, w.tabId, w.config, w.contentConfig],
+        {prepare: true},
+        function (error, result) {
+            commonUtils.handleJSONResponse(null, res, {result: result, error: error})
+        }
+    )
 }
-
+// as it is supposed to be not many widgets per user filtering is delegated to client-side
 function getWidgets (req, res) {
     var getWidgetsByUser = 'SELECT * FROM user_widgets WHERE "userId" = ?'
     var userId = req.session.userid

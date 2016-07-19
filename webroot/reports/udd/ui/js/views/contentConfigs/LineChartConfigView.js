@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
+ * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 /*
  * Configuration View for customizing LineWithFocusChartView
@@ -78,5 +78,5 @@ define(function (require) {
             return self
         },
     })
-    return LineChartConfigView;
+    return LineChartConfigView
 })
