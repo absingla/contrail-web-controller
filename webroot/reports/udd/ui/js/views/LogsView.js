@@ -33,7 +33,7 @@ define(function (require) {
         },
 
         _format: function (data) {
-            if (!data || !_.isString(data[0].Xmlmessage) || !_.isNumber(data[0])) return []
+            if (!data || !_.isString(data[0].Xmlmessage) || !_.isNumber(data[0].MessageTS)) return []
             var UVEModuleIds = window.monitorInfraConstants.UVEModuleIds
             var retArr = $.map(data, function (obj) {
                 obj.message = window.cowu.formatXML2JSON(obj.Xmlmessage)
