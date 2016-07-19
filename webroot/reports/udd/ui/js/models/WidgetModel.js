@@ -214,6 +214,7 @@ define(function (require) {
             if (_.isEmpty(select)) return
             var yAxisValues = _.without(select.split(', '), 'T=', 'T')
             if (attrs.contentConfigModel) attrs.contentConfigModel.model().set('yAxisValues', yAxisValues)
+            // update logs config model records value based on dataModel limit value selected
         },
 
         _parseViewLabels: function () {
