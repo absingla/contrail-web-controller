@@ -130,7 +130,7 @@ define([
                                         path: 'table_name',
                                         dataBindValue: 'table_name',
                                         dataBindOptionList: 'table_name_data_object',
-                                        class: "col-xs-3",
+                                        class: "col-xs-6",
                                         elementConfig: {
                                             defaultValueId: 0, allowClear: false, placeholder: cowl.QE_SELECT_OBJECT_TABLE,
                                             dataTextField: "name", dataValueField: "name",
