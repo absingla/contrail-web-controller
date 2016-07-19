@@ -21,15 +21,19 @@ define(function (require) {
 
         render: function () {
             var self = this
+            var data
             var list = self.model.getItems()
             if (self.model.isRequestInProgress()) {
-                self.$el.html(window.cowm.DATA_FETCHING)
-                return
+                data = window.cowm.DATA_FETCHING
+            } else {
+                data = self._format(list.slice(0, 5))
+                if (!_.isEmpty(list) && _.isEmpty(data)) data = window.cowm.DATA_COMPATIBILITY_ERROR
             }
-            self.$el.html(self.template(self._format(list.slice(0, 5))))
+            self.$el.html(self.template(data))
         },
 
         _format: function (data) {
+            if (!data || !_.isString(data[0].Xmlmessage) || !_.isNumber(data[0])) return []
             var UVEModuleIds = window.monitorInfraConstants.UVEModuleIds
             var retArr = $.map(data, function (obj) {
                 obj.message = window.cowu.formatXML2JSON(obj.Xmlmessage)
