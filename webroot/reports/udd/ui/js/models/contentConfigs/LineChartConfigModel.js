@@ -3,11 +3,11 @@
  */
 
 define(function (require) {
-    var ContrailModel = require('contrail-model')
+    var ContentConfigModel = require('reports/udd/ui/js/models/ContentConfigModel.js')
     var cowc = require('core-constants')
     var cowf = new (require('core-formatters'))
 
-    return ContrailModel.extend({
+    return ContentConfigModel.extend({
         defaultConfig: {
             color: '1f77b4',
             yAxisLabel: '',

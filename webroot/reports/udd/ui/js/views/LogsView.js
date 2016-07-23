@@ -26,7 +26,7 @@ define(function (require) {
             if (self.model.isRequestInProgress()) {
                 data = window.cowm.DATA_FETCHING
             } else {
-                data = self._format(list.slice(0, 5))
+                data = self._format(list.slice(0, self.attributes.viewConfig.totalRecords))
                 if (!_.isEmpty(list) && _.isEmpty(data)) data = window.cowm.DATA_COMPATIBILITY_ERROR
             }
             self.$el.html(self.template(data))
