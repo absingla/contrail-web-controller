@@ -202,7 +202,8 @@ define(function (require) {
             if (ContentConfigModel) {
                 // TODO set dataModel in modelConfig
                 contentConfigModel = new ContentConfigModel(attrs.contentConfig.contentConfigView.modelConfig)
-                contentConfigModel.setDataModel(dataConfigModel)
+                contentConfigModel.onDataModelChange(dataConfigModel)
+                dataConfigModel.model().on('change', contentConfigModel.onDataModelChange.bind(contentConfigModel, dataConfigModel))
             }
             // for some content views config may be missing
             self.set('contentConfigModel', contentConfigModel)

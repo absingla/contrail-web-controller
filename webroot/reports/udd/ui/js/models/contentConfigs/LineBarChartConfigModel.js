@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
+ * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 
 define(function (require) {
@@ -31,17 +31,10 @@ define(function (require) {
             },
         },
 
-        setDataModel: function (dataModel) {
-            var self = this
-            self.dataModel = dataModel
-            // TODO there should be off call in destroy method
-            self.dataModel.model().on('change:timeSeries', self.onDataModelChange.bind(self))
-            self.onDataModelChange(undefined, self.dataModel.timeSeries())
-        },
         // update fields dependent on data model
-        onDataModelChange: function (model, timeSeries) {
+        onDataModelChange: function (viewModel) {
             var self = this
-            self.model().set('yAxisValues', timeSeries)
+            self.yAxisValues(viewModel.timeSeries())
         },
 
         toJSON: function () {

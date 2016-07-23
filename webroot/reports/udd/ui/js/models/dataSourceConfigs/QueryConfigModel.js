@@ -22,7 +22,6 @@ define(function (require) {
                 log_level: '7',
                 keywords: '',
                 limit: cowc.QE_DEFAULT_LIMIT_100,
-                timeSeries: {},
             }
             defaultOptions[cowc.QE_STAT_TABLE_TYPE] = {
                 query_prefix: cowc.STAT_QUERY_PREFIX,
@@ -41,11 +40,13 @@ define(function (require) {
                 // TODO select values are not set on first call
                 model.set(defaultOptions[table_type])
             })
-            self.model().on('change:select', function (model, select) {
-                model.set('timeSeries', _.without(select.split(', '), 'T='))
-            })
 
             return self
+        },
+
+        timeSeries: function () {
+            var self = this
+            return _.without(self.select().split(', '), 'T=')
         },
     })
 
