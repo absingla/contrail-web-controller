@@ -46,7 +46,7 @@ define(function (require) {
 
         timeSeries: function () {
             var self = this
-            return _.without(self.select().split(', '), 'T=')
+            return _.without((self.select() || '').split(', '), 'T=')
         },
     })
 
