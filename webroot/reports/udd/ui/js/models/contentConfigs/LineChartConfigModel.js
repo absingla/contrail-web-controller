@@ -9,10 +9,11 @@ define(function (require) {
 
     return ContrailModel.extend({
         defaultConfig: {
-            'color': '1f77b4',
-            'yAxisLabel': '',
-            'yAxisValue': '',
-            'yAxisValues': [],
+            color: '1f77b4',
+            yAxisLabel: '',
+            yAxisValue: '',
+            yAxisValues: [],
+            dataModel: {},
         },
 
         validations: {
@@ -24,12 +25,24 @@ define(function (require) {
             },
         },
 
+        setDataModel: function (dataModel) {
+            var self = this
+            self.dataModel = dataModel
+            self.dataModel.model().on('change:timeSeries', self.onDataModelChange.bind(self))
+            self.onDataModelChange(undefined, self.dataModel.timeSeries())
+        },
+        // update fields dependent on data model
+        onDataModelChange: function (model, timeSeries) {
+            var self = this
+            self.model().set('yAxisValues', timeSeries)
+        },
+
         toJSON: function () {
             var self = this
             return {
-                'color': self.color(),
-                'yAxisLabel': self.yAxisLabel(),
-                'yAxisValue': self.yAxisValue(),
+                color: self.color(),
+                yAxisLabel: self.yAxisLabel(),
+                yAxisValue: self.yAxisValue(),
             }
         },
 

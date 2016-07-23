@@ -192,28 +192,23 @@ define(function (require) {
         _onConfigModelsLoaded: function (DataConfigModel, ContentConfigModel) {
             var self = this
             var contentConfigModel
+            var dataConfigModel = self.get('dataConfigModel')
             var attrs = self.attributes
             if (attrs.dataConfigModel) attrs.dataConfigModel.model().off()
-            if (DataConfigModel) self.set('dataConfigModel', new DataConfigModel(attrs.contentConfig.dataConfigView.modelConfig))
-            if (ContentConfigModel) contentConfigModel = new ContentConfigModel(attrs.contentConfig.contentConfigView.modelConfig)
+            if (DataConfigModel) {
+                dataConfigModel = new DataConfigModel(attrs.contentConfig.dataConfigView.modelConfig)
+                self.set('dataConfigModel', dataConfigModel)
+            }
+            if (ContentConfigModel) {
+                // TODO set dataModel in modelConfig
+                contentConfigModel = new ContentConfigModel(attrs.contentConfig.contentConfigView.modelConfig)
+                contentConfigModel.setDataModel(dataConfigModel)
+            }
+            // for some content views config may be missing
             self.set('contentConfigModel', contentConfigModel)
-
-            // TODO move to specific widget
-            // update yAxisValue based on contentConfigModel select field
-            self._updateContentConfigModel()
-            attrs.dataConfigModel.model().on('change', self._updateContentConfigModel.bind(self))
 
             self.ready = true
             self.trigger('ready')
-        },
-
-        _updateContentConfigModel: function () {
-            var self = this
-            var attrs = self.attributes
-            var select = attrs.dataConfigModel.select()
-            if (_.isEmpty(select)) return
-            var yAxisValues = _.without(select.split(', '), 'T=', 'T')
-            if (attrs.contentConfigModel) attrs.contentConfigModel.model().set('yAxisValues', yAxisValues)
         },
 
         _parseViewLabels: function () {
