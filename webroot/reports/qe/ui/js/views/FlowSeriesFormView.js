@@ -182,7 +182,7 @@ define([
                                                     label: false,
                                                     path: 'time_granularity',
                                                     dataBindValue: 'time_granularity',
-                                                    class: "col-xs-4",
+                                                    class: "col-xs-5",
                                                     elementConfig: {min: 1}
                                                 }
                                             },
