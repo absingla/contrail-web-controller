@@ -8,8 +8,9 @@ define([
     'ct-test-messages',
     'reports/qe/test/ui/views/LogsQueryQueueView.mock.data',
     'co-grid-view-test-suite',
-    'logs-form-view-custom-test-suite'
-], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite, CustomTestSuite) {
+    'logs-form-view-custom-test-suite',
+    'co-test-utils',
+], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite, CustomTestSuite, cotu) {
 
     var moduleId = cttm.LOGS_QUERY_QUEUE_COMMON_TEST_MODULE;
 
@@ -43,7 +44,6 @@ define([
             url: ctwc.URL_QUERY_RESULT,
             body: JSON.stringify(TestMockdata.logsViewQueryMockData)
         }));
-
 
         responses.push(cotr.createFakeServerResponse({
             method: "POST",
@@ -85,7 +85,6 @@ define([
         };
     };
 
-
     var testInitFn = function (defObj, onAllViewsRenderComplete) {
 
         setTimeout(function () {
@@ -95,13 +94,10 @@ define([
             // Add necessary timeout for the tab elements to load properly and resolve the promise
             cotc.PAGE_INIT_TIMEOUT * 10
         );
-        $("#run_query").trigger('click');
+        cotu.triggerClickOnElement("#run_query");
         return;
     };
 
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
-
     cotr.startTestRunner(pageTestConfig);
-
-
 });

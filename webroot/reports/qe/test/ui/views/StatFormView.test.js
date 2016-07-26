@@ -8,8 +8,9 @@ define([
     'ct-test-messages',
     'reports/qe/test/ui/views/StatQueryQueueView.mock.data',
     'co-grid-view-test-suite',
-    'stat-form-view-custom-test-suite'
-], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite, CustomTestSuite) {
+    'stat-form-view-custom-test-suite',
+    'co-test-utils',
+], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite, CustomTestSuite, cotu) {
 
     var moduleId = cttm.STAT_FORM_CUSTOM_TEST;
 
@@ -87,26 +88,23 @@ define([
 
     var testInitFn = function (defObj, onAllViewsRenderComplete) {
 
-        $($('span.add-on')[0]).trigger('click');
-        $($('.ui-menu-item')[0]).trigger('click');
-        $($('.add-on .icon-pencil')[0]).trigger('click');
+        cotu.triggerClickOnElement($('span.add-on')[0]);
+        cotu.triggerClickOnElement($('.ui-menu-item')[0]);
+        cotu.triggerClickOnElement($('.add-on .icon-pencil')[0]);
 
         setTimeout(function(){
-            $('.selectAllLink').trigger('click');
-            $('.btnSave').trigger('click');
-            $("#run_query").trigger('click');
+            cotu.triggerClickOnElement('.selectAllLink');
+            cotu.triggerClickOnElement('.btnSave');
+            cotu.triggerClickOnElement("#run_query");
             setTimeout(function(){
                 onAllViewsRenderComplete.notify();
                 defObj.resolve();
             },cotc.PAGE_INIT_TIMEOUT * 10);
 
-        },  cotc.PAGE_INIT_TIMEOUT * 10);
+        },  cotc.FORM_ACTIONS_TIMEOUT/2);
         return;
     };
 
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
-
     cotr.startTestRunner(pageTestConfig);
-
-
 });

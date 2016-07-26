@@ -8,8 +8,9 @@ define([
     'ct-test-messages',
     'reports/qe/test/ui/views/FlowQueryQueueView.mock.data',
     'co-grid-view-test-suite',
-    'flow-record-form-view-custom-test-suite'
-], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite, CustomTestSuite) {
+    'flow-record-form-view-custom-test-suite',
+    'co-test-utils',
+], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite, CustomTestSuite, cotu) {
 
     var moduleId = cttm.FLOW_QUERY_QUEUE_COMMON_TEST_MODULE;
 
@@ -86,7 +87,6 @@ define([
         };
     };
 
-
     var testInitFn = function (defObj, onAllViewsRenderComplete) {
 
         setTimeout(function () {
@@ -96,13 +96,10 @@ define([
             // Add necessary timeout for the tab elements to load properly and resolve the promise
             cotc.PAGE_INIT_TIMEOUT * 10
         );
-        $("#run_query").trigger('click');
+        cotu.triggerClickOnElement("#run_query");
         return;
     };
 
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
-
     cotr.startTestRunner(pageTestConfig);
-
-
 });
