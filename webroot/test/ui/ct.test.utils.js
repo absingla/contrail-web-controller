@@ -37,6 +37,10 @@ define([
             '/api/qe/query/queue?queryQueue=fqq':/\/api\/qe\/query\/queue\?queryQueue=fqq.*$/,
             '/api/qe/query/queue?queryQueue=lqq':/\/api\/qe\/query\/queue\?queryQueue=lqq.*$/,
             '/api/qe/query/queue?queryQueue=sqq':/\/api\/qe\/query\/queue\?queryQueue=sqq.*$/,
+            '/api/qe/table/schema/FlowSeriesTable':/\/api\/qe\/table\/schema\/FlowSeriesTable.*$/,
+            '/api/service/networking/web-server-info':/\/api\/service\/networking\/web-server-info.*$/,
+            '/api/qe/table/schema/MessageTable':/\/api\/qe\/table\/schema\/MessageTable.*$/,
+            '/api/qe/table/schema/StatTable.CollectorDbStats.cql_stats.errors':/\/api\/qe\/table\/schema\/StatTable.CollectorDbStats.cql_stats.errors.*$/,
 
 
             '/api/admin/reports/query?port=34560-34815&timeRange=600&table=FlowSeriesTable': /\/api\/admin\/reports\/query\?port=34560-34815&timeRange=600&table=FlowSeriesTable.*$/,
