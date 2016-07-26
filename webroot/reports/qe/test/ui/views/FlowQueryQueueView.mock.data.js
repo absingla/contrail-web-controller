@@ -5,13 +5,13 @@
 define(['underscore'], function (_) {
 
     var rowsCount = 120, timeStamp = 1468458000000000;
-    this.getMockData = function () {
+    this.getMockData = function(){
 
         var tmpArray = [];
-        for (var i = 0; i < rowsCount; i++) {
+        for(var i=0; i< rowsCount ;i++){
             timeStamp = timeStamp + Math.floor((Math.random() * 999));
-            var skeletonData = {
-                "T": timeStamp,
+            var skeletonData = 	{
+                "T":timeStamp ,
                 "destip": "10.1.1.3",
                 "destvn": "default-domain:admin:frontend",
                 "direction_ing": 1,
@@ -30,7 +30,7 @@ define(['underscore'], function (_) {
 
         return tmpArray;
     }
-    this.flowsQueryQueueMockData = [
+    this.viewQueryQueueMockData = [
         {
             "startTime": 1467997933519,
             "queryJSON": {
@@ -101,6 +101,240 @@ define(['underscore'], function (_) {
         }
     ],
 
+        this.postValues = {
+            "data": [
+                {
+                    "fields.value": "a3s27",
+                    "name": "FlowSeriesTable:vrouter"
+                },
+                {
+                    "fields.value": "a3s28",
+                    "name": "FlowSeriesTable:vrouter"
+                },
+                {
+                    "fields.value": "default-domain:admin:frontend",
+                    "name": "FlowSeriesTable:destvn"
+                },
+                {
+                    "fields.value": "default-domain:admin:backend",
+                    "name": "FlowSeriesTable:destvn"
+                },
+                {
+                    "fields.value": "default-domain:admin:backend",
+                    "name": "FlowSeriesTable:sourcevn"
+                },
+                {
+                    "fields.value": "default-domain:admin:frontend",
+                    "name": "FlowSeriesTable:sourcevn"
+                }
+            ],
+            "total": 6,
+            "queryJSON": {
+                "start_time": 1468522236000000,
+                "end_time": 1468522836000000,
+                "select_fields": [
+                    "name",
+                    "fields.value"
+                ],
+                "table": "StatTable.FieldNames.fields",
+                "where": [
+                    [
+                        {
+                            "name": "name",
+                            "value": "FlowSeriesTable",
+                            "op": 7
+                        }
+                    ]
+                ]
+            },
+            "chunk": 1,
+            "chunkSize": 6,
+            "serverSideChunking": true
+        },
+
+        this.flowSchemaTable = {
+            "type": "FLOW",
+            "columns": [
+                {
+                    "datatype": "string",
+                    "index": true,
+                    "name": "vrouter",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "string",
+                    "index": true,
+                    "name": "sourcevn",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "ipaddr",
+                    "index": true,
+                    "name": "sourceip",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "string",
+                    "index": true,
+                    "name": "destvn",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "ipaddr",
+                    "index": true,
+                    "name": "destip",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": true,
+                    "name": "protocol",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": true,
+                    "name": "sport",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": true,
+                    "name": "dport",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": true,
+                    "name": "direction_ing",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": false,
+                    "name": "flow_class_id",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": false,
+                    "name": "T",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": false,
+                    "name": "T=",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": false,
+                    "name": "packets",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": false,
+                    "name": "bytes",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": false,
+                    "name": "sum(packets)",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": false,
+                    "name": "sum(bytes)",
+                    "select": null,
+                    "suffixes": null
+                },
+                {
+                    "datatype": "int",
+                    "index": false,
+                    "name": "flow_count",
+                    "select": null,
+                    "suffixes": null
+                }
+            ]
+        },
+
+        this.serverInfo = {
+            "orchestrationModel": [
+                "openstack"
+            ],
+            "serverUTCTime": 1468528899000,
+            "hostName": "pjagadeesh-mbp",
+            "role": [
+                "member",
+                "superAdmin"
+            ],
+            "featurePkg": {
+                "webController": true,
+                "serverManager": true,
+                "webStorage": true
+            },
+            "uiConfig": {
+                "nodemanager": {
+                    "installed": true
+                },
+                "dropdown_value_separator": ";"
+            },
+            "isAuthenticated": true,
+            "discoveryEnabled": false,
+            "configServer": {
+                "port": "8082",
+                "ip": "10.84.11.2"
+            },
+            "optFeatureList": {
+                "mon_infra_underlay": false,
+                "mon_infra_mx": false
+            },
+            "featurePkgsInfo": {
+                "webController": {
+                    "path": "/Users/pjagadeesh/testAuto/contrail-web-controller",
+                    "enable": true
+                },
+                "serverManager": {
+                    "path": "/Users/pjagadeesh/testAuto/contrail-web-server-manager",
+                    "enable": true
+                },
+                "webStorage": {
+                    "path": "/Users/pjagadeesh/testAuto/contrail-web-storage",
+                    "enable": true
+                }
+            },
+            "sessionTimeout": 3600000,
+            "_csrf": "3yKZE/9ITYaiQoZOGUt/aPhh",
+            "serviceEndPointFromConfig": true,
+            "regionList": [],
+            "isRegionListFromConfig": false,
+            "configRegionList": {
+                "RegionOne": "http://127.0.0.1:5000/v2.0"
+            },
+            "currentRegionName": null,
+            "loggedInOrchestrationMode": "openstack",
+            "insecureAccess": false
+        },
+
         this.getFlowViewQueryMockData = {
             "data": getMockData(),
             "total": rowsCount,
@@ -141,7 +375,10 @@ define(['underscore'], function (_) {
 
 
     return {
-        flowsQueryQueueMockData: flowsQueryQueueMockData,
-        getFlowViewQueryMockData: getFlowViewQueryMockData
+        viewQueryQueueMockData:viewQueryQueueMockData,
+        getFlowViewQueryMockData :getFlowViewQueryMockData,
+        postValues:postValues,
+        flowSchemaTable:flowSchemaTable,
+        serverInfo : serverInfo
     };
 });

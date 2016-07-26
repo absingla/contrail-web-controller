@@ -22,7 +22,7 @@ define([
         responses.push(cotr.createFakeServerResponse({
             method: "GET",
             url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=fqq'),
-            body: JSON.stringify(TestMockdata.flowsQueryQueueMockData)
+            body: JSON.stringify(TestMockdata.viewQueryQueueMockData)
         }));
 
         return responses;
