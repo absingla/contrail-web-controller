@@ -109,7 +109,8 @@ define([
 
                 }
 
-                if (_.contains(['list', 'struct', 'sandesh'], value['_type'])) {
+                if (_.contains(['list', 'struct', 'sandesh'], value['_type']) ||
+                    (!contrail.checkIfExist(value['_type']) && _.isArray(value))) {
                     gridColumn['formatter'] = {
                         format: 'json2html', options: {jsonValuePath: key, htmlValuePath: key + 'HTML', expandLevel: 0}
                     };
@@ -227,15 +228,15 @@ define([
 
         } else if (sandeshObj['_type'] === 'slist') {
             sandeshObj = _.omit(sandeshObj, ['_type', 'more', 'next_batch']);
-            _.each(sandeshObj, function(value, key) {
+            _.each(sandeshObj, function(sandeshValue, sandeshKey) {
                 var sandeshListObj = {};
-                sandeshListObj[key] = value;
+                sandeshListObj[sandeshKey] = sandeshValue;
                 sandeshData = sandeshData.concat(parseData(sandeshListObj, sandeshKey));
             });
         } else {
 
             sandeshData.push({
-                title: contrail.checkIfExist(title) ? title : '',
+                title: (contrail.checkIfExist(title) ? title + ' | ' : '') + sandeshKey,
                 data: jsonObject
             });
         }
