@@ -185,6 +185,24 @@
         <feature>monitoring</feature>
         <callback>nwMonApi.getInstanceDetailsForVRouter</callback>
     </item>
+    <item>
+        <url>/api/tenant/networking/get-instances-list</url>
+        <method>post</method>
+        <feature>monitoring</feature>
+        <callback>nwMonApi.getInstancesList</callback>
+    </item>
+    <item>
+        <url>/api/tenant/networking/get-instances</url>
+        <method>post</method>
+        <feature>monitoring</feature>
+        <callback>nwMonApi.getInstances</callback>
+    </item>
+    <item>
+        <url>/api/tenant/networking/query</url>
+        <method>post</method>
+        <feature>monitoring</feature>
+        <callback>nwMonApi.runPOSTQuery</callback>
+    </item>
     <!-- End Monitor Networking APIs -->
 </urlLists>
 

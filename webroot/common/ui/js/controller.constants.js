@@ -42,6 +42,12 @@ define([
         this.URL_INSTANCE_TRAFFIC_STATS = '/api/tenant/networking/flow-series/vm?minsSince={0}&fqName={1}&sampleCnt={2}&ip={3}&vmName={4}&vmVnName={5}&useServerTime=true';
         this.URL_INSTANCE_PORT_DISTRIBUTION = '/api/tenant/networking/network/stats/top?minsSince=10&fqName={0}&useServerTime=true&type=port&ip={1}';
 
+        this.URL_NETWORK_QUERY = '/api/tenant/networking/query';
+        this.URL_GET_INSTANCES = '/api/tenant/networking/get-instances?via={0}&type={1}&count={2}&nextCount={3}&startAt={4}';
+        this.URL_GET_INSTANCES_LIST = '/api/tenant/networking/get-instances-list?via={0}&type={1}&count={2}&nextCount={3}&startAt={4}';
+        this.URL_GET_VMI_UUID_LIST = '/api/tenants/config/get-config-uuid-list?type=virtual-machine-interface&parentUUID={0}';
+        this.URL_CONFIG_GET_VM_DETAILS_PAGED = '/api/tenants/config/get-virtual-machine-details-paged';
+        
         this.URL_VM_VN_STATS = '/api/tenant/networking/stats';
         this.URL_VM_INTERFACES = '/api/tenant/networking/virtual-machine-interfaces/summary';
 

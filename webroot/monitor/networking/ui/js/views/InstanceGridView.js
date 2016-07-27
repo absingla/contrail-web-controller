@@ -14,12 +14,15 @@ define([
                 viewConfig = this.attributes.viewConfig,
                 parentUUID = viewConfig['parentUUID'],
                 parentType = viewConfig['parentType'],
+                parentFQN = viewConfig['parentFQN'],
                 pagerOptions = viewConfig['pagerOptions'];
 
             var instanceRemoteConfig = {
                 url: parentUUID != null ? ctwc.get(ctwc.URL_PROJECT_INSTANCES_IN_CHUNKS, parentUUID, 10, 100, parentType, $.now()) : ctwc.get(ctwc.URL_INSTANCE_DETAILS_IN_CHUNKS, 10, 250, $.now()),
                 type: 'POST',
                 data: JSON.stringify({
+                    id: ctwu.generateRequestUUID(),
+                    FQN: parentFQN,
                     data: [{"type": ctwc.TYPE_VIRTUAL_MACHINE, "cfilt": ctwc.FILTERS_COLUMN_VM.join(',')}]
                 })
             };

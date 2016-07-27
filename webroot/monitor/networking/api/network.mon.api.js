@@ -679,28 +679,44 @@ function getVMListByVMIList(vmiList, appData, callback) {
         return;
     }
     var vmiCnt = vmiList.length;
+    var vmiUUIDList = [];
     for (var i = 0; i < vmiCnt; i++) {
         vmiUUID = vmiList[i]['uuid'];
         if (null == insertedVMIList[vmiUUID]) {
-            vmiReqUrl = '/virtual-machine-interface/' + vmiUUID;
-            commonUtils.createReqObj(vmiListObjArr, vmiReqUrl,
-                global.HTTP_REQUEST_GET, null, null,
-                null, appData);
-            insertedVMIList[vmiUUID] = vmiUUID;
+            vmiUUIDList.push(vmiUUID);
+            // vmiReqUrl = '/virtual-machine-interface/' + vmiUUID;
+            // commonUtils.createReqObj(vmiListObjArr, vmiReqUrl,
+            //     global.HTTP_REQUEST_GET, null, null,
+            //     null, appData);
+            // insertedVMIList[vmiUUID] = vmiUUID;
         }
     }
-    async.map(vmiListObjArr,
-        commonUtils.getServerResponseByRestApi(configApiServer, true),
+
+    var chunk = 200,
+        tmpArray = [],
+        uuidCnt = vmiUUIDList.length;
+    for (var i = 0, j = uuidCnt; i < j; i += chunk) {
+        tmpArray = vmiUUIDList.slice(i, i + chunk);
+        var reqUrl = '/virtual-machine-interfaces?detail=true&obj_uuids=' +
+            tmpArray.join(',') +
+            '&fields=virtual_machine_refs';
+
+        commonUtils.createReqObj(vmiListObjArr, reqUrl, null, null, null, null,
+            appData);
+    }
+
+    async.map(vmiListObjArr, commonUtils.getServerResponseByRestApi(configApiServer, true),
         function (err, data) {
-            if (null != data) {
-                var vmiRespCnt = data.length;
-                for (var i = 0; i < vmiRespCnt; i++) {
-                    if (data[i] && data[i]['virtual-machine-interface'] &&
-                        data[i]['virtual-machine-interface']['virtual_machine_refs']) {
-                        vmRefs =
-                            data[i]['virtual-machine-interface']['virtual_machine_refs'];
-                        var vmRefsCnt = vmRefs.length;
-                        for (var j = 0; j < vmRefsCnt; j++) {
+            if (null != data && data.length > 0) {
+                var resultVMIList = [];
+                for (var i = 0; i < data.length; i++) {
+                    resultVMIList = resultVMIList.concat(data[i]['virtual-machine-interfaces']);
+                }
+                for (var i = 0; i < resultVMIList.length; i++) {
+                    if (resultVMIList[i]['virtual-machine-interface'] &&
+                        resultVMIList[i]['virtual-machine-interface']['virtual_machine_refs']) {
+                        var vmRefs = resultVMIList[i]['virtual-machine-interface']['virtual_machine_refs'];
+                        for (var j = 0; j < vmRefs.length; j++) {
                             var vmUUID = vmRefs[j]['uuid'];
                             if (null == insertedVMList[vmUUID]) {
                                 vmList.push(vmUUID);
@@ -708,10 +724,38 @@ function getVMListByVMIList(vmiList, appData, callback) {
                             }
                         }
                     }
+
                 }
             }
             callback(null, vmList);
         });
+
+    // async.map(vmiListObjArr,
+    //     commonUtils.getServerResponseByRestApi(configApiServer, true),
+    //     function (err, data) {
+    //         console.log("response");
+    //         console.log(data[0]['virtual-machine-interfaces'][0]);
+    //
+    //         if (null != data) {
+    //             var vmiRespCnt = data.length;
+    //             for (var i = 0; i < vmiRespCnt; i++) {
+    //                 if (data[i] && data[i]['virtual-machine-interface'] &&
+    //                     data[i]['virtual-machine-interface']['virtual_machine_refs']) {
+    //                     vmRefs =
+    //                         data[i]['virtual-machine-interface']['virtual_machine_refs'];
+    //                     var vmRefsCnt = vmRefs.length;
+    //                     for (var j = 0; j < vmRefsCnt; j++) {
+    //                         var vmUUID = vmRefs[j]['uuid'];
+    //                         if (null == insertedVMList[vmUUID]) {
+    //                             vmList.push(vmUUID);
+    //                             insertedVMList[vmUUID] = vmUUID;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         callback(null, vmList);
+    //     });
 }
 
 function getVMListByType(type, configData, appData, callback) {
@@ -1027,8 +1071,7 @@ function aggConfigVNList(fqn, appData, callback) {
     var vnList = [], dataObjArr = [], req = appData.authObj.req;
     var configURL = null;
     if (null != fqn) {
-        configURL = '/virtual-networks?parent_type=project&parent_fq_name_str=' +
-            fqn;
+        configURL = '/virtual-networks?parent_type=project&parent_fq_name_str=' + fqn;
         getVNConfigList(configURL, appData, callback);
     } else {
         var getVNCB = virtualNetworkDetailsMap[req.session.loggedInOrchestrationMode];
@@ -1747,6 +1790,928 @@ function getNetworkDetails(req, res, appData) {
 }
 
 
+/**
+ * Redis 
+ */
+
+function generateRequestUUID() {
+    var s = [], itoh = '0123456789ABCDEF';
+    for (var i = 0; i < 36; i++) {
+        s[i] = Math.floor(Math.random() * 0x10);
+    }
+    s[14] = 4;
+    s[19] = (s[19] & 0x3) | 0x8;
+    for (var i = 0; i < 36; i++) {
+        s[i] = itoh[s[i]];
+    }
+    s[8] = s[13] = s[18] = s[23] = s[s.length] = '-';
+    s[s.length] = (new Date()).getTime();
+    return s.join('');
+};
+
+function saveQueryResult2Redis(resultData, total, queryId, chunkSize, sort, queryJSON) {
+    var endRow;
+    if (sort != null) {
+        redisClient.set(queryId + ":sortStatus", JSON.stringify(sort));
+    }
+
+    if (total == 0) {
+        redisClient.set(queryId + ':chunk1', JSON.stringify({data: [], total: 0, queryJSON: queryJSON}));
+        redisClient.set(queryId, JSON.stringify({data: [], total: 0, queryJSON: queryJSON}));
+    } else {
+        for (var j = 0, k = 1; j < total; k++) {
+            endRow = k * chunkSize;
+            if (endRow > resultData.length) {
+                endRow = resultData.length;
+            }
+            var spliceData = resultData.slice(j, endRow);
+
+            var redisKey = queryId + ':chunk' + k,
+                dataJSON = {data: spliceData, total: total, queryJSON: queryJSON, chunk: k, chunkSize: chunkSize, serverSideChunking: true},
+                workerData = {redisKey: redisKey, dataJSON: dataJSON};
+
+            writeData2Redis(workerData);
+
+            j = endRow;
+        }
+    }
+};
+
+function writeData2Redis(workerData) {
+    var redisKey = workerData['redisKey'],
+        dataJSON = workerData['dataJSON'];
+
+    var jsonWorker = new Worker(function () {
+        this.onmessage = function (event) {
+            var jsonData = event.data;
+            try {
+                var jsonStr = JSON.stringify(jsonData);
+                postMessage({error: null, jsonStr: jsonStr});
+            } catch (error) {
+                postMessage({error: error});
+            }
+        };
+    });
+
+    jsonWorker.onmessage = function (event) {
+        var workedData = event.data;
+        if (workedData.error == null) {
+            var jsonStr = workedData['jsonStr']
+
+            //logutils.logger.debug(redisKey + " start writing data to redis");
+            redisClient.set(redisKey, jsonStr, function (rError) {
+                if (rError) {
+                    logutils.logger.error("QE Redis Write Error: " + rError);
+                }
+                //logutils.logger.debug(redisKey + " end writing data to redis");
+            });
+        } else {
+            logutils.logger.error("QE JSON Stringify Error: " + workedData.error);
+        }
+    }
+
+    jsonWorker.postMessage(dataJSON);
+}
+
+
+/**
+ * Creates a new object data structure which can store and retrieve objects with
+ * keys for up to size of 'size' and new insertion should delete the
+ * oldest entry.
+ * @param size
+ */
+function FixedHash(size) {
+    var self = this;
+    this.store = {};
+    this.keyStore = [];
+    this.size = size ? size : 10;
+
+    this.has = function(key) {
+        return self.store.hasOwnProperty(key);
+    };
+    
+    this.ensureSpace = function() {
+        if (self.keyStore.length == self.size) {
+            //Remove the first key inserted from keyStore and Store.
+            delete self.store[self.keyStore.shift()];
+        }
+    }
+    
+    this.insert = function(key, obj) {
+        console.log("insert!!", self.store[key], obj);
+        self.ensureSpace();
+        self.deleteItem(key);
+        self.keyStore.push(key);
+        self.store[key] = obj;
+    };
+
+    this.push = function(key, obj) {
+        self.ensureSpace();
+        if (self.store.hasOwnProperty(key)) {
+            if( Object.prototype.toString.call( self.store[key] ) === '[object Array]' ) {
+                self.store[key] = self.store[key].concat(obj);
+            } else {
+                for (var attr in obj) {
+                    if (obj.hasOwnProperty(attr)) {
+                        self.store[attr] = obj[attr];
+                    }
+                }
+            }
+        } else {
+            self.keyStore.push(key);
+            self.store[key] = obj;
+        }
+
+    };
+
+    //If key is present return the record, else return empty
+    this.get = function(key) {
+        return self.store.hasOwnProperty(key) ? self.store[key] : [];
+    };
+
+    this.getAllItems = function() {
+        return self.store;
+    }
+
+    this.deleteItem = function(key) {
+        var idx = self.keyStore.indexOf(key);
+        if ( idx > -1) {
+            self.keyStore.splice(idx, 1);
+            delete self.store[key];
+        }
+    }
+}
+
+var RESPONSE_DATA_STORE = new FixedHash(10), //Hash of List to keep the records based on reqId
+    OPSERVER_PROCESS_QUEUE = new FixedHash(10), //Hash of Queue to be used for Analytics async.each scenarios. Indexed with reqId
+    REQ_STATUS_QUEUE = new FixedHash(10); //Stores processing status for each reqId.
+
+/*get Instance list API */
+
+function getInstancesListFromConfig(req, appData, callback) {
+    var fqnUUID = req.body['fqnUUID'];
+    var type = req.query['type'];
+    var url = null;
+
+    var reqId = req.body['id'];
+
+    console.log("Config vm list request :");
+
+    if (null != fqnUUID) {
+        if (type == 'vn') {
+            url = '/virtual-network/' + fqnUUID;
+        } else if (type == 'project') {
+            url = '/project/' + fqnUUID;
+        }
+
+        configApiServer.apiGet(url, appData, function (err, configFQNData) {
+            if (err || (null == configFQNData)) {
+                callback(err, []);
+                return;
+            }
+            getVMListByType(type, configFQNData, appData, function (err, configVMList) {
+                if (err || (null == configVMList) || (!configVMList.length)) {
+                    callback(err, []);
+                    return;
+                }
+
+                if (configVMList.length != 0) {
+                    //Sorting the UUID list so the order remains the same always.
+                    configVMList.sort(function (s1, s2) {
+                        return (s1 > s2) - (s1 < s2)
+                    });
+
+                    RESPONSE_DATA_STORE.push(reqId, configVMList);
+                }
+                
+                callback(err, configVMList);
+
+            });
+        });
+    } else {
+        var dataObjArr = [];
+        authApi.getTenantList(req, appData, function (err, tenantList) {
+            var projectsLen = (tenantList['tenants'] != null) ? (tenantList['tenants'].length) : 0,
+                configURL = null;
+            for (var i = 0; i < projectsLen; i++) {
+                configURL = '/project/' + commonUtils.convertUUIDToString(tenantList['tenants'][i]['id']);
+                commonUtils.createReqObj(dataObjArr, configURL, global.HTTP_REQUEST_GET, null, null, null, appData);
+            }
+            async.map(dataObjArr, commonUtils.getAPIServerResponse(configApiServer.apiGet, true),
+                function (err, projectData) {
+                    if (err || (null == projectData)) {
+                        callback(err, null);
+                        return;
+                    }
+                    var projectDataLen = projectData.length, vmiList = [];
+                    for (var i = 0; i < projectDataLen; i++) {
+                        var itemData = projectData[i]['project'];
+                        if (itemData['virtual_machine_interfaces'] != null){
+                            vmiList = vmiList.concat(itemData['virtual_machine_interfaces']);
+                        }
+                    }
+
+                    getVMListByVMIList(vmiList, appData, function (err, configVMList) {
+                        if (configVMList && configVMList.length > 1) {
+                            configVMList.sort();
+                        }
+
+                        RESPONSE_DATA_STORE.push(reqId, configVMList);
+                        
+                        callback(err, configVMList);
+
+                    });
+                });
+        });
+    }
+
+}
+
+function getInstancesListFromAnalytics(req, appData, callback) {
+    var reqId = req.body['id'];
+    var fqn = req.body['FQN'];
+    var opUrl, opUri = '/analytics/uves/virtual-network/', opUriQuery = '?cfilt=UveVirtualNetworkAgent:virtualmachine_list';
+
+    if (null != fqn) {
+        if (type == 'vn') {
+            opUrl = opUri + fqn + opUriQuery;
+        } else if (type == 'project') {
+            //For type project, we will get all networks under project by appending :* to fqn
+            opUrl = opUri + fqn + ":*" + opUriQuery;
+        }
+
+        opApiServer.apiGet(opUrl, appData, function(err, response) {
+            if (err || (null == response)) {
+                callback(err, []);
+                return;
+            }
+            var opVMList = [];
+            if (type == 'vn') {
+                if (response.hasOwnProperty('UveVirtualNetworkAgent')) {
+                    opVMList = opVMList.concat(response['UveVirtualNetworkAgent']['virtualmachine_list']);
+                }
+            } else if (type == 'project') {
+                if (response['value'].length > 0) {
+                    for (var i = 0; i < response['value'].length; i++) {
+                        if (response['value'][i]['value'].hasOwnProperty('UveVirtualNetworkAgent')) {
+                            opVMList = opVMList.concat(response['value'][i]['value']['UveVirtualNetworkAgent']['virtualmachine_list']);
+                        }
+                    }
+                }
+            }
+            if (opVMList.length != 0) {
+                //Sorting the UUID list so the order remains the same always.
+                opVMList.sort(function (s1, s2) {
+                    return (s1 > s2) - (s1 < s2)
+                });
+
+                RESPONSE_DATA_STORE.push(reqId, opVMList);
+            }
+            callback(err, opVMList);
+            return;
+        });
+    } else {
+        var domainFQN = commonUtils.getValueByJsonPath(appData, 'authObj;req;cookies;domain', null, false),
+            reqObjArr = [];
+        authApi.getTenantList(req, appData, function (err, tenantList) {
+            var projectsLen = (tenantList['tenants'] != null) ? (tenantList['tenants'].length) : 0;
+
+            for (var i = 0; i < projectsLen; i++) {
+                opUrl = opUri + domainFQN + ':' + tenantList['tenants'][i]['name'] + ':*' + opUriQuery;
+                commonUtils.createReqObj(reqObjArr, opUrl, global.HTTP_REQUEST_GET, null, opApiServer, null, appData);
+            }
+
+            async.map(reqObjArr, commonUtils.getAPIServerResponse(opApiServer.apiGet, true), function (err, response) {
+                if (err || (null == response)) {
+                    callback(err, null);
+                    return;
+                }
+                var opVMList = [];
+                if (response.length > 0) {
+                    for (var i = 0; i < response.length; i++) {
+                        if (response[i].hasOwnProperty('value') && response[i]['value'].length > 0) {
+                            for (var j = 0; j < response[i]['value'].length; j++) {
+                                if (response[i]['value'][j]['value'].hasOwnProperty('UveVirtualNetworkAgent')) {
+                                    opVMList = opVMList.concat(response[i]['value'][j]['value']['UveVirtualNetworkAgent']['virtualmachine_list']);
+                                }
+                            }
+                        }
+                    }
+                    if (opVMList.length != 0) {
+                        //Sorting the UUID list so the order remains the same always.
+                        opVMList.sort(function (s1, s2) {
+                            return (s1 > s2) - (s1 < s2)
+                        });
+                        RESPONSE_DATA_STORE.push(reqId, opVMList);
+
+                        if (!REQ_STATUS_QUEUE.has(reqId)) {
+                            REQ_STATUS_QUEUE.insert(reqId, "complete");
+                        }
+                    }
+                }
+                callback(err, opVMList);
+                return;
+            });
+
+        });
+    }
+
+}
+
+function getInstancesList(req, res, appData) {
+    if (req.query['via']) {
+        if (req.query['via'] == "analytics") {
+            console.log("via analytics>>>>>>>>");
+            getInstancesListFromAnalytics(req, appData, function (err, vmList) {
+                commonUtils.handleJSONResponse(err, res, vmList);
+                return;
+            });
+        } else if (req.query['via'] == "config") {
+            getInstancesListFromConfig(req, appData, function (err, vmList) {
+                commonUtils.handleJSONResponse(err, res, vmList);
+                return;
+            });
+        }
+    } else {
+        getInstancesListFromConfig(req, appData, function (err, vmList) {
+            commonUtils.handleJSONResponse(err, res, vmList);
+            return;
+        });
+    }
+}
+
+/*End of Instance list API */
+
+/*Get Instances API*/
+
+/**
+ * Process API requests to OPServer in queue. Supports paginated response
+ * @param queue
+ * @param queueFetchStatus
+ * @param count
+ * @param type
+ * @param filtUrl
+ * @param appData
+ * @param callback
+ */
+function processReqFromQueue(queue, queueFetchStatus, count, type, filtUrl, appData, callback) {
+    var resultJSON = createEmptyPaginatedData(),
+        url = '/analytics/uves/' + type + '/*?kfilt=';
+
+    //We will use only more for paginated response.
+    delete resultJSON['lastKey'];
+
+    var list = queue.splice(0, count);
+
+    if (list.length > 0) {
+        for (var i = 0; i < list.length; i++) {
+            url += list[i];
+            if (i + 1 < list.length) {
+                url += ',';
+            }
+        }
+
+        //filtURL already contains the url, /analytics/uves, so remove this and then append to our url
+        var kfiltUrlKey = '/*?kfilt=',
+            splArr = url.split(kfiltUrlKey),
+            postData = {};
+
+        if (splArr.length == 2) {
+            postData['kfilt'] = splArr[1].split(',');
+            url = splArr[0];
+        }
+
+        if (filtUrl) {
+            var cfiltArr = filtUrl.split('cfilt=');
+            if (cfiltArr.length == 2) {
+                postData['cfilt'] = cfiltArr[1].split(',');
+            }
+        }
+        opApiServer.apiPost(url, postData, appData, function (err, data) {
+            if (data && data['value']) {
+                var resCnt = data['value'].length;
+                if (resCnt < count) {
+                    /* We have got less number of elements compared to whatever we
+                     * sent to opSrever in kfilt, so these entries may be existing
+                     * in API Server, but not in opServer, so add these in the
+                     * response
+                     */
+                    var tempResData = {}, vnName;
+                    for (var i = 0; i < resCnt; i++) {
+                        if (null == data['value'][i]) {
+                            continue;
+                        }
+                        vnName = data['value'][i]['name'];
+                        tempResData[vnName] = vnName;
+                    }
+                    var kFiltLen = postData['kfilt'].length;
+                    for (var i = 0; i < kFiltLen; i++) {
+                        vnName = postData['kfilt'][i];
+                        if (null == tempResData[vnName]) {
+                            tempResData[vnName] = vnName;
+                            data['value'].push({'name': vnName, 'value': {}});
+                        }
+                    }
+                }
+            }
+
+            resultJSON['data'] = data;
+
+            //Queue can be still populating, even though queue is empty after processing.
+            //So make sure fetch status is also "complete" before setting more to false.
+            if (queueFetchStatus == "complete" && queue.length == 0) {
+                resultJSON['more'] = false;
+            } else {
+                resultJSON['more'] = true;
+            }
+
+            callback(err, resultJSON);
+
+        });
+    } else {
+        //Queue is currently empty. This request may have come due to previous response with more set
+        //to true. Check if the Queue building requests are complete; set 'more' accordingly and in
+        //both cases, set data values to empty to prevent grid showing empty rows.
+        if (queueFetchStatus == "complete") {
+            resultJSON['more'] = false;
+        } else {
+            resultJSON['msg'] = "Queue is empty now; But origin requests are still in progress.";
+            resultJSON['more'] = true;
+        }
+        resultJSON["data"]["value"] = [];
+
+        callback(null, resultJSON);
+    }
+
+}
+
+/**
+ * Get the list of instances from Config API and proceed with requests to
+ * Analytics with the filters in the request.
+ * @param req
+ * @param appData
+ * @param callback
+ */
+function getInstancesForUserFromConfig(req, appData, callback) {
+
+    var lastUUID = req.body['lastKey'],
+        count = req.query['count'],
+        type = req.query['type'],
+        filtUrl = null,
+        resultJSON = createEmptyPaginatedData(),
+        filtData = nwMonUtils.buildBulkUVEUrls(req.body, appData);
+
+    if (filtData && filtData[0]) {
+        filtUrl = filtData[0]['reqUrl'];
+    }
+
+    getInstancesListFromConfig(req, appData, function(err, configVMList) {
+        if (err || (null == configVMList)) {
+            callback(err, resultJSON);
+            return;
+        }
+        var vmList = nwMonUtils.makeUVEList(configVMList);
+        processInstanceReqByLastUUID(lastUUID, count, 'name', vmList, filtUrl, appData, function (err, data) {
+            callback(err, data);
+        });
+    });
+
+}
+
+/**
+ * For requests with FQN set, request Analytics based on type and get instance list and proceed with requests to
+ * Analytics with the filters in the request.
+ * @param req
+ * @param appData
+ * @param callback
+ */
+function getInstancesByFqnFromAnalytics(req, appData, callback) {
+    var fqnUUID = req.query['fqnUUID'];
+    var lastUUID = req.query['lastKey'];
+    var count = req.query['count'];
+    var type = req.query['type'];
+    var filtUrl = null;
+
+    var reqId = req.body['id'];
+    var fqn = req.body['FQN'];
+    var opUrl, opUri = '/analytics/uves/virtual-network/', opUriQuery = '?cfilt=UveVirtualNetworkAgent:virtualmachine_list';
+    var resultJSON = createEmptyPaginatedData();
+
+    if (type == 'vn') {
+        opUrl = opUri + fqn + opUriQuery;
+    } else if (type == 'project') {
+        //For type project, we will get all networks under project by appending :* to fqn
+        opUrl = opUri + fqn + ":*" + opUriQuery;
+    }
+
+    var filtData = nwMonUtils.buildBulkUVEUrls(req.body, appData);
+    if (filtData && filtData[0]) {
+        filtUrl = filtData[0]['reqUrl'];
+    }
+
+    if (RESPONSE_DATA_STORE.has(reqId)) {
+        var opVMCachedList = RESPONSE_DATA_STORE.get(reqId);
+        var data = nwMonUtils.makeUVEList(opVMCachedList, 'VMUUID');
+        console.log("UUID from cache..!", opVMCachedList);
+
+        processInstanceReqByLastUUID(lastUUID, count, 'VMUUID', data, filtUrl, appData, function (err, data) {
+            callback(err, data);
+        });
+    } else {
+        opApiServer.apiGet(opUrl, appData, function(err, response) {
+            if (err || (null == response)) {
+                callback(err, resultJSON);
+                return;
+            }
+            var opVMList = [];
+            if (type == 'vn') {
+                if (response.hasOwnProperty('UveVirtualNetworkAgent')) {
+                    opVMList = opVMList.concat(response['UveVirtualNetworkAgent']['virtualmachine_list']);
+                }
+            } else if (type == 'project') {
+                if (response['value'].length > 0) {
+                    for (var i = 0; i < response['value'].length; i++) {
+                        if (response['value'][i]['value'].hasOwnProperty('UveVirtualNetworkAgent')) {
+                            opVMList = opVMList.concat(response['value'][i]['value']['UveVirtualNetworkAgent']['virtualmachine_list']);
+                        }
+                    }
+                }
+            }
+            if (opVMList.length != 0) {
+                //Sorting the UUID list so the order remains the same always.
+                opVMList.sort(function (s1, s2) {
+                    return (s1 > s2) - (s1 < s2)
+                });
+
+                RESPONSE_DATA_STORE.push(reqId, opVMList);
+
+                var data = nwMonUtils.makeUVEList(opVMList, 'VMUUID');
+                processInstanceReqByLastUUID(lastUUID, count, 'VMUUID', data, filtUrl, appData, function (err, data) {
+                    callback(err, data);
+                });
+            }
+
+        });
+    }
+}
+
+/**
+ * Main handler for getting instances via Analytics. req with FQN or without FQN(based on domain)
+ * Request without FQN will get the list of instances for all the project under domain and proceed with request
+ * to Analytics. Instance list is pushed to Queue, which can be processed either by non-empty response from first project
+ * request or wait for all project requests to complete.
+ * @param req
+ * @param appData
+ * @param callback
+ */
+function getInstancesForUserFromAnalytics(req, appData, callback) {
+    var count = req.query['count'];
+    var type = req.query['type'];
+    var reqObjArr = [];
+    var filtUrl = null;
+    var filtData = nwMonUtils.buildBulkUVEUrls(req.body, appData);
+    var resultJSON = createEmptyPaginatedData();
+
+    var reqId = req.body['id'];
+    var domainFQN = commonUtils.getValueByJsonPath(appData, 'authObj;req;cookies;domain', null, false);
+    var fqn = req.body['FQN'];
+    var opUrl, opUri = '/analytics/uves/virtual-network/', opUriQuery = '?cfilt=UveVirtualNetworkAgent:virtualmachine_list';
+
+    if (filtData && filtData[0]) {
+        filtUrl = filtData[0]['reqUrl'];
+    }
+
+    /**
+     * when we have FQN, straight away get the VM UUIDs from Analytics and paginated requests
+     * will be processed with using lastkey.
+     * For request without FQN, we will get the VM UUIDs for all projects under domain.
+     * VM UUIDs per project will be processed using a Queue which is loaded asynchronously.
+     */
+    if (null != fqn) {
+        if (null == type) {
+            var err = new appErrors.RESTServerError('type is required');
+            callback(err, resultJSON)
+            return;
+        }
+        console.log("Getting instance details by FQN");
+        getInstancesByFqnFromAnalytics(req, appData, callback);
+        return;
+    } else {
+        //Case all-projects:all-networks under breadcrumb.
+        //First check if the request ID was processed already and the UUID list is present.
+        //Proceed with processing the Queue.
+        if (RESPONSE_DATA_STORE.has(reqId)) {
+            console.log("UUID from cache..!");
+            processReqFromQueue(OPSERVER_PROCESS_QUEUE.get(reqId), REQ_STATUS_QUEUE.get(reqId), count, 'virtual-machine', filtUrl, appData, callback);
+
+        }
+        else { //else proceed with FQN or by requesting all the projects under the domain.
+            //Should we wait for response from all the projects? or proceed with chunks? default is true : proceed.
+            var originResponseChunk = true;
+            //Number of active async requests
+            var originConcurrentLimit = 5;
+
+            if (null != req.body['originResponseChunk']) {
+                originResponseChunk = typeof req.body['originResponseChunk'] == "string" ? req.body['originResponseChunk'].toLowerCase() : req.body['originResponseChunk'];
+            }
+
+            if (null != req.body['originConcurrentLimit']) {
+                originConcurrentLimit = typeof req.body['originResponseChunk'] == "string" ? parseInt(req.body['originConcurrentLimit']) : req.body['originConcurrentLimit'];
+            }
+
+            authApi.getTenantList(req, appData, function (err, tenantList) {
+                var projectsLen = (tenantList['tenants'] != null) ? (tenantList['tenants'].length) : 0;
+
+                for (var i = 0; i < projectsLen; i++) {
+                    opUrl = opUri + domainFQN + ':' + tenantList['tenants'][i]['name'] + ':*' + opUriQuery;
+                    commonUtils.createReqObj(reqObjArr, opUrl, global.HTTP_REQUEST_GET, null, opApiServer, null, appData);
+                }
+
+                if (originResponseChunk || originResponseChunk == 'true') {
+                    console.log("async.each!");
+                    function getProjectVms (reqObj, finalCB) {
+                        //Call rest api for each request object.
+                        commonUtils.getServerResponseByRestApi(opApiServer, true, reqObj, function (err, response) {
+                            if (err) {
+                                finalCB(err, resultJSON);
+                                return;
+                            }
+                            var opVMList = [];
+
+                            if (response['value'].length > 0) {
+                                for (var i = 0; i < response['value'].length; i++) {
+                                    if (response['value'][i]['value'].hasOwnProperty('UveVirtualNetworkAgent')) {
+                                        opVMList = opVMList.concat(response['value'][i]['value']['UveVirtualNetworkAgent']['virtualmachine_list']);
+                                    }
+                                }
+                            }
+
+                            if (opVMList.length != 0) {
+
+                                OPSERVER_PROCESS_QUEUE.push(reqId, opVMList);
+
+                                var opVMCachedList = RESPONSE_DATA_STORE.get(reqId);
+                                console.log(opVMCachedList, opVMList);
+                                if (opVMCachedList.length > 0) {
+                                    opVMList = opVMCachedList.concat(opVMList);
+                                }
+                                //Sorting the UUID list so the order remains the same always.
+                                opVMList.sort(function (s1, s2) {
+                                    return (s1 > s2) - (s1 < s2)
+                                });
+
+                                RESPONSE_DATA_STORE.insert(reqId, opVMList);
+
+                                if (!REQ_STATUS_QUEUE.has(reqId)) {
+                                    REQ_STATUS_QUEUE.insert(reqId, "started");
+                                    processReqFromQueue(OPSERVER_PROCESS_QUEUE.get(reqId), REQ_STATUS_QUEUE.get(reqId), count, 'virtual-machine', filtUrl, appData, callback);
+                                }
+                            }
+
+                            finalCB();
+
+                        });
+                    };
+
+                    async.forEachLimit(reqObjArr, originConcurrentLimit, getProjectVms, function(err) {
+                        if (err) {
+                            callback(err, resultJSON);
+                        }
+
+                        REQ_STATUS_QUEUE.insert(reqId, "complete");
+
+                    });
+                } else { //wait for response from all the projects under domain.
+
+                    console.log("async.map!");
+                    async.map(reqObjArr, commonUtils.getAPIServerResponse(opApiServer.apiGet, true),
+                        function (err, response) {
+                            if (err || (null == response)) {
+                                callback(err, null);
+                                return;
+                            }
+                            var opVMList = [];
+                            if (response.length > 0) {
+                                for (var i = 0; i < response.length; i++) {
+                                    if (response[i].hasOwnProperty('value') && response[i]['value'].length > 0) {
+                                        for (var j = 0; j < response[i]['value'].length; j++) {
+                                            if (response[i]['value'][j]['value'].hasOwnProperty('UveVirtualNetworkAgent')) {
+                                                opVMList = opVMList.concat(response[i]['value'][j]['value']['UveVirtualNetworkAgent']['virtualmachine_list']);
+                                            }
+                                        }
+                                    }
+                                }
+                                if (opVMList.length != 0) {
+                                    //Sorting the UUID list so the order remains the same always.
+                                    opVMList.sort(function (s1, s2) {
+                                        return (s1 > s2) - (s1 < s2)
+                                    });
+                                    OPSERVER_PROCESS_QUEUE.push(reqId, opVMList);
+                                    RESPONSE_DATA_STORE.push(reqId, opVMList);
+
+                                    if (!REQ_STATUS_QUEUE.has(reqId)) {
+                                        REQ_STATUS_QUEUE.insert(reqId, "complete");
+                                    }
+                                    processReqFromQueue(OPSERVER_PROCESS_QUEUE.get(reqId), REQ_STATUS_QUEUE.get(reqId), count, 'virtual-machine', filtUrl, appData, callback);
+
+                                } else {
+                                    callback(err, resultJSON);
+                                    return;
+                                }
+                            }
+                        });
+                }
+
+            });
+        }
+    }
+};
+
+/**
+ *
+ * @param req
+ * @param res
+ * @param appData
+ */
+function getInstances(req, res, appData) {
+    var getVMCB = instanceDetailsMap[req.session.loggedInOrchestrationMode];
+    if (null != getVMCB) {
+        getVMCB(req, appData, function (err, instDetails) {
+            commonUtils.handleJSONResponse(err, res, instDetails);
+            return;
+        });
+        return;
+    }
+    if (req.query['via']) {
+        if (req.query['via'] == "analytics") {
+            console.log("via analytics>>>>>>>>");
+            getInstancesForUserFromAnalytics(req, appData, function (err, instDetails) {
+                commonUtils.handleJSONResponse(err, res, instDetails);
+                return;
+            });
+        } else if (req.query['via'] == "config") {
+            getInstancesForUserFromConfig(req, appData, function (err, instDetails) {
+                commonUtils.handleJSONResponse(err, res, instDetails);
+                return;
+            });
+        }
+    } else {
+        getInstancesForUserFromConfig(req, appData, function (err, instDetails) {
+            commonUtils.handleJSONResponse(err, res, instDetails);
+            return;
+        });
+    }
+};
+
+/*End of getInstances*/
+
+/*Run NM Query*/
+
+
+function formatQueryString(table, whereClauseObjArr, selectFieldObjArr, timeObj, noSortReqd, limit, dir, AndClause) {
+    var queryJSON = {};
+    var whereClauseLen = 0;
+    queryJSON = global.QUERY_JSON[table];
+    var selectLen = selectFieldObjArr.length;
+    queryJSON['select_fields'] = [];
+    for (var i = 0; i < selectLen; i++) {
+        /* Every array element is one object */
+        queryJSON['select_fields'][i] = selectFieldObjArr[i];
+    }
+    
+    queryJSON['start_time'] = timeObj['start_time'];
+    queryJSON['end_time'] = timeObj['end_time'];
+    if ((null == noSortReqd) || (false == noSortReqd) ||
+        (typeof noSortReqd === 'undefined')) {
+        queryJSON['sort_fields'] = ['sum(bytes)'];
+        queryJSON['sort'] = global.QUERY_STRING_SORT_DESC;
+    }
+    if ((limit != null) && (typeof limit != undefined) && (-1 != limit)) {
+        queryJSON['limit'] = limit;
+    }
+    queryJSON['where'] = [];
+    whereClauseLen = whereClauseObjArr.length;
+    if ((null == AndClause) || (typeof AndClause === 'undefined')) {
+        for (i = 0; i < whereClauseLen; i++) {
+            for (var key in whereClauseObjArr[i]) {
+                queryJSON['where'][i] =
+                    [
+                        {"name": key, "value": whereClauseObjArr[i][key], "op": 1}
+                    ];
+            }
+        }
+    } else {
+        queryJSON['where'][0] = [];
+        for (i = 0; i < whereClauseLen; i++) {
+            for (key in whereClauseObjArr[i]) {
+                queryJSON['where'][0][i] =
+                {"name": key, "value": whereClauseObjArr[i][key], "op": 1};
+            }
+        }
+    }
+    if ((dir == null) || (typeof dir === 'undefined')) {
+        queryJSON['dir'] = global.TRAFFIC_DIR_INGRESS;
+    } else {
+        queryJSON['dir'] = dir;
+    }
+    return commonUtils.cloneObj(queryJSON);
+}
+
+function updateQueryObjByType(queryObj, type) {
+    if ('virtual-machine' == type) {
+        queryObj.table = 'StatTable_UveVMInterfaceAgent_if_stats';
+        queryObj.context = 'vm';
+        queryObj.whereFieldName = 'vm_uuid';
+    } else if ('virtual-network' == type) {
+        queryObj.table = 'StatTable_UveVirtualNetworkAgent_vn_stats';
+        queryObj.context = 'vn';
+    } else if ('virtual-machine-interface' == type) {
+        queryObj.table = 'StatTable_UveVMInterfaceAgent_if_stats';
+        queryObj.context = 'vm';
+    }
+    return queryObj;
+}
+
+function createQueryJSON(queryObj) {
+    var minSince = queryObj['minSince'],
+        useServerTime = queryObj['userServerTime'],
+        timeObj = nwMonJobs.createTimeQueryJsonObjByServerTimeFlag(minSince, useServerTime),
+        whereClauseArray = [], whereClause;
+
+    queryObj.whereFieldName = "name";
+
+    updateQueryObjByType(queryObj, queryObj.type);
+
+    //To support passing UUID via req. This support will be taken off in future.
+    var UUIDList = queryObj['uuids']
+    if (UUIDList.indexOf(',') > -1) {
+        UUIDList = UUIDList.split(',');
+        for (var i = 0; i < UUIDList.length; i++) {
+            whereClause = {};
+            whereClause[queryObj.whereFieldName] = UUIDList[i];
+            whereClauseArray.push(whereClause);
+        }
+    } else {
+        whereClause = {};
+        whereClause[queryObj.whereFieldName] = UUIDList;
+        whereClauseArray.push(whereClause);
+    }
+    
+    var props = global.STATS_PROP[queryObj.context],
+        selectArr = [props['inBytes'], props['outBytes'], props['inPkts'], props['outPkts'], queryObj.whereFieldName],
+        queryJSON = formatQueryString(queryObj.table, whereClauseArray, selectArr, timeObj, true, null);
+
+    queryObj.queryJSON = queryJSON;
+    
+    return queryJSON;
+    
+}
+
+function executeQuery (queryJSONList, appData, callback) {
+    var dataObjArr = [];
+
+    for (var i = 0; i < queryJSONList.length; i++) {
+        commonUtils.createReqObj(dataObjArr, global.RUN_QUERY_URL, global.HTTP_REQUEST_POST,
+            commonUtils.cloneObj(queryJSONList[i]), null, null, appData);
+    }
+    logutils.logger.debug("Query1 executing:" + JSON.stringify((dataObjArr[0] != null) ? dataObjArr[0]['data'] : ""));
+
+    async.map(dataObjArr, commonUtils.getAPIServerResponse(opApiServer.apiPost, true), function(err, data) {
+        callback(err, data);
+    });
+}
+
+function runQuery (req, res, appData) {
+    
+    var reqQueryObj = req.body,
+        queryJSON = [];
+
+    if( Object.prototype.toString.call( reqQueryObj ) === '[object Array]' ) {
+        for (var i = 0; i < reqQueryObj.length; i++) {
+            queryJSON.push(createQueryJSON(reqQueryObj[i]));
+        }    
+    } else {
+        queryJSON.push(createQueryJSON(reqQueryObj));
+    }
+    
+    
+    //logutils.logger.debug("Query json is " + JSON.stringify(queryJSON));
+
+    executeQuery(queryJSON, null, appData, function (err, data) {
+        //logutils.logger.debug(JSON.stringify(data));
+        commonUtils.handleJSONResponse(err, res, data);
+    });
+}
+
+function runPOSTQuery (req, res, appData) {
+
+    runQuery(req, res, appData);
+    
+}
+
+
+/*End of NM Query/
+
 /* List all public functions */
 exports.getFlowSeriesByVN = getFlowSeriesByVN;
 exports.getProjectSummary = getProjectSummary;
@@ -1771,3 +2736,8 @@ exports.getVNetworks = getVNetworks;
 exports.getNetworkDomainSummary = getNetworkDomainSummary;
 exports.getNetworkDetails = getNetworkDetails;
 exports.getInstanceDetailsForVRouter = getInstanceDetailsForVRouter;
+//Instances
+exports.getInstancesList = getInstancesList;
+exports.getInstances = getInstances;
+//Query
+exports.runPOSTQuery = runPOSTQuery;

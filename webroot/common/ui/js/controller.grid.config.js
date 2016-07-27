@@ -356,49 +356,49 @@ define([
         };
         this.getVMDetailsLazyRemoteConfig = function (type) {
             return [
-                {
-                    getAjaxConfig: function (responseJSON) {
-                        var uuids, lazyAjaxConfig;
-
-                        uuids = $.map(responseJSON, function (item) {
-                            return item['name'];
-                        });
-
-                        lazyAjaxConfig = {
-                            url: ctwc.URL_VM_VN_STATS,
-                            type: 'POST',
-                            data: JSON.stringify({
-                                data: {
-                                    type: type,
-                                    uuids: uuids.join(','),
-                                    minsSince: 60,
-                                    useServerTime: true
-                                }
-                            })
-                        }
-                        return lazyAjaxConfig;
-                    },
-                    successCallback: function (response, contrailListModel) {
-                        var statDataList = ctwp.parseInstanceStats(response[0], type),
-                            dataItems = contrailListModel.getItems(),
-                            updatedDataItems = [],
-                            statData;
-
-                        for (var j = 0; j < statDataList.length; j++) {
-                            statData = statDataList[j];
-                            for (var i = 0; i < dataItems.length; i++) {
-                                var dataItem = dataItems[i];
-                                if (statData['name'] == dataItem['name']) {
-                                    dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
-                                    dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
-                                    updatedDataItems.push(dataItem);
-                                    break;
-                                }
-                            }
-                        }
-                        contrailListModel.updateData(updatedDataItems);
-                    }
-                },
+                // {
+                //     getAjaxConfig: function (responseJSON) {
+                //         var uuids, lazyAjaxConfig;
+                //
+                //         uuids = $.map(responseJSON, function (item) {
+                //             return item['name'];
+                //         });
+                //
+                //         lazyAjaxConfig = {
+                //             url: ctwc.URL_VM_VN_STATS,
+                //             type: 'POST',
+                //             data: JSON.stringify({
+                //                 data: {
+                //                     type: type,
+                //                     uuids: uuids.join(','),
+                //                     minSince: 60,
+                //                     useServerTime: true
+                //                 }
+                //             })
+                //         }
+                //         return lazyAjaxConfig;
+                //     },
+                //     successCallback: function (response, contrailListModel) {
+                //         var statDataList = ctwp.parseInstanceStats(response[0], type),
+                //             dataItems = contrailListModel.getItems(),
+                //             updatedDataItems = [],
+                //             statData;
+                //
+                //         for (var j = 0; j < statDataList.length; j++) {
+                //             statData = statDataList[j];
+                //             for (var i = 0; i < dataItems.length; i++) {
+                //                 var dataItem = dataItems[i];
+                //                 if (statData['name'] == dataItem['name']) {
+                //                     dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
+                //                     dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
+                //                     updatedDataItems.push(dataItem);
+                //                     break;
+                //                 }
+                //             }
+                //         }
+                //         contrailListModel.updateData(updatedDataItems);
+                //     }
+                // },
                 {
                     getAjaxConfig: function (responseJSON) {
                         var lazyAjaxConfig,
