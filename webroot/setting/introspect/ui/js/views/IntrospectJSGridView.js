@@ -38,7 +38,7 @@ define([
                         }
                     }
                 ]
-            })
+            });
         });
 
         return {
@@ -51,13 +51,15 @@ define([
     }
 
     function getIntrospectJSGridConfig(value) {
+        var dataObj, gridData =  [], gridColumnsObj = {columns: []};
 
-        var dataObj = parseDataObject(value.data),
-            gridData =  [], gridColumnsObj = {};
+        if (isSandeshDataHavingObject(value)) {
+            dataObj = parseDataObject(value.data);
 
-        if (dataObj != null && dataObj != undefined) {
-            gridColumnsObj = createGridColumns(dataObj);
-            gridData = createGridData(dataObj);
+            if (dataObj != null && dataObj != undefined) {
+                gridColumnsObj = createGridColumns(dataObj);
+                gridData = createGridData(dataObj);
+            }
         }
 
         return {
@@ -345,6 +347,15 @@ define([
         }
 
         return jsonObject;
+    }
+
+    function isSandeshDataHavingObject(sandeshDataItem) {
+        var isObject = false;
+        _.each(sandeshDataItem.data, function(value, key) {
+            isObject = isObject || _.isObject(value);
+        });
+
+        return isObject;
     }
 
     function parseListDataObj(jsonObject) {
