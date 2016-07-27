@@ -38,7 +38,7 @@ define([
                         }
                     }
                 ]
-            })
+            });
         });
 
         return {
@@ -51,13 +51,15 @@ define([
     }
 
     function getIntrospectJSGridConfig(value) {
+        var dataObj, gridData =  [], gridColumnsObj = {columns: []};
 
-        var dataObj = parseDataObject(value.data),
-            gridData =  [], gridColumnsObj = {};
+        if (isSandeshDataHavingObject(value)) {
+            dataObj = parseDataObject(value.data);
 
-        if (dataObj != null && dataObj != undefined) {
-            gridColumnsObj = createGridColumns(dataObj);
-            gridData = createGridData(dataObj);
+            if (dataObj != null && dataObj != undefined) {
+                gridColumnsObj = createGridColumns(dataObj);
+                gridData = createGridData(dataObj);
+            }
         }
 
         return {
@@ -109,7 +111,8 @@ define([
 
                 }
 
-                if (_.contains(['list', 'struct', 'sandesh'], value['_type'])) {
+                if (_.contains(['list', 'struct', 'sandesh'], value['_type']) ||
+                    (!contrail.checkIfExist(value['_type']) && _.isArray(value))) {
                     gridColumn['formatter'] = {
                         format: 'json2html', options: {jsonValuePath: key, htmlValuePath: key + 'HTML', expandLevel: 0}
                     };
@@ -227,15 +230,15 @@ define([
 
         } else if (sandeshObj['_type'] === 'slist') {
             sandeshObj = _.omit(sandeshObj, ['_type', 'more', 'next_batch']);
-            _.each(sandeshObj, function(value, key) {
+            _.each(sandeshObj, function(sandeshValue, sandeshKey) {
                 var sandeshListObj = {};
-                sandeshListObj[key] = value;
+                sandeshListObj[sandeshKey] = sandeshValue;
                 sandeshData = sandeshData.concat(parseData(sandeshListObj, sandeshKey));
             });
         } else {
 
             sandeshData.push({
-                title: contrail.checkIfExist(title) ? title : '',
+                title: (contrail.checkIfExist(title) ? title + ' | ' : '') + sandeshKey,
                 data: jsonObject
             });
         }
@@ -344,6 +347,15 @@ define([
         }
 
         return jsonObject;
+    }
+
+    function isSandeshDataHavingObject(sandeshDataItem) {
+        var isObject = false;
+        _.each(sandeshDataItem.data, function(value, key) {
+            isObject = isObject || _.isObject(value);
+        });
+
+        return isObject;
     }
 
     function parseListDataObj(jsonObject) {
