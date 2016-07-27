@@ -31,7 +31,7 @@ define([
             //  Run query without selecting any table.
             setTimeout(function () {
                 cotu.triggerClickOnElement('#run_query');
-                isPresent = cotu.compareIfMessageExists($("span.help-block").text().trim(), "Table Name is required");
+                isPresent = cotu.compareIfMessageExists(cotu.getTextInElement("span.help-block"), "Table Name is required");
                 equal(isPresent, true,
                     "Custom test to assert the error message when no field is selected");
 
@@ -48,7 +48,7 @@ define([
                 cotu.triggerClickOnElement('.btnSave');
 
                 cotu.triggerClickOnElement('#run_query');
-                isPresent = cotu.compareIfMessageExists($("span.help-block").text().trim(),"Select is required");
+                isPresent = cotu.compareIfMessageExists(cotu.getTextInElement("span.help-block"),"Select is required");
                 equal(isPresent, true,
                     "Custom test to assert the error message when no field is selected");
                 done2();

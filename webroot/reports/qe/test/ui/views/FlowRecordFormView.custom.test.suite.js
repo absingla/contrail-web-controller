@@ -34,7 +34,7 @@ define([
                 cotu.triggerClickOnElement('.btnSave');
 
                 cotu.triggerClickOnElement('#run_query');
-                var isPresent = cotu.compareIfMessageExists($("span.help-block").text().trim(), "Select is required");
+                var isPresent = cotu.compareIfMessageExists(cotu.getTextInElement("span.help-block"), "Select is required");
                 equal(isPresent, true,
                     "Custom test to assert the error message when no field is selected");
 
