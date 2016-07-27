@@ -41,13 +41,13 @@ define([
 
         responses.push(cotr.createFakeServerResponse({
             method: "POST",
-            url: ctwc.URL_QUERY_RESULT,
+            url: cotc.URL_QE_QUERY,
             body: JSON.stringify(TestMockdata.logsViewQueryMockData)
         }));
 
         responses.push(cotr.createFakeServerResponse({
             method: "POST",
-            url: ctwc.URL_COLUMN_VALUES,
+            url: cotc.URL_COLUMN_VALUES,
             body: JSON.stringify(TestMockdata.values)
         }));
 

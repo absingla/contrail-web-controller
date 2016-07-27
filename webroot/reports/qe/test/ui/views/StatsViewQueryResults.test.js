@@ -27,7 +27,7 @@ define([
 
         responses.push(cotr.createFakeServerResponse({
             method: "POST",
-            url: ctwc.URL_QUERY_RESULT,
+            url: ctwc.URL_QE_QUERY,
             body: JSON.stringify(TestMockdata.statViewQueryQueueMockData)
         }));
 
@@ -61,7 +61,6 @@ define([
             ]
         };
     };
-
 
     var testInitFn = function (defObj, onAllViewsRenderComplete) {
 

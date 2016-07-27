@@ -27,7 +27,7 @@ define([
 
         responses.push(cotr.createFakeServerResponse({
             method: "POST",
-            url: ctwc.URL_QUERY_RESULT,
+            url: cotc.URL_QE_QUERY,
             body: JSON.stringify(TestMockdata.getFlowViewQueryMockData)
         }));
 
