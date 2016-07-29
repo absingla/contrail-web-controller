@@ -27,6 +27,7 @@ define(function (require) {
             'click .close': 'remove',
             'click .panel-heading .config': 'toggleConfig',
             'click .title': 'editTitle',
+            'keydown .edit-title': '_onKeyInTitle',
             'blur .panel-heading>input': 'saveTitle',
             'click .panel-footer .submit': 'submit',
             'click .panel-footer .reset': 'reset',
@@ -203,6 +204,11 @@ define(function (require) {
                     text: self.model.viewLabels[id],
                 }
             })
+        },
+
+        _onKeyInTitle: function (e) {
+            var self = this
+            if (e.keyCode === 13) self.saveTitle()
         },
 
         remove: function () {
