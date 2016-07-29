@@ -1161,7 +1161,7 @@ and need to add the iconClass tag wherever we need to show some icons
             <items>
                 <item>
                     <label>Flows</label>
-                    <iconClass>fa fa-exchange</iconClass>
+                    <iconClass>menu-icon fa fa-exchange</iconClass>
                     <init>/reports/qe/ui/js/qe.init.js</init>
                     <items>
                         <item>
