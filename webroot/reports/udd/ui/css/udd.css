@@ -40,6 +40,7 @@
   padding: 0;
 }
 #content-container .placeholder {
+  display: block;
   margin: 8px;
   text-align: center;
   border: 1px dashed #ccc;
@@ -55,12 +56,18 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-
-#content-container .area .grid-stack .widget.grid-stack-item {
-  margin: 0 8px;
+#content-container .area .grid-stack .grid-stack-item .widget {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  right: 4px;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  margin: 0;
 }
-#content-container .area .grid-stack .widget.grid-stack-item > .ui-resizable-se {
-  right: 5px;
+#content-container .area .grid-stack .grid-stack-item .ui-resizable-handle {
+  right: 8px;
   bottom: 5px;
 }
 #content-container .area .grid-stack .widget.panel .panel-heading,

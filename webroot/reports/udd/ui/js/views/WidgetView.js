@@ -175,7 +175,7 @@ define(function (require) {
                                 }, {
                                     elementId: 'submit', view: 'FormButtonView',
                                     viewConfig: {
-                                        label: 'Submit',
+                                        label: 'Next',
                                         class: 'submit display-inline-block',
                                         elementConfig: {
                                             btnClass: 'btn-primary',
@@ -254,12 +254,14 @@ define(function (require) {
                 self.$(self.selectors.back).hide()
                 self.$(self.selectors.contentConfigDropdown).hide()
                 self.$(self.selectors.dataConfigDropdown).show()
+                self.$('.submit button').html('Next')
             }
             if (step === self.steps.CONTENT_CONFIG) {
                 configTitle = 'Content View Config: '
                 self.$(self.selectors.back).show()
                 self.$(self.selectors.dataConfigDropdown).hide()
                 self.$(self.selectors.contentConfigDropdown).show()
+                self.$('.submit button').html('Submit')
             }
             self.$(self.selectors.configTitle).html(configTitle)
 

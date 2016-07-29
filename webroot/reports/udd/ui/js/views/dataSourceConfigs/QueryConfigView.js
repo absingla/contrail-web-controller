@@ -90,7 +90,7 @@ define(function (require) {
                                         path: 'table_name',
                                         dataBindValue: 'table_name',
                                         dataBindOptionList: 'table_name_data_object',
-                                        class: 'span6',
+                                        class: 'span12',
                                         elementConfig: {
                                             defaultValueId: 0,
                                             allowClear: false,
@@ -135,7 +135,7 @@ define(function (require) {
                                     viewConfig: {
                                         path: 'select',
                                         dataBindValue: 'select',
-                                        class: 'span6',
+                                        class: 'span12',
                                         editPopupConfig: {
                                             renderEditFn: function () {
                                                 var tableName = self.model.table_name();
@@ -186,7 +186,7 @@ define(function (require) {
                                     viewConfig: {
                                         path: 'where',
                                         dataBindValue: 'where',
-                                        class: 'span9',
+                                        class: 'span12',
                                         placeHolder: '*',
                                         editPopupConfig: {
                                             renderEditFn: function () {
@@ -206,7 +206,7 @@ define(function (require) {
                                     viewConfig: {
                                         path: 'filters',
                                         dataBindValue: 'filters',
-                                        class: 'span9',
+                                        class: 'span12',
                                         label: cowl.TITLE_QE_FILTER,
                                         editPopupConfig: {
                                             renderEditFn: function () {
