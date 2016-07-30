@@ -138,6 +138,9 @@ define([
         this.TYPE_VN = 'vn';
         this.TYPE_VIRTUAL_NETWORK = "virtual-network";
         this.TYPE_VIRTUAL_MACHINE = "virtual-machine";
+        this.TYPE_VIRTUAL_MACHINE_INTERFACE = "virtual-machine-interface";
+        this.TYPE_SECURITY_GROUPS = "security-groups";
+        this.TYPE_NETWORK_IPAMS = "network-ipams";
 
         this.ALL_PROJECT_DROPDOWN_OPTION = [{name: 'all projects', value: 'all', fq_name: 'all'}];
         this.ALL_NETWORK_DROPDOWN_OPTION = [{name: 'all networks', value: 'all', fq_name: 'all'}];
@@ -545,6 +548,12 @@ define([
                 'outPkts': 'SUM(vn_stats.out_pkts)'
             },
             'virtual-machine': {
+                'inBytes': 'SUM(if_stats.in_bytes)',
+                'outBytes': 'SUM(if_stats.out_bytes)',
+                'inPkts': 'SUM(if_stats.in_pkts)',
+                'outPkts': 'SUM(if_stats.out_pkts)'
+            },
+            'virtual-machine-interface': {
                 'inBytes': 'SUM(if_stats.in_bytes)',
                 'outBytes': 'SUM(if_stats.out_bytes)',
                 'inPkts': 'SUM(if_stats.in_pkts)',

@@ -589,8 +589,7 @@ function getVirtualInterfacesSummary(req, res, appData) {
                 interfaceList = vnJSON['UveVirtualNetworkAgent']['interface_list'];
                 opServerPostData['kfilt'] = interfaceList;
 
-                opApiServer.apiPost(vmiUrl, opServerPostData, appData,
-                                    function (err, data) {
+                opApiServer.apiPost(vmiUrl, opServerPostData, appData, function (err, data) {
                     if (err || (null == data)) {
                         commonUtils.handleJSONResponse(err, res, null);
                     } else {
@@ -2477,13 +2476,11 @@ function getInstancesForUserFromAnalytics(req, appData, callback) {
                         if (err) {
                             callback(err, resultJSON);
                         }
-
+                        
                         REQ_STATUS_QUEUE.insert(reqId, "complete");
 
                     });
                 } else { //wait for response from all the projects under domain.
-
-                    console.log("async.map!");
                     async.map(reqObjArr, commonUtils.getAPIServerResponse(opApiServer.apiGet, true),
                         function (err, response) {
                             if (err || (null == response)) {
@@ -2565,153 +2562,6 @@ function getInstances(req, res, appData) {
 
 /*End of getInstances*/
 
-/*Run NM Query*/
-
-
-function formatQueryString(table, whereClauseObjArr, selectFieldObjArr, timeObj, noSortReqd, limit, dir, AndClause) {
-    var queryJSON = {};
-    var whereClauseLen = 0;
-    queryJSON = global.QUERY_JSON[table];
-    var selectLen = selectFieldObjArr.length;
-    queryJSON['select_fields'] = [];
-    for (var i = 0; i < selectLen; i++) {
-        /* Every array element is one object */
-        queryJSON['select_fields'][i] = selectFieldObjArr[i];
-    }
-    
-    queryJSON['start_time'] = timeObj['start_time'];
-    queryJSON['end_time'] = timeObj['end_time'];
-    if ((null == noSortReqd) || (false == noSortReqd) ||
-        (typeof noSortReqd === 'undefined')) {
-        queryJSON['sort_fields'] = ['sum(bytes)'];
-        queryJSON['sort'] = global.QUERY_STRING_SORT_DESC;
-    }
-    if ((limit != null) && (typeof limit != undefined) && (-1 != limit)) {
-        queryJSON['limit'] = limit;
-    }
-    queryJSON['where'] = [];
-    whereClauseLen = whereClauseObjArr.length;
-    if ((null == AndClause) || (typeof AndClause === 'undefined')) {
-        for (i = 0; i < whereClauseLen; i++) {
-            for (var key in whereClauseObjArr[i]) {
-                queryJSON['where'][i] =
-                    [
-                        {"name": key, "value": whereClauseObjArr[i][key], "op": 1}
-                    ];
-            }
-        }
-    } else {
-        queryJSON['where'][0] = [];
-        for (i = 0; i < whereClauseLen; i++) {
-            for (key in whereClauseObjArr[i]) {
-                queryJSON['where'][0][i] =
-                {"name": key, "value": whereClauseObjArr[i][key], "op": 1};
-            }
-        }
-    }
-    if ((dir == null) || (typeof dir === 'undefined')) {
-        queryJSON['dir'] = global.TRAFFIC_DIR_INGRESS;
-    } else {
-        queryJSON['dir'] = dir;
-    }
-    return commonUtils.cloneObj(queryJSON);
-}
-
-function updateQueryObjByType(queryObj, type) {
-    if ('virtual-machine' == type) {
-        queryObj.table = 'StatTable_UveVMInterfaceAgent_if_stats';
-        queryObj.context = 'vm';
-        queryObj.whereFieldName = 'vm_uuid';
-    } else if ('virtual-network' == type) {
-        queryObj.table = 'StatTable_UveVirtualNetworkAgent_vn_stats';
-        queryObj.context = 'vn';
-    } else if ('virtual-machine-interface' == type) {
-        queryObj.table = 'StatTable_UveVMInterfaceAgent_if_stats';
-        queryObj.context = 'vm';
-    }
-    return queryObj;
-}
-
-function createQueryJSON(queryObj) {
-    var minSince = queryObj['minSince'],
-        useServerTime = queryObj['userServerTime'],
-        timeObj = nwMonJobs.createTimeQueryJsonObjByServerTimeFlag(minSince, useServerTime),
-        whereClauseArray = [], whereClause;
-
-    queryObj.whereFieldName = "name";
-
-    updateQueryObjByType(queryObj, queryObj.type);
-
-    //To support passing UUID via req. This support will be taken off in future.
-    var UUIDList = queryObj['uuids']
-    if (UUIDList.indexOf(',') > -1) {
-        UUIDList = UUIDList.split(',');
-        for (var i = 0; i < UUIDList.length; i++) {
-            whereClause = {};
-            whereClause[queryObj.whereFieldName] = UUIDList[i];
-            whereClauseArray.push(whereClause);
-        }
-    } else {
-        whereClause = {};
-        whereClause[queryObj.whereFieldName] = UUIDList;
-        whereClauseArray.push(whereClause);
-    }
-    
-    var props = global.STATS_PROP[queryObj.context],
-        selectArr = [props['inBytes'], props['outBytes'], props['inPkts'], props['outPkts'], queryObj.whereFieldName],
-        queryJSON = formatQueryString(queryObj.table, whereClauseArray, selectArr, timeObj, true, null);
-
-    queryObj.queryJSON = queryJSON;
-    
-    return queryJSON;
-    
-}
-
-function executeQuery (queryJSONList, appData, callback) {
-    var dataObjArr = [];
-
-    for (var i = 0; i < queryJSONList.length; i++) {
-        commonUtils.createReqObj(dataObjArr, global.RUN_QUERY_URL, global.HTTP_REQUEST_POST,
-            commonUtils.cloneObj(queryJSONList[i]), null, null, appData);
-    }
-    logutils.logger.debug("Query1 executing:" + JSON.stringify((dataObjArr[0] != null) ? dataObjArr[0]['data'] : ""));
-
-    async.map(dataObjArr, commonUtils.getAPIServerResponse(opApiServer.apiPost, true), function(err, data) {
-        callback(err, data);
-    });
-}
-
-function runQuery (req, res, appData) {
-    
-    var reqQueryObj = req.body,
-        queryJSON = [];
-
-    if( Object.prototype.toString.call( reqQueryObj ) === '[object Array]' ) {
-        for (var i = 0; i < reqQueryObj.length; i++) {
-            queryJSON.push(createQueryJSON(reqQueryObj[i]));
-        }    
-    } else {
-        queryJSON.push(createQueryJSON(reqQueryObj));
-    }
-    
-    
-    //logutils.logger.debug("Query json is " + JSON.stringify(queryJSON));
-
-    executeQuery(queryJSON, null, appData, function (err, data) {
-        //logutils.logger.debug(JSON.stringify(data));
-        commonUtils.handleJSONResponse(err, res, data);
-    });
-}
-
-function runPOSTQuery (req, res, appData) {
-
-    runQuery(req, res, appData);
-    
-}
-
-
-/*End of NM Query/
-
 /* List all public functions */
 exports.getFlowSeriesByVN = getFlowSeriesByVN;
 exports.getProjectSummary = getProjectSummary;
@@ -2739,5 +2589,3 @@ exports.getInstanceDetailsForVRouter = getInstanceDetailsForVRouter;
 //Instances
 exports.getInstancesList = getInstancesList;
 exports.getInstances = getInstances;
-//Query
-exports.runPOSTQuery = runPOSTQuery;
