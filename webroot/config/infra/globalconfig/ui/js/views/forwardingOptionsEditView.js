@@ -18,7 +18,7 @@ define([
                 contrail.getTemplate4Id(ctwl.TMPL_CORE_GENERIC_EDIT),
                 editLayout = editTemplate({prefixId: prefixId, modalId: modalId}),
                 self = this;
-            cowu.createModal({'modalId': modalId, 'className': 'modal-400',
+            cowu.createModal({'modalId': modalId, 'className': 'modal-560',
                              'title': options['title'], 'body': editLayout,
                              'onSave': function () {
                 self.model.configureForwardingOptions({
