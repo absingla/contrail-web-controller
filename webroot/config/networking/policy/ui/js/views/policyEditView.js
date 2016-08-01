@@ -63,7 +63,7 @@ define([
                    self.renderView4Config(
                         $("#" + modalId).find("#" + modalId + "-form"),
                         self.model, getConfigureViewConfig
-                        (disableElement, allData),
+                        (disableElement, allData, self.selectedProjId),
                         'policyValidations', null, null, function(){
                             self.model.showErrorAttr(prefixId +
                                             cowc.FORM_SUFFIX_ID, false);
@@ -147,6 +147,12 @@ define([
             //get policies
             getAjaxs[3] = $.ajax({
                 url:"/api/tenants/config/policys",
+                type:"GET"
+            });
+
+            //get securty groups
+            getAjaxs[4] = $.ajax({
+                url:"/api/tenants/config/securitygroup",
                 type:"GET"
             });
 
@@ -252,6 +258,46 @@ define([
                                  parent : "network_policy"});
                         }
                     }
+
+                    //prepare security group sub array
+                    var allSGs = [{ text: "Enter or Select a SG",
+                        value: "dummy" +
+                           cowc.DROPDOWN_VALUE_SEPARATOR +
+                           "security_group",
+                        disabled: true}],
+                        sgs = getValueByJsonPath(results,
+                            "4;0;security-groups", []);
+                    _.each(sgs, function(sg){
+                        var fqn =  getValueByJsonPath(sg, "fq_name", [], false);
+                        var domain = fqn[0];
+                        var project = fqn[1];
+                        if(domain === selectedDomain &&
+                           project === selectedProject) {
+                            allSGs.push(
+                                {text : fqn.length === 3 ? fqn[2] : "",
+                                 value : fqn.join(":")
+                                         + cowc.DROPDOWN_VALUE_SEPARATOR +
+                                         "security_group",
+                                 id : fqn.join(":")
+                                         + cowc.DROPDOWN_VALUE_SEPARATOR +
+                                         "security_group",
+                                 parent : "security_group"});
+                        } else {
+                            allSGs.push(
+                                    {text : fqn.length === 3 ? fqn[2] + " (" +
+                                            fqn[1] + ":" + fqn[2] + ")" : "",
+                                     value : fqn.join(":")
+                                             + cowc.DROPDOWN_VALUE_SEPARATOR +
+                                             "security_group",
+                                     id : fqn.join(":")
+                                             + cowc.DROPDOWN_VALUE_SEPARATOR +
+                                             "security_group",
+                                     parent : "security_group"});
+                        }
+                    });
+
+
+
                     returnArr["service_instances"] = [];
                     returnArr["service_instances_ref"] = [];
                     var analyzerInsts = [];
@@ -321,10 +367,13 @@ define([
                                         text:'Enter VN:CIDR',
                                         value:"dummy",
                                         disabled : true }]},
-                                   {text : 'Networks', value : 'virtual_network',
+                                   {text : 'Network', value : 'virtual_network',
                                    children : allVns},
-                                   {text : 'Policies', value : 'network_policy',
-                                   children : allPolicies});
+                                   {text : 'Policy', value : 'network_policy',
+                                   children : allPolicies},
+                                   {text : "Security Group",
+                                       value: "security_group",
+                                       children: allSGs});
                     returnArr["addrFields"] = addrFields;
                     callback(returnArr);
                 }
@@ -342,7 +391,7 @@ define([
         return returnText;
     }
 
-    var getConfigureViewConfig = function(isDisable, allData) {
+    var getConfigureViewConfig = function(isDisable, allData, selectedProjId) {
         return {
             elementId: cowu.formatElementId(
                             [prefixId, ctwl.TITLE_EDIT_POLICY]),
@@ -447,18 +496,23 @@ define([
                                                 'icon-contrail-network-ipam'
                                             },
                                             {
-                                                name : 'Networks',
+                                                name : 'Network',
                                                 value : 'virtual_network',
                                                 iconClass:
                                                 'icon-contrail-virtual-network'
                                             },
                                             {
-                                                name : 'Policies',
+                                                name : 'Policy',
                                                 value : 'network_policy',
                                                 iconClass:
                                                 'icon-contrail-network-policy'
-                                            }
-                                            ]
+                                            },
+                                            {
+                                                name : 'Security Group',
+                                                value : 'security_group',
+                                                iconClass:
+                                                'icon-contrail-security-group'
+                                            }]
                                         }
                                     }
                                 },
@@ -516,16 +570,22 @@ define([
                                                 'icon-contrail-network-ipam'
                                             },
                                             {
-                                                name : 'Networks',
+                                                name : 'Network',
                                                 value : 'virtual_network',
                                                 iconClass:
                                                 'icon-contrail-virtual-network'
                                             },
                                             {
-                                                name : 'Policies',
+                                                name : 'Policy',
                                                 value : 'network_policy',
                                                 iconClass:
                                                 'icon-contrail-network-policy'
+                                            },
+                                            {
+                                                name : 'Security Group',
+                                                value : 'security_group',
+                                                iconClass:
+                                                'icon-contrail-security-group'
                                             }]
                                         }
                                     }
@@ -578,6 +638,19 @@ define([
                                      path: 'mirror_to_check',
                                      dataBindValue: 'mirror_to_check()'
                                     }
+                                },
+                                {
+                                    elementId: 'qos_action_check',
+                                    name: 'QoS',
+                                    view: "FormCheckboxView",
+                                    class: "",
+                                    width: 40,
+                                    viewConfig: {
+                                        templateId:
+                                         cowc.TMPL_EDITABLE_GRID_CHECKBOX_VIEW,
+                                        path: 'qos_action_check',
+                                        dataBindValue: 'qos_action_check()'
+                                       }
                                 }]
                             },{
                             columns: [
@@ -629,7 +702,43 @@ define([
                                 "function() { $root.deleteRules($data, this); }",
                                  iconClass: 'icon-minus'}
                             ]*/
-                        }],
+                        },{
+                            columns: [
+                                {
+                                    elementId: 'qos',
+                                    name: 'QoS',
+                                    width: 100,
+                                    view: "FormDropdownView",
+                                    viewConfig: {
+                                        placeholder: 'Select QoS',
+                                        visible: "qos_action_check()",
+                                        templateId:
+                                            cowc.TMPL_EDITABLE_GRID_DROPDOWN_LEFT_LABEL_VIEW,
+                                        path : 'qos',
+                                        colSpan: "10",
+                                        dataBindValue :
+                                            'qos()',
+                                        elementConfig : {
+                                            placeholder: 'Select QoS',
+                                            dataTextField : "text",
+                                            dataValueField : "id",
+                                            dataSource : {
+                                                type: 'remote',
+                                                requestType: 'POST',
+                                                postData: JSON.stringify({data:
+                                                    [{type: "qos-configs",
+                                                    parent_id:
+                                                        selectedProjId}]}),
+                                                url:
+                                                    ctwc.URL_GET_CONFIG_DETAILS,
+                                                parse:
+                                                  policyFormatters.
+                                                  qosDropDownFormatter
+                                            }
+                                        }
+                                    }
+                                }]
+                            }],
                             gridActions: [
                                 {onClick: "function() { addRule(); }",
                                  buttonTitle: ""}

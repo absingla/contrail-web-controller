@@ -116,6 +116,7 @@ define([
             address[0]["virtual_network"] = null;
             address[0]["subnet"] = null;
             address[0]["network_policy"] = null;
+            address[0]["security_group"] = null;
 
             if (srcArr.length == 2 && srcArr[1] != 'subnet') {
                 address[0][srcArr[1]] =
@@ -231,6 +232,14 @@ define([
                                 split(cowc.DROPDOWN_VALUE_SEPARATOR);
                             newPoliceyRule[i].action_list.apply_service = SIVal;
                         }
+                    }
+
+                    //QoS
+                    if(policeyRule[i].qos_action_check() === true) {
+                        newPoliceyRule[i].action_list.qos_action =
+                            policeyRule[i].qos();
+                    } else {
+                        newPoliceyRule[i].action_list.qos_action = null;
                     }
                     delete(policeyRule[i])
                 }

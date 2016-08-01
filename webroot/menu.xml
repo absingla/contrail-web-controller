@@ -34,7 +34,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     <iconClass>icon-desktop</iconClass>
                     <access>
                         <roles>
-                            <role>superAdmin</role>
+                            <role>cloudAdmin</role>
                         </roles>
                         <orchModels>
                             <model>openstack</model>
@@ -65,7 +65,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                 <tab>vRouters</tab>
                             </queryParams>
                         </item>
-                        <!--<item>
+                        <item optional="true">
                             <hash>mon_infra_mx</hash>
                             <label>MX Visualisation</label>
                             <resources>
@@ -76,8 +76,8 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <class>mxRenderer</class>
                                 </resource>
                             </resources>
-                        </item>-->
-                        <item>
+                        </item>
+                        <item optional="true">
                             <hash>mon_infra_underlay</hash>
                             <label>Physical Topology</label>
                             <resources>
@@ -331,7 +331,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     <label>Infrastructure</label>
                     <access>
                         <roles>
-                            <role>superAdmin</role>
+                            <role>cloudAdmin</role>
                         </roles>
                         <orchModels>
                             <model>openstack</model>
@@ -359,6 +359,14 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <js>globalconfig.main.js</js>
                                     <class>globalConfigPageLoader</class>
                                     <function>renderGlobalConfig</function>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/alarm/common/ui</rootDir>
+                                    <template>ConfigAlarm.tmpl</template>
+                                </resource>
+                                <resource>
+                                     <rootDir>/reports/qe/ui</rootDir>
+                                     <css>qe.main.css</css>
                                 </resource>
                             </resources>
                             <searchStrings>Configure Global Config</searchStrings>
@@ -700,6 +708,23 @@ and need to add the iconClass tag wherever we need to show some icons
                             </resources>
                             <searchStrings>Route Aggregates</searchStrings>
                         </item> -->
+                        <item>
+                            <label>QoS</label>
+                            <hash>config_net_qos</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/qos/ui</rootDir>
+                                    <js>qos.main.js</js>
+                                    <class>configQOSPageLoader</class>
+                                    <function>renderQOS</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>QoS</searchStrings>
+                        </item>
                     </items>
                 </item>
                 <item>
@@ -710,6 +735,7 @@ and need to add the iconClass tag wherever we need to show some icons
                         </roles>
                         <orchModels>
                             <model>openstack</model>
+                            <model>vcenter</model>
                         </orchModels>
                     </access>
                     <iconClass>icon-link</iconClass>
@@ -767,6 +793,11 @@ and need to add the iconClass tag wherever we need to show some icons
                         <item>
                             <label>BGP as a Service</label>
                             <hash>config_sc_bgpasaservice</hash>
+                            <access>
+                                <orchModels>
+                                    <model>openstack</model>
+                                </orchModels>
+                            </access>
                             <resources>
                                 <resource>
                                     <rootDir>/common/ui</rootDir>
@@ -831,6 +862,123 @@ and need to add the iconClass tag wherever we need to show some icons
                         </item>
                     </items>
                 </item>
+                <item>
+                    <label>RBAC</label>
+                    <access>
+                        <roles>
+                            <role>member</role>
+                        </roles>
+                        <orchModels>
+                            <model>openstack</model>
+                        </orchModels>
+                    </access>
+                    <iconClass>icon-user</iconClass>
+                    <items>
+                        <item>
+                            <label>Domain</label>
+                            <hash>config_rbac_domain</hash>
+                               <resources>
+                                   <resource>
+                                       <rootDir>/common/ui</rootDir>
+                                       <js>controller.app.js</js>
+                                   </resource>
+                                   <resource>
+                                       <rootDir>/config/rbac/domain/ui</rootDir>
+                                       <js>rbacDomain.main.js</js>
+                                       <class>configRBACDomainPageLoader</class>
+                                       <function>renderRBACDomain</function>
+                                   </resource>
+                               </resources>
+                            <searchStrings>RBAC Domain</searchStrings>
+                        </item>
+                        <item>
+                            <label>Project</label>
+                            <hash>config_rbac_project</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/rbac/project/ui</rootDir>
+                                    <js>rbacProject.main.js</js>
+                                    <class>configRBACProjectPageLoader</class>
+                                    <function>renderRBACProject</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>RBAC Project</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                <item>
+                    <label>Alarms</label>
+                    <access>
+                        <roles>
+                            <role>member</role>
+                        </roles>
+                        <orchModels>
+                            <model>openstack</model>
+                        </orchModels>
+                    </access>
+                    <iconClass>icon-bell-alt</iconClass>
+                    <items>
+                        <item>
+                            <label>Project</label>
+                            <hash>config_alarm_project</hash>
+                               <resources>
+                                   <resource>
+                                       <rootDir>/common/ui</rootDir>
+                                       <js>controller.app.js</js>
+                                   </resource>
+                                   <resource>
+                                       <rootDir>/config/alarm/project/ui</rootDir>
+                                       <js>ConfigAlarmProject.main.js</js>
+                                       <class>configAlarmProjectPageLoader</class>
+                                       <function>renderProjectAlarm</function>
+                                   </resource>
+                                   <resource>
+                                       <rootDir>/config/alarm/common/ui</rootDir>
+                                       <template>ConfigAlarm.tmpl</template>
+                                   </resource>
+                                   <resource>
+                                       <rootDir>/reports/qe/ui</rootDir>
+                                       <css>qe.main.css</css>
+                                   </resource>
+                               </resources>
+                            <searchStrings>Alarm Project</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                
+                <item>
+                    <name>configEditor</name>
+                    <label>Config Editor</label>
+                    <hash>config_editor</hash>
+                    <iconClass>icon-code</iconClass>
+                    <resources>
+                        <resource>
+                            <rootDir>/config/configEditor/ui</rootDir>
+                            <js>configEditor.main.js</js>
+                            <template>config.editor.tmpl</template>
+                            <class>configEditorLoader</class>
+                            <function>render</function>
+                            <searchStrings>Config Editor</searchStrings>
+                        </resource>
+                    </resources>
+                    <!-- <items>
+                        <item>
+                            <hash>config_config_editor</hash>
+                            <label>API List</label>
+                            <resources>
+                                <resource>
+                                    <rootDir>/config/configEditor/ui</rootDir>
+                                    <class>configEditorLoader</class>
+                                    <function>render</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Config Editor</searchStrings>
+                        </item>
+                    </items> -->
+                </item>
                 <!--
                 <item>
                     <label>IPAM</label>
@@ -866,7 +1014,7 @@ and need to add the iconClass tag wherever we need to show some icons
             <iconClass>icon-cog</iconClass>
             <access>
                 <roles>
-                    <role>superAdmin</role>
+                    <role>cloudAdmin</role>
                 </roles>
                 <orchModels>
                     <model>openstack</model>
@@ -1002,7 +1150,7 @@ and need to add the iconClass tag wherever we need to show some icons
             </resources>
             <access>
                 <roles>
-                    <role>superAdmin</role>
+                    <role>cloudAdmin</role>
                 </roles>
                 <orchModels>
                     <model>openstack</model>

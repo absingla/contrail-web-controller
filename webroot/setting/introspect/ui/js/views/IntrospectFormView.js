@@ -104,7 +104,9 @@ define([
                 introspectType = viewConfig.type,
                 introspectSecondaryFormId = '#introspect-' + introspectNode + '-' + introspectType + '-secondary-form',
                 introspectSecondaryId = 'introspect-' + introspectNode + '-' + introspectType + '-secondary-container',
-                secondaryModelData = getSecondaryModelData(moduleIntrospectFormData);
+                secondaryModelData = getSecondaryModelData(moduleIntrospectFormData),
+                primaryModelAttributes = self['primary']['model'].model()['attributes'],
+                moduleIntrospect = primaryModelAttributes.module_introspect;
 
             self['secondary'] = {};
             self['secondary']['model'] = new IntrospectSecondaryFormModel(secondaryModelData);
@@ -124,7 +126,7 @@ define([
 
                 $('#submit-introspect' + introspectNode + '-' + introspectPort).on('click', function() {
                     var params = self['secondary']['model'].model()['attributes'];
-                    self.renderIntrospectResult(params);
+                    self.renderIntrospectResult(moduleIntrospect, params);
                 });
 
                 $(introspectResultId)
@@ -133,12 +135,12 @@ define([
                         var xmlName = $(this).data('link'),
                             params = {x: $(this).text()};
 
-                        self.renderIntrospectResult(params);
+                        self.renderIntrospectResult(xmlName, params);
                     });
             });
         },
 
-        renderIntrospectResult: function(params) {
+        renderIntrospectResult: function(moduleIntrospect, params) {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
@@ -151,14 +153,13 @@ define([
                 introspectResultId = '#introspect-' + introspectNode + '-' + introspectType + '-results',
                 primaryModelAttributes = self['primary']['model'].model()['attributes'],
                 ipAddress = primaryModelAttributes.ip_address,
-                moduleIntrospect = primaryModelAttributes.module_introspect;
-
+                introspectResultTabViewConfig = getIntrospectResultTabViewConfig(introspectNode, ipAddress, introspectPort, moduleIntrospect, introspectType, params);
+            
             if (widgetConfig !== null) {
                 $(introspectFormId).parents('.widget-box').data('widget-action').collapse();
             }
 
-            self.renderView4Config($(introspectResultId), self.model,
-                getIntrospectResultTabViewConfig(introspectNode, ipAddress, introspectPort, moduleIntrospect, introspectType, params), null, null, modelMap, null);
+            self.renderView4Config($(introspectResultId), self.model, introspectResultTabViewConfig, null, null, modelMap, null);
 
         }
     });

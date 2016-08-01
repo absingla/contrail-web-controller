@@ -49,7 +49,8 @@ define([
             self.renderView4Config($("#" +
                                     modalId).find("#" + prefixId + "-form"),
                                     self.model,
-                                    getVNCfgViewConfig(false),
+                                    getVNCfgViewConfig(false,
+                                            self.selectedProjId),
                                     "vnCfgConfigValidations", null, null,
                                     function () {
                 self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID,
@@ -109,7 +110,8 @@ define([
             self.renderView4Config($("#" +
                                     modalId).find("#" + prefixId + "-form"),
                                     self.model,
-                                    getVNCfgViewConfig(true),
+                                    getVNCfgViewConfig(true,
+                                            self.selectedProjId),
                                     "vnCfgConfigValidations", null, null,
                                     function () {
                 self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
@@ -172,7 +174,7 @@ define([
         }
     });
 
-    function getVNCfgViewConfig (disableOnEdit) {
+    function getVNCfgViewConfig (disableOnEdit, selectedProjId) {
         var prefixId = ctwl.CFG_VN_PREFIX_ID;
         var vnCfgViewConfig = {
             elementId: cowu.formatElementId([prefixId,
@@ -231,11 +233,18 @@ define([
                                     path: 'network_policy_refs',
                                     class: 'span12',
                                     dataBindValue: 'network_policy_refs',
-                                    dataBindOptionList: 'ui_added_parameters().networkPolicyList()',
                                     elementConfig: {
                                         placeholder: 'Select Network Policies',
                                         dataTextField: "text",
-                                        dataValueField: "id"
+                                        dataValueField: "id",
+                                        separator: cowc.DROPDOWN_VALUE_SEPARATOR,
+                                        dataSource : {
+                                            type: 'remote',
+                                            url:
+                                            '/api/tenants/config/policys',
+                                            parse:
+                                            formatVNCfg.polMSFormatter,
+                                    }
                                 }
                             }
                         }
@@ -699,11 +708,18 @@ define([
                                                     path: 'physical_router_back_refs',
                                                     class: 'span6',
                                                     dataBindValue: 'physical_router_back_refs',
-                                                    dataBindOptionList: 'ui_added_parameters().physicalRouterList()',
                                                     elementConfig: {
                                                         placeholder: 'Select Physical Router(s)',
                                                         dataTextField: "text",
-                                                        dataValueField: "id"
+                                                        dataValueField: "id",
+                                                        separator: cowc.DROPDOWN_VALUE_SEPARATOR,
+                                                        dataSource : {
+                                                            type: 'remote',
+                                                            url:
+                                                            '/api/tenants/config/physical-routers-list',
+                                                            parse:
+                                                            formatVNCfg.phyRouterMSFormatter,
+                                                    }
                                                 }
                                             }
                                         },
@@ -715,14 +731,24 @@ define([
                                                     path: 'route_table_refs',
                                                     class: 'span6',
                                                     dataBindValue: 'route_table_refs',
-                                                    dataBindOptionList: 'ui_added_parameters().routeTableList()',
                                                     elementConfig: {
                                                         placeholder: 'Select Static Route(s)',
                                                         dataTextField: "text",
-                                                        dataValueField: "id"
+                                                        dataValueField: "id",
+                                                        separator: cowc.DROPDOWN_VALUE_SEPARATOR,
+                                                        dataSource : {
+                                                            type: 'remote',
+                                                            requestType: 'POST',
+                                                            postData: JSON.stringify({'data':
+                                                                [{'type':'route-tables'}]}),
+                                                            url:
+                                                            '/api/tenants/config/get-config-list',
+                                                            parse:
+                                                            formatVNCfg.staticRouteMSFormatter,
+                                                    }
                                                 }
                                             }
-                                        }
+                                        },
                                         ]
                                     },
                                     {
@@ -733,7 +759,7 @@ define([
                                                 viewConfig: {
                                                     label: 'ECMP Hashing Fields',
                                                     path: 'ecmp_hashing_include_fields',
-                                                    class: 'span12',
+                                                    class: 'span6',
                                                     dataBindValue: 'ecmp_hashing_include_fields',
                                                     elementConfig: {
                                                         placeholder: 'Select ECMP Hashing Fields',
@@ -753,8 +779,31 @@ define([
                                                         ]
                                                 }
                                             }
-                                        }
-                                        ]
+                                        },
+                                        {
+                                            elementId: 'qos_config_refs',
+                                            view: "FormDropdownView",
+                                            viewConfig: {
+                                                label: "QoS",
+                                                path : 'qos_config_refs',
+                                                class: "span6",
+                                                dataBindValue :
+                                                    'qos_config_refs',
+                                                elementConfig : {
+                                                    placeholder: 'Select QoS',
+                                                    dataTextField : "text",
+                                                    dataValueField : "id",
+                                                    dataSource : {
+                                                        type: 'remote',
+                                                        requestType: 'POST',
+                                                        postData: JSON.stringify({data: [{type: "qos-configs",
+                                                            parent_id: selectedProjId}]}),
+                                                        url: ctwc.URL_GET_CONFIG_DETAILS,
+                                                        parse: formatVNCfg.qosDropDownFormatter
+                                                    }
+                                                }
+                                            }
+                                        }]
                                     },
                                     {
                                         columns: [
@@ -931,6 +980,7 @@ define([
                                                             elementConfig: {
                                                                 dataTextField: "text",
                                                                 dataValueField: "id",
+                                                                separator: cowc.DROPDOWN_VALUE_SEPARATOR,
                                                                 dataSource : {
                                                                     type: 'remote',
                                                                     url:

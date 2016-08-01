@@ -920,7 +920,7 @@ define([
         var healthCheckStatusObjs =
             getValueByJsonPath(rowData, 'statusDetails;healthCheckStatus',
                                null);
-        if ("Active" != vmStatus) {
+        if (("Active" != vmStatus) && (false == isVCenter())) {
             return vmStatusStr;
         }
         var intfStatusDownCnt = 0;
@@ -953,6 +953,9 @@ define([
             }
         }
         if ((!intfStatusDownCnt) && (!hlthChkStatusDownCnt)) {
+            if (true == isVCenter()) {
+                return "-";
+            }
             return vmStatusStr;
         }
         var statusIcon = "status-badge-rounded status-partially-active";
@@ -1149,7 +1152,7 @@ define([
                 getValueByJsonPath(svcTmpl,
                                    'service_template_properties;version', 1);
             if (2 == tmplVersion) {
-                return true;
+                return false;
             }
             return svcScaling;
         }), model);

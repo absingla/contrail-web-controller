@@ -78,6 +78,82 @@ define([
                    },
                    renderOnActivate: true
                }
+           },{
+               elementId: 'rbac_global_tab',
+               title: 'RBAC',
+               view: "rbacGlobalListView",
+               viewPathPrefix: "config/infra/globalconfig/ui/js/views/",
+               viewConfig: viewConfig,
+               tabConfig: {
+                   activate: function(event, ui) {
+                       var gridId = $('#' + ctwc.RBAC_GRID_ID);
+                       if (gridId.data('contrailGrid')) {
+                           gridId.data('contrailGrid').refreshView();
+                       }
+                   },
+                   renderOnActivate: true
+               }
+           },{
+               elementId: 'fc_global_tab',
+               title: 'Forwarding Classes',
+               view: "forwardingClassListView",
+               viewPathPrefix: "config/infra/globalconfig/ui/js/views/",
+               viewConfig: viewConfig,
+               tabConfig: {
+                   activate: function(event, ui) {
+                       var gridId = $('#' + ctwc.FORWARDING_CLASS_GRID_ID);
+                       if (gridId.data('contrailGrid')) {
+                           gridId.data('contrailGrid').refreshView();
+                       }
+                   },
+                   renderOnActivate: true
+               }
+           },{
+               elementId: 'qos_global_tab',
+               title: 'QoS',
+               view: "qosGlobalListView",
+               viewPathPrefix: "config/infra/globalconfig/ui/js/views/",
+               viewConfig: viewConfig,
+               tabConfig: {
+                   activate: function(event, ui) {
+                       var gridId = $('#' + ctwc.QOS_GRID_ID);
+                       if (gridId.data('contrailGrid')) {
+                           gridId.data('contrailGrid').refreshView();
+                       }
+                   },
+                   renderOnActivate: true
+               }
+           },{
+               elementId: 'alarm_rule_global_tab',
+               title: 'Alarm Rules',
+               view: "ConfigAlarmGlobalListView",
+               viewPathPrefix: "config/infra/globalconfig/ui/js/views/",
+               viewConfig: viewConfig,
+               tabConfig: {
+                   activate: function(event, ui) {
+                       var gridId = $('#' + ctwc.ALARM_RULE_GRID_ID);
+                       if (gridId.data('contrailGrid')) {
+                           gridId.data('contrailGrid').refreshView();
+                       }
+                   },
+                   renderOnActivate: true
+               }
+           },
+           {
+               elementId: 'user_defined_counter_tab',
+               title: 'Counters',
+               view: "userDefinedCountersListView",
+               viewPathPrefix: "config/infra/globalconfig/ui/js/views/",
+               viewConfig: viewConfig,
+               tabConfig: {
+                   activate: function(event, ui) {
+                       var gridId = $('#' + ctwc.USER_DEFINED_COUNTRERS_GRID_ID);
+                       if (gridId.data('contrailGrid')) {
+                           gridId.data('contrailGrid').refreshView();
+                       }
+                   },
+                   renderOnActivate: true
+               }
            }]
         };
     };

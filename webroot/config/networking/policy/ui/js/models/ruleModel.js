@@ -15,10 +15,12 @@ define([
                 'apply_service':null,
                 'gateway_name':null,
                 'log':false,
-                'mirror_to':{'analyzer_name':null}},
+                'mirror_to':{'analyzer_name':null},
+                'qos_action': null},
             'log_checked':false,
             'apply_service_check' : false,
             'mirror_to_check' : false,
+            'qos_action_check': false,
             'application':[],
             'direction': '<>',
             'protocol': 'any',
@@ -33,6 +35,7 @@ define([
             'simple_action': 'pass',
             'service_instance':'',
             'mirror':'',
+            'qos':null,
             'rule_uuid':'',
             'analyzer_name':'',
             'rule_sequence':{
@@ -90,6 +93,18 @@ define([
                 modelConfig["mirror"] = mirrorTo;
                 modelConfig["mirror_to_check"] = true;
             }
+
+            //qos
+            var qos = getValueByJsonPath(modelConfig,
+                    "action_list;qos_action", "");
+            if(qos) {
+                modelConfig["qos"] = qos;
+                modelConfig["qos_action_check"] = true;
+            } else {
+                modelConfig["qos"] = "";
+                modelConfig["qos_action_check"] = false;
+            }
+
             if (modelConfig["src_addresses"][0] != null) {
                 modelConfig["src_addresses_arr"] =
                            modelConfig["src_addresses"][0];
@@ -316,7 +331,9 @@ define([
                 prefix = getValueByJsonPath(address, "subnet;ip_prefix", ""),
                 prefixLen = getValueByJsonPath(address, "subnet;ip_prefix_len", ""),
                 virtualNetwork = getValueByJsonPath(address, "virtual_network", ""),
-                networkPolicy = getValueByJsonPath(address, "network_policy", "");
+                networkPolicy = getValueByJsonPath(address, "network_policy", ""),
+                securityGroup =
+                    getValueByJsonPath(address, "security_group", "");
             if (prefix != "" && virtualNetwork != "") {
                 var subnet = prefix + "/" + prefixLen;
                 virtualNetwork = virtualNetwork.split(":");
@@ -353,6 +370,15 @@ define([
 
             if (networkPolicy != "") {
                 var value = networkPolicy + cowc.DROPDOWN_VALUE_SEPARATOR + "network_policy";
+                returnObject.addres = value;
+                returnObject.address = value;
+                return returnObject;
+            }
+
+            if(securityGroup) {
+                var value =
+                    securityGroup + cowc.DROPDOWN_VALUE_SEPARATOR +
+                    "security_group";
                 returnObject.addres = value;
                 returnObject.address = value;
                 return returnObject;

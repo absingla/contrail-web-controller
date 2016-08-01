@@ -4,9 +4,9 @@
 
 define([
     'underscore',
-    'core-bundle',
-    'nonamd-libs'
-], function (_) {
+    'core-constants',
+    'contrail-common'
+], function (_,cowc) {
     var CTConstants = function () {
 
         this.URL_ALL_DOMAINS = '/api/tenants/config/domains';
@@ -322,13 +322,13 @@ define([
         };
 
         this.constructReqURL = function (urlConfig) {
-            var url = "", length = 0,
-                context;
+            var url = "", length = 0, context,
+                fqName = contrail.checkIfExist(urlConfig['fqName']) ? decodeURIComponent(urlConfig['fqName']) : urlConfig['fqName'];
 
-            if (urlConfig['fqName'] != null)
-                length = urlConfig['fqName'].split(':').length;
+            if (fqName != null)
+                length = fqName.split(':').length;
             else
-                urlConfig['fqName'] = "*";
+                fqName = "*";
 
             context = urlConfig['context'];
 
@@ -413,25 +413,25 @@ define([
             else
                 $.extend(reqParams, {limit: 100});    //Hack
             //Rename fqName variable as per NodeJS API requirement
-            if (urlConfig['fqName'] != null) {
+            if (fqName != null) {
                 //For flow-series,need to pass fqName as srcVN
                 if (context == 'connected-nw') {
-                    $.extend(reqParams, {'srcVN': urlConfig['srcVN'], 'destVN': urlConfig['fqName']});
+                    $.extend(reqParams, {'srcVN': urlConfig['srcVN'], 'destVN': fqName});
                 } else if (urlConfig['widget'] == 'flowseries') {
                     if (context == 'instance') {
                         $.extend(reqParams, {
-                            'fqName': ifNull(urlConfig['vnName'], urlConfig['fqName']),
+                            'fqName': ifNull(urlConfig['vnName'], fqName),
                             'ip': urlConfig['ip']
                         });
                     } else
-                        $.extend(reqParams, {'fqName': urlConfig['fqName']});        //change queryParameter to fqName
+                        $.extend(reqParams, {'fqName': fqName});        //change queryParameter to fqName
                 } else if (urlConfig['type'] == 'details') {
                     if (context == 'network')
                         $.extend(reqParams, {'uuid': urlConfig['uuid']});
                 } else if (context == 'instance') {
                     $.extend(reqParams, {'fqName': urlConfig['vnName'], 'ip': urlConfig['ip']});
                 } else
-                    $.extend(reqParams, {'fqName': urlConfig['fqName']});
+                    $.extend(reqParams, {'fqName': fqName});
             }
 
             //If port argument is present,just copy it..arguments that need to be copied to reqParams as it is
@@ -442,7 +442,7 @@ define([
                 }
             });
             if (urlConfig['type'] == 'portRangeDetail') {
-                var fqName = urlConfig['fqName'], protocolCode;
+                var fqName = fqName, protocolCode;
                 reqParams['timeRange'] = 600;
                 reqParams['table'] = 'FlowSeriesTable';
                 if (urlConfig['startTime'] != null) {
@@ -506,10 +506,10 @@ define([
             if (urlConfig['source'] == 'uve') {
                 if (urlConfig['type'] != 'instance') {
                     delete reqParams['fqName'];
-                    if (urlConfig['fqName'] == '' || urlConfig['fqName'] == '*')
+                    if (fqName == '' || fqName == '*')
                         reqParams['fqNameRegExp'] = '*';
                     else
-                        reqParams['fqNameRegExp'] = '*' + urlConfig['fqName'] + ':*';
+                        reqParams['fqNameRegExp'] = '*' + fqName + ':*';
                 } else {
                     reqParams['fqName'] = '';
                 }
@@ -564,7 +564,8 @@ define([
         this.GLOBAL_BGP_OPTIONS_MAP = [
             {"key": "autonomous_system", "name": "Global ASN"},
             {"key": "ibgp_auto_mesh", "name": "iBGP Auto Mesh"},
-            {"key": "ip_fabric_subnets", "name": "IP Fabric Subnets"}
+            {"key": "ip_fabric_subnets", "name": "IP Fabric Subnets"}/*,
+            {"key": "graceful_restart_params", "name": "Graceful Restart"}*/
         ];
         this.GLOBAL_BGP_OPTIONS_SECTION_ID = "global-bgp-options-section";
         this.GLOBAL_BGP_OPTIONS_ID = "global-bgp-options";
@@ -593,6 +594,16 @@ define([
         this.GLOBAL_FLOW_AGING_GRID_ID = "global-flow-aging-grid";
         this.GLOBAL_FLOW_AGING_PREFIX_ID = "global_flow_aging";
         this.GLOBAL_FLOW_AGING_LIST_VIEW_ID = "global-flow-aging-list-view";
+
+        //User defined counters
+        this.GLOBAL_SYSTEM_CONFIG = "/global-system-config/";
+        this.USER_DEFINED_COUNTRERS_GLOBAL = "user-defined-counters-global";
+        this.USER_DEFINED_COUNTRERS_GRID_ID = "user-defined-counters-grid";
+        this.USER_DEFINED_COUNTRERS_LIST_ID = "user-defined-counters-list";
+        this.GLOBAL_COUNTERS_PREFIX_ID = "user_defined_counters";
+        this.GLOBAL_USER_DEFINED_COUNTRER_SECTION_ID = "user_defined_counters_section";
+        this.USER_DEFINED_COUNTRER_CREATE_SECTION_ID = "user_defined_counters_create_section";
+
 
         //BGP
         this.URL_GET_BGP = '/api/tenants/config/bgp/get-bgp-routers';
@@ -660,7 +671,7 @@ define([
                                               value: "inet6-vpn"
                                           }
                                       ];
-         this.AUTHENTICATION_DATA = [
+        this.AUTHENTICATION_DATA = [
                                         {
                                             text : 'None',
                                             value : 'none'
@@ -670,7 +681,7 @@ define([
                                             value : 'md5'
                                         }
                                     ];
-         this.BGP_AAS_ROUTERS = ["bgpaas-server", "bgpaas-client"];
+        this.BGP_AAS_ROUTERS = ["bgpaas-server", "bgpaas-client"];
 
         //Physical Routers constants
         this.URL_PHYSICAL_ROUTERS_DETAILS_IN_CHUNKS =
@@ -788,6 +799,41 @@ define([
         this.DNS_RECORDS_GRID_ID = 'dns-records-grid';
         this.DNS_RECORDS_PREFIX_ID = 'dns_record';
 
+        /* RBAC constants */
+        this.RBAC_GLOBAL_PAGE_ID = "config-rbac-global-list";
+        this.CONFIG_RBAC_GLOBAL_SECTION_ID = "config-rbac-global-section";
+        this.CONFIG_RBAC_GLOBAL_ID = "config-rbac-global";
+
+        this.RBAC_DOMAIN_PAGE_ID = "config-rbac-domain-list";
+        this.CONFIG_RBAC_DOMAIN_SECTION_ID = "config-rbac-domain-section";
+        this.CONFIG_RBAC_DOMAIN_ID = "config-rbac-domain";
+
+        this.RBAC_PROJECT_PAGE_ID = "config-rbac-project-list";
+        this.CONFIG_RBAC_PROJECT_SECTION_ID = "config-rbac-project-section";
+        this.CONFIG_RBAC_PROJECT_ID = "config-rbac-project";
+
+        this.RBAC_GRID_ID = "rbac-grid";
+        this.CONFIG_RBAC_LIST_VIEW_ID = "config-rbac-list-view";
+        this.RBAC_ROLE_CRUD_LIST = [
+                                    {text: "Create", value: "C"},
+                                    {text: "Read", value: "R"},
+                                    {text: "Update", value: "U"},
+                                    {text: "Delete", value: "D"}];
+        this.RBAC_ALL_ROLES = "All Roles (*)";
+        this.RBAC_PREFIX_ID = "rbac";
+
+        /* Config Alarm Rule Constants */
+        this.ALARM_PREFIX_ID = "configalarm";
+        this.ALARM_GRID_ID = "config-alarm-grid";
+        this.ALARM_LIST_VIEW_ID = "alarm-list-view";
+        this.CONFIG_ALARM_PROJECT_SECTION_ID = "config-alarm-project-section";
+        this.CONFIG_ALARM_LIST_VIEW_ID = "config-alarm-list-view";
+        this.CONFIG_ALARM_PROJECT_ID = 'config-alarm-project';
+        this.CONFIG_ALARM_GLOBAL_ID = "config-alarm-global";
+        this.CONFIG_ALARM_GLOBAL_SECTION_ID = "config-alarm-global-section";
+        this.CONFIG_ALARM_LIST_ID = "config-alarm-list";
+        this.CONFIG_ALARM_SEVERITY_TEMPLATE = 'config-alarm-severity-template';
+
         /* Route Aggregate Constants */
         this.CONFIG_ROUTE_AGGREGATE_LIST_ID = "config-route-aggregate-list";
         this.ROUTE_AGGREGATE_GRID_ID = "route-aggregate-grid";
@@ -797,7 +843,8 @@ define([
         this.ROUTE_AGGREGATE_PREFIX_ID = "route_aggregate";
         this.URL_CREATE_ROUTE_AGGREGATE = "/route-aggregates";
         this.URL_UPDATE_ROUTE_AGGREGATE = "/route-aggregate/";
-
+         /* Config Browser Constants */
+        this.CONFIG_HEADER_TEXT = "Root Level";
         this.DEFAULT_COMMUNITIES = [
             {text:"no-export",id:"no-export"},
             {text:"accept-own",id:"accept-own"},
@@ -805,6 +852,74 @@ define([
             {text:"no-export-subconfed",id:"no-export-subconfed"},
             {text:"no-reoriginate",id:"no-reoriginate"}
         ];
+
+        /* QOS constants */
+        this.QOS_GLOBAL_PAGE_ID = "config-qos-global-list";
+        this.CONFIG_QOS_GLOBAL_SECTION_ID = "config-qos-global-section";
+        this.CONFIG_QOS_GLOBAL_ID = "config-qos-global";
+
+        this.QOS_PROJECT_PAGE_ID = "config-qos-project-list";
+        this.CONFIG_QOS_PROJECT_SECTION_ID = "config-qos-project-section";
+        this.CONFIG_QOS_PROJECT_ID = "config-qos-project";
+
+        this.QOS_GRID_ID = "qos-grid";
+        this.CONFIG_QOS_LIST_VIEW_ID = "config-qos-list-view";
+        this.QOS_PREFIX_ID = "qos_cofig";
+        this.QOS_CONFIG_TYPE_DATA = [{text: "vHost", value: "vhost"},
+                                     {text: "Physical", value: "fabric"},
+                                     {text: "Project", value: "project"}];
+        this.QOS_DSCP_VALUES = [
+                                { text: "ef (101110)", value: "46"},
+                                { text: "af11 (001010)", value: "10"},
+                                { text: "af12 (001100)", value: "12"},
+                                { text: "af13 (001110)", value: "14"},
+                                { text: "af21 (010010)", value: "18"},
+                                { text: "af22 (010100)", value: "20"},
+                                { text: "af23 (010110)", value: "22"},
+                                { text: "af31 (011010)", value: "26"},
+                                { text: "af32 (011100)", value: "28"},
+                                { text: "af33 (011110)", value: "30"},
+                                { text: "af41 (100010)", value: "34"},
+                                { text: "af42 (100100)", value: "36"},
+                                { text: "af43 (100110)", value: "38"},
+                                { text: "be (000000)", value: "0"},
+                                { text: "cs1 (001000)", value: "8"},
+                                { text: "cs2 (010000)", value: "16"},
+                                { text: "cs3 (011000)", value: "24"},
+                                { text: "cs4 (100000)", value: "32"},
+                                { text: "cs5 (101000)", value: "40"},
+                                { text: "nc1/cs6 (110000)", value: "48"},
+                                { text: "nc2/cs7 (111000)", value: "56"}];
+
+        this.QOS_MPLS_EXP_VALUES = [
+                                { text: "be (000)", value: "0"},
+                                { text: "be1 (001)", value: "1"},
+                                { text: "ef (010)", value: "2"},
+                                { text: "ef1 (011)", value: "3"},
+                                { text: "af11 (100)", value: "4"},
+                                { text: "af12 (101)", value: "5"},
+                                { text: "nc1/cs6 (110)", value: "6"},
+                                { text: "nc2/cs7 (111)", value: "7"}];
+
+        this.QOS_VLAN_PRIORITY_VALUES = [
+                                { text: "be (000)", value: "0"},
+                                { text: "be1 (001)", value: "1"},
+                                { text: "ef (010)", value: "2"},
+                                { text: "ef1 (011)", value: "3"},
+                                { text: "af11 (100)", value: "4"},
+                                { text: "af12 (101)", value: "5"},
+                                { text: "nc1/cs6 (110)", value: "6"},
+                                { text: "nc2/cs7 (111)", value: "7"}];
+
+        /* Forwarding Class Constants */
+        this.CONFIG_FORWARDING_CLASS_LIST_ID = "config-forwarding-class-list";
+        this.FORWARDING_CLASS_GRID_ID = "forwarding-class-grid";
+        this.CONFIG_FORWARDING_CLASS_SECTION_ID =
+            "config-forwarding-class-section";
+        this.CONFIG_FORWARDING_CLASS_ID = "config-forwarding-class";
+        this.CONFIG_FORWARDING_CLASS_LIST_VIEW_ID =
+            "config-forwarding-class-list-view";
+        this.FORWARDING_CLASS_PREFIX_ID = "forwarding_class";
 
         /* Packet Capture Constants */
         this.PACKET_CAPTURE_LIST_ID = "packet-capture-list";
@@ -820,6 +935,17 @@ define([
         this.URL_GET_CONFIG_DETAILS = "/api/tenants/config/get-config-details";
         this.URL_CREATE_CONFIG_OBJECT = "/api/tenants/config/create-config-object";
         this.URL_UPDATE_CONFIG_OBJECT = "/api/tenants/config/update-config-object";
+        this.URL_GET_CONFIG_LIST = "/api/tenants/config/get-config-list";
+       // Config Editor Constants
+        this.CONFIG_OBJECT_LIST_VIEW = 'config-object-list-view';
+        this.CONFIG_OBJECT_DETAILS_VIEW = 'config-object-details-view';
+        this.CONFIG_API_LIST_VIEW = 'config-api-list-view';
+        this.CONFIG_PATH = 'config/configEditor/ui/js/views/';
+        this.TMPL_CONFIG_HREF = "config-editor-href-container";
+        this.COPIED_MSG = 'Copied To Clipboard';
+        this.CONFIG_EDITOR_TEMPLATE = 'config-editor-template';
+        this.CONFIG_HASH_PATH = '/#p=config_editor&q[objName]=';
+        this.TEXT_AREA_PLACEHOLDER = 'Copy / Paste JSON data for ';
 
         this.MULTISELECT_VALUE_SEPARATOR = ";;";
     };

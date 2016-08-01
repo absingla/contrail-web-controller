@@ -1291,23 +1291,6 @@ define([
             }
         }
 
-        /**
-         * Util functions to create the footer links in the monitor infra details pages
-         */
-        /*self.createFooterLinks = function (parent, config) {
-            var template = contrail.getTemplate4Id('monitor-footer-links-template');
-            $('#monitor-footer-links-template').remove();
-            $(parent).append(template(config));
-            if(config.onIntrospectClick != null) {
-                $('#linkIntrospect').off('click');
-                $('#linkIntrospect').click(config.onIntrospectClick);
-            }
-            if(config.onStatusClick != null) {
-                $('#linkStatus').off('click');
-                $('#linkStatus').click(config.onStatusClick);
-            }
-        }*/
-
         self.getSandeshPostData = function(ip,port,url) {
             var postData;
             var obj = {};
@@ -1326,6 +1309,10 @@ define([
             return postData;
         }
 
+        /**
+         * To be used to create just the status and introspect links for
+         * node details pages.
+         */
         self.createMonInfraDetailsFooterLinks = function (parent, ipList, port) {
             var ipDeferredObj = $.Deferred();
             var ipPortList = [];
@@ -1361,62 +1348,71 @@ define([
             });
         };
 
-        self.createConfigNodeDetailsFooterLinks = function (parent, ipList) {
-            var apiIpPortsDeferredObj = $.Deferred();
-            self.getApiServerIpPorts (apiIpPortsDeferredObj);
-            apiIpPortsDeferredObj.done (function (apiServerDetails) {
-                if (apiServerDetails != null) {
-                    var cnt = apiServerDetails.length;
-                    var ipPortList = [];
-                    for (var i = 0 ; i < cnt; i++) {
-                        ipPortList.push({
-                            "ip"   : apiServerDetails[i]['ip-address'],
-                            "port" : apiServerDetails[i]['port'],
-                            "isConfig" : true
-                        })
-                    }
-                    var ipDeferredObj = $.Deferred();
-                    self.getReachableIpFromList(ipPortList,
-                                                ipDeferredObj);
-                    ipDeferredObj.done (function (res){
-                        var footerlinks = [];
-                        if (res != null) {
-                            footerlinks.push({
-                              name:'introspect',
-                              onClick: function () {
-                                          monitorInfraUtils.
-                                              onIntrospectLinkClick(res.ip,
-                                                      '8084');
-                                    }
-                            });
-                            footerlinks.push({
-                                name:'config',
-                                onClick: function () {
-                                          monitorInfraUtils.
-                                              onConfigLinkClick(res.ip,
-                                                      res.port);
-                                      }
-                            });
-                            footerlinks.push({
-                                name:'status',
-                                onClick : function () {
-                                          monitorInfraUtils.
-                                              onStatusLinkClick(res.ip);
-                                      }
-                            });
-                        }
-                        self.createFooterLinks(parent,footerlinks);
-                    });
+        /**
+         * To be used to create footer links in the Mon infra details pages
+         * in which we have status and introspect link by default and an additional
+         * user defined link.
+         */
+        self.createNodeDetailsFooterLinks = function (options) {
+            var parent = options.parent;
+            var ipList = options.ipList;
+            var introspectPort = options.introspectPort;
+            var linkLabel = options.linkLabel;
+            var type = options.type;
+            var featurePort = options.featurePort;
+
+            if (ipList != null) {
+                var cnt = ipList.length;
+                var ipPortList = [];
+                for (var i = 0 ; i < cnt; i++) {
+                    ipPortList.push({
+                        "ip"   : ipList[i],
+                        "port" : featurePort,
+                        "isConfig" : (type == 'ApiServer') ? true : false
+                    })
                 }
-            });
+                var ipDeferredObj = $.Deferred();
+                self.getReachableIpFromList(ipPortList,
+                                            ipDeferredObj);
+                ipDeferredObj.done (function (res){
+                    var footerlinks = [];
+                    if (res != null) {
+                        footerlinks.push({
+                          name:'introspect',
+                          onClick: function () {
+                                      monitorInfraUtils.
+                                          onIntrospectLinkClick(res.ip,
+                                                  introspectPort);
+                                }
+                        });
+                        footerlinks.push({
+                            name: linkLabel,
+                            label: linkLabel,
+                            onClick: function () {
+                                      monitorInfraUtils.
+                                          onConfigLinkClick(res.ip,
+                                                  res.port);
+                                  }
+                        });
+                        footerlinks.push({
+                            name:'status',
+                            onClick : function () {
+                                      monitorInfraUtils.
+                                          onStatusLinkClick(res.ip);
+                                  }
+                        });
+                    }
+                    self.createFooterLinks(parent,footerlinks);
+                });
+            }
         };
 
         /**
          * Try to get the port from discovery.
          * If not found get it from the config.global.js and return
          */
-        self.getApiServerIpPorts = function (deferredObj) {
-            var apiServersInfo = [];
+        self.getServerIpPortsForType = function (deferredObj,type) {
+            var serversInfo = [];
             //If discovery is enabled fetch api server details from discovery
             if (getValueByJsonPath(globalObj,
                     'webServerInfo;discoveryEnabled',true)) {
@@ -1424,27 +1420,31 @@ define([
                     url:'/api/tenant/monitoring/discovery-service-list',
                     type:'GET',
                 }).done(function(result) {
-                    var apiServers = getValueByJsonPath(result,
-                            'ApiServer;data;ApiServer', []);
-                    deferredObj.resolve(apiServers);
+                    var servers = getValueByJsonPath(result,
+                            type + ';data;' + type, []);
+                    deferredObj.resolve(servers);
                     return;
                 }).fail(function(result) {
                     deferredObj.resolve(null);
                 });
             } else {
               //Not found in discovery so check in config
-                var configServer = getValueByJsonPath(globalObj,
-                        'webServerInfo;configServer', null);
-                var apiServerPort,apiServerIp;
-                if (configServer != null) {
-                    apiServerPort = configServer.port;
-                    apiServerIp = configServer.ip;
+                var serverType = '';
+                if (type == 'ApiServer') {
+                    serverType = 'apiServer'
+                } else if (type == 'OpServer') {
+                    serverType = 'opServer';
                 }
-                apiServersInfo.push({
-                    "ip-address":apiServerIp,
-                    "port":apiServerPort
-                });
-                deferredObj.resolve(apiServersInfo);
+                var server = getValueByJsonPath(globalObj,
+                        'webServerInfo;' + serverType, null);
+                if (server != null) {
+                    serversInfo.push({
+                        "ip-address": server.server_ip,
+                        "port": server.server_port
+                    });
+                }
+
+                deferredObj.resolve(serversInfo);
             }
         }
 
@@ -1455,9 +1455,11 @@ define([
             $(parent).find('.footer-links').remove();
             $(parent).append(template(config));
             $.each(config,function(i,d){
+                var label = (d.label != null)? d.label :
+                    cowl.getFirstCharUpperCase(d.name);
                 var linkDiv = '<a id="mon_infra_footer_link_'+
-                                d.name +'" class="pull-right" >'+
-                                cowl.getFirstCharUpperCase(d.name) +'</a>';
+                                d.name +'" class="pull-right" >'+ label  +'</a>';
+
                 $(parent).find('.footer-links').append(linkDiv);
                 if(d.onClick != null) {
                     $('#mon_infra_footer_link_' + d.name).off('click');
@@ -1530,10 +1532,16 @@ define([
             var nodes = currObj['children'];
             //var avgCpu = d3.mean(nodes,function(d){return d.x});
             //var avgMem = d3.mean(nodes,function(d){return d.y});
+            var maxSize = self.vRouterBubbleSizeFn(nodes);
+            var nodeWithMaxSize = _.filter(nodes,function (obj) {
+                return obj['size'] == maxSize;
+            });
             var tooltipContents = [
                 {label:'', value: 'No. of Nodes: ' + nodes.length},
                 {label:'Avg. ' + ctwl.TITLE_CPU, value:$.isNumeric(currObj['x']) ? currObj['x'].toFixed(2)  : currObj['x']},
-                {label:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024* 1024) : currObj['y']}
+                {label:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024* 1024) : currObj['y']},
+                {label: 'Max Throughput (In/Out)', value: formatThroughput(nodeWithMaxSize[0]['inThroughput'])
+                    + ' / ' + formatThroughput(nodeWithMaxSize[0]['outThroughput'])}
             ];
             if(formatType == 'simple') {
                 return tooltipContents;
@@ -1566,6 +1574,13 @@ define([
                 {label: ctwl.TITLE_CPU, value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  : '-'},
                 {label:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
             ];
+            if(currObj['type'] == 'vRouter') {
+                var bandwidthTooltipContent = {
+                    label: 'Throughput (In/Out)',
+                    value: formatThroughput(currObj['inThroughput'])
+                    + ' / ' + formatThroughput(currObj['outThroughput'])};
+                tooltipContents = tooltipContents.concat(bandwidthTooltipContent);
+            }
             //Get tooltipAlerts
             tooltipContents = tooltipContents.concat(self.getTooltipAlerts(currObj));
             var cfg = ifNull(cfg,{});

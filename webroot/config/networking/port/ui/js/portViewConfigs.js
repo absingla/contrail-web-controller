@@ -266,6 +266,7 @@
                                      name: 'Static Routes',
                                      viewConfig: {
                                          label:'Service Health Check',
+                                         class: "span6",
                                          path: 'service_health_check_refs',
                                          dataBindValue: 'service_health_check_refs',
                                          elementConfig:{
@@ -288,19 +289,53 @@
                                              }
                                          }
                                      }
+                                 },
+                                 {
+                                     elementId: 'qos_config_refs',
+                                     view: "FormDropdownView",
+                                     viewConfig: {
+                                         label: "QoS",
+                                         path : 'qos_config_refs',
+                                         class: "span6",
+                                         dataBindValue :
+                                             'qos_config_refs',
+                                         elementConfig : {
+                                             placeholder: 'Select QoS',
+                                             dataTextField : "text",
+                                             dataValueField : "id",
+                                             dataSource : {
+                                                 type: 'remote',
+                                                 requestType: 'POST',
+                                                 postData: JSON.stringify({data: [{type: "qos-configs",
+                                                     parent_id: selectedProjectId}]}),
+                                                 url: ctwc.URL_GET_CONFIG_DETAILS,
+                                                 parse: portFormatter.qosDropDownFormatter
+                                             }
+                                         }
+                                     }
                                  }]
                              }, self.allowedAddressPairColSection(),
                              {
                                  columns: [{
                                      elementId: 'local_preference',
                                      name: "Local Preference",
-                                     view: "FormInputView",
+                                     view: "FormComboboxView",
                                      viewConfig: {
                                          path: 'virtual_machine_interface_properties.local_preference',
                                          label: 'Local Preference',
-                                         placeholder: '1 - 4294967295',
                                          dataBindValue: 'virtual_machine_interface_properties().local_preference',
-                                         class: ""
+                                         class: "",
+                                         elementConfig: {
+                                             dataTextField: "text",
+                                             dataValueField: "value",
+                                             placeholder: "Select Local Preference",
+                                             dataSource:{
+                                                 type: "local",
+                                                 data: [
+                                                    {text: "100", value: "100"},
+                                                    {text: "200", value: "200"}]
+                                             }
+                                         }
                                      }
                                  }]
                              }, {

@@ -187,30 +187,22 @@ define([
         this.BOTTOM_CONTENT_CONTAINER = "bottom-content-container";
 
         this.MONITOR_PROJECT_LIST_ID = "monitor-project-list";
-        this.MONITOR_PROJECT_ID = "monitor-project";
         this.MONITOR_PROJECT_VIEW_ID = "monitor-project-view";
         this.MONITOR_PROJECT_PAGE_ID = "monitor-project-page";
         this.MONITOR_PROJECT_LIST_PAGE_ID = "monitor-project-list-page";
-        this.MONITOR_PROJECT_LIST_VIEW_ID = "monitor-project-list-view";
         this.MONITOR_NETWORK_PAGE_ID = "monitor-network-page";
         this.MONITOR_NETWORK_LIST_PAGE_ID = "monitor-network-list-page";
         this.MONITOR_NETWORK_LIST_ID = "monitor-network-list";
-        this.MONITOR_NETWORK_LIST_VIEW_ID = "monitor-network-list-view";
-        this.MONITOR_NETWORK_ID = "monitor-network";
         this.MONITOR_NETWORK_VIEW_ID = "monitor-network-view";
         this.MONITOR_INSTANCE_LIST_ID = "monitor-instance-list";
         this.MONITOR_INTERFACE_LIST_ID = "monitor-interface-list";
         this.MONITOR_INSTANCE_PAGE_ID = "monitor-instance-page";
         this.MONITOR_INSTANCE_LIST_PAGE_ID = "monitor-instances-list-page";
         this.MONITOR_INSTANCE_LIST_VIEW_ID = "monitor-instance-list-view";
-        this.MONITOR_INTERFACE_LIST_VIEW_ID = "monitor-interface-list-view";
         this.MONITOR_INTERFACE_LIST_PAGE_ID = "monitor-interfaces-list-page";
-        this.MONITOR_INSTANCE_ID = "monitor-instance";
         this.MONITOR_INSTANCE_VIEW_ID = "monitor-instance-view";
         this.MONITOR_FLOW_LIST_ID = "monitor-flow-list";
-        this.MONITOR_FLOW_LIST_VIEW_ID = "monitor-flow-list-view";
         this.MONITOR_FLOWS_PAGE_ID = "monitor-flows-page";
-        this.MONITOR_NETWORK_CONFIG_ID = "monitor-network-config";
         this.MONITOR_NETWORK_CONFIG_VIEW_ID = "monitor-network-config-view";
         this.MONITOR_NETWORK_CONFIG_TABS_ID = "monitor-network-config-tabs";
         this.MONITOR_NETWORK_POLICY_DETAILS_ID = "monitor-network-policy-details";
@@ -225,7 +217,6 @@ define([
 
         this.PROJECTS_ID = "projects";
         this.PROJECT_GRAPH_ID = "project-graph";
-        this.PROJECT_DETAILS_ID = "project-details";
         this.PROJECT_TABS_ID = "project-tabs";
         this.PROJECT_INSTANCE_GRID_ID = "project-instance-grid";
         this.PROJECTS_GRID_ID = "projects-grid";
@@ -334,8 +325,8 @@ define([
         this.TITLE_CPU = "CPU Share (%)";
         this.TITLE_CPU_LOAD = "CPU Load";
         this.TITLE_MEMORY = "Memory";
-        this.RESPONSE_SIZE = 'Response size';
-        this.RESPONSE_TIME = 'Response time';
+        this.RESPONSE_SIZE = 'Response Size';
+        this.RESPONSE_TIME = 'Response Time';
 
         /** Titles used in node details chart widget **/
         this.TITLE_CONTROLNODE_CPU_MEM_UTILIZATION = 'Control Node CPU/Memory Utilization';
@@ -409,6 +400,9 @@ define([
         this.CONFIGNODE_SUMMARY_CHART_ID = 'config-nodes-chart';
         this.CONFIGNODE_SUMMARY_LIST_SECTION_ID = 'config-nodes-list-section';
         this.CONFIGNODE_SUMMARY_CHART_SECTION_ID = 'config-nodes-chart-section';
+        //Config node scatter chart
+        this.CONFIGNODE_SUMMARY_SCATTERCHART_ID = 'config-nodes-scatterchart';
+        this.CONFIGNODE_SUMMARY_SCATTERCHART_SECTION_ID = 'config-nodes-scatterchart-section';
         this.CONFIGNODE_DETAILS_PAGE_ID = 'config_nodes_details_pages';
         this.CONFIGNODE_TAB_SECTION_ID = 'config_node_tab_section';
         this.CONFIGNODE_TAB_VIEW_ID = 'config_node_tab';
@@ -978,6 +972,36 @@ define([
         this.TITLE_DNS_RECORD_MULTI_DELETE = "Delete DNS Record(s)";
         this.TITLE_EDIT_DNS_RECORD = 'Edit DNS Record';
 
+        /* User defined counters labels */
+        this.TITLE_USER_DEFINED_COUNTERS = "Counters"
+        this.TITLE_CREATE_USER_DEFINDED_COUNTER = 'Create Counter';
+        this.TITLE_DEL_USER_DEFINDED_COUNTER = 'Delete Counter';
+        this.TITLE_DEL_USER_DEFINDED_COUNTERS = 'Delete Counter(s)';
+        this.TITLE_EDIT_USER_DEFINDED_COUNTER = 'Edit Counter';
+        this.COUNTERS_MUTI_SELECT_DELETE = 'countersMultiSelectDelete';
+
+        /* RBAC labels */
+        this.TITLE_RBAC = 'API Access';
+        this.TITLE_CREATE_RBAC = 'Create API Access';
+        this.TITLE_DEL_RBAC = 'Delete API Access';
+        this.TITLE_RBAC_MULTI_DELETE =
+            "Delete API Access";
+        this.TITLE_EDIT_RBAC = 'Edit API Access';
+        this.TITLE_INSERT_RBAC = 'Insert API Access';
+
+        /* Config Alarm labels */
+        this.TITLE_ALARM_RULE = 'Alarm Rules';
+        this.TITLE_EDIT_ALARM_RULE = 'Edit Alarm Rule';
+        this.TITLE_ALARM_RULE_MULTI_DELETE = "Delete Alarm Rules";
+        this.TITLE_ALARM_RULE_DELETE = "Delete Alarm Rule";
+        this.TITLE_CREATE_ALARM_RULE = 'Create Alarm Rule';
+        this.TXT_CONFIG_ALARM_RULE = 'rule';
+        this.CONFIG_ALARM_TEXT_MAP = {
+             2: 'Critical',
+             3: 'Major',
+             4: 'Minor'
+        };
+
         //Config DB Labels - Start
         this.CDB_FQ_TABLE_NAMES_GRID_ID = "cdb-fq-table-names-grid";
         this.CDB_TITLE_FQ_TABLE_NAMES = "FQ Names Table Keys";
@@ -1010,7 +1034,7 @@ define([
         this.CDB_DELETE_MODAL_ID_ = "delete-cdb";
 
         this.CDB_LABEL_KEY_VALUES = "keyvalues";
-        this.CDB_LABEL_KEY = "key";
+        this.CDB_LABEL_KEY = "keys";
         //Config DB Labels - End
 
         /*
@@ -1087,6 +1111,24 @@ define([
         this.TITLE_ROUTE_AGGREGATE_DELETE = 'Delete Route Aggregate';
         this.TITLE_ROUTE_AGGREGATE_MULTI_DELETE = 'Delete Route Aggregate(s)';
         this.TITLE_ADD_ROUTE_AGGREGATE = 'Create Route Aggregate';
+
+        /* QOS labels */
+        this.TITLE_QOS = 'QoS';
+        this.TITLE_CREATE_QOS = 'Create QoS';
+        this.TITLE_GLOBAL_CREATE_VHOST_QOS = 'Create vHost QoS';
+        this.TITLE_GLOBAL_CREATE_PHYSICAL_QOS = 'Create Fabric QoS';
+        this.TITLE_DEL_QOS = 'Delete QoS';
+        this.TITLE_QOS_MULTI_DELETE =
+            'Delete QoS';
+        this.TITLE_EDIT_QOS = 'Edit QoS';
+
+        /* Forwarding Class labels */
+        this.TITLE_FORWARDING_CLASS = 'Forwarding Classes';
+        this.TITLE_CREATE_FORWARDING_CLASS = 'Create Forwarding Class';
+        this.TITLE_DEL_FORWARDING_CLASS = 'Delete Forwarding Class';
+        this.TITLE_FORWARDING_CLASS_MULTI_DELETE =
+            "Delete Forwarding Classes";
+        this.TITLE_EDIT_FORWARDING_CLASS = 'Edit Forwarding Class';
 
         // Health Check Config labels
         this.CFG_SVC_HEALTH_CHK_PAGE_ID = 'config-svc-health-chk-page';
