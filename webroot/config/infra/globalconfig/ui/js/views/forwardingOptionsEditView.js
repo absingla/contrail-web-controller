@@ -163,7 +163,7 @@ define([
                                     ],
                                     gridActions: [{
                                         onClick: "function() { $root.addEncapPriOrders($data, false); }",
-                                        iconClass: 'icon-plus'
+                                        iconClass: 'fa fa-plus'
                                     }]
                                 }
                             }

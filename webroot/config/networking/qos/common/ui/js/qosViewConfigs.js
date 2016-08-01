@@ -156,11 +156,11 @@ define(["underscore", "config/networking/qos/common/ui/js/qosFormatters"],
                         {onClick: "function() {\
                             $root.addDSCPEntry();\
                             }",
-                         iconClass: 'icon-plus'},
+                         iconClass: 'fa fa-plus'},
                         {onClick: "function() {\
                             $root.deleteDSCPEntry($data, this);\
                            }",
-                         iconClass: 'icon-minus'}
+                         iconClass: 'fa fa-minus'}
                     ],
                     gridActions: [
                         {onClick: "function() {\
@@ -190,11 +190,11 @@ define(["underscore", "config/networking/qos/common/ui/js/qosFormatters"],
                         {onClick: "function() {\
                             $root.addVlanPriorityEntry();\
                             }",
-                         iconClass: 'icon-plus'},
+                         iconClass: 'fa fa-plus'},
                         {onClick: "function() {\
                             $root.deleteVlanPriorityEntry($data, this);\
                            }",
-                         iconClass: 'icon-minus'}
+                         iconClass: 'fa fa-minus'}
                     ],
                     gridActions: [
                         {onClick: "function() {\
@@ -224,11 +224,11 @@ define(["underscore", "config/networking/qos/common/ui/js/qosFormatters"],
                         {onClick: "function() {\
                             $root.addMPLSExpEntry();\
                             }",
-                         iconClass: 'icon-plus'},
+                         iconClass: 'fa fa-plus'},
                         {onClick: "function() {\
                             $root.deleteMPLSExpEntry($data, this);\
                            }",
-                         iconClass: 'icon-minus'}
+                         iconClass: 'fa fa-minus'}
                     ],
                     gridActions: [
                         {onClick: "function() {\

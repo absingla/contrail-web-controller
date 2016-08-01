@@ -275,11 +275,11 @@ define([
                                     {
                                         rowActions: [
                                             {
-                                                onClick: 'addOrRuleAtIndex()', iconClass: 'icon-plus',
+                                                onClick: 'addOrRuleAtIndex()', iconClass: 'fa fa-plus',
                                                 viewConfig: {width: 20}
                                             },
                                             {
-                                                onClick: "deleteOrRule()", iconClass: 'icon-remove',
+                                                onClick: "deleteOrRule()", iconClass: 'fa fa-remove',
                                                 viewConfig: {width: 20}
                                             },
                                         ],
@@ -294,11 +294,11 @@ define([
                                                         {
                                                             rowActions: [
                                                                 {
-                                                                    onClick: "deleteRule()", iconClass: 'icon-remove',
+                                                                    onClick: "deleteRule()", iconClass: 'fa fa-remove',
                                                                     viewConfig: {width: 20}
                                                                 },
                                                                 {
-                                                                    onClick: "addRuleAtIndex()", iconClass: 'icon-plus',
+                                                                    onClick: "addRuleAtIndex()", iconClass: 'fa fa-plus',
                                                                     viewConfig: {width: 20}
                                                                 }
                                                             ],

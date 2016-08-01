@@ -158,14 +158,14 @@ define([
                         }],
                         rowActions: [
                             { onClick: "function() { $root.addSubnet(); }",
-                              iconClass: 'icon-plus'},
+                              iconClass: 'fa fa-plus'},
                             { onClick:
                                 "function() {$root.deleteSubnet($data, this); }",
-                              iconClass: 'icon-minus'}
+                              iconClass: 'fa fa-minus'}
                         ],
                         gridActions: [
                             { onClick: "function() { $root.addSubnet(); }",
-                              iconClass: 'icon-plus'}
+                              iconClass: 'fa fa-plus'}
                         ],
                     }
                 }

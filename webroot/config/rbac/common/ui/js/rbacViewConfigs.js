@@ -128,11 +128,11 @@ define(["underscore", "config/rbac/common/ui/js/rbacFormatters"],
                         {onClick: "function() {\
                             $root.addRulePerm();\
                             }",
-                         iconClass: 'icon-plus'},
+                         iconClass: 'fa fa-plus'},
                         {onClick: "function() {\
                             $root.deleteRulePerm($data, this);\
                            }",
-                         iconClass: 'icon-minus'}
+                         iconClass: 'fa fa-minus'}
                     ],
                     gridActions: [
                         {onClick: "function() {\
