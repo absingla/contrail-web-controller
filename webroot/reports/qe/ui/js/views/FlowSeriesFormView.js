@@ -193,7 +193,7 @@ define([
                                                     path: 'time_granularity_unit',
                                                     dataBindValue: 'time_granularity_unit',
                                                     dataBindOptionList: 'getTimeGranularityUnits()',
-                                                    class: "col-xs-4",
+                                                    class: "col-xs-7",
                                                     elementConfig: {}
                                                 }
                                             }
