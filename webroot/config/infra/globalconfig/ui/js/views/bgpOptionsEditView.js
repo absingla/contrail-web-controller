@@ -142,7 +142,7 @@ define([
                         collection: 'ipFabricSubnets',
                         validation: 'ipFabricSubnetsValidation',
                         templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
-                        class: "col-xs-12",
+                        class: "",
                         columns: [{
                             elementId: 'ip_fabric_subnets',
                             name: 'Subnet',

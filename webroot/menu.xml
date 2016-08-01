@@ -872,7 +872,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <model>openstack</model>
                         </orchModels>
                     </access>
-                    <iconClass>icon-user</iconClass>
+                    <iconClass>menu-icon fa fa-user</iconClass>
                     <items>
                         <item>
                             <label>Domain</label>
@@ -919,7 +919,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <model>openstack</model>
                         </orchModels>
                     </access>
-                    <iconClass>icon-bell-alt</iconClass>
+                    <iconClass>menu-icon fa fa-bell</iconClass>
                     <items>
                         <item>
                             <label>Project</label>
@@ -953,7 +953,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     <name>configEditor</name>
                     <label>Config Editor</label>
                     <hash>config_editor</hash>
-                    <iconClass>icon-code</iconClass>
+                    <iconClass>menu-icon fa fa-code</iconClass>
                     <resources>
                         <resource>
                             <rootDir>/config/configEditor/ui</rootDir>
@@ -1026,7 +1026,7 @@ and need to add the iconClass tag wherever we need to show some icons
             <items>
                 <item>
                     <label>Config DB</label>
-                    <iconClass>icon-contrail-config-db</iconClass>
+                    <iconClass>menu-icon icon-contrail-config-db</iconClass>
                     <init>/setting/configdb/ui/js/cdb.init.js</init>
                     <items>
                         <item>
