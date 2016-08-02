@@ -244,7 +244,7 @@ define([
                     elementId: 'submit-introspect' + introspectNode + '-' + introspectPort,
                     view: "FormButtonView", label: "Submit",
                     viewConfig: {
-                        class: 'display-inline-block margin-5-10-0-0',
+                        class: 'display-inline-block margin-0-0-0-15',
                         label: 'Submit',
                         elementConfig: {
                             btnClass: 'btn-primary'
