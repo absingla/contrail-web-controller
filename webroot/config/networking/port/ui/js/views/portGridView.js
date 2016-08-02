@@ -246,7 +246,7 @@ define([
             {
                 "title" : ctwl.TITLE_DELETE_CONFIG,
                 "id" : "btnDeletePort",
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "onClick" : function() {
                     var checkedRows =
                         $(gridElId).data("contrailGrid").
@@ -294,14 +294,14 @@ define([
             {
                 "type": "dropdown",
                 "title": ctwl.TITLE_DELETE_CONFIG,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "linkElementId": "btnDeletePort",
                 "actions": dropdownActions
             },
             {
                 "type": "link",
                 "title": ctwl.TITLE_ADD_PORT,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     var dataItem = {};
                     dataItem.securityGroupValue = portFormatters.getProjectFqn()+":default";
@@ -555,7 +555,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span6',
+                            class: 'col-xs-6',
                             rows: [{
                                 title: ctwl.TITLE_PORT_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',

@@ -30,7 +30,7 @@
                          path: 'virtualNetworkName',
                          dataBindValue: 'virtualNetworkName',
                          dropdownAutoWidth : false,
-                         class: "span6",
+                         class: "col-xs-6",
                          elementConfig:{
                              allowClear: true,
                              dataTextField: "text",
@@ -59,7 +59,7 @@
                          label: 'Name',
                          placeholder: 'Port Name',
                          dataBindValue: 'display_name',
-                         class: "span6"
+                         class: "col-xs-6"
                      }
                  }]
              };
@@ -86,7 +86,7 @@
                              path: 'subnet_uuid',
                              dataBindValue: 'subnet_uuid()',
                              dataBindOptionList : "subnetDataSource()",
-                             class: "span6",
+                             class: "col-xs-6",
                              label: 'Subnet',
                              width:275,
                              templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
@@ -105,19 +105,19 @@
                              placeholder: 'Fixed IP',
                              templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                              dataBindValue: 'fixedIp()',
-                             class: "span6",
+                             class: "col-xs-6",
                              width:275,
                              label: 'IP'
                          }
                      }],
                      rowActions: [{
                          onClick: "function() { $root.addFixedIP(); }",
-                         iconClass: 'icon-plus',
+                         iconClass: 'fa fa-plus',
                      },
                      {
                          onClick:
                          "function() { $root.deleteFixedIP($data, this);}",
-                          iconClass: 'icon-minus'
+                          iconClass: 'fa fa-minus'
                      }],
                      gridActions: [{
                          name:"fixedIPAddBtn",
@@ -167,12 +167,12 @@
                          }],
                          rowActions: [{
                           onClick: "function() { $root.addAAP(); }",
-                         iconClass: 'icon-plus',
+                         iconClass: 'fa fa-plus',
                          },
                          {
                              onClick:
                              "function() { $root.deleteAAP($data, this);}",
-                              iconClass: 'icon-minus'
+                              iconClass: 'fa fa-minus'
                          }],
                          gridActions: [{
                              onClick: "function() { addAAP(); }",
@@ -204,7 +204,7 @@
                                          disabled: isDisable,
                                          path: 'macAddress',
                                          label: 'MAC Address',
-                                         class: 'span6',
+                                         class: 'col-xs-6',
                                          placeholder: 'Specify MAC Address',
                                          dataBindValue: 'macAddress'
                                      }
@@ -215,7 +215,7 @@
                                      viewConfig: {
                                          path: 'id_perms.enable',
                                          dataBindValue: 'id_perms().enable',
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          label: 'Admin State',
                                          elementConfig:{
                                              allowClear: true,
@@ -346,7 +346,7 @@
                                          viewConfig: {
                                              label: 'ECMP Hashing Fields',
                                              path: 'ecmp_hashing_include_fields',
-                                             class: 'span12',
+                                             class: 'col-xs-12',
                                              dataBindValue:
                                                      'ecmp_hashing_include_fields',
                                              elementConfig: {
@@ -379,7 +379,7 @@
                                          visible : "!isVCenter()",
                                          path: 'deviceOwnerValue',
                                          dataBindValue: 'deviceOwnerValue',
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          label: "Device Owner",
                                          elementConfig:{
                                              allowClear: true,
@@ -402,7 +402,7 @@
                                      path: 'virtualMachineValue',
                                      label: "Compute UUID",
                                      dataBindValue: 'virtualMachineValue',
-                                     class: "span6",
+                                     class: "col-xs-6",
                                      visible: "deviceComputeShow()",
                                      elementConfig:{
                                          dataTextField: "text",
@@ -427,7 +427,7 @@
                                      path: 'logicalRouterValue',
                                      label: "Router",
                                      dataBindValue: 'logicalRouterValue',
-                                     class: "span6",
+                                     class: "col-xs-6",
                                      visible: "deviceRouterShow()",
                                      elementConfig:{
                                          dataTextField: "text",
@@ -466,7 +466,7 @@
                                              templateId: cowc.TMPL_EDITABLE_GRID_COMBOBOX_VIEW,
                                              dataBindValue: 'key()',
                                              placeholder: 'Key',
-                                             class: "span6",
+                                             class: "col-xs-6",
                                              width:275,
                                              label: 'Key',
                                              disabled: "disablePortBindKey()",
@@ -495,7 +495,7 @@
                                              placeholder: 'Value',
                                              templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                                              dataBindValue: 'value()',
-                                             class: "span6",
+                                             class: "col-xs-6",
                                              width:275,
                                              label: 'Value',
                                              disabled: "disablePortBindValue()"
@@ -503,12 +503,12 @@
                                      }],
                                      rowActions: [{
                                          onClick: "function() { $root.addPortBinding(); }",
-                                         iconClass: 'icon-plus',
+                                         iconClass: 'fa fa-plus',
                                          },
                                          {
                                          onClick:
                                          "function() { $root.deletePortBinding($data, this); }",
-                                         iconClass: 'icon-minus',
+                                         iconClass: 'fa fa-minus',
                                          visible : "hideDeleteButtonPortBinding"
                                      }],
                                      gridActions: [{
@@ -526,7 +526,7 @@
                                          label: "Disable Policy",
                                          templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                          dataBindValue: 'virtual_machine_interface_disable_policy',
-                                         class: "span6"
+                                         class: "col-xs-6"
                                      }
                                  }]
                              }, {
@@ -541,7 +541,7 @@
                                          label: "Sub Interface",
                                          templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                          dataBindValue: 'is_sub_interface',
-                                         class: "span6"
+                                         class: "col-xs-6"
                                      }
                                  }]
                              }, {
@@ -555,7 +555,7 @@
                                          placeholder: 'Specify VLAN',
                                          path: 'virtual_machine_interface_properties.sub_interface_vlan_tag',
                                          dataBindValue: 'virtual_machine_interface_properties().sub_interface_vlan_tag',
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          label: 'VLAN',
                                      }
                                  },{
@@ -568,7 +568,7 @@
                                          visible: "is_sub_interface",
                                          placeholder: 'Primary Interface',
                                          disabled: "disable_sub_interface()",
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          label: "Primary Interface",
                                          dataBindValue: 'subInterfaceVMIValue',
                                          elementConfig:{
@@ -632,7 +632,7 @@
                                          label: "Mirroring",
                                          templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                          dataBindValue: 'is_mirror',
-                                         class: "span6"
+                                         class: "col-xs-6"
                                      }
                                  }]
                              }, {
@@ -676,7 +676,7 @@
                                      name: "Analyzer IP Address",
                                      view: "FormInputView",
                                      viewConfig: {
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          path: 'mirrorToAnalyzerIpAddress',
                                          placeholder: 'xxx.xxx.xxx.xxx',
                                          dataBindValue: 'mirrorToAnalyzerIpAddress',
@@ -688,7 +688,7 @@
                                      name: "UDP Port",
                                      view: "FormInputView",
                                      viewConfig: {
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          path: 'mirrorToUdpPort',
                                          placeholder: '1 to 65535',
                                          dataBindValue: 'mirrorToUdpPort',
@@ -787,12 +787,12 @@
                                          }],
                                          rowActions: [{
                                              onClick: "function() { $root.addDHCP(); }",
-                                             iconClass: 'icon-plus',
+                                             iconClass: 'fa fa-plus',
                                              },
                                              {
                                              onClick:
                                              "function() { $root.deleteDHCP($data, this); }",
-                                             iconClass: 'icon-minus'
+                                             iconClass: 'fa fa-minus'
                                          }],
                                          gridActions: [{
                                              onClick: "function() { addDHCP(); }",
@@ -836,7 +836,7 @@
                                                  templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
                                                  dataBindValue: 'protocol()',
                                                  placeholder: 'Protocol',
-                                                 class: "span6",
+                                                 class: "col-xs-6",
                                                  width:275,
                                                  label: 'Protocol',
                                                  elementConfig:{
@@ -860,19 +860,19 @@
                                                  templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                                                  dataBindValue: 'port()',
                                                  disabled: "disablePort()",
-                                                 class: "span6",
+                                                 class: "col-xs-6",
                                                  width:275,
                                                  label: 'Value'
                                              }
                                          }],
                                          rowActions: [{
                                              onClick: "function() { $root.addFatFlow(); }",
-                                             iconClass: 'icon-plus',
+                                             iconClass: 'fa fa-plus',
                                              },
                                              {
                                              onClick:
                                              "function() { $root.deleteFatFlow($data, this); }",
-                                             iconClass: 'icon-minus'
+                                             iconClass: 'fa fa-minus'
                                          }],
                                          gridActions: [{
                                              onClick: "function() { addFatFlow(); }",
@@ -896,7 +896,7 @@
                      viewConfig: {
                          path: 'floatingIpValue',
                          dataBindValue: 'floatingIpValue',
-                         class: 'span12',
+                         class: 'col-xs-12',
                          label:"Floating IPs",
                          elementConfig:{
                              allowClear: true,
@@ -925,7 +925,7 @@
                              label: 'Security Group(s)',
                              templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                              path: 'is_sec_grp',
-                             class: 'span12',
+                             class: 'col-xs-12',
                              dataBindValue: 'is_sec_grp'
                          }
                      }
@@ -943,7 +943,7 @@
                          viewConfig: {
                              path: 'securityGroupValue',
                              dataBindValue: 'securityGroupValue',
-                             class: 'span12',
+                             class: 'col-xs-12',
                              disabled : "is_sec_grp_disabled",
                              elementConfig:{
                                  allowClear: true,

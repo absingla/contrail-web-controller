@@ -161,7 +161,7 @@ define([
             {
                 "type" : "link",
                 "title" : ctwl.TITLE_ALARM_RULE_MULTI_DELETE,
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnDeleteAlarm',
                 "onClick" : function() {
                     var gridObj = $(gridElId).data('contrailGrid'),
@@ -182,7 +182,7 @@ define([
             {
                 "type" : "link",
                 "title" : ctwl.TITLE_CREATE_ALARM_RULE,
-                "iconClass" : "icon-plus",
+                "iconClass" : "fa fa-plus",
                 "onClick" : function() {
                     var gridObj = $(gridElId).data('contrailGrid'),
                         alarmModel = new AlarmModel();

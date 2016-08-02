@@ -167,11 +167,11 @@ define([
                                         {onClick: "function() {\
                                             $root.addFlowAgingTuple();\
                                         }",
-                                        iconClass: 'icon-plus'},{
+                                        iconClass: 'fa fa-plus'},{
                                         onClick: "function() {\
                                             $root.deleteFlowAgingTuple($data, this);\
                                         }",
-                                        iconClass: 'icon-minus'
+                                        iconClass: 'fa fa-minus'
                                     }],
                                     gridActions: [{
                                         onClick: "function() {\

@@ -191,7 +191,7 @@ define([
                                 viewConfig: {
                                     label: 'Name',
                                     path: 'display_name',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     dataBindValue: 'display_name',
                                 }
                             }
@@ -205,7 +205,7 @@ define([
                                 viewConfig: {
                                     label: 'Primary VLAN',
                                     path: 'pVlanId',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     dataBindValue: 'pVlanId',
                                     visible: '(isVCenter()) && disable() == false',
                                 }
@@ -216,7 +216,7 @@ define([
                                 viewConfig: {
                                     label: 'Secondary VLAN',
                                     path: 'sVlanId',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     dataBindValue: 'sVlanId',
                                     visible: '(isVCenter()) && disable() == false',
                                 }
@@ -231,7 +231,7 @@ define([
                                 viewConfig: {
                                     label: 'Network Policy(s)',
                                     path: 'network_policy_refs',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue: 'network_policy_refs',
                                     elementConfig: {
                                         placeholder: 'Select Network Policies',
@@ -287,12 +287,12 @@ define([
                                                          if (!isVCenter())\
                                                              $root.addSubnet();\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          if (!isVCenter())\
                                                          $root.deleteSubnet($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  columns: [
                                                     {
@@ -499,11 +499,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addHostRoute();\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          $root.deleteHostRoute($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  gridActions: [
                                                      {onClick: "function() {\
@@ -541,7 +541,7 @@ define([
                                             viewConfig: {
                                                 label: 'Admin State',
                                                 path : 'id_perms.enable',
-                                                class: 'span6',
+                                                class: 'col-xs-6',
                                                 dataBindValue :
                                                     'id_perms().enable',
                                                 elementConfig : {
@@ -558,7 +558,7 @@ define([
                                             view: "FormCheckboxView",
                                             viewConfig : {
                                                 path : 'external_ipam',
-                                                class : "span6",
+                                                class : "col-xs-6",
                                                 label:'Static IP Addressing',
                                                 dataBindValue : 'external_ipam',
                                                 visible : 'isVCenter()',
@@ -577,7 +577,7 @@ define([
                                             view: "FormCheckboxView",
                                             viewConfig : {
                                                 path : 'is_shared',
-                                                class : "span4",
+                                                class : "col-xs-4",
                                                 label:'Shared',
                                                 templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                                 dataBindValue : 'is_shared',
@@ -591,7 +591,7 @@ define([
                                             view: "FormCheckboxView",
                                             viewConfig : {
                                                 path : 'router_external',
-                                                class : "span4",
+                                                class : "col-xs-4",
                                                 label:'External',
                                                 templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                                 dataBindValue : 'router_external',
@@ -605,7 +605,7 @@ define([
                                             view: "FormCheckboxView",
                                             viewConfig : {
                                                 path : 'virtual_network_properties.allow_transit',
-                                                class : "span4",
+                                                class : "col-xs-4",
                                                 label:'Allow Transit',
                                                 templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                                 dataBindValue : 'virtual_network_properties().allow_transit',
@@ -623,7 +623,7 @@ define([
                                             view: "FormCheckboxView",
                                             viewConfig : {
                                                 path : 'flood_unknown_unicast',
-                                                class : "span4",
+                                                class : "col-xs-4",
                                                 label:'Flood Unknown Unicast',
                                                 templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                                 dataBindValue : 'flood_unknown_unicast',
@@ -637,7 +637,7 @@ define([
                                             view: "FormCheckboxView",
                                             viewConfig : {
                                                 path : 'virtual_network_properties.rpf',
-                                                class : "span4",
+                                                class : "col-xs-4",
                                                 label:'Reverse Path Forwarding',
                                                 templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                                 dataBindValue : 'virtual_network_properties().rpf',
@@ -651,7 +651,7 @@ define([
                                             view: "FormCheckboxView",
                                             viewConfig : {
                                                 path : 'multi_policy_service_chains_enabled',
-                                                class : "span4",
+                                                class : "col-xs-4",
                                                 label:'Multiple Service Chains',
                                                 templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                                 dataBindValue : 'multi_policy_service_chains_enabled',
@@ -670,7 +670,7 @@ define([
                                             viewConfig: {
                                                 label: 'Forwarding Mode',
                                                 path : 'virtual_network_properties.forwarding_mode',
-                                                class: 'span6',
+                                                class: 'col-xs-6',
                                                 dataBindValue :
                                                     'virtual_network_properties().forwarding_mode',
                                                 elementConfig : {
@@ -691,7 +691,7 @@ define([
                                                 placeholder: '1 - 16777215',
                                                 label: 'VxLAN Identifier',
                                                 path: 'virtual_network_properties.vxlan_network_identifier',
-                                                class: 'span6',
+                                                class: 'col-xs-6',
                                                 dataBindValue: 'virtual_network_properties().vxlan_network_identifier',
                                                 visible: 'user_created_vxlan_mode()',
                                             }
@@ -706,7 +706,7 @@ define([
                                                 viewConfig: {
                                                     label: 'Extend to Physical Router(s)',
                                                     path: 'physical_router_back_refs',
-                                                    class: 'span6',
+                                                    class: 'col-xs-6',
                                                     dataBindValue: 'physical_router_back_refs',
                                                     elementConfig: {
                                                         placeholder: 'Select Physical Router(s)',
@@ -729,7 +729,7 @@ define([
                                                 viewConfig: {
                                                     label: 'Static Route(s)',
                                                     path: 'route_table_refs',
-                                                    class: 'span6',
+                                                    class: 'col-xs-6',
                                                     dataBindValue: 'route_table_refs',
                                                     elementConfig: {
                                                         placeholder: 'Select Static Route(s)',
@@ -759,7 +759,7 @@ define([
                                                 viewConfig: {
                                                     label: 'ECMP Hashing Fields',
                                                     path: 'ecmp_hashing_include_fields',
-                                                    class: 'span6',
+                                                    class: 'col-xs-12',
                                                     dataBindValue: 'ecmp_hashing_include_fields',
                                                     elementConfig: {
                                                         placeholder: 'Select ECMP Hashing Fields',
@@ -813,7 +813,7 @@ define([
                                                 viewConfig: {
                                                     label: 'Provider Network',
                                                     path: 'user_created_sriov_enabled',
-                                                    class: 'span2',
+                                                    class: 'col-xs-2',
                                                     dataBindValue: 'user_created_sriov_enabled',
                                                     elementConfig: {
                                                         isChecked: false
@@ -831,7 +831,7 @@ define([
                                                 placeholder: 'Network Name',
                                                 label: 'Physical Network',
                                                 path: 'provider_properties.physical_network',
-                                                class: 'span6',
+                                                class: 'col-xs-6',
                                                 dataBindValue: 'provider_properties().physical_network',
                                                 visible: 'user_created_sriov_enabled()',
                                             }
@@ -843,7 +843,7 @@ define([
                                                 placeholder: '1 - 4094',
                                                 label: 'VLAN',
                                                 path: 'provider_properties.segmentation_id',
-                                                class: 'span6',
+                                                class: 'col-xs-6',
                                                 dataBindValue: 'provider_properties().segmentation_id',
                                                 visible: 'user_created_sriov_enabled()',
                                             }
@@ -901,11 +901,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addSubnetDNS();\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                     {onClick: "function() {\
                                                          $root.deleteSubnetDNS($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'
+                                                      iconClass: 'fa fa-minus'
                                                     }
                                                  ],
                                                  gridActions: [
@@ -972,7 +972,7 @@ define([
                                                         view: 'FormMultiselectView',
                                                         viewConfig: {
                                                             path: 'projects',
-                                                            class: 'span6',
+                                                            class: 'col-xs-6',
                                                             dataBindValue: 'projects()',
                                                             templateId: cowc.TMPL_EDITABLE_GRID_MULTISELECT_VIEW,
                                                             class: "", width: 400,
@@ -996,11 +996,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addFipPool();\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          $root.deleteFipPool($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  gridActions: [
                                                      {onClick: "function() {\
@@ -1078,11 +1078,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addRouteTarget('user_created_route_targets');\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          $root.deleteRouteTarget($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  gridActions: [
                                                      {onClick: "function() {\
@@ -1160,11 +1160,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addRouteTarget('user_created_export_route_targets');\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          $root.deleteRouteTarget($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  gridActions: [
                                                      {onClick: "function() {\
@@ -1242,11 +1242,11 @@ define([
                                                      {onClick: "function() {\
                                                          $root.addRouteTarget('user_created_import_route_targets');\
                                                          }",
-                                                      iconClass: 'icon-plus'},
+                                                      iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
                                                          $root.deleteRouteTarget($data, this);\
                                                         }",
-                                                      iconClass: 'icon-minus'}
+                                                      iconClass: 'fa fa-minus'}
                                                  ],
                                                  gridActions: [
                                                      {onClick: "function() {\

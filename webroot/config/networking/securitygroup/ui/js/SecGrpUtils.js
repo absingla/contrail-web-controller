@@ -457,12 +457,12 @@ define([
                                         onClick: "function() {\
                                             $root.addSecGrpRule();\
                                         }",
-                                        iconClass: 'icon-plus'
+                                        iconClass: 'fa fa-plus'
                                     },{
                                         onClick: "function() {\
                                             $root.deleteSecGrpRules($data, this);\
                                         }",
-                                        iconClass: 'icon-minus'
+                                        iconClass: 'fa fa-minus'
                                     }],
                                     gridActions: [{
                                         onClick: "function() {\

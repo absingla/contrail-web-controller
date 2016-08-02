@@ -218,12 +218,12 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span6',
+                            class: 'col-xs-6',
                             rows: [{
                                 title: ctwl.TITLE_MONITOR_NETWORK_POLICY_SUMMARY,
                                 templateGenerator: 'BlockListTemplateGenerator',
                                 templateGeneratorConfig: [{
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     key: 'fq_name',
                                     label: 'Display Name',
                                     templateGenerator: 'TextGenerator',
@@ -234,12 +234,12 @@ define([
                                         }
                                     }
                                 }, {
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     key: 'uuid',
                                     label: 'UUID',
                                     templateGenerator: 'TextGenerator'
                                 }, {
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     key: 'virtual_network_back_refs',
                                     label: 'Connected networks',
                                     templateGenerator: 'LinkGenerator',
@@ -249,7 +249,7 @@ define([
                                         params: {}
                                     }
                                 }, {
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     label: 'Rules Count',
                                     key: 'network_policy_entries.policy_rule',
                                     templateGenerator: 'TextGenerator',
@@ -296,12 +296,12 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span6',
+                            class: 'col-xs-6',
                             rows: [{
                                 title: ctwl.TITLE_MONITOR_SECURITY_GROUP_SUMMARY,
                                 templateGenerator: 'BlockListTemplateGenerator',
                                 templateGeneratorConfig: [{
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     key: 'fq_name',
                                     label: 'Display Name',
                                     templateGenerator: 'TextGenerator',
@@ -309,12 +309,12 @@ define([
                                         formatter: 'nameFromFQName'
                                     }
                                 }, {
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     key: 'uuid',
                                     label: 'UUID',
                                     templateGenerator: 'TextGenerator'
                                 }, {
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     label: 'Rules Count',
                                     key: 'security_group_entries.policy_rule',
                                     templateGenerator: 'TextGenerator',
@@ -358,12 +358,12 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span6',
+                            class: 'col-xs-6',
                             rows: [{
                                 title: ctwl.TITLE_MONITOR_NETWORK_IPAM_SUMMARY,
                                 templateGenerator: 'BlockListTemplateGenerator',
                                 templateGeneratorConfig: [{
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     key: 'fq_name',
                                     label: 'Display Name',
                                     templateGenerator: 'TextGenerator',
@@ -374,12 +374,12 @@ define([
                                         }
                                     }
                                 }, {
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     key: 'uuid',
                                     label: 'UUID',
                                     templateGenerator: 'TextGenerator'
                                 }, {
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     label: 'DNS Method',
                                     key: 'network_ipam_mgmt.ipam_dns_method',
                                     templateGenerator: 'TextGenerator',
@@ -387,7 +387,7 @@ define([
                                         formatter: 'dnsMethod'
                                     }
                                 }, {
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     label: 'NTP Server IP',
                                     key: 'network_ipam_mgmt.dhcp_option_list',
                                     templateGenerator: 'TextGenerator',
@@ -395,7 +395,7 @@ define([
                                         formatter: 'NTPServerIPFromDHCPOption'
                                     }
                                 }, {
-                                    keyClass: 'span3',
+                                    keyClass: 'col-xs-3',
                                     label: 'Domain Name',
                                     key: 'network_ipam_mgmt.dhcp_option_list',
                                     templateGenerator: 'TextGenerator',

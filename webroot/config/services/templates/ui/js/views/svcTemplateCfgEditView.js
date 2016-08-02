@@ -115,7 +115,7 @@ define([
                                 view: 'FormInputView',
                                 viewConfig: {
                                     path: 'name',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue: 'name',
                                     disabled: disableOnEdit
                                 }
@@ -130,7 +130,7 @@ define([
                                 viewConfig: {
                                     path:
                                         'user_created_version',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     dataBindValue:
                                         'user_created_version',
                                     dataBindOptionList: 'versionList()',
@@ -146,7 +146,7 @@ define([
                                 viewConfig: {
                                     path :
                                         'user_created_service_virtualization_type',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     dataBindValue :
                                             'user_created_service_virtualization_type',
                                     elementConfig : {
@@ -167,7 +167,7 @@ define([
                                 viewConfig: {
                                     visible: 'isSvcVirtTypeNonPhysicalDevice',
                                     path : 'user_created_service_mode',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     label: 'Service Mode',
                                     dataBindValue : 'user_created_service_mode',
                                     elementConfig : {
@@ -186,7 +186,7 @@ define([
                                     visible: 'isSvcVirtTypeNonPhysicalDevice',
                                     path : 'user_created_service_type',
                                     label: 'Service Type',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     dataBindValue : 'user_created_service_type',
                                     elementConfig : {
                                         dataTextField : "text",
@@ -208,7 +208,7 @@ define([
                                     visible: 'showImageList',
                                     label: 'Image Name',
                                     path : 'service_template_properties.image_name',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue : 'service_template_properties().image_name',
                                     elementConfig : {
                                         placeholder: 'Select Image',
@@ -235,7 +235,7 @@ define([
                                 viewConfig: {
                                     label: 'Service Appliance Set',
                                     path : 'service_appliance_set',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     visible: 'isSvcVirtTypePhysicalDevice',
                                     dataBindValue : 'service_appliance_set',
                                     elementConfig : {
@@ -329,11 +329,11 @@ define([
                                                          {onClick: "function() {\
                                                              $root.addSvcTemplateInterface();\
                                                              }",
-                                                             iconClass: 'icon-plus'},
+                                                             iconClass: 'fa fa-plus'},
                                                          {onClick: "function() {\
                                                              $root.deleteSvcTemplateInterface($root, $data, this);\
                                                             }",
-                                                          iconClass: 'icon-minus'}
+                                                          iconClass: 'fa fa-minus'}
                                                      ],
                                                      gridActions: [
                                                          {onClick: "function() {\
@@ -393,11 +393,11 @@ define([
                                                          {onClick: "function() {\
                                                              $root.addSvcTemplateInterface();\
                                                              }",
-                                                             iconClass: 'icon-plus'},
+                                                             iconClass: 'fa fa-plus'},
                                                          {onClick: "function() {\
                                                              $root.deleteSvcTemplateInterface($root, $data, this);\
                                                             }",
-                                                          iconClass: 'icon-minus'}
+                                                          iconClass: 'fa fa-minus'}
                                                      ],
                                                      gridActions: [
                                                          {onClick: "function() {\
@@ -438,7 +438,7 @@ define([
                                                 label: 'Service Scaling',
                                                 path : 'user_created_service_scaling',
                                                 templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
-                                                class : "span6",
+                                                class : "col-xs-6",
                                                 dataBindValue : 'user_created_service_scaling',
                                                 elementConfig : {
                                                     label:'Service Scaling',
@@ -454,7 +454,7 @@ define([
                                                 label: 'Availability Zone',
                                                 path : 'service_template_properties.availability_zone_enable',
                                                 templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
-                                                class : "span6",
+                                                class : "col-xs-6",
                                                 dataBindValue : 'service_template_properties().availability_zone_enable',
                                                 elementConfig : {
                                                     label:'Availability Zone',
@@ -472,7 +472,7 @@ define([
                                                 visible: 'isSvcVirtTypeNonPhysicalDevice',
                                                 label: 'Instance Flavor',
                                                 path : 'service_template_properties.flavor',
-                                                class: 'span12',
+                                                class: 'col-xs-12',
                                                 dataBindValue : 'service_template_properties().flavor',
                                                 elementConfig : {
                                                     placeholder: 'Select Flavor',

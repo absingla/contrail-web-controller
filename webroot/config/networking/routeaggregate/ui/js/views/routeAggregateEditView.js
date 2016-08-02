@@ -118,7 +118,7 @@ define([
                                         path: "display_name",
                                         dataBindValue: "display_name",
                                         label: "Name",
-                                        class: "span6"
+                                        class: "col-xs-6"
                                     }
                                 }
                             ]
@@ -154,13 +154,13 @@ define([
                                                             {
                                                                 onClick: "function() {\
                                                                 $root.addRoute(); }",
-                                                                iconClass: 'icon-plus'
+                                                                iconClass: 'fa fa-plus'
                                                             },
                                                             {
                                                                 onClick: "function() {\
                                                                 $root.deleteRoute($data, this)\
                                                                 ;}",
-                                                                iconClass: 'icon-minus'
+                                                                iconClass: 'fa fa-minus'
                                                             }
                                                         ],
                                                         gridActions: [

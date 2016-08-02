@@ -170,7 +170,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span12',
+                            class: 'col-xs-12',
                             rows: [{
                                 title: ctwl.SVC_INST_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',
@@ -288,7 +288,7 @@ define([
                                     },
                                     {
                                         key: 'statusDetails',
-                                        valueClass: 'span11',
+                                        valueClass: 'col-xs-11',
                                         label: 'Instance Status',
                                         templateGenerator: 'TextGenerator',
                                         templateGeneratorConfig: {
@@ -297,7 +297,7 @@ define([
                                     },
                                     {
                                         key: 'statusDetails',
-                                        valueClass: 'span11',
+                                        valueClass: 'col-xs-11',
                                         label: 'Interface Status',
                                         templateGenerator: 'TextGenerator',
                                         templateGeneratorConfig: {
@@ -739,10 +739,10 @@ define([
         var returnHtml = "";
         var statusHeader =
             '<thead>' +
-                '<th class="span4">Interface</th>' +
-                '<th class="span2">Status</th>' +
-                '<th class="span4">Health Status</th>' +
-                '<th class="span2">IP Address</th>' +
+                '<th class="col-xs-4">Interface</th>' +
+                '<th class="col-xs-2">Status</th>' +
+                '<th class="col-xs-4">Health Status</th>' +
+                '<th class="col-xs-2">IP Address</th>' +
               '</thead>'
         returnHtml += statusHeader;
         var len = statusObjList.length;
@@ -751,14 +751,14 @@ define([
         }
         for (var i = 0; i < len; i++) {
             returnHtml += '<tr>';
-            returnHtml += '<td class="span4" style="vertical-align:top;">' + statusObjList[i]['vmi'] +
+            returnHtml += '<td class="col-xs-4" style="vertical-align:top;">' + statusObjList[i]['vmi'] +
                 '</td>';
-            returnHtml += '<td class="span2" style="vertical-align:top;">' +
+            returnHtml += '<td class="col-xs-2" style="vertical-align:top;">' +
                 statusObjList[i]['intfStatus'] + '</td>';
-            returnHtml += '<td class="span4" style="vertical-align:top;">';
+            returnHtml += '<td class="col-xs-4" style="vertical-align:top;">';
             returnHtml += statusObjList[i]['hlthChkStr'];
             returnHtml += ' </td>';
-            returnHtml += '<td class="span2" style="vertical-align:top;">' + statusObjList[i]['vmiIP'] +
+            returnHtml += '<td class="col-xs-2" style="vertical-align:top;">' + statusObjList[i]['vmiIP'] +
                 '</td>';
             returnHtml += '</tr>';
         }
@@ -809,18 +809,18 @@ define([
         }
         var statusHeader =
             '<tr ><thead>' +
-                 '<th class="span3">Virtual Machine</th>' +
-                 '<th class="span2">Status</th>' +
-                 '<th class="span2">Power State</th>' +
-                 '<th class="span3">Networks</th>' +
-                 '<th class="span2"></th>' +
+                 '<th class="col-xs-3">Virtual Machine</th>' +
+                 '<th class="col-xs-2">Status</th>' +
+                 '<th class="col-xs-2">Power State</th>' +
+                 '<th class="col-xs-3">Networks</th>' +
+                 '<th class="col-xs-2"></th>' +
               '</thead></tr>'
         returnHtml += statusHeader;
         for (i = 0; i < cnt; i++) {
             returnHtml += '<tr>';
-            returnHtml += '<td class="span3">' + statusDataList[i]['name'] +
+            returnHtml += '<td class="col-xs-3">' + statusDataList[i]['name'] +
                 '</td>';
-            returnHtml += '<td class="span2">';
+            returnHtml += '<td class="col-xs-2">';
             var stat = String(statusDataList[i]['status']).toUpperCase();
             if ('SPAWNING' == stat) {
                 returnHtml += '<img src="/img/loading.gif">';
@@ -834,11 +834,11 @@ define([
                 returnHtml += 'Updating';
             }
             returnHtml += statusDataList[i]['status'] + ' </td>';
-            returnHtml += '<td class="span2">' + statusDataList[i]['state'] +
+            returnHtml += '<td class="col-xs-2">' + statusDataList[i]['state'] +
                 '</td>';
             var instDetailStr = statusDataList[i]['address'].split('~~');
             if (instDetailStr.length > 1) {
-                returnHtml += '<td class="span3">';
+                returnHtml += '<td class="col-xs-3">';
                 var msgSplit = instDetailStr[0].split(" ");
                 var msgStr = msgSplit[msgSplit.length - 1] +
                     " IP Address not assigned.";
@@ -849,9 +849,9 @@ define([
                 }
                 returnHtml += '</td>';
             } else {
-                returnHtml += '<td class="span2">'+ instDetailStr +'</td>';
+                returnHtml += '<td class="col-xs-2">'+ instDetailStr +'</td>';
             }
-            returnHtml += '<td class="span2"><a onClick="showViewConsoleWindow(\'' +
+            returnHtml += '<td class="col-xs-2"><a onClick="showViewConsoleWindow(\'' +
                 statusDataList[i]['id'] +'\', \''+ statusDataList[i]['name'] +
                 '\');"> View Console </a></td>';
             returnHtml += '</tr>';
@@ -1251,7 +1251,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_DEL_SERVICE_INSTANCES,
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnActionDelSvcInst',
                 "onClick": function() {
                     svcInstModel = new SvcInstModel({
@@ -1272,7 +1272,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_CREATE_SERVICE_INSTANCE,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function() {
                     svcInstModel = new SvcInstModel({
                         svcInstanceDataObj: svcInstanceDataObj
