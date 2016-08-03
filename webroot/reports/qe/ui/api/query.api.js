@@ -387,32 +387,6 @@ function handleQueryResponse(res, options) {
         redisClient.exists(queryId + ":chunk1", function (err, exists) {
             if (exists) {
                 chunk = 1;
-                // var stream = redisReadStream(redisClient, queryId),
-                //     chunkedData, accumulatedData = [], dataBuffer, resultJSON;
-                // stream.on('error', function (err) {
-                //     logutils.logger.error(err.stack);
-                //     commonUtils.handleJSONResponse(err, res, null);
-                // }).on('readable', function () {
-                //     while ((chunkedData = stream.read()) !== null) {
-                //         accumulatedData.push(chunkedData)
-                //     }
-                // }).on('end', function () {
-                //     dataBuffer = Buffer.concat(accumulatedData);
-                //     resultJSON = JSON.parse(dataBuffer);
-                //     if (toSort) {
-                //         sortJSON(resultJSON['data'], sort, function () {
-                //             var startIndex, endIndex, total, responseJSON
-                //             total = resultJSON['total'];
-                //             startIndex = (chunk - 1) * chunkSize;
-                //             endIndex = (total < (startIndex + chunkSize)) ? total : (startIndex + chunkSize);
-                //             responseJSON = resultJSON['data'].slice(startIndex, endIndex);
-                //             commonUtils.handleJSONResponse(null, res, {data: responseJSON, total: total, queryJSON: resultJSON['queryJSON']});
-                //             saveQueryResult2Redis(resultJSON['data'], total, queryId, chunkSize, sort, resultJSON['queryJSON']);
-                //         });
-                //     } else {
-                //         commonUtils.handleJSONResponse(null, res, resultJSON);
-                //     }
-                // });
             } else {
                 commonUtils.handleJSONResponse(null, res, {data: [], total: 0});
             }
