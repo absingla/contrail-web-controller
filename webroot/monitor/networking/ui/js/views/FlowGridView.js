@@ -100,9 +100,9 @@ define([
                     dataValueField: 'id',
                     noneSelectedText: ctwl.TITLE_FILTER_PROTOCOL,
                     filterConfig: {
-                        placeholder: ctwl.TITLE_FILTER_BY_PROTOCOL,
+                        placeholder: ctwl.TITLE_FILTER_BY_PROTOCOL
                     },
-                    minWidth: 100,
+                    minWidth: 160,
                     height: 150,
                     emptyOptionText: 'No Protocol found',
                     data: [{
