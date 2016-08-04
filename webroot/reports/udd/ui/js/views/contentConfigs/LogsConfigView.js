@@ -33,7 +33,7 @@ define(function (require) {
                                         label: 'Number of records',
                                         path: 'records',
                                         dataBindValue: 'records',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                     },
                                 },
                             ],

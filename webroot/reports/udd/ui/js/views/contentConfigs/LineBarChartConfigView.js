@@ -33,7 +33,7 @@ define(function (require) {
                                         label: 'Bar Color',
                                         path: 'barColor',
                                         dataBindValue: 'barColor',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                     },
                                 }, {
                                     elementId: 'lineColor', view: 'FormInputView',
@@ -41,7 +41,7 @@ define(function (require) {
                                         label: 'Line Color',
                                         path: 'lineColor',
                                         dataBindValue: 'lineColor',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                     },
                                 },
                             ],
@@ -53,7 +53,7 @@ define(function (require) {
                                         label: 'Bar Label',
                                         path: 'barLabel',
                                         dataBindValue: 'barLabel',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                     },
                                 }, {
                                     elementId: 'lineLabel', view: 'FormInputView',
@@ -61,7 +61,7 @@ define(function (require) {
                                         label: 'Line Label',
                                         path: 'lineLabel',
                                         dataBindValue: 'lineLabel',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                     },
                                 },
                             ],
@@ -74,7 +74,7 @@ define(function (require) {
                                         path: 'barValue',
                                         dataBindValue: 'barValue',
                                         dataBindOptionList: 'yAxisValues',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                         elementConfig: {
                                             placeholder: 'Select Bar Value',
                                             defaultValueId: 0,
@@ -87,7 +87,7 @@ define(function (require) {
                                         path: 'lineValue',
                                         dataBindValue: 'lineValue',
                                         dataBindOptionList: 'yAxisValues',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                         elementConfig: {
                                             placeholder: 'Select Bar Value',
                                             defaultValueId: 1,

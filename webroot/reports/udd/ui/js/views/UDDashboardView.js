@@ -18,7 +18,6 @@ define(function (require) {
             self.currentTab = urlParams.tab || self.model.tabIds(self.currentDashboard)[0] || 'tab1'
 
             // TODO render dashboards in menu
-
             self.renderView4Config(self.$el, null, self.getViewConfig())
         },
 
@@ -43,7 +42,7 @@ define(function (require) {
                                     elementId: 'widget-layout-tabs-view',
                                     view: 'TabsView',
                                     viewConfig: {
-                                        theme: 'classic',
+                                        theme: 'overcast',
                                         active: currentTabNumber,
                                         tabs: tabs,
                                         onAdd: function (title) {

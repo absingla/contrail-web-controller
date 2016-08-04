@@ -133,7 +133,7 @@ define(function (require) {
                                         label: 'Data Source',
                                         path: 'dataConfigView',
                                         dataBindValue: 'dataConfigView',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                         elementConfig: {
                                             dataTextField: 'text', dataValueField: 'id',
                                             data: self._getViewOptionsList(self.model.getDataSourceList()),
@@ -145,7 +145,7 @@ define(function (require) {
                                         label: 'Content View',
                                         path: 'contentView',
                                         dataBindValue: 'contentView',
-                                        class: 'span6 hide',
+                                        class: 'col-xs-6 hide',
                                         elementConfig: {
                                             data: self._getViewOptionsList(self.model.getContentViewList()),
                                         },

@@ -29,52 +29,33 @@ define(function (require) {
                         {
                             columns: [
                                 {
+                                    elementId: 'time_range', view: 'FormDropdownView',
+                                    viewConfig: {
+                                        path: 'time_range',
+                                        dataBindValue: 'time_range',
+                                        class: 'col-xs-6',
+                                        elementConfig: {
+                                            dataTextField: 'text',
+                                            dataValueField: 'id',
+                                            data: cowc.TIMERANGE_DROPDOWN_VALUES_WO_CUSTOM,
+                                        },
+                                    },
+                                }
+                            ],
+                        },
+                        {
+                            columns: [
+                                {
                                     elementId: 'table_type', view: 'FormDropdownView',
                                     viewConfig: {
                                         path: 'table_type',
                                         dataBindValue: 'table_type',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                         elementConfig: {
                                             dataTextField: 'text',
                                             dataValueField: 'id',
                                             data: cowc.TABLE_TYPES,
                                         },
-                                    },
-                                },
-                            ],
-                        }, {
-                            columns: [
-                                {
-                                    elementId: 'time_range', view: 'FormDropdownView',
-                                    viewConfig: {
-                                        path: 'time_range',
-                                        dataBindValue: 'time_range',
-                                        class: 'span6',
-                                        elementConfig: {
-                                            dataTextField: 'text',
-                                            dataValueField: 'id',
-                                            data: cowc.TIMERANGE_DROPDOWN_VALUES,
-                                        },
-                                    },
-                                }, {
-                                    elementId: 'from_time', view: 'FormDateTimePickerView',
-                                    viewConfig: {
-                                        style: 'display: none;',
-                                        path: 'from_time',
-                                        dataBindValue: 'from_time',
-                                        class: 'span3',
-                                        elementConfig: qewu.getFromTimeElementConfig('from_time', 'to_time'),
-                                        visible: 'time_range() == -1',
-                                    },
-                                }, {
-                                    elementId: 'to_time', view: 'FormDateTimePickerView',
-                                    viewConfig: {
-                                        style: 'display: none;',
-                                        path: 'to_time',
-                                        dataBindValue: 'to_time',
-                                        class: 'span3',
-                                        elementConfig: qewu.getToTimeElementConfig('from_time', 'to_time'),
-                                        visible: 'time_range() == -1',
                                     },
                                 },
                             ],
@@ -90,13 +71,13 @@ define(function (require) {
                                         path: 'table_name',
                                         dataBindValue: 'table_name',
                                         dataBindOptionList: 'table_name_data_object',
-                                        class: 'span12',
+                                        class: 'col-xs-6',
                                         elementConfig: {
                                             defaultValueId: 0,
                                             allowClear: false,
                                             placeholder: cowl.QE_SELECT_STAT_TABLE,
                                             dataTextField: 'name',
-                                            dataValueField: 'name',
+                                            dataValueField: 'name'
                                         },
                                     },
                                 },
@@ -110,7 +91,7 @@ define(function (require) {
                                     elementId: 'log_level', view: 'FormDropdownView',
                                     viewConfig: { path: 'log_level',
                                         dataBindValue: 'log_level',
-                                        class: 'span3',
+                                        class: 'col-xs-6',
                                         elementConfig: {
                                             dataTextField: 'name',
                                             dataValueField: 'value',
@@ -121,7 +102,7 @@ define(function (require) {
                                     elementId: 'keywords', view: 'FormInputView',
                                     viewConfig: { path: 'keywords',
                                         dataBindValue: 'keywords',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                         placeholder: 'Comma separated keywords' },
                                 },
                             ],
@@ -135,7 +116,7 @@ define(function (require) {
                                     viewConfig: {
                                         path: 'select',
                                         dataBindValue: 'select',
-                                        class: 'span12',
+                                        class: 'col-xs-9',
                                         editPopupConfig: {
                                             renderEditFn: function () {
                                                 var tableName = self.model.table_name();
@@ -146,7 +127,7 @@ define(function (require) {
                                 }, {
                                     elementId: 'time-granularity-section', view: 'FormCompositeView',
                                     viewConfig: {
-                                        class: 'span6',
+                                        class: 'col-xs-3',
                                         style: 'display: none;',
                                         path: 'time_granularity',
                                         label: 'Time Granularity',
@@ -158,7 +139,7 @@ define(function (require) {
                                                     label: false,
                                                     path: 'time_granularity',
                                                     dataBindValue: 'time_granularity',
-                                                    class: 'span4',
+                                                    class: 'col-xs-6',
                                                     elementConfig: {min: 1},
                                                 },
                                             }, {
@@ -168,7 +149,7 @@ define(function (require) {
                                                     path: 'time_granularity_unit',
                                                     dataBindValue: 'time_granularity_unit',
                                                     dataBindOptionList: 'getTimeGranularityUnits()',
-                                                    class: 'span4',
+                                                    class: 'col-xs-6',
                                                     elementConfig: {},
                                                 },
                                             },
@@ -186,7 +167,7 @@ define(function (require) {
                                     viewConfig: {
                                         path: 'where',
                                         dataBindValue: 'where',
-                                        class: 'span12',
+                                        class: 'col-xs-12',
                                         placeHolder: '*',
                                         editPopupConfig: {
                                             renderEditFn: function () {
@@ -206,7 +187,7 @@ define(function (require) {
                                     viewConfig: {
                                         path: 'filters',
                                         dataBindValue: 'filters',
-                                        class: 'span12',
+                                        class: 'col-xs-12',
                                         label: cowl.TITLE_QE_FILTER,
                                         editPopupConfig: {
                                             renderEditFn: function () {
@@ -225,8 +206,11 @@ define(function (require) {
                                     elementId: 'advanced_options', view: 'FormTextView',
                                     viewConfig: {
                                         text: 'getAdvancedOptionsText()',
-                                        class: 'advanced-options-link',
-                                        click: 'toggleAdvancedFields',
+                                        class: 'col-xs-6 margin-0-0-10',
+                                        elementConfig: {
+                                            class: 'advanced-options-link',
+                                        },
+                                        click: 'toggleAdvancedFields'
                                     },
                                 },
                             ],

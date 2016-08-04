@@ -33,7 +33,7 @@ define(function (require) {
                                         label: 'Line Color',
                                         path: 'color',
                                         dataBindValue: 'color',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                     },
                                 }, {
                                     elementId: 'yAxisLabel', view: 'FormInputView',
@@ -41,7 +41,7 @@ define(function (require) {
                                         label: 'y Axis Label',
                                         path: 'yAxisLabel',
                                         dataBindValue: 'yAxisLabel',
-                                        class: 'span6',
+                                        class: 'col-xs-6',
                                     },
                                 },
                             ],
@@ -54,10 +54,10 @@ define(function (require) {
                                         path: 'yAxisValue',
                                         dataBindValue: 'yAxisValue',
                                         dataBindOptionList: 'yAxisValues',
-                                        class: 'span9',
+                                        class: 'col-xs-6',
                                         elementConfig: {
                                             placeholder: 'Select Y Axis Value',
-                                            defaultValueId: 0,
+                                            defaultValueId: 0
                                         },
                                     },
                                 },
