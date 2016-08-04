@@ -9,10 +9,6 @@
         <define>uddapi</define>
         <path>./udd.api</path>
     </require>
-    <require>
-        <define>cdbapi</define>
-        <path>./cdb.api</path>
-    </require>
     <item>
         <url>/api/udd/widget/:id</url>
         <method>put</method>

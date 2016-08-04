@@ -21,7 +21,7 @@ define(function (require) {
                 select: cowc.DEFAULT_SL_SELECT_FIELDS,
                 log_level: '7',
                 keywords: '',
-                limit: cowc.QE_DEFAULT_LIMIT_100,
+                limit: cowc.QE_DEFAULT_LIMIT_50K,
             }
             defaultOptions[cowc.QE_STAT_TABLE_TYPE] = {
                 query_prefix: cowc.STAT_QUERY_PREFIX,
