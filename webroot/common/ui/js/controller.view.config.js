@@ -612,6 +612,7 @@ define([
                 forceY: [0, 1000],
                 tooltipConfigCB: ctwgrc.getPortDistributionTooltipConfig(onScatterChartClick),
                 controlPanelConfig: {
+                    enable: true,
                     filter: {
                         enable: true,
                         iconClass: 'icon-filter',
@@ -622,6 +623,9 @@ define([
                         enable: true,
                         viewConfig: getControlPanelLegendConfig()
                     }
+                },
+                navigationPanelConfig: {
+                    enable: true
                 },
                 clickCB: onScatterChartClick,
                 sizeFieldName: 'flowCnt',
