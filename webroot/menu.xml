@@ -1164,8 +1164,8 @@ and need to add the iconClass tag wherever we need to show some icons
             </access>
             <items>
                 <item>
-                    <label>Dashboard</label>
-                    <iconClass>icon-dashboard</iconClass>
+                    <label>Dashboards</label>
+                    <iconClass>menu-icon fa fa-dashboard</iconClass>
                     <init>/reports/udd/ui/js/udd.init.js</init>
                     <items>
                         <item>

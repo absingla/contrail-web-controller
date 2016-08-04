@@ -28,26 +28,6 @@ define(function (require) {
                         {
                             columns: [
                                 {
-                                    elementId: 'color', view: 'FormInputView',
-                                    viewConfig: {
-                                        label: 'Line Color',
-                                        path: 'color',
-                                        dataBindValue: 'color',
-                                        class: 'col-xs-6',
-                                    },
-                                }, {
-                                    elementId: 'yAxisLabel', view: 'FormInputView',
-                                    viewConfig: {
-                                        label: 'y Axis Label',
-                                        path: 'yAxisLabel',
-                                        dataBindValue: 'yAxisLabel',
-                                        class: 'col-xs-6',
-                                    },
-                                },
-                            ],
-                        }, {
-                            columns: [
-                                {
                                     elementId: 'yAxisValue', view: 'FormDropdownView',
                                     viewConfig: {
                                         label: 'y Axis Value',
@@ -61,6 +41,27 @@ define(function (require) {
                                         },
                                     },
                                 },
+                                {
+                                    elementId: 'yAxisLabel', view: 'FormInputView',
+                                    viewConfig: {
+                                        label: 'y Axis Label',
+                                        path: 'yAxisLabel',
+                                        dataBindValue: 'yAxisLabel',
+                                        class: 'col-xs-6',
+                                    },
+                                },
+                            ],
+                        }, {
+                            columns: [
+                                {
+                                    elementId: 'color', view: 'FormInputView',
+                                    viewConfig: {
+                                        label: 'Line Color',
+                                        path: 'color',
+                                        dataBindValue: 'color',
+                                        class: 'col-xs-6',
+                                    },
+                                }
                             ],
                         },
                     ],

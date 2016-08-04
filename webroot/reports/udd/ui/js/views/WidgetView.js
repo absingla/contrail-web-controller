@@ -145,7 +145,7 @@ define(function (require) {
                                         label: 'Content View',
                                         path: 'contentView',
                                         dataBindValue: 'contentView',
-                                        class: 'col-xs-6 hide',
+                                        class: 'col-xs-6 hidden',
                                         elementConfig: {
                                             data: self._getViewOptionsList(self.model.getContentViewList()),
                                         },
@@ -252,15 +252,15 @@ define(function (require) {
             if (step === self.steps.DATA_CONFIG) {
                 configTitle = 'Data Config: '
                 self.$(self.selectors.back).hide()
-                self.$(self.selectors.contentConfigDropdown).hide()
-                self.$(self.selectors.dataConfigDropdown).show()
+                self.$(self.selectors.contentConfigDropdown).hideElement()
+                self.$(self.selectors.dataConfigDropdown).showElement()
                 self.$('.submit button').html('Next')
             }
             if (step === self.steps.CONTENT_CONFIG) {
                 configTitle = 'Content View Config: '
                 self.$(self.selectors.back).show()
-                self.$(self.selectors.dataConfigDropdown).hide()
-                self.$(self.selectors.contentConfigDropdown).show()
+                self.$(self.selectors.dataConfigDropdown).hideElement()
+                self.$(self.selectors.contentConfigDropdown).showElement()
                 self.$('.submit button').html('Submit')
             }
             self.$(self.selectors.configTitle).html(configTitle)
