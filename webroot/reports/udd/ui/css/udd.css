@@ -34,7 +34,6 @@
 }
 #content-container .area {
   width: 100%;
-  padding: 8px 0;
 }
 #content-container .contrail-tabs-classic .ui-tabs-panel.ui-widget-content, .contrail-widget-tabs .ui-tabs-panel.ui-widget-content {
   padding: 0;
@@ -64,7 +63,7 @@
   right: 4px;
   border: 1px solid #ddd;
   border-radius: 0;
-  margin: 0;
+  margin: 0 0 15px;
 }
 #content-container .area .grid-stack .grid-stack-item .ui-resizable-handle {
   right: 8px;
