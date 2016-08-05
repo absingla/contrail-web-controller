@@ -71,7 +71,9 @@ define([
                                             document.getElementById(modalId));
                             kbValidation.bind(self,{collection:
                                   self.model.model().attributes.PolicyRules});
-                   });
+                            //permissions
+                            ctwu.bindPermissionsValidation(self);
+                   }, null, true);
                    return;
                }
            );
@@ -364,7 +366,7 @@ define([
                     var addrFields = [];
                     addrFields.push({text : 'CIDR', value : 'subnet',
                                     children : [{
-                                        text:'Enter VN:CIDR',
+                                        text:'Enter CIDR or VN:CIDR',
                                         value:"dummy",
                                         disabled : true }]},
                                    {text : 'Network', value : 'virtual_network',
@@ -396,6 +398,7 @@ define([
             elementId: cowu.formatElementId(
                             [prefixId, ctwl.TITLE_EDIT_POLICY]),
             view: "SectionView",
+            title: "Policy", //permissions
             viewConfig:{
             rows: [{
                     columns: [{
@@ -655,7 +658,7 @@ define([
                             },{
                             columns: [
                                 {
-                                     elementId: 'service_instance',
+                                     elementId: 'service_instances',
                                      name: 'Services',
                                      view: "FormMultiselectView",
                                      width: 100,
@@ -705,7 +708,7 @@ define([
                         },{
                             columns: [
                                 {
-                                    elementId: 'qos',
+                                    elementId: 'QoS',
                                     name: 'QoS',
                                     width: 100,
                                     view: "FormDropdownView",

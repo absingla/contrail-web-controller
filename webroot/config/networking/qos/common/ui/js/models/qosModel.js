@@ -4,12 +4,12 @@
 
 define([
     "underscore",
-    "contrail-model",
+    "contrail-config-model",
     "config/networking/qos/common/ui/js/models/forwardingClassPairModel",
     "config/infra/globalconfig/ui/js/globalConfig.utils"
-], function (_, ContrailModel, FCPairModel, globalConfigUtils) {
+], function (_, ContrailConfigModel, FCPairModel, globalConfigUtils) {
     var gcUtils = new globalConfigUtils();
-    var rbacModel = ContrailModel.extend({
+    var rbacModel = ContrailConfigModel.extend({
         defaultConfig: {
             "name": null,
             "fq_name": null,
@@ -25,7 +25,7 @@ define([
             "mpls_exp_entries": {
                 "qos_id_forwarding_class_pair": []
             },
-            "default_forwarding_class_id": null
+            "default_forwarding_class_id": 0
         },
 
         validations: {
@@ -35,9 +35,11 @@ define([
                     msg: "QoS Config Name is required"
                 },
 
-                'default_forwarding_class_id': {
-                    required: true,
-                    msg: "Default Forwarding Class ID is required"
+                'default_forwarding_class_id': function(value, attr, finalObj) {
+                    if(isNaN(value)){
+                        return "Default Forwarding Class ID " +
+                               "should be a number";
+                    }
                 }
             }
         },
@@ -91,7 +93,8 @@ define([
                     new Backbone.Collection(mplsEntryModelArry);
                 modelConfig['display_name'] =
                     ctwu.getDisplayNameOrName(modelConfig);
-
+               //permissions
+               this.formatRBACPermsModelConfig(modelConfig);
             return modelConfig;
         },
 
@@ -191,7 +194,9 @@ define([
                         key : "mpls_exp_entries_fc_pair",
                         type : cowc.OBJECT_TYPE_COLLECTION,
                         getValidation : "mplsValidations"
-                    }
+                    },
+                    //permissions
+                    ctwu.getPermissionsValidation()
                 ];
 
             if (this.isDeepValid(validations)) {
@@ -244,6 +249,9 @@ define([
                 newQOSConfigData["mpls_exp_entries"]
                    ["qos_id_forwarding_class_pair"] =
                     self.getMPLSExpEntries(attr);
+
+                //permissions
+                this.updateRBACPermsAttrs(newQOSConfigData);
 
                 ctwu.deleteCGridData(newQOSConfigData);
 

@@ -67,8 +67,7 @@ define([
                                    portModel.virtualNetworkName());
             }
             portEditView.renderPortPopup({
-                                  "title": ctwl.TITLE_EDIT_PORT +
-                                  ' (' + dataItem.name + ')',
+                                  "title": ctwl.EDIT,
                                   mode: ctwl.EDIT_ACTION,
                                   callback: function () {
                 var dataView =
@@ -146,11 +145,11 @@ define([
                     autoRefresh: false,
                     checkboxSelectable: {
                         onNothingChecked: function(e){
-                            $('#btnDeletePort').addClass(
+                            $('.deletePortClass').parent().addClass(
                                                          'disabled-link');
                         },
                         onSomethingChecked: function(e){
-                            $('#btnDeletePort').removeClass(
+                            $('.deletePortClass').parent().removeClass(
                                                          'disabled-link');
                         }
                     },
@@ -245,8 +244,7 @@ define([
         dropdownActions = [
             {
                 "title" : ctwl.TITLE_DELETE_CONFIG,
-                "id" : "btnDeletePort",
-                "iconClass": 'icon-trash',
+                "iconClass" : "deletePortClass",
                 "onClick" : function() {
                     var checkedRows =
                         $(gridElId).data("contrailGrid").
@@ -295,7 +293,6 @@ define([
                 "type": "dropdown",
                 "title": ctwl.TITLE_DELETE_CONFIG,
                 "iconClass": "icon-trash",
-                "linkElementId": "btnDeletePort",
                 "actions": dropdownActions
             },
             {
@@ -311,7 +308,7 @@ define([
                     showHideModelAttrs(portModel);
                     subscribeModelChangeEvents(portModel, ctwl.CREATE_ACTION);
                     portEditView.renderPortPopup({
-                                     "title": ctwl.TITLE_ADD_PORT,
+                                     "title": ctwl.CREATE,
                                      mode : ctwl.CREATE_ACTION,
                                      callback: function () {
                         var dataView =
@@ -480,8 +477,7 @@ define([
                 formatter: "AAPFormatter"
             }
         }, {
-            key: 'virtual_machine_interface_properties',
-            name:"virtual_machine_interface_properties",
+            key: 'virtual_machine_interface_properties.interface_mirror',
             label:"Mirror to",
             templateGenerator: 'TextGenerator',
             templateGeneratorConfig:{
@@ -561,7 +557,9 @@ define([
                                 templateGenerator: 'BlockListTemplateGenerator',
                                 templateGeneratorConfig:
                                     getBlockListTemplateGeneratorCfg()
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails()]
                         }]
                     }
                 }]

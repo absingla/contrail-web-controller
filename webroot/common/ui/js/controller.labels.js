@@ -339,7 +339,7 @@ define([
         this.TITLE_CONFIGNODE_APISERVER_CPU_MEM_UTILIZATION = 'API Server CPU/Memory Utilization';
         this.TITLE_CONFIGNODE_SERVICE_MONITOR_CPU_MEM_UTILIZATION = 'Service Monitor CPU/Memory Utilization';
         this.TITLE_CONFIGNODE_SCHEMA_CPU_MEM_UTILIZATION = 'Schema CPU/Memory Utilization';
-        this.TITLE_DATABASENODE_DISK_USAGE = 'Database Node Disk Space Usage';
+        this.TITLE_DATABASENODE_DISK_USAGE = 'Disk Usage';
         /**ENDS Titles used in node details chart widget **/
 
         this.X_AXIS_TITLE_PORT = "Port";
@@ -384,7 +384,27 @@ define([
         this.VROUTER_DASHBOARD_CHART_ID = 'vrouter-dashboard-chart';
         this.VROUTER_DASHBOARD_SPARKLINE_ID = 'vrouter-dashboard-sparkline';
         this.VROUTER_DASHBOARD_SECTION_ID = 'vrouter-dashboard-section';
-
+        //Analytics node labels
+        this.ANALYTICS_CHART_SANDESH_SECTION_ID = "analytics-chart-sandesh-section-id";
+        this.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID = "analytics-chart-sandesh-stackedbarchart-id";
+        this.ANALYTICS_CHART_SANDESH_LABEL = "Sandesh messages";
+        this.ANALYTICS_CHART_QUERIES_SECTION_ID = "analytics-chart-queries-section-id";
+        this.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID = "analytics-chart-queries-stackedbarchart-id";
+        this.ANALYTICS_CHART_QUERIES_LABEL = "Queries";
+        this.ANALYTICS_CHART_FAILED_QUERIES = "Failed Queries";
+        this.ANALYTICS_CHART_DATABASE_READ_SECTION_ID = "analytics-chart-database-read-section-id";
+        this.ANALYTICS_CHART_DATABASE_READ_STACKEDBARCHART_ID = "analytics-chart-database-read-stackedbarchart-id";
+        this.ANALYTICS_CHART_DATABASE_READ_LABEL = "DB Reads";
+        this.ANALYTICS_CHART_FAILED_DATABASE_READS = "Failed DB Reads";
+        this.ANALYTICS_CHART_DATABASE_WRITE_SECTION_ID = "analytics-chart-database-write-section-id";
+        this.ANALYTICS_CHART_DATABASE_WRITE_STACKEDBARCHART_ID = "analytics-chart-database-write-stackedbarchart-id";
+        this.ANALYTICS_CHART_DATABASE_WRITE_LABEL = "DB Writes";
+        this.ANALYTICS_CHART_FAILED_DATABASE_WRITES = "Failed DB Writes";
+        this.ANALYTICS_CHART_DATABASE_READ = "table_info.reads";
+        this.ANALYTICS_CHART_DATABASE_READ_FAILS = "table_info.read_fails";
+        this.ANALYTICS_CHART_DATABASE_WRITE = "table_info.writes";
+        this.ANALYTICS_CHART_DATABASE_WRITE_FAILS = "table_info.write_fails";
+        this.ANALYTICS_NODES = 'Analytics Nodes';
         //Config node labels
         this.CONFIGNODE_VIEWPATH_PREFIX = 'monitor/infrastructure/confignode/ui/js/views/';
         this.CONFIGNODE_SUMMARY_PAGE_ID = 'monitor-config-nodes';
@@ -973,11 +993,11 @@ define([
         this.TITLE_EDIT_DNS_RECORD = 'Edit DNS Record';
 
         /* User defined counters labels */
-        this.TITLE_USER_DEFINED_COUNTERS = "Counters"
-        this.TITLE_CREATE_USER_DEFINDED_COUNTER = 'Create Counter';
-        this.TITLE_DEL_USER_DEFINDED_COUNTER = 'Delete Counter';
-        this.TITLE_DEL_USER_DEFINDED_COUNTERS = 'Delete Counter(s)';
-        this.TITLE_EDIT_USER_DEFINDED_COUNTER = 'Edit Counter';
+        this.TITLE_USER_DEFINED_COUNTERS = "Log Statistic"
+        this.TITLE_CREATE_USER_DEFINDED_COUNTER = 'Create Log Statistic';
+        this.TITLE_DEL_USER_DEFINDED_COUNTER = 'Delete Log Statistic';
+        this.TITLE_DEL_USER_DEFINDED_COUNTERS = 'Delete Log Statistic';
+        this.TITLE_EDIT_USER_DEFINDED_COUNTER = 'Edit Log Statistic';
         this.COUNTERS_MUTI_SELECT_DELETE = 'countersMultiSelectDelete';
 
         /* RBAC labels */
@@ -988,6 +1008,9 @@ define([
             "Delete API Access";
         this.TITLE_EDIT_RBAC = 'Edit API Access';
         this.TITLE_INSERT_RBAC = 'Insert API Access';
+
+        this.EDIT = "Edit";
+        this.CREATE = "Create";
 
         /* Config Alarm labels */
         this.TITLE_ALARM_RULE = 'Alarm Rules';

@@ -24,8 +24,8 @@ define(
                         if($.inArray(routerType, ctwc.BGP_AAS_ROUTERS) !== -1) {
                             return true;
                         }
-                        var memCpuUsage = jsonPath(d,'$.value.NodeStatus.process_mem_cpu_usage' +
-                                            '[?(@.module_id=="contrail-control")]')[0];
+                        var memCpuUsage = getValueByJsonPath(d,
+                                'value;NodeStatus;process_mem_cpu_usage;contrail-control',{});
                         obj['x'] = parseInt(getValueByJsonPath(memCpuUsage,'cpu_share'));
                         obj['y'] = parseInt(getValueByJsonPath(memCpuUsage,'mem_res'))/1024;
                         obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : NaN;
@@ -193,8 +193,8 @@ define(
                         var obj = {};
                         var d = result[i];
                         var dValue = result[i]['value'];
-                        var memCpuUsage = jsonPath(d,'$.value.NodeStatus.process_mem_cpu_usage' +
-                            '[?(@.module_id=="contrail-vrouter-agent")]')[0];
+                        var memCpuUsage = getValueByJsonPath(d,
+                                'value;NodeStatus;process_mem_cpu_usage;contrail-vrouter-agent',{});
                         var cpu = getValueByJsonPath(memCpuUsage,'cpu_share','--');
                         var mem = getValueByJsonPath(memCpuUsage,'mem_res','--');
                         obj['cpu'] = $.isNumeric(cpu) ? parseFloat(cpu.
@@ -319,8 +319,8 @@ define(
                                 }
                             });
                             obj['isPartialUveMissing'] = $.isEmptyObject(
-                                    getValueByJsonPath(dValue,
-                                        'NodeStatus;process_mem_cpu_usage;cpu_share')) ||
+                                    getValueByJsonPath(d,
+                                            'value;NodeStatus;process_mem_cpu_usage;contrail-vrouter-agent')) ||
                                 $.isEmptyObject(getValueByJsonPath(dValue,
                                     'VrouterAgent;build_info')) ||
                                 obj['uveIP'].length == 0 ? true : false;
@@ -375,8 +375,8 @@ define(
                     var retArr = [];
                     $.each(result, function(idx, d) {
                         var obj = {};
-                        var memCpuUsage = jsonPath(d,'$.value.NodeStatus.process_mem_cpu_usage' +
-                                            '[?(@.module_id=="contrail-collector")]')[0];
+                        var memCpuUsage = getValueByJsonPath(d,
+                                'value;NodeStatus;process_mem_cpu_usage;contrail-collector',{});
                         obj['x'] = parseInt(getValueByJsonPath(memCpuUsage,'cpu_share'));
                         obj['y'] = parseInt(getValueByJsonPath(memCpuUsage,'mem_res'))/1024;
                         obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : NaN;
@@ -442,9 +442,8 @@ define(
                             infraMonitorAlertUtils.getProcessAlerts(d, obj);
                         obj['isPartialUveMissing'] = false;
                         if (obj['isUveMissing'] == false) {
-                            if (cowu.isEmptyObject(jsonPath(d,
-                                '$.value.NodeStatus.process_mem_cpu_usage'+
-                                '[?(@.module_id=="contrail-collector")].cpu_share')[0])
+                            if (cowu.isEmptyObject(getValueByJsonPath(d,
+                            'value;NodeStatus;process_mem_cpu_usage;contrail-collector'))
                                 || cowu.isEmptyObject(jsonPath(d,
                                         '$.value.CollectorState.build_info')[0])) {
                                         obj['isPartialUveMissing'] = true;
@@ -486,10 +485,17 @@ define(
                     var retArr = [];
                     $.each(result,function(idx,d) {
                         var obj = {};
-                        var memCpuUsage = jsonPath(d,'$.value.NodeStatus.process_mem_cpu_usage' +
-                                            '[?(@.module_id="^contrail-api")]')[0];
-                        obj['x'] = parseInt(getValueByJsonPath(memCpuUsage,'cpu_share'));
-                        obj['y'] = parseInt(getValueByJsonPath(memCpuUsage,'mem_res'))/1024;
+                        var memCpuUsage = getValueByJsonPath(d,'value;NodeStatus;process_mem_cpu_usage',{});
+                        var cpu=0, mem=0;
+                        for (var key in memCpuUsage) {
+                            if (memCpuUsage.hasOwnProperty(key) && key.indexOf('contrail-api') != -1) {
+                                var memcpu = memCpuUsage[key];
+                                cpu += parseInt(getValueByJsonPath(memcpu,'cpu_share'),0);
+                                mem += parseInt(getValueByJsonPath(memcpu,'mem_res'),0)/1024;
+                            }
+                          }
+                        obj['x'] = cpu;
+                        obj['y'] = mem;
                         obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : NaN;
                         obj['memory'] = formatBytes(obj['y']*1024*1024);
                         obj['x'] = $.isNumeric(obj['x']) ? obj['x'] : 0;
@@ -548,7 +554,7 @@ define(
                         }
                         if(cowu.isEmptyObject(jsonPath(d,
                            '$.value.NodeStatus.process_mem_cpu_usage'+
-                           '[?(@.module_id="^contrail-api")]')[0]) ||
+                           '[?(@="^contrail-api")]')[0]) ||
                            cowu.isEmptyObject(jsonPath(d,
                                 '$.value.ModuleCpuState.build_info')[0])) {
                            obj['isPartialUveMissing'] = true;
@@ -714,6 +720,244 @@ define(
                     return buckets;
                 };
 
+                self.parseSandeshMessageStackChartData = function (apiStats) {
+                    var cf =crossfilter(apiStats);
+                    var parsedData = [];
+                    var timeStampField = 'T';
+                    var groupDim = cf.dimension(function(d) { return d["Source"];});
+                    var tsDim = cf.dimension(function(d) { return d[timeStampField];});
+                    var buckets = this.bucketizeConfigNodeStats(apiStats);
+                    var colorCodes = monitorInfraConstants.CONFIGNODE_COLORS;
+                    colorCodes = colorCodes.slice(0, groupDim.group().all().length);
+                    //Now parse this data to be usable in the chart
+                    var parsedData = [];
+                    for(var i  in buckets) {
+                        var y0 = 0, counts = [], totalFailedReqs = 0;
+                        var timestampExtent = buckets[i]['timestampExtent'];
+                        tsDim.filter(timestampExtent);
+                        var reqCntData = groupDim.group().all();
+                        //Getting nodes group with msg_info.messages
+                        var totalResMessages = groupDim.group().reduceSum(
+                            function (d) {
+                                return d['msg_info.messages'];
+                            });
+                        var totalResMessagesArr = totalResMessages.top(Infinity);
+                        var totalResMessagesArrLen = totalResMessagesArr.length;
+                        var totalReqs = 0;
+                        for (var j =0 ; j < totalResMessagesArrLen; j++) {
+                            totalReqs += totalResMessagesArr[j]['value']
+                        }
+                        for(var j=0;j<totalResMessagesArrLen;j++) {
+                            var nodeName = totalResMessagesArr[j]['key'];
+                            var nodeReqCnt = totalResMessagesArr[j]['value'];
+                            var fromTime = new XDate((timestampExtent[0]/1000)).toString('HH:mm');
+                            var toTime = new XDate((timestampExtent[1]/1000)).toString('HH:mm');
+                            counts.push({
+                                name: nodeName,
+                                color: colorCodes[j],
+                                nodeReqCnt: nodeReqCnt,
+                                msgCnt: totalResMessagesArr[j]['value'],
+                                time: contrail.format('{0}', fromTime),
+                                y0:y0,
+                                y1:y0 += nodeReqCnt
+                            });
+                        }
+                        parsedData.push({
+                            colorCodes: colorCodes,
+                            counts: counts,
+                            total: totalReqs,
+                            timestampExtent: timestampExtent,
+                            date: new Date(i / 1000)
+                        });
+                    }
+                    return parsedData;
+                };
+
+                this.parseAnlyticsQueriesChartData = function (apiStats) {
+                    var cf =crossfilter(apiStats);
+                    var parsedData = [];
+                    var timeStampField = 'T';
+                    var groupDim = cf.dimension(function(d) { return d["Source"];});
+                    var tsDim = cf.dimension(function(d) { return d[timeStampField];});
+                    var buckets = this.bucketizeConfigNodeStats(apiStats);
+                    var colorCodes = monitorInfraConstants.CONFIGNODE_COLORS;
+                    colorCodes = colorCodes.slice(0, groupDim.group().all().length);
+                    //Now parse this data to be usable in the chart
+                    var parsedData = [];
+                    for(var i  in buckets) {
+                        var y0 = 0, counts = [], totalFailedReqs = 0;
+                        var timestampExtent = buckets[i]['timestampExtent'];
+                        tsDim.filter(timestampExtent);
+                        var queriesCntData = groupDim.group().all();
+                       //reqCntData
+                        //Getting nodes group with failed requests as value
+                        var reqFailedData = groupDim.group().reduceSum(
+                            function (d) {
+                                if (d['query_stats.error'] != "None") {
+                                    return 1;
+                                } else {
+                                    return 0;
+                                }
+                            });
+                        //Getting nodes group with response time as value
+                        var totalResTimeData = groupDim.group().reduceSum(
+                            function (d) {
+                                return d['name'];
+                            });
+                        var reqFailedArr = reqFailedData.top(Infinity);
+                        var resTimeArr = totalResTimeData.top(Infinity);
+
+                        var reqFailedArrLen = reqFailedArr.length;
+                        var resTimeArrLen = resTimeArr.length;
+                        var reqFailedNodeMap = {}, resTimeNodeMap = {};
+                        //Constructing the node - responsetime map
+                        for (var j = 0; j < resTimeArrLen; j++) {
+                            resTimeNodeMap[resTimeArr[j]['key']] =
+                                resTimeArr[j]['value'];
+                        }
+                        //Constructing the node - failedRequestCnt map
+                        for (var j = 0; j < reqFailedArrLen; j++) {
+                            totalFailedReqs += reqFailedArr[j]['value']
+                            reqFailedNodeMap[reqFailedArr[j]['key']] =
+                                reqFailedArr[j]['value'];
+                        }
+                        var totalReqs = 0;
+                        for (var j = 0, len = queriesCntData.length; j < len; j++) {
+                            totalReqs += queriesCntData[j]['value']
+                        }
+                        counts.push({
+                            name: monitorInfraConstants.CONFIGNODE_FAILEDREQUESTS_TITLE,
+                            totalReqs: totalReqs,
+                            totalFailedReq: totalFailedReqs,
+                            color: monitorInfraConstants.CONFIGNODE_FAILEDREQUESTS_COLOR,
+                            y0: y0,
+                            y1: y0 += totalFailedReqs
+                        });
+                        for(var j=0,len=queriesCntData.length;j<len;j++) {
+                            var nodeName = queriesCntData[j]['key'];
+                            var nodeReqCnt = queriesCntData[j]['value'];
+                            var failedReqPerNode = ifNull(reqFailedNodeMap[nodeName], 0);
+                            var failedReqPerNodePercent = 0;
+                            if (failedReqPerNode != 0 && nodeReqCnt != 0) {
+                                failedReqPerNodePercent = Math.round((failedReqPerNode/nodeReqCnt) * 100);
+                            }
+                            //var avgResTime = Math.round((ifNull(resTimeNodeMap[nodeName], 0)/nodeReqCnt)) / 1000; //Converting to millisecs
+                            var fromTime = new XDate((timestampExtent[0]/1000)).toString('HH:mm');
+                            var toTime = new XDate((timestampExtent[1]/1000)).toString('HH:mm');
+                            counts.push({
+                                name: nodeName,
+                                color: colorCodes[j],
+                                //avgResTime: contrail.format('{0} {1}', avgResTime, 'ms'),
+                                nodeReqCnt: nodeReqCnt,
+                                reqFailPercent: failedReqPerNodePercent,
+                                time: contrail.format('{0}', fromTime),
+                                y0:y0,
+                                y1:y0 += nodeReqCnt
+                            });
+                        }
+                        parsedData.push({
+                            colorCodes: colorCodes,
+                            counts: counts,
+                            total: totalReqs,
+                            timestampExtent: timestampExtent,
+                            date: new Date(i / 1000)
+                        });
+                    }
+                    return parsedData;
+                };
+
+                this.parseAnlyticsNodeDataBaseReadWriteChartData = function (apiStats, reqfailed, reqdata) {
+                    var cf =crossfilter(apiStats);
+                    var parsedData = [];
+                    var timeStampField = 'T';
+                    var groupDim = cf.dimension(function(d) { return d["Source"];});
+                    var tsDim = cf.dimension(function(d) { return d[timeStampField];});
+                    var buckets = this.bucketizeConfigNodeStats(apiStats);
+                    var colorCodes = monitorInfraConstants.CONFIGNODE_COLORS;
+                    colorCodes = colorCodes.slice(0, groupDim.group().all().length);
+                    //Now parse this data to be usable in the chart
+                    var parsedData = [];
+                    for(var i  in buckets) {
+                        var y0 = 0, counts = [], totalFailedReqs = 0;
+                        var timestampExtent = buckets[i]['timestampExtent'];
+                        tsDim.filter(timestampExtent);
+                        var reqCntData = groupDim.group().all();
+
+                        //Getting nodes group with failed requests as value
+                        var reqFailedData = groupDim.group().reduceSum(
+                            function (d) {
+                                if (d[reqfailed] > 0) {
+                                    return 1;
+                                } else {
+                                    return 0;
+                                }
+                            });
+                        //Getting nodes group with response time as value
+
+                        var totalResReadWriteData = groupDim.group().reduceSum(
+                            function (d) {
+                                return d[reqdata];
+                            });
+                        var reqFailedArr = reqFailedData.top(Infinity);
+                        var totalResReadWriteDataArr = totalResReadWriteData.top(Infinity);
+
+                        var reqFailedArrLen = reqFailedArr.length;
+                        var totalResReadWriteDataArrLen = totalResReadWriteDataArr.length;
+                        var reqFailedNodeMap = {}, resTimeNodeMap = {};
+                        //Constructing the node - failedRequestCnt map
+                        for (var j = 0; j < reqFailedArrLen; j++) {
+                            totalFailedReqs += reqFailedArr[j]['value']
+                            reqFailedNodeMap[reqFailedArr[j]['key']] =
+                                reqFailedArr[j]['value'];
+                        }
+                        var totalReqs = 0;
+                        //console.log(totalResTimeData);
+                        if(totalResReadWriteData){
+                            for (var j = 0; j < totalResReadWriteDataArrLen; j++) {
+                                totalReqs += totalResReadWriteDataArr[j]['value']
+                            }
+                        }
+                        counts.push({
+                            name: monitorInfraConstants.CONFIGNODE_FAILEDREQUESTS_TITLE,
+                            totalReqs: totalReqs,
+                            totalFailedReq: totalFailedReqs,
+                            color: monitorInfraConstants.CONFIGNODE_FAILEDREQUESTS_COLOR,
+                            y0: y0,
+                            y1: y0 += totalFailedReqs
+                        });
+                        for (var j = 0; j < totalResReadWriteDataArrLen; j++) {
+                            var nodeName = totalResReadWriteDataArr[j]['key'];
+                            var nodeReqCnt = totalResReadWriteDataArr[j]['value'];
+                            var failedReqPerNode = ifNull(reqFailedNodeMap[nodeName], 0);
+                            var failedReqPerNodePercent = 0;
+                            if (failedReqPerNode != 0 && nodeReqCnt != 0) {
+                                failedReqPerNodePercent = Math.round((failedReqPerNode/nodeReqCnt) * 100);
+                            }
+                            var avgResTime = Math.round((ifNull(resTimeNodeMap[nodeName], 0)/nodeReqCnt)) / 1000; //Converting to millisecs
+                            console.log(avgResTime);
+                            var fromTime = new XDate((timestampExtent[0]/1000)).toString('HH:mm');
+                            var toTime = new XDate((timestampExtent[1]/1000)).toString('HH:mm');
+                            counts.push({
+                                name: nodeName,
+                                color: colorCodes[j],
+                                avgResTime: contrail.format('{0} {1}', avgResTime, 'ms'),
+                                nodeReqCnt: nodeReqCnt,
+                                reqFailPercent: failedReqPerNodePercent,
+                                time: contrail.format('{0}', fromTime),
+                                y0:y0,
+                                y1:y0 += nodeReqCnt
+                            });
+                        }
+                        parsedData.push({
+                            colorCodes: colorCodes,
+                            counts: counts,
+                            total: totalReqs,
+                            timestampExtent: timestampExtent,
+                            date: new Date(i / 1000)
+                        });
+                    }
+                    return parsedData;
+                };
                 this.parseConfigNodeRequestsStackChartData = function (apiStats) {
                     var cf =crossfilter(apiStats);
                     var parsedData = [];
@@ -1482,6 +1726,7 @@ define(
                     var origResponse = response;
                     var isFromACLFlows = false;
                     var ret = [];
+                    var lastFlowReq = false;
                     response = jsonPath(origResponse,"$..SandeshFlowData")[0];
                     if (response == null){
                         isFromACLFlows = true;
@@ -1489,15 +1734,6 @@ define(
                     }
                     var flowKey = jsonPath(origResponse,"$..flow_key")[0];
                     var iterationKey = jsonPath(origResponse,"$..iteration_key")[0];
-                // var retArr = [];
-                /* for (var i = 0; i < response.length; i++) {
-                        var currACL = response[i];
-                        for (var j = 0; j < currACL['flowData'].length; j++) {
-                            var currFlow = currACL['flowData'][j];
-                            var aclUuid = currACL['acl_uuid'];
-                            retArr.push($.extend(currFlow, {acl_uuid:aclUuid}));
-                        }
-                    }*/
                     if( response != null ){
                         if(!(response instanceof Array)){
                             response = [response];
@@ -1549,23 +1785,23 @@ define(
                     if(flowKey != null && !$.isEmptyObject(flowKey)){
                         //Had to add this hack because sometimes we get into to
                         //this parse function twice leading this to be added twice to the stack
-                        if(flowKey != "0:0:0:0:0.0.0.0:0.0.0.0" &&
+                        if(flowKey != "0-0-0-0-0-0.0.0.0-0.0.0.0" &&
                             flowKeyStack[flowKeyStack.length - 1] != flowKey)
                             flowKeyStack.push(flowKey);
                     }
-                    if((flowKey == null) || (flowKey == "0:0:0:0:0.0.0.0:0.0.0.0")) {
+                    if((flowKey == null) || (flowKey == "0-0-0-0-0-0.0.0.0-0.0.0.0")) {
                         lastFlowReq = true;
                     }
                     //Push the aclIterKey to the stack for Next use
                     if(iterationKey != null && !$.isEmptyObject(iterationKey)){
                         //Had to add this hack because sometimes we get into to
                         //this parse function twice leading this to be added twice to the stack
-                        if(iterationKey.indexOf('0:0:0:0:0.0.0.0:0.0.0.0') == -1 &&
+                        if(iterationKey.indexOf('0-0-0-0-0-0.0.0.0-0.0.0.0') == -1 &&
                             aclIterKeyStack[aclIterKeyStack.length - 1] != iterationKey)
                             aclIterKeyStack.push(iterationKey);
                     }
                     //$('#flowCnt').text(response.flowData.length);
-                    return  ret;
+                    return  {data:ret,lastFlowReq:lastFlowReq};
                 }
 
                 self.mergeACLAndSGData = function(sgData,aclListModel) {
