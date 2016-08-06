@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
+ * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 
 .btn {
@@ -63,7 +63,7 @@
   right: 4px;
   border: 1px solid #ddd;
   border-radius: 0;
-  margin: 0 0 15px;
+  margin: 0;
 }
 #content-container .area .grid-stack .grid-stack-item .ui-resizable-handle {
   right: 8px;
