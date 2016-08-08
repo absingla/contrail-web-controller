@@ -73,18 +73,26 @@ define(function (require) {
                         // TODO as we don't know the actual content of the widget use view.update()
                         self.$('#' + tabId + ' svg').trigger('refresh')
                     },
-                    onRemove: function () {
+                    onEdit: function (newTitle) {
                         if (this.model.isEmpty()) return true
-                        var proceed = confirm('Are you sure to delete "' + this.title + '" tab and all of its widgets?')
-                        if (proceed) {
+                        var proceed = false
+                        if (!newTitle) {
+                            proceed = confirm('Are you sure to delete all widgets in this tab?')
+                            if (proceed) {
+                                _.each(this.model.models, function (widget) {
+                                    widget.destroy()
+                                })
+                            }
+                        } else {
                             _.each(this.model.models, function (widget) {
-                                widget.destroy()
+                                widget.set('tabId', newTitle)
+                                widget.save()
                             })
                         }
                         // TODO error handling
                         return proceed
                     },
-                    removable: true,
+                    editable: true,
                 },
             }
             var config = _.extend({}, defaultTabConfig)
