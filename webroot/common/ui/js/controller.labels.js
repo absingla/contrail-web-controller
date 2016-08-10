@@ -396,6 +396,7 @@ define([
         this.ANALYTICS_CHART_DATABASE_READ_STACKEDBARCHART_ID = "analytics-chart-database-read-stackedbarchart-id";
         this.ANALYTICS_CHART_DATABASE_READ_LABEL = "DB Reads";
         this.ANALYTICS_CHART_FAILED_DATABASE_READS = "Failed DB Reads";
+        this.ANALYTICS_CHART_DATABASE_USAGE = "DB Usage";
         this.ANALYTICS_CHART_DATABASE_WRITE_SECTION_ID = "analytics-chart-database-write-section-id";
         this.ANALYTICS_CHART_DATABASE_WRITE_STACKEDBARCHART_ID = "analytics-chart-database-write-stackedbarchart-id";
         this.ANALYTICS_CHART_DATABASE_WRITE_LABEL = "DB Writes";
@@ -405,6 +406,10 @@ define([
         this.ANALYTICS_CHART_DATABASE_WRITE = "table_info.writes";
         this.ANALYTICS_CHART_DATABASE_WRITE_FAILS = "table_info.write_fails";
         this.ANALYTICS_NODES = 'Analytics Nodes';
+        this.CACHE_ANALYTICSNODE_SANDESH_CHARTS = 'cache-analyticsnode-sandesh-charts';
+        this.CACHE_ANALYTICSNODE_QUERIES_CHARTS = 'cache-analyticsnode-queries-charts';
+        this.CACHE_ANALYTICSNODE_DATABASEREADWRITE_CHARTS = 'cache-analyticsnode-databsereadwrite-charts';
+        this.CACHE_DATABASE_USAGE_CHARTS = 'cache-databse-usage-charts';
         //Config node labels
         this.CONFIGNODE_VIEWPATH_PREFIX = 'monitor/infrastructure/confignode/ui/js/views/';
         this.CONFIGNODE_SUMMARY_PAGE_ID = 'monitor-config-nodes';
@@ -1020,9 +1025,9 @@ define([
         this.TITLE_CREATE_ALARM_RULE = 'Create Alarm Rule';
         this.TXT_CONFIG_ALARM_RULE = 'rule';
         this.CONFIG_ALARM_TEXT_MAP = {
-             2: 'Critical',
-             3: 'Major',
-             4: 'Minor'
+             0: 'Critical',
+             1: 'Major',
+             2: 'Minor'
         };
 
         //Config DB Labels - Start
