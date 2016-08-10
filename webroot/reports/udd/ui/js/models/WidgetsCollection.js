@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
+ * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 define(function (require) {
     var Backbone = require('backbone')
@@ -34,6 +34,13 @@ define(function (require) {
         tabIds: function (dashboardId) {
             var self = this
             return _.uniq(self.filterBy(dashboardId).pluck('tabId'))
+        },
+
+        getTabName: function (tabId) {
+            var self = this
+            var tabName = ''
+            if (self.models[0]) tabName = self.models[0].get('tabName') || self.models[0].get('tabId')
+            return tabName 
         },
     })
     return WidgetsCollection

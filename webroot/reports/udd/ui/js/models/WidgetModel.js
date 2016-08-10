@@ -158,6 +158,7 @@ define(function (require) {
             var result = {
                 dashboardId: attrs.dashboardId,
                 tabId: attrs.tabId,
+                tabName: attrs.tabName,
                 config: {
                     title: configModel.title(),
                     x: configModel.x(),

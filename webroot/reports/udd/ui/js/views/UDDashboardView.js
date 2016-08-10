@@ -4,6 +4,7 @@
 
 define(function (require) {
     var ContrailView = require('contrail-view')
+    var qewu = require('core-basedir/js/common/qe.utils')
 
     var UDDashboardView = ContrailView.extend({
         el: $(window.contentContainer),
@@ -15,7 +16,7 @@ define(function (require) {
             var urlParams = window.layoutHandler.getURLHashObj()
             // get dashboard and tab ids from url params / loaded widgets or generate default
             self.currentDashboard = urlParams.p.split('_').slice(-1).pop() || self.model.dashboardIds()[0] || 'udd0'
-            self.currentTab = urlParams.tab || self.model.tabIds(self.currentDashboard)[0] || 'tab1'
+            self.currentTab = urlParams.tab || self.model.tabIds(self.currentDashboard)[0] || qewu.generateQueryUUID().slice(0, 36)
 
             // TODO render dashboards in menu
             self.renderView4Config(self.$el, null, self.getViewConfig())
@@ -46,7 +47,8 @@ define(function (require) {
                                         active: currentTabNumber,
                                         tabs: tabs,
                                         onAdd: function (title) {
-                                            this.renderNewTab('widget-layout-tabs-view', [self.getTabViewConfig(title)], true)
+                                            var tabViewConfigs = [self.getTabViewConfig(qewu.generateQueryUUID().slice(0, 36), title)]
+                                            this.renderNewTab('widget-layout-tabs-view', tabViewConfigs, true)
                                         },
                                         extendable: true,
                                     },
@@ -58,7 +60,7 @@ define(function (require) {
             }
         },
 
-        getTabViewConfig: function (tabId) {
+        getTabViewConfig: function (tabId, tabName) {
             var self = this
 
             var defaultTabConfig = {
@@ -67,6 +69,7 @@ define(function (require) {
                 viewConfig: {
                     dashboardId: self.currentDashboard,
                     tabId: tabId,
+                    tabName: tabName,
                 },
                 tabConfig: {
                     activate: function (event, ui) {
@@ -85,7 +88,7 @@ define(function (require) {
                             }
                         } else {
                             _.each(this.model.models, function (widget) {
-                                widget.set('tabId', newTitle)
+                                widget.set('tabName', newTitle)
                                 widget.save()
                             })
                         }
@@ -97,8 +100,8 @@ define(function (require) {
             }
             var config = _.extend({}, defaultTabConfig)
             config.elementId = tabId
-            config.title = tabId
             config.model = self.model.filterBy(self.currentDashboard, tabId)
+            config.title = tabName || config.model.getTabName(tabId)
             config.viewConfig.tabId = tabId
             return config
         },

@@ -71,6 +71,7 @@ define(function (require) {
             self.model.add({
                 dashboardId: self.p.dashboardId,
                 tabId: self.p.tabId,
+                tabName: self.p.tabName,
                 config: {x: x, y: y, width: 1, height: self.p.minHeight},
             })
         },
