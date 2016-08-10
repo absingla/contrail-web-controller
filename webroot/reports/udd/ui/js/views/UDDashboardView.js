@@ -79,6 +79,7 @@ define(function (require) {
                     onEdit: function (newTitle) {
                         var proceed = false
                         if (!newTitle) {
+                            if (this.model.isEmpty()) return true
                             proceed = confirm('Are you sure to delete all widgets in this tab?')
                             if (proceed) {
                                 _.each(this.model.models, function (widget) {
@@ -95,7 +96,7 @@ define(function (require) {
             var config = _.extend({}, defaultTabConfig)
             config.elementId = tabId
             config.model = self.model.filterBy(self.currentDashboard, tabId)
-            if (_.isEmpty(self.model.models)) {
+            if (config.model.isEmpty()) {
                 config.title = tabName || tabId
                 config.model.setTabName(config.title)
             } else config.title = config.model.getTabName(tabId)
