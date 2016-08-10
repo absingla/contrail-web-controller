@@ -8,7 +8,7 @@ var cassandra = require('cassandra-driver')
 var uddKeyspace = 'config_webui'
 var client = new cassandra.Client({ contactPoints: config.cassandra.server_ips, keyspace: 'system' })
 client.execute('SELECT keyspace_name FROM system.schema_keyspaces;', function (err, result) {
-    console.error(err)
+    if (err) return console.error(err)
     if (_.isEmpty(_.filter(result.rows, ['keyspace_name', uddKeyspace]))) {
     // if (client.metadata.keyspaces[uddKeyspace]) {
     // TODO why all keyspaces are nested inside one of them in client.metadata.keyspaces?
@@ -19,21 +19,11 @@ client.execute('SELECT keyspace_name FROM system.schema_keyspaces;', function (e
         var q5 = 'CREATE INDEX ON user_widgets ("userId");'
 
         client.execute(q1, function (err1, result1) {
-            console.log(result1)
-            console.log(err1)
             client = connectDB()
             client.execute(q2, function (err2, result2) {
-                console.log(result2)
-                console.log(err2)
                 client.execute(q3, function (err3, result3) {
-                    console.log(result3)
-                    console.log(err3)
                     client.execute(q4, function (err4, result4) {
-                        console.log(result4)
-                        console.log(err4)
                         client.execute(q5, function (err5, result5) {
-                            console.log(result5)
-                            console.log(err5)
                         })
                     })
                 })
