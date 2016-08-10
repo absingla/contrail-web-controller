@@ -171,9 +171,10 @@ define([
                         view: "InstancePortDistributionView",
                         viewPathPrefix: "monitor/networking/ui/js/views/",
                         tabConfig: {
-                            activate: function(event, ui) {
-                                $('#' + ctwl.INSTANCE_PORT_DIST_CHART_ID).trigger('refresh');
-                            }
+                            renderOnActivate: true,
+                            // activate: function(event, ui) {
+                            //     $('#' + ctwl.INSTANCE_PORT_DIST_CHART_ID).trigger('refresh');
+                            // }
                         },
                         viewConfig: {
                             modelKey: ctwc.get(ctwc.UMID_INSTANCE_UVE, instanceUUID),
@@ -606,36 +607,70 @@ define([
 
         self.getPortDistChartOptions = function() {
             return {
-                xLabel: ctwl.X_AXIS_TITLE_PORT,
-                yLabel: ctwl.Y_AXIS_TITLE_BW,
-                forceX: [0, 1000],
-                forceY: [0, 1000],
-                tooltipConfigCB: ctwgrc.getPortDistributionTooltipConfig(onScatterChartClick),
-                controlPanelConfig: {
+                controlPanel: {
                     enable: true,
                     filter: {
                         enable: true,
                         iconClass: 'icon-filter',
                         title: 'Filter',
                         viewConfig: getControlPanelFilterConfig()
-                    },
-                    legend: {
-                        enable: true,
-                        viewConfig: getControlPanelLegendConfig()
                     }
                 },
-                navigationPanelConfig: {
-                    enable: true
+                navigation: {
+                    enable: true,
+                    marginLeft: 70,
+                    xAccessor: 'x',
+                    accessorData: {
+                        'y' : {
+                            label: 'Bandwidth (Last 10 Mins)',
+                            enable: true,
+                            y: 1,
+                            tooltip : {
+                                nameFormatter: function(name) {
+                                    return "Bandwidth";
+                                },
+                                valueFormatter: function(value) {
+                                    return formatBytes(value * 1024, false, 2, 3);
+                                }
+                            }
+                        }
+                    }
                 },
-                clickCB: onScatterChartClick,
-                sizeFieldName: 'flowCnt',
-                xLabelFormat: d3.format(','),
-                yLabelFormat: function (yValue) {
-                    var formattedValue = formatBytes(yValue, false, null, 1);
-                    return formattedValue;
+                mainChart: {
+                    xLabel: ctwl.X_AXIS_TITLE_PORT,
+                    yLabel: ctwl.Y_AXIS_TITLE_BW,
+                    forceX: [0, 1000],
+                    forceY: [0, 1000],
+                    tooltip: {
+                        contentCB: ctwgrc.getPortDistributionTooltipConfig(onScatterChartClick),
+                        clickCB: onScatterChartClick,
+                    },
+                    xAccessor: 'x',
+                    xLabelFormat: d3.format(','),
+                    yLabelFormat: function (yValue) {
+                        var formattedValue = formatBytes(yValue, false, null, 1);
+                        return formattedValue;
+                    },
+                    marginLeft: 70,
+                    accessorData: {
+                        'y' : {
+                            label: 'Bandwidth (Last 10 Mins)',
+                            enable: true,
+                            y: 1,
+                            sizeAccessor: 'flowCnt',
+                            shape: 'circle',
+                            tooltip : {
+                                nameFormatter: function(name) {
+                                    return "Bandwidth";
+                                },
+                                valueFormatter: function(value) {
+                                    return formatBytes(value * 1024, false, 2, 3);
+                                }
+                            }
+                        }
+                    }
                 },
-                margin: {left: 70},
-                noDataMessage: cowm.DATA_SUCCESS_EMPTY
+                noDataMessage: cowm.DATA_SUCCESS_EMPTY,
             }
         };
 
