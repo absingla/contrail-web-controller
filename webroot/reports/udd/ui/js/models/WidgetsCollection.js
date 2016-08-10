@@ -36,11 +36,19 @@ define(function (require) {
             return _.uniq(self.filterBy(dashboardId).pluck('tabId'))
         },
 
-        getTabName: function (tabId) {
+        setTabName: function (tabName) {
             var self = this
-            var tabName = ''
-            if (self.models[0]) tabName = self.models[0].get('tabName') || self.models[0].get('tabId')
-            return tabName 
+            self.tabName = tabName
+            _.each(self.models, function (widget) {
+                widget.set('tabName', tabName)
+                widget.save()
+            })
+        },
+        // each tab has its own collection
+        getTabName: function () {
+            var self = this
+            if (self.models[0]) self.tabName = self.models[0].get('tabName') || self.models[0].get('tabId')
+            return self.tabName
         },
     })
     return WidgetsCollection

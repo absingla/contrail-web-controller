@@ -77,7 +77,6 @@ define(function (require) {
                         self.$('#' + tabId + ' svg').trigger('refresh')
                     },
                     onEdit: function (newTitle) {
-                        if (this.model.isEmpty()) return true
                         var proceed = false
                         if (!newTitle) {
                             proceed = confirm('Are you sure to delete all widgets in this tab?')
@@ -86,12 +85,7 @@ define(function (require) {
                                     widget.destroy()
                                 })
                             }
-                        } else {
-                            _.each(this.model.models, function (widget) {
-                                widget.set('tabName', newTitle)
-                                widget.save()
-                            })
-                        }
+                        } else this.model.setTabName(newTitle)
                         // TODO error handling
                         return proceed
                     },
@@ -101,7 +95,11 @@ define(function (require) {
             var config = _.extend({}, defaultTabConfig)
             config.elementId = tabId
             config.model = self.model.filterBy(self.currentDashboard, tabId)
-            config.title = tabName || config.model.getTabName(tabId)
+            if (_.isEmpty(self.model.models)) {
+                config.title = tabName || tabId
+                config.model.setTabName(config.title)
+            } else config.title = config.model.getTabName(tabId)
+
             config.viewConfig.tabId = tabId
             return config
         },
