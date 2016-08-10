@@ -71,7 +71,7 @@ define(function (require) {
                                         path: 'table_name',
                                         dataBindValue: 'table_name',
                                         dataBindOptionList: 'table_name_data_object',
-                                        class: 'col-xs-6',
+                                        class: 'col-xs-12',
                                         elementConfig: {
                                             defaultValueId: 0,
                                             allowClear: false,
@@ -116,7 +116,7 @@ define(function (require) {
                                     viewConfig: {
                                         path: 'select',
                                         dataBindValue: 'select',
-                                        class: 'col-xs-9',
+                                        class: 'col-xs-12',
                                         editPopupConfig: {
                                             renderEditFn: function () {
                                                 var tableName = self.model.table_name();
@@ -127,7 +127,7 @@ define(function (require) {
                                 }, {
                                     elementId: 'time-granularity-section', view: 'FormCompositeView',
                                     viewConfig: {
-                                        class: 'col-xs-3',
+                                        class: 'col-xs-6',
                                         style: 'display: none;',
                                         path: 'time_granularity',
                                         label: 'Time Granularity',
