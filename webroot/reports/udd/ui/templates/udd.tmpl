@@ -1,5 +1,3 @@
-<!-- Copyright (c) 2014 Juniper Networks, Inc. All rights reserved. -->
-
 <script type="text/x-handlebars-template" id="query-select-popup-template">
     <form id="{{queryPrefix}}-select-popup-form" onsubmit="return false;">
         <div class="row" data-bind="visible: select_data_object().requestState() == cowc.DATA_REQUEST_STATE_FETCHING">
@@ -33,20 +31,4 @@
             </div>
         </div>
     </form>
-</script>
-
-<script type="text/x-handlebars-template" id="session-analyzer-view-template">
-    <div id="qe-{{queryPrefix}}-container" class="row">
-        {{#if text}}
-        <div id='qe-{{queryPrefix}}-text-container' class="row">
-            <div id='qe-{{queryPrefix}}-text{{saQueryIdSuffix}}' class="row"></div>
-        </div>
-        {{/if}}
-        <div id='qe-{{queryPrefix}}-chart-container' class="row">
-            <div id='qe-{{queryPrefix}}-result-chart{{saQueryIdSuffix}}' class="row"></div>
-        </div>
-        <div id="qe-{{queryPrefix}}-tab-container" class="margin-10-0-0 row">
-            <div id='qe-{{queryPrefix}}-result-tab{{saQueryIdSuffix}}' class="row"></div>
-        </div>
-    </div>
 </script>

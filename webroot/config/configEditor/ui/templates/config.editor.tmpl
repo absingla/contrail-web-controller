@@ -1,7 +1,7 @@
 <!-- Copyright (c) 2016 Juniper Networks, Inc. All rights reserved. -->
 
 <script type="text/x-handlebars-template" id="config-editor-href-container">
-    <div class="config-editor-header row margin-5-0">
+    <div class="config-editor-header">
         <div class="copy-config-object">
             <button class="button btn btn-mini json-editor-btn-copy"><i class="fa fa-files-o"></i></button>
             <span class="config-text">Copy</span>
@@ -11,7 +11,7 @@
     <textarea id='hiddenTextArea'></textarea>
 </script>
 <script type="text/x-handlebars-template" id="config-editor-template">
-    <div id="jsonContainer" class="row margin-0-0-5">
+    <div id="jsonContainer" class="span6 row-fluid margin-0-0-5" style="width:100%;float:left;">
         <div class="config-editor-header">
             <div class="copy-config-object">
                 <button class="button btn btn-mini json-editor-btn-copy" title="Copy Raw JSON"><i class="fa fa-files-o"></i></button>
@@ -38,18 +38,18 @@
                 <span class="config-text">Reset</span>
             </div>
         </div>
-        <div class='object-json-view scroll-container'></div>
-        <div class='object-text-area-view scroll-container hide-header-icon'>
+        <div class='object-json-view scroll-container row-fluid'></div>
+        <div class='object-text-area-view scroll-container row-fluid hide-header-icon'>
             <textarea id='jsonTextArea' class="scroll-container config-scroll-color" spellcheck='false'></textarea>
         </div>
         <textarea id='hiddenTextArea'></textarea>
     </div>
-    <div id="editorContainer" class="row margin-0-0-5 hide-header-icon" style="width:50.35%;float:right;">
+    <div id="editorContainer" class="row-fluid margin-0-0-5 span6 hide-header-icon" style="width:50.35%;float:right;">
         <div>
             <button class="save-form-object button btn btn-mini json-editor-btn-create" title="Save"><i class="fa fa-save"></i></button>
             <button class="cancel-config-form button btn btn-mini json-editor-btn-create" title="Cancel"><i class="fa fa-remove"></i></button>
             <button class="reset-config-form button btn btn-mini json-editor-btn-create" title="Reset"><i class="fa fa-undo"></i></button>
         </div>
-        <div id="jsonEditorContainer" class="scroll-container row margin-0-0-5 span6"></div>
-   </div>
+        <div id="jsonEditorContainer" class="scroll-container row-fluid margin-0-0-5 span6"></div>
+    </div>
 </script>

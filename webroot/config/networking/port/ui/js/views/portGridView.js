@@ -12,26 +12,26 @@ define([
 ], function (_, Backbone, PortModel, PortEditView,
              PortFormatters, ContrailView) {
     var portEditView = new PortEditView(),
-        portFormatters = new PortFormatters(),
-        gridElId = "#" + ctwc.PORT_GRID_ID;
+      portFormatters = new PortFormatters(),
+      gridElId = "#" + ctwc.PORT_GRID_ID;
 
     var portGridView = ContrailView.extend({
         el: $(contentContainer),
 
         render: function () {
             var self = this,
-                viewConfig = this.attributes.viewConfig,
-                pagerOptions = viewConfig['pagerOptions'];
+              viewConfig = this.attributes.viewConfig,
+              pagerOptions = viewConfig['pagerOptions'];
             portEditView.selectedProjectId = viewConfig.selectedProjectId;
             self.renderView4Config(self.$el, self.model,
-                                  getPortGridViewConfig(viewConfig));
+              getPortGridViewConfig(viewConfig));
         }
     });
 
     var getPortGridViewConfig = function (viewConfig) {
         return {
             elementId: cowu.formatElementId
-                            ([ctwc.CONFIG_PORT_LIST_VIEW_ID]),
+            ([ctwc.CONFIG_PORT_LIST_VIEW_ID]),
             view: "SectionView",
             viewConfig: {
                 rows: [
@@ -42,7 +42,7 @@ define([
                                 title: ctwl.CONFIG_PORT_TITLE,
                                 view: "GridView",
                                 viewConfig: {
-                                   elementConfig: getConfiguration(viewConfig)
+                                    elementConfig: getConfiguration(viewConfig)
                                 }
                             }
                         ]
@@ -55,7 +55,7 @@ define([
         var rowActionConfig = [];
         rowActionConfig.push(ctwgc.getEditConfig('Edit', function(rowIndex) {
             var dataItem =
-                $(gridElId).data('contrailGrid')._dataView.getItem(rowIndex);
+              $(gridElId).data('contrailGrid')._dataView.getItem(rowIndex);
 
             var portModel = new PortModel(dataItem);
             portEditView.model = portModel;
@@ -64,71 +64,72 @@ define([
             subscribeModelChangeEvents(portModel, ctwl.EDIT_ACTION);
             if (portModel.mirrorToRoutingInstance() == "") {
                 portModel.updateMirrorRoutingInterface(portModel,
-                                   portModel.virtualNetworkName());
+                  portModel.virtualNetworkName());
             }
             portEditView.renderPortPopup({
-                                  "title": ctwl.EDIT,
-                                  mode: ctwl.EDIT_ACTION,
-                                  callback: function () {
-                var dataView =
-                    $(gridElId).data("contrailGrid")._dataView;
-                dataView.refreshData();
-            }});
+                "title": ctwl.TITLE_EDIT_PORT +
+                ' (' + dataItem.name + ')',
+                mode: ctwl.EDIT_ACTION,
+                callback: function () {
+                    var dataView =
+                      $(gridElId).data("contrailGrid")._dataView;
+                    dataView.refreshData();
+                }});
         }));
         if(!portFormatters.isSubInterface(dc)) {
-        rowActionConfig.push(ctwgc.getEditConfig('Add SubInterface',
-            function(rowIndex) {
-            var gridDataItem =
-                $(gridElId).data('contrailGrid')._dataView.getItem(rowIndex);
-            var dataItem = {};
-            dataItem.virtual_network_refs = gridDataItem.virtual_network_refs;
-            var vmiData = {};
-            vmiData.uuid = gridDataItem.uuid;
-            vmiData.to = gridDataItem.fq_name;
-            var virtualMachineInterfaceRefs = [];
-            virtualMachineInterfaceRefs.push(vmiData);
-            dataItem.virtual_machine_interface_refs = virtualMachineInterfaceRefs;
-            dataItem.is_sub_interface = true;
-            dataItem.disable_sub_interface = true;
-            dataItem.securityGroupValue = portFormatters.getProjectFqn()+":default";
-            dataItem.is_sec_grp = true;
-            dataItem.virtual_machine_interface_properties = {};
-            dataItem.virtual_machine_interface_properties.sub_interface_vlan_tag
-                                                            = 'addSubInterface';
-            var portModel = new PortModel(dataItem);
-            portEditView.model = portModel;
-            showHideModelAttrs(portModel);
-            subscribeModelChangeEvents(portModel, ctwl.CREATE_ACTION);
-            portModel.updateMirrorRoutingInterface(portModel, portModel.virtualNetworkName());
-            portEditView.renderPortPopup({
-                                  "title": ctwl.TITLE_ADD_SUBINTERFACE +
-                                  '  to port (' + gridDataItem.name + ')',
-                                  mode: ctwl.CREATE_ACTION,
-                                  callback: function () {
-                var dataView =
-                    $(gridElId).data("contrailGrid")._dataView;
-                dataView.refreshData();
-            }});
-        }));
+            rowActionConfig.push(ctwgc.getEditConfig('Add SubInterface',
+              function(rowIndex) {
+                  var gridDataItem =
+                    $(gridElId).data('contrailGrid')._dataView.getItem(rowIndex);
+                  var dataItem = {};
+                  dataItem.virtual_network_refs = gridDataItem.virtual_network_refs;
+                  var vmiData = {};
+                  vmiData.uuid = gridDataItem.uuid;
+                  vmiData.to = gridDataItem.fq_name;
+                  var virtualMachineInterfaceRefs = [];
+                  virtualMachineInterfaceRefs.push(vmiData);
+                  dataItem.virtual_machine_interface_refs = virtualMachineInterfaceRefs;
+                  dataItem.is_sub_interface = true;
+                  dataItem.disable_sub_interface = true;
+                  dataItem.securityGroupValue = portFormatters.getProjectFqn()+":default";
+                  dataItem.is_sec_grp = true;
+                  dataItem.virtual_machine_interface_properties = {};
+                  dataItem.virtual_machine_interface_properties.sub_interface_vlan_tag
+                    = 'addSubInterface';
+                  var portModel = new PortModel(dataItem);
+                  portEditView.model = portModel;
+                  showHideModelAttrs(portModel);
+                  subscribeModelChangeEvents(portModel, ctwl.CREATE_ACTION);
+                  portModel.updateMirrorRoutingInterface(portModel, portModel.virtualNetworkName());
+                  portEditView.renderPortPopup({
+                      "title": ctwl.TITLE_ADD_SUBINTERFACE +
+                      '  to port (' + gridDataItem.name + ')',
+                      mode: ctwl.CREATE_ACTION,
+                      callback: function () {
+                          var dataView =
+                            $(gridElId).data("contrailGrid")._dataView;
+                          dataView.refreshData();
+                      }});
+              }));
         }
         rowActionConfig.push(
-        ctwgc.getDeleteConfig('Delete', function(rowIndex) {
-            var rowNum = this.rowIdentifier;
-            var dataItem =
+          ctwgc.getDeleteConfig('Delete', function(rowIndex) {
+              var rowNum = this.rowIdentifier;
+              var dataItem =
                 $(gridElId).data('contrailGrid')._dataView.getItem(rowIndex);
 
-            var portModel = new PortModel(dataItem);
-            portEditView.model = portModel;
-            portEditView.renderDeletePort({
-                                  "title": ctwl.TITLE_PORT_DETETE,
-                                  selectedGridData: [dataItem],
-                                  selectedProjectId: viewConfig.selectedProjectId,
-                                  callback: function() {
-                var dataView =
-                    $(gridElId).data("contrailGrid")._dataView;
-                dataView.refreshData();
-            }});
-        }));
+              var portModel = new PortModel(dataItem);
+              portEditView.model = portModel;
+              portEditView.renderDeletePort({
+                  "title": ctwl.TITLE_PORT_DETETE,
+                  selectedGridData: [dataItem],
+                  selectedProjectId: viewConfig.selectedProjectId,
+                  callback: function() {
+                      var dataView =
+                        $(gridElId).data("contrailGrid")._dataView;
+                      dataView.refreshData();
+                  }});
+          }));
         return rowActionConfig;
     }
     var getConfiguration = function (viewConfig) {
@@ -138,26 +139,26 @@ define([
                     text: ctwl.CONFIG_PORT_TITLE
                 },
                 advanceControls : getHeaderActionConfig(
-                                     "#" + ctwc.PORT_GRID_ID, viewConfig)
+                  "#" + ctwc.PORT_GRID_ID, viewConfig)
             },
             body: {
                 options: {
                     autoRefresh: false,
                     checkboxSelectable: {
                         onNothingChecked: function(e){
-                            $('.deletePortClass').parent().addClass(
-                                                         'disabled-link');
+                            $('#btnDeletePort').addClass(
+                              'disabled-link');
                         },
                         onSomethingChecked: function(e){
-                            $('.deletePortClass').parent().removeClass(
-                                                         'disabled-link');
+                            $('#btnDeletePort').removeClass(
+                              'disabled-link');
                         }
                     },
                     actionCell: getRowActionConfig,
                     detail: {
                         template: cowu.generateDetailTemplateHTML(
-                                            getPortDetailsTemplateConfig(),
-                                            cowc.APP_CONTRAIL_CONTROLLER)
+                          getPortDetailsTemplateConfig(),
+                          cowc.APP_CONTRAIL_CONTROLLER)
                     }
                 },
                 dataSource: {
@@ -176,13 +177,13 @@ define([
             },
             footer: {
                 pager: contrail.handleIfNull
-                                    (viewConfig.pagerOptions,
-                                        { options:
-                                          { pageSize: 5,
-                                            pageSizeSelect: [5, 10, 50, 100]
-                                          }
-                                        }
-                                    )
+                (viewConfig.pagerOptions,
+                  { options:
+                  { pageSize: 5,
+                      pageSizeSelect: [5, 10, 50, 100]
+                  }
+                  }
+                )
             }
         };
         return gridElementConfig;
@@ -195,7 +196,7 @@ define([
             name:"UUID",
             minWidth : 280,
             sortable: {
-               sortBy: 'formattedValue'
+                sortBy: 'formattedValue'
             },
             formatter: portFormatters.uuidWithName
         },
@@ -205,7 +206,7 @@ define([
             name:"Network",
             minWidth : 230,
             sortable: {
-               sortBy: 'formattedValue'
+                sortBy: 'formattedValue'
             },
             formatter: portFormatters.networkFormater
         },
@@ -214,7 +215,7 @@ define([
             field:"fixed_ip",
             name:"Fixed IPs",
             sortable: {
-               sortBy: 'formattedValue'
+                sortBy: 'formattedValue'
             },
             minWidth : 200,
             formatter: portFormatters.fixedIPFormater
@@ -223,7 +224,7 @@ define([
             field:"floating_ip",
             name:"Floating IPs",
             sortable: {
-               sortBy: 'formattedValue'
+                sortBy: 'formattedValue'
             },
             minWidth : 200,
             formatter: portFormatters.floatingIPFormatter
@@ -232,7 +233,7 @@ define([
             field:"virtual_machine_interface_device_owner",
             name:"Device",
             sortable: {
-               sortBy: 'formattedValue'
+                sortBy: 'formattedValue'
             },
             minWidth : 180,
             formatter: portFormatters.deviceOwnerFormatter
@@ -244,24 +245,25 @@ define([
         dropdownActions = [
             {
                 "title" : ctwl.TITLE_DELETE_CONFIG,
-                "iconClass" : "deletePortClass",
+                "id" : "btnDeletePort",
+                "iconClass": 'fa fa-trash',
                 "onClick" : function() {
                     var checkedRows =
-                        $(gridElId).data("contrailGrid").
-                        getCheckedRows();
+                      $(gridElId).data("contrailGrid").
+                      getCheckedRows();
                     if(checkedRows.length > 0 ) {
                         var portModel = new PortModel();
                         portEditView.model = portModel;
                         portEditView.renderDeletePort(
-                            {"title": ctwl.TITLE_DELETE_CONFIG,
-                                selectedGridData: checkedRows,
-                                selectedProjectId: viewConfig.selectedProjectId,
-                                callback: function () {
-                                    var dataView =
-                                        $(gridElId).data("contrailGrid")._dataView;
-                                    dataView.refreshData();
-                                }
-                            }
+                          {"title": ctwl.TITLE_DELETE_CONFIG,
+                              selectedGridData: checkedRows,
+                              selectedProjectId: viewConfig.selectedProjectId,
+                              callback: function () {
+                                  var dataView =
+                                    $(gridElId).data("contrailGrid")._dataView;
+                                  dataView.refreshData();
+                              }
+                          }
                         );
                     }
                 }
@@ -273,51 +275,52 @@ define([
                     var portModel = new PortModel();
                     portEditView.model = portModel;
                     portEditView.renderDeleteAllPort(
-                        {"title": ctwl.TITLE_PORT_DETETE,
-                            selectedProjectId: viewConfig.selectedProjectId,
-                            callback: function () {
-                                var dataView =
-                                    $(gridElId).
-                                    data("contrailGrid")._dataView;
-                                dataView.is_sec_grp = true;
-                                dataView.refreshData();
-                            }
-                        }
+                      {"title": ctwl.TITLE_PORT_DETETE,
+                          selectedProjectId: viewConfig.selectedProjectId,
+                          callback: function () {
+                              var dataView =
+                                $(gridElId).
+                                data("contrailGrid")._dataView;
+                              dataView.is_sec_grp = true;
+                              dataView.refreshData();
+                          }
+                      }
                     );
                 }
             }
         ];
         var headerActionConfig =
-        [
-            {
-                "type": "dropdown",
-                "title": ctwl.TITLE_DELETE_CONFIG,
-                "iconClass": "fa fa-trash",
-                "actions": dropdownActions
-            },
-            {
-                "type": "link",
-                "title": ctwl.TITLE_ADD_PORT,
-                "iconClass": "fa fa-plus",
-                "onClick": function () {
-                    var dataItem = {};
-                    dataItem.securityGroupValue = portFormatters.getProjectFqn()+":default";
-                    dataItem.is_sec_grp = true;
-                    var portModel = new PortModel(dataItem);
-                    portEditView.model = portModel;
-                    showHideModelAttrs(portModel);
-                    subscribeModelChangeEvents(portModel, ctwl.CREATE_ACTION);
-                    portEditView.renderPortPopup({
-                                     "title": ctwl.CREATE,
-                                     mode : ctwl.CREATE_ACTION,
-                                     callback: function () {
-                        var dataView =
-                            $(gridElId).data("contrailGrid")._dataView;
-                        dataView.refreshData();
-                    }});
-                }
-            }
-        ];
+          [
+              {
+                  "type": "dropdown",
+                  "title": ctwl.TITLE_DELETE_CONFIG,
+                  "iconClass": "fa fa-trash",
+                  "linkElementId": "btnDeletePort",
+                  "actions": dropdownActions
+              },
+              {
+                  "type": "link",
+                  "title": ctwl.TITLE_ADD_PORT,
+                  "iconClass": "fa fa-plus",
+                  "onClick": function () {
+                      var dataItem = {};
+                      dataItem.securityGroupValue = portFormatters.getProjectFqn()+":default";
+                      dataItem.is_sec_grp = true;
+                      var portModel = new PortModel(dataItem);
+                      portEditView.model = portModel;
+                      showHideModelAttrs(portModel);
+                      subscribeModelChangeEvents(portModel, ctwl.CREATE_ACTION);
+                      portEditView.renderPortPopup({
+                          "title": ctwl.TITLE_ADD_PORT,
+                          mode : ctwl.CREATE_ACTION,
+                          callback: function () {
+                              var dataView =
+                                $(gridElId).data("contrailGrid")._dataView;
+                              dataView.refreshData();
+                          }});
+                  }
+              }
+          ];
         return headerActionConfig;
     };
 
@@ -343,203 +346,204 @@ define([
     };
     function getBlockListTemplateGeneratorCfg() {
         var blockList = [{
-            key: 'virtual_network_refs',
-            name: 'virtual_network_refs',
-            label:'Network',
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "networkFormater"
-            }
-        }, {
-            key: 'uuid',
-            name: 'uuid',
-            templateGenerator: 'TextGenerator'
-        }, {
-            key: 'name',
-            name:"name",
-            label:"Name",
-            templateGenerator: 'TextGenerator'
-        }, {
-            key: 'display_name',
-            name:"display_name",
-            label:"Display Name",
-            templateGenerator: 'TextGenerator'
-        }, {
-            key: 'id_perms',
-            name:"id_perms",
-            label: 'Admin State',
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "AdminStateFormatter"
-            }
-        }, {
-            key: 'virtual_machine_interface_mac_addresses',
-            label: 'MAC Address',
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "MACAddressFormatter"
-            }
-        }, {
-            key: 'instance_ip_back_refs',
-            name:"Fixed IPs",
-            label:"Fixed IPs",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "fixedIPFormaterExpand"
-            }
-        }, {
-            key: 'floating_ip_back_refs',
-            name:"floating_ip_back_refs",
-            label:"Floating IPs",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "floatingIPFormatter"
-            }
-        }, {
-            key: 'security_group_refs',
-            name:"security_group_refs",
-            label:"Security Groups",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "sgFormater"
-            }
-        }, {
-            key: 'virtual_machine_interface_dhcp_option_list',
-            name:"virtual_machine_interface_dhcp_option_list",
-            label:"DHCP Options",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "DHCPFormatter"
-            }
-        }, {
-            key: 'interface_route_table_refs',
-            name:"interface_route_table_refs",
-            label:"Static Routes",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "staticRoutFormatter"
-            }
-        }, {
-            key: 'service_health_check_refs',
-            name:"service_health_check_refs",
-            label:"Service Health Check",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "serviceHealthCheckFormatter"
-            }
-        }, {
-            label: 'QoS',
-            key: 'qos_config_refs',
-            templateGenerator:
+              key: 'virtual_network_refs',
+              name: 'virtual_network_refs',
+              label:'Network',
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "networkFormater"
+              }
+          }, {
+              key: 'uuid',
+              name: 'uuid',
+              templateGenerator: 'TextGenerator'
+          }, {
+              key: 'name',
+              name:"name",
+              label:"Name",
+              templateGenerator: 'TextGenerator'
+          }, {
+              key: 'display_name',
+              name:"display_name",
+              label:"Display Name",
+              templateGenerator: 'TextGenerator'
+          }, {
+              key: 'id_perms',
+              name:"id_perms",
+              label: 'Admin State',
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "AdminStateFormatter"
+              }
+          }, {
+              key: 'virtual_machine_interface_mac_addresses',
+              label: 'MAC Address',
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "MACAddressFormatter"
+              }
+          }, {
+              key: 'instance_ip_back_refs',
+              name:"Fixed IPs",
+              label:"Fixed IPs",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "fixedIPFormaterExpand"
+              }
+          }, {
+              key: 'floating_ip_back_refs',
+              name:"floating_ip_back_refs",
+              label:"Floating IPs",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "floatingIPFormatter"
+              }
+          }, {
+              key: 'security_group_refs',
+              name:"security_group_refs",
+              label:"Security Groups",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "sgFormater"
+              }
+          }, {
+              key: 'virtual_machine_interface_dhcp_option_list',
+              name:"virtual_machine_interface_dhcp_option_list",
+              label:"DHCP Options",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "DHCPFormatter"
+              }
+          }, {
+              key: 'interface_route_table_refs',
+              name:"interface_route_table_refs",
+              label:"Static Routes",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "staticRoutFormatter"
+              }
+          }, {
+              key: 'service_health_check_refs',
+              name:"service_health_check_refs",
+              label:"Service Health Check",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "serviceHealthCheckFormatter"
+              }
+          }, {
+              label: 'QoS',
+              key: 'qos_config_refs',
+              templateGenerator:
                 'TextGenerator',
-            templateGeneratorConfig: {
-                formatter:
+              templateGeneratorConfig: {
+                  formatter:
                     'QoSFormatter',
-            }
-        }, {
-            key: 'virtual_machine_interface_properties',
-            name:"virtual_machine_interface_properties",
-            label:"Local Preference",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "localPrefFormater"
-            }
-        }, {
-            key: 'ecmp_hashing_include_fields',
-            name:"ecmp_hashing_include_fields",
-            label:"ECMP Hashing Fields",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "ECMPHashingFormatter"
-            }
-        }, {
-            key: 'virtual_machine_interface_fat_flow_protocols',
-            name:"virtual_machine_interface_fat_flow_protocols",
-            label:"FatFlow",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "FatFlowFormatter"
-            }
-        }, {
-            key: 'virtual_machine_interface_bindings',
-            name:"virtual_machine_interface_bindings",
-            label:"Bindings",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "PortBindingFormatter"
-            }
-        }, {
-            key: 'virtual_machine_interface_allowed_address_pairs',
-            name:"virtual_machine_interface_allowed_address_pairs",
-            label:"Allowed address pairs",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "AAPFormatter"
-            }
-        }, {
-            key: 'virtual_machine_interface_properties.interface_mirror',
-            label:"Mirror to",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "mirrorFormatter"
-            }
-        },  {
-            key: 'virtual_machine_interface_refs',
-            name:"virtual_machine_interface_refs",
-            label:"Sub Interfaces",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "childrensUUID"
-            }
-        }, {
-            key: 'virtual_machine_interface_properties',
-            name:"virtual_machine_interface_properties",
-            label:"Sub Interface VLAN",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "subInterfaceVXLANUUID"
-            }
-        }, {
-            key: 'virtual_machine_interface_properties.sub_interface_vlan_tag',
-            name:"virtual_machine_interface_refs.sub_interface_vlan_tag",
-            label:"Parent Port",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "parentUUIDFormatter"
-            }
-        }, {
-            key: 'virtual_machine_interface_disable_policy',
-            name:"virtual_machine_interface_disable_policy",
-            label:"Disable Policy",
-            templateGenerator: 'TextGenerator',
-            templateGeneratorConfig:{
-                formatter: "disablePolicyFormatter"
-            }
-        }],
+              }
+          }, {
+              key: 'virtual_machine_interface_properties',
+              name:"virtual_machine_interface_properties",
+              label:"Local Preference",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "localPrefFormater"
+              }
+          }, {
+              key: 'ecmp_hashing_include_fields',
+              name:"ecmp_hashing_include_fields",
+              label:"ECMP Hashing Fields",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "ECMPHashingFormatter"
+              }
+          }, {
+              key: 'virtual_machine_interface_fat_flow_protocols',
+              name:"virtual_machine_interface_fat_flow_protocols",
+              label:"FatFlow",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "FatFlowFormatter"
+              }
+          }, {
+              key: 'virtual_machine_interface_bindings',
+              name:"virtual_machine_interface_bindings",
+              label:"Bindings",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "PortBindingFormatter"
+              }
+          }, {
+              key: 'virtual_machine_interface_allowed_address_pairs',
+              name:"virtual_machine_interface_allowed_address_pairs",
+              label:"Allowed address pairs",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "AAPFormatter"
+              }
+          }, {
+              key: 'virtual_machine_interface_properties',
+              name:"virtual_machine_interface_properties",
+              label:"Mirror to",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "mirrorFormatter"
+              }
+          },  {
+              key: 'virtual_machine_interface_refs',
+              name:"virtual_machine_interface_refs",
+              label:"Sub Interfaces",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "childrensUUID"
+              }
+          }, {
+              key: 'virtual_machine_interface_properties',
+              name:"virtual_machine_interface_properties",
+              label:"Sub Interface VLAN",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "subInterfaceVXLANUUID"
+              }
+          }, {
+              key: 'virtual_machine_interface_properties.sub_interface_vlan_tag',
+              name:"virtual_machine_interface_refs.sub_interface_vlan_tag",
+              label:"Parent Port",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "parentUUIDFormatter"
+              }
+          }, {
+              key: 'virtual_machine_interface_disable_policy',
+              name:"virtual_machine_interface_disable_policy",
+              label:"Disable Policy",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "disablePolicyFormatter"
+              }
+          }],
 
-        deviceOwnerTemplate = {
-                key: 'virtual_machine_interface_device_owner',
-                name:"virtual_machine_interface_device_owner",
-                label:"Device",
-                templateGenerator: 'TextGenerator',
-                templateGeneratorConfig:{
-                    formatter: "deviceOwnerFormatter"
-                }
-        },
+          deviceOwnerTemplate = {
+              key: 'virtual_machine_interface_device_owner',
+              name:"virtual_machine_interface_device_owner",
+              label:"Device",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "deviceOwnerFormatter"
+              }
+          },
 
-        deviceOwnerUUIDTemplate = {
-                key: 'virtual_machine_interface_device_owner',
-                name:"virtual_machine_interface_device_owner",
-                label:"Device ID",
-                templateGenerator: 'TextGenerator',
-                templateGeneratorConfig:{
-                    formatter: "deviceUUIDFormatter"
-                }
-        };
+          deviceOwnerUUIDTemplate = {
+              key: 'virtual_machine_interface_device_owner',
+              name:"virtual_machine_interface_device_owner",
+              label:"Device ID",
+              templateGenerator: 'TextGenerator',
+              templateGeneratorConfig:{
+                  formatter: "deviceUUIDFormatter"
+              }
+          };
 
         if(!isVCenter()){
             blockList.splice(10, 0,
-                    deviceOwnerTemplate, deviceOwnerUUIDTemplate);
+              deviceOwnerTemplate, deviceOwnerUUIDTemplate);
         }
         return blockList;
     };
@@ -556,10 +560,8 @@ define([
                                 title: ctwl.TITLE_PORT_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',
                                 templateGeneratorConfig:
-                                    getBlockListTemplateGeneratorCfg()
-                            },
-                            //permissions
-                            ctwu.getRBACPermissionExpandDetails()]
+                                  getBlockListTemplateGeneratorCfg()
+                            }]
                         }]
                     }
                 }]
@@ -569,10 +571,10 @@ define([
 
     function subscribeModelChangeEvents(portModel, mode) {
         portModel.__kb.view_model.model().on('change:virtualNetworkName',
-            function(model, newValue){
-                portModel.onVNSelectionChanged(portFormatters, newValue, mode);
-                portModel.updateMirrorRoutingInterface(portModel, newValue);
-            }
+          function(model, newValue){
+              portModel.onVNSelectionChanged(portFormatters, newValue, mode);
+              portModel.updateMirrorRoutingInterface(portModel, newValue);
+          }
         );
     };
     this.networkFormater = function (v, dc) {
@@ -643,7 +645,7 @@ define([
     };
     this.QoSFormatter = function (v, dc) {
         return portFormatters.qosExpansionFormatter(null,
-                                        null, null, null, dc);
+          null, null, null, dc);
     };
     return portGridView;
 });

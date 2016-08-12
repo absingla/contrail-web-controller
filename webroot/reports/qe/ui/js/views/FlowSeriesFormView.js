@@ -13,16 +13,16 @@ define([
     var FlowSeriesFormView = QueryFormView.extend({
         render: function () {
             var self = this,
-                viewConfig = self.attributes.viewConfig,
-                modelMap = contrail.handleIfNull(self.modelMap, {}),
-                hashParams = layoutHandler.getURLHashParams(),
-                queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
-                queryType = contrail.checkIfExist(hashParams.queryType) ? hashParams.queryType : null,
-                widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
-                queryPrefix = cowc.FS_QUERY_PREFIX,
-                queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_FORM_SUFFIX,
-                flowSeriesId = cowl.QE_FLOW_SERIES_ID,
-                queryFormAttributes = contrail.checkIfExist(hashParams.queryFormAttributes) ? hashParams.queryFormAttributes : {};
+              viewConfig = self.attributes.viewConfig,
+              modelMap = contrail.handleIfNull(self.modelMap, {}),
+              hashParams = layoutHandler.getURLHashParams(),
+              queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
+              queryType = contrail.checkIfExist(hashParams.queryType) ? hashParams.queryType : null,
+              widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
+              queryPrefix = cowc.FS_QUERY_PREFIX,
+              queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_FORM_SUFFIX,
+              flowSeriesId = cowl.QE_FLOW_SERIES_ID,
+              queryFormAttributes = contrail.checkIfExist(hashParams.queryFormAttributes) ? hashParams.queryFormAttributes : {};
 
             if (queryType === cowc.QUERY_TYPE_MODIFY) {
                 queryFormAttributes.from_time = parseInt(queryFormAttributes.from_time_utc);
@@ -42,7 +42,7 @@ define([
                     }
                 });
 
-               qewu.adjustHeight4FormTextarea(queryPrefix);
+                qewu.adjustHeight4FormTextarea(queryPrefix);
 
                 if (queryType === cowc.QUERY_TYPE_RERUN) {
                     self.renderQueryResult();
@@ -56,13 +56,13 @@ define([
 
         renderQueryResult: function() {
             var self = this,
-                viewConfig = self.attributes.viewConfig,
-                widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
-                modelMap = contrail.handleIfNull(self.modelMap, {}),
-                queryFormModel = self.model,
-                queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_FORM_SUFFIX,
-                queryResultId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_RESULTS_SUFFIX,
-                queryResultTabId = cowl.QE_FLOW_SERIES_TAB_ID, serverCurrentTime;
+              viewConfig = self.attributes.viewConfig,
+              widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
+              modelMap = contrail.handleIfNull(self.modelMap, {}),
+              queryFormModel = self.model,
+              queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_FORM_SUFFIX,
+              queryResultId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FS_QUERY_PREFIX + cowc.QE_RESULTS_SUFFIX,
+              queryResultTabId = cowl.QE_FLOW_SERIES_TAB_ID, serverCurrentTime;
 
             if (widgetConfig !== null) {
                 $(queryFormId).parents('.widget-box').data('widget-action').collapse();
@@ -71,35 +71,35 @@ define([
             queryFormModel.is_request_in_progress(true);
             qewu.fetchServerCurrentTime(function(serverCurrentTime) {
                 var timeRange = parseInt(queryFormModel.time_range()),
-                    queryRequestPostData = queryFormModel.getQueryRequestPostData(serverCurrentTime);
+                  queryRequestPostData = queryFormModel.getQueryRequestPostData(serverCurrentTime);
 
                 self.renderView4Config($(queryResultId), self.model,
-                    getQueryResultTabViewConfig(queryRequestPostData, queryResultTabId), null, null, modelMap,
-                    function() {
-                        var queryResultTabView = self.childViewMap[queryResultTabId],
-                            queryResultListModel = modelMap[cowc.UMID_QUERY_RESULT_LIST_MODEL];
+                  getQueryResultTabViewConfig(queryRequestPostData, queryResultTabId), null, null, modelMap,
+                  function() {
+                      var queryResultTabView = self.childViewMap[queryResultTabId],
+                        queryResultListModel = modelMap[cowc.UMID_QUERY_RESULT_LIST_MODEL];
 
-                        if (!(queryResultListModel.isRequestInProgress()) && queryResultListModel.getItems().length > 0) {
-                            self.renderQueryResultChartTab(queryResultTabView, queryResultTabId, queryFormModel, queryRequestPostData)
-                            queryFormModel.is_request_in_progress(false);
-                        } else {
-                            queryResultListModel.onAllRequestsComplete.subscribe(function () {
-                                if (queryResultListModel.getItems().length > 0) {
-                                    self.renderQueryResultChartTab(queryResultTabView, queryResultTabId, queryFormModel, queryRequestPostData)
-                                }
-                                queryFormModel.is_request_in_progress(false);
-                            });
-                        }
-                });
+                      if (!(queryResultListModel.isRequestInProgress()) && queryResultListModel.getItems().length > 0) {
+                          self.renderQueryResultChartTab(queryResultTabView, queryResultTabId, queryFormModel, queryRequestPostData)
+                          queryFormModel.is_request_in_progress(false);
+                      } else {
+                          queryResultListModel.onAllRequestsComplete.subscribe(function () {
+                              if (queryResultListModel.getItems().length > 0) {
+                                  self.renderQueryResultChartTab(queryResultTabView, queryResultTabId, queryFormModel, queryRequestPostData)
+                              }
+                              queryFormModel.is_request_in_progress(false);
+                          });
+                      }
+                  });
             });
         },
 
         renderSessionAnalyzer: function (elementId, sessionAnalyzerViewConfig) {
             var self = this,
-                childViewMap = self.childViewMap,
-                modelMap = contrail.handleIfNull(self.modelMap, {}),
-                queryResultTabsId = cowl.QE_FLOW_SERIES_TAB_ID,
-                queryResultTabsView = contrail.checkIfExist(childViewMap[queryResultTabsId]) ? childViewMap[queryResultTabsId] : null;
+              childViewMap = self.childViewMap,
+              modelMap = contrail.handleIfNull(self.modelMap, {}),
+              queryResultTabsId = cowl.QE_FLOW_SERIES_TAB_ID,
+              queryResultTabsView = contrail.checkIfExist(childViewMap[queryResultTabsId]) ? childViewMap[queryResultTabsId] : null;
 
             if (queryResultTabsView != null) {
                 queryResultTabsView.renderNewTab(queryResultTabsId, [sessionAnalyzerViewConfig], true, modelMap, null);
@@ -109,15 +109,15 @@ define([
 
         renderQueryResultChartTab: function(queryResultTabView, queryResultTabId, queryFormModel, queryRequestPostData) {
             var self = this,
-                viewConfig = self.attributes.viewConfig,
-                queryFormAttributes = contrail.checkIfExist(viewConfig.queryFormAttributes) ? viewConfig.queryFormAttributes : {},
-                formQueryIdSuffix = (!$.isEmptyObject(queryFormAttributes)) ? '-' + queryFormAttributes.queryId : '',
-                flowSeriesChartId = cowl.QE_FLOW_SERIES_CHART_ID + formQueryIdSuffix,
-                selectArray = queryFormModel.select().replace(/ /g, "").split(",");
+              viewConfig = self.attributes.viewConfig,
+              queryFormAttributes = contrail.checkIfExist(viewConfig.queryFormAttributes) ? viewConfig.queryFormAttributes : {},
+              formQueryIdSuffix = (!$.isEmptyObject(queryFormAttributes)) ? '-' + queryFormAttributes.queryId : '',
+              flowSeriesChartId = cowl.QE_FLOW_SERIES_CHART_ID + formQueryIdSuffix,
+              selectArray = queryFormModel.select().replace(/ /g, "").split(",");
 
             if (selectArray.indexOf("T=") !== -1 && $('#' + flowSeriesChartId).length === 0) {
                 queryResultTabView
-                    .renderNewTab(queryResultTabId, getQueryResultChartViewConfig(queryRequestPostData, self.el.id));
+                .renderNewTab(queryResultTabId, getQueryResultChartViewConfig(queryRequestPostData, self.el.id));
             }
         },
 
@@ -133,7 +133,7 @@ define([
                                 {
                                     elementId: 'time_range', view: "FormDropdownView",
                                     viewConfig: {
-                                        path: 'time_range', dataBindValue: 'time_range', class: "col-xs-3", help: 'reports/qe/flows/flow_series/time_range',
+                                        path: 'time_range', dataBindValue: 'time_range', class: "col-xs-3",
                                         elementConfig: {dataTextField: "text", dataValueField: "id", data: cowc.TIMERANGE_DROPDOWN_VALUES}}
                                 },
                                 {
@@ -160,7 +160,7 @@ define([
                             columns: [
                                 {
                                     elementId: 'select', view: "FormTextAreaView",
-                                    viewConfig: {path: 'select', dataBindValue: 'select', class: "col-xs-9", help: 'reports/qe/flows/flow_series/select', editPopupConfig: {
+                                    viewConfig: {path: 'select', dataBindValue: 'select', class: "col-xs-9", editPopupConfig: {
                                         renderEditFn: function() {
                                             self.renderSelect({className: cowc.QE_MODAL_CLASS_700});
                                         }
@@ -234,10 +234,10 @@ define([
                                     elementId: 'filters', view: "FormTextAreaView",
                                     viewConfig: {
                                         path: 'filters', dataBindValue: 'filters', class: "col-xs-9", label: cowl.TITLE_QE_FILTER, editPopupConfig: {
-                                        renderEditFn: function() {
-                                            self.renderFilters({className: cowc.QE_MODAL_CLASS_700});
-                                        }
-                                    }}
+                                            renderEditFn: function() {
+                                                self.renderFilters({className: cowc.QE_MODAL_CLASS_700});
+                                            }
+                                        }}
                                 }
                             ]
                         },
@@ -326,8 +326,8 @@ define([
 
     function getQueryResultChartViewConfig(queryRequestPostData, clickOutElementId) {
         var queryResultChartId = cowl.QE_FLOW_SERIES_CHART_ID,
-            queryResultChartGridId = cowl.QE_FLOW_SERIES_CHART_GRID_ID,
-            flowSeriesChartTabViewConfig = [];
+          queryResultChartGridId = cowl.QE_FLOW_SERIES_CHART_GRID_ID,
+          flowSeriesChartTabViewConfig = [];
 
         flowSeriesChartTabViewConfig.push({
             elementId: queryResultChartId,

@@ -3,30 +3,35 @@
  */
 
 define([
-    'underscore',
+    'lodash',
     'knockout',
     'query-form-model',
-    'core-basedir/js/common/qe.model.config'
-], function (_, Knockout, QueryFormModel,qewmc) {
+    'core-basedir/js/common/qe.model.config',
+    'core-constants',
+], function (_, Knockout, QueryFormModel, qewmc, cowc) {
     var ObjectLogsFormModel = QueryFormModel.extend({
 
         defaultSelectFields: [],
 
-        constructor: function (modelData, queryReqConfig) {
-            var defaultConfig = qewmc.getQueryModelConfig({table_type: cowc.QE_OBJECT_TABLE_TYPE, query_prefix: cowc.OBJECT_LOGS_PREFIX, limit: cowc.QE_DEFAULT_LIMIT_50K});
+        constructor: function (modelConfig, queryReqConfig) {
+            var defaultConfig = qewmc.getQueryModelConfig({
+                table_type: cowc.QE_OBJECT_TABLE_TYPE,
+                query_prefix: cowc.OBJECT_LOGS_PREFIX,
+                limit: cowc.QE_DEFAULT_LIMIT_50K,
+            })
 
-            modelData = $.extend(true, {}, defaultConfig, modelData);
-            QueryFormModel.prototype.constructor.call(this, modelData, $.extend(true, queryReqConfig, {chunkSize: cowc.QE_RESULT_CHUNK_SIZE_10K}));
+            var modelData = _.merge(defaultConfig, modelConfig)
+            _.merge({chunkSize: cowc.QE_RESULT_CHUNK_SIZE_10K}, queryReqConfig)
+            QueryFormModel.prototype.constructor.call(this, modelData, queryReqConfig)
 
             return this;
         },
 
-        isTableNameAvailable: function() {
+        isTableNameAvailable: function () {
             var tableName = this.table_name();
-
             return !(tableName === null || tableName === '');
-        }
-    });
+        },
+    })
 
     return ObjectLogsFormModel;
 });

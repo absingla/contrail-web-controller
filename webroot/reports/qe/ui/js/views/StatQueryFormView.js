@@ -12,7 +12,7 @@ define([
 
     var StatQueryFormView = QueryFormView.extend({
         render: function () {
-            var self = this, viewConfig = self.attributes.viewConfig,
+            var self = this
                 viewConfig = self.attributes.viewConfig,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),

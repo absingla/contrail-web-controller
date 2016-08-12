@@ -6,25 +6,6 @@ textarea[name="select"] {
 .select-label {
     width: 100%; text-overflow: ellipsis; overflow-x: hidden;
 }
-.advanced-options-link{
-    font-size:10px;
-    color:#999;
-    cursor:pointer;
-}
-.advanced-options-link:hover{
-    color:#3182bd;
-}
-
-.select-aggregate-header {
-    border-bottom: 1px solid #EEEEEE;
-    padding: 5px 0;
-}
-.select-aggregate-header h4 {
-    margin: 0;
-}
-.select-aggregate-body {
-    padding: 8px 0;
-}
 .where-textarea, .filter-textarea {
     padding-right: 30px;
     resize: none;
@@ -152,7 +133,4 @@ a.selectAllLink:hover {
 }
 .and-clause-collection .collection-actions-add a {
     color: #3182bd;
-}
-.paddingright{
-    padding-right: 20px;
 }

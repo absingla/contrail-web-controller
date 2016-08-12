@@ -92,7 +92,7 @@ define([
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 selectedFlowRecord = contrail.checkIfExist(selectedFlowRecord) ? selectedFlowRecord : viewConfig['selectedFlowRecord'],
-                queryFormAttributes = self.model.getFormModelAttributes(),
+                queryFormAttributes = self.model.toJSON(),
                 queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FR_QUERY_PREFIX + cowc.QE_FORM_SUFFIX,
                 queryResultId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.FR_QUERY_PREFIX + cowc.QE_RESULTS_SUFFIX,
                 queryResultTabsId = cowl.QE_FLOW_RECORD_TAB_ID,
@@ -343,7 +343,7 @@ define([
         return [{
             elementId: cowl.QE_SESSION_ANALYZER_VIEW_ID + '-' +queryId + '-' + selectedFlowRecord.cgrid,
             title: cowl.TITLE_SESSION_ANALYZER,
-            iconClass: 'icon-bar-chart',
+            iconClass: 'fa fa-bar-chart-o',
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewPathPrefix: 'controller-basedir/reports/qe/ui/js/views/',
             view: 'SessionAnalyzerView',

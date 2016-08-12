@@ -8,53 +8,53 @@ define([
     'knockback'
 ], function (_, ContrailView, Knockback) {
     var gridElId = '#' + ctwc.GLOBAL_BGP_OPTIONS_GRID_ID,
-        prefixId = ctwc.GLOBAL_BGP_OPTIONS_PREFIX_ID,
-        modalId = 'configure-' + prefixId,
-        formId = '#' + modalId + '-form';
+      prefixId = ctwc.GLOBAL_BGP_OPTIONS_PREFIX_ID,
+      modalId = 'configure-' + prefixId,
+      formId = '#' + modalId + '-form';
 
     var bgpOptionsEditView = ContrailView.extend({
         renderEditBGPOptions: function(options) {
             var editTemplate =
                 contrail.getTemplate4Id(ctwl.TMPL_CORE_GENERIC_EDIT),
-                editLayout = editTemplate({prefixId: prefixId, modalId: modalId}),
-                self = this;
+              editLayout = editTemplate({prefixId: prefixId, modalId: modalId}),
+              self = this;
             cowu.createModal({'modalId': modalId, 'className': 'modal-700',
-                             'title': options['title'], 'body': editLayout,
-                             'onSave': function () {
-                self.model.configureBGPOptions({
-                    init: function () {
-                        cowu.enableModalLoading(modalId);
-                    },
-                    success: function () {
-                        options['callback']();
-                        $("#" + modalId).modal('hide');
-                    },
-                    error: function (error) {
-                        cowu.disableModalLoading(modalId, function () {
-                            self.model.showErrorAttr(prefixId +
-                                                     cowc.FORM_SUFFIX_ID,
-                                                     error.responseText);
-                        });
-                    }
-                });
-                // TODO: Release binding on successful configure
-            }, 'onCancel': function () {
-                Knockback.release(self.model, document.getElementById(modalId));
-                kbValidation.unbind(self);
-                $("#" + modalId).modal('hide');
-            }});
+                'title': options['title'], 'body': editLayout,
+                'onSave': function () {
+                    self.model.configureBGPOptions({
+                        init: function () {
+                            cowu.enableModalLoading(modalId);
+                        },
+                        success: function () {
+                            options['callback']();
+                            $("#" + modalId).modal('hide');
+                        },
+                        error: function (error) {
+                            cowu.disableModalLoading(modalId, function () {
+                                self.model.showErrorAttr(prefixId +
+                                  cowc.FORM_SUFFIX_ID,
+                                  error.responseText);
+                            });
+                        }
+                    });
+                    // TODO: Release binding on successful configure
+                }, 'onCancel': function () {
+                    Knockback.release(self.model, document.getElementById(modalId));
+                    kbValidation.unbind(self);
+                    $("#" + modalId).modal('hide');
+                }});
 
             self.renderView4Config($("#" + modalId).find(formId),
-                                   this.model,
-                                   bgpOptionsViewConfig(),
-                                   "bgpOptionsValidations",
-                                   null, null, function() {
-                self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
-                Knockback.applyBindings(self.model,
-                                        document.getElementById(modalId));
-                kbValidation.bind(self, {collection:
-                                  self.model.model().attributes.ipFabricSubnets});
-            });
+              this.model,
+              bgpOptionsViewConfig(),
+              "bgpOptionsValidations",
+              null, null, function() {
+                  self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
+                  Knockback.applyBindings(self.model,
+                    document.getElementById(modalId));
+                  kbValidation.bind(self, {collection:
+                  self.model.model().attributes.ipFabricSubnets});
+              });
         }
     });
 
@@ -95,37 +95,37 @@ define([
                                 elementId: "ipFabric_subnets_accordion",
                                 view: "AccordianView",
                                 viewConfig: [
-                                   {
-                                       elementId: "ipFabric_subnets_section",
-                                       title : "IP Fabric Subnets",
-                                       view : "SectionView",
-                                       viewConfig : {
-                                           rows : ipFabriSubnetSection()
-                                       }
-                                   }
+                                    {
+                                        elementId: "ipFabric_subnets_section",
+                                        title : "IP Fabric Subnets",
+                                        view : "SectionView",
+                                        viewConfig : {
+                                            rows : ipFabriSubnetSection()
+                                        }
+                                    }
                                 ]
                             }
                         ]
                     }/*,
-                    {
-                        columns : [
-                            {
-                                elementId: "graceful_restart_accordion",
-                                view: "AccordianView",
-                                viewConfig: [
-                                   {
-                                       elementId: "graceful_restart_section",
-                                       title : "Graceful Restart",
-                                       view : "SectionView",
-                                       active:false,
-                                       viewConfig : {
-                                           rows : gracefulRestartTimeSection()
-                                       }
-                                   }
-                                ]
-                            }
-                        ]
-                    }*/
+                     {
+                     columns : [
+                     {
+                     elementId: "graceful_restart_accordion",
+                     view: "AccordianView",
+                     viewConfig: [
+                     {
+                     elementId: "graceful_restart_section",
+                     title : "Graceful Restart",
+                     view : "SectionView",
+                     active:false,
+                     viewConfig : {
+                     rows : gracefulRestartTimeSection()
+                     }
+                     }
+                     ]
+                     }
+                     ]
+                     }*/
                 ]
             }
         }
@@ -139,10 +139,10 @@ define([
                     view: 'FormEditableGridView',
                     viewConfig: {
                         path: 'ipFabricSubnets',
-                        class: 'col-xs-12',
                         collection: 'ipFabricSubnets',
                         validation: 'ipFabricSubnetsValidation',
                         templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
+                        class: "",
                         columns: [{
                             elementId: 'ip_fabric_subnets',
                             name: 'Subnet',
@@ -153,19 +153,19 @@ define([
                                 width: 300,
                                 path: 'ip_fabric_subnets',
                                 dataBindValue:
-                                    'ip_fabric_subnets()',
+                                  'ip_fabric_subnets()',
                             }
                         }],
                         rowActions: [
                             { onClick: "function() { $root.addSubnet(); }",
-                              iconClass: 'fa fa-plus'},
+                                iconClass: 'fa fa-plus'},
                             { onClick:
-                                "function() {$root.deleteSubnet($data, this); }",
-                              iconClass: 'fa fa-minus'}
+                              "function() {$root.deleteSubnet($data, this); }",
+                                iconClass: 'fa fa-minus'}
                         ],
                         gridActions: [
                             { onClick: "function() { $root.addSubnet(); }",
-                              iconClass: 'fa fa-plus'}
+                                iconClass: 'fa fa-plus'}
                         ],
                     }
                 }
@@ -175,59 +175,58 @@ define([
 
     function gracefulRestartTimeSection() {
         return [
-                {
-                    columns : [
-                        {
-                            elementId:
-                                "graceful_restart_time",
-                            view: "FormInputView",
-                            viewConfig: {
-                                path:
-                                    "graceful_restart_params." +
-                                    "graceful_restart_time",
-                                label : "Restart Time (seconds)",
-                                placeholder : "0 - 600 (0)",
-                                dataBindValue: "graceful_restart_params()." +
-                                    "graceful_restart_time",
-                                class: "col-xs-6"
-                            }
-                        },
-                        {
-                            elementId: "long_lived_graceful_restart_time",
-                            view: "FormInputView",
-                            viewConfig: {
-                                path: "graceful_restart_params." +
-                                    "long_lived_graceful_restart_time",
-                                label : "Long Lived Restart Time (seconds)",
-                                placeholder : "0 - 16777215 (0)",
-                                dataBindValue:
-                                    "graceful_restart_params()." +
-                                    "long_lived_graceful_restart_time",
-                                class: "col-xs-6"
-                            }
+            {
+                columns : [
+                    {
+                        elementId:
+                          "graceful_restart_time",
+                        view: "FormInputView",
+                        viewConfig: {
+                            path:
+                            "graceful_restart_params." +
+                            "graceful_restart_time",
+                            label : "Restart Time (seconds)",
+                            placeholder : "0 - 600 (0)",
+                            dataBindValue: "graceful_restart_params()." +
+                            "graceful_restart_time",
+                            class: "col-xs-6"
                         }
-                    ]
-                },
-                {
-                    columns : [
-                        {
-                            elementId: "end_of_rib_receive_time",
-                            view: "FormInputView",
-                            viewConfig: {
-                                path: "graceful_restart_params." +
-                                    "end_of_rib_receive_time",
-                                label : "End of RIB Receive Time (seconds)",
-                                placeholder : '0 - 600 (30)',
-                                dataBindValue: "graceful_restart_params()." +
-                                    "end_of_rib_receive_time",
-                                class: "col-xs-6"
-                            }
+                    },
+                    {
+                        elementId: "long_lived_graceful_restart_time",
+                        view: "FormInputView",
+                        viewConfig: {
+                            path: "graceful_restart_params." +
+                            "long_lived_graceful_restart_time",
+                            label : "Long Lived Restart Time (seconds)",
+                            placeholder : "0 - 16777215 (0)",
+                            dataBindValue:
+                            "graceful_restart_params()." +
+                            "long_lived_graceful_restart_time",
+                            class: "col-xs-6"
                         }
-                    ]
-                }
-            ];
+                    }
+                ]
+            },
+            {
+                columns : [
+                    {
+                        elementId: "end_of_rib_receive_time",
+                        view: "FormInputView",
+                        viewConfig: {
+                            path: "graceful_restart_params." +
+                            "end_of_rib_receive_time",
+                            label : "End of RIB Receive Time (seconds)",
+                            placeholder : '0 - 600 (30)',
+                            dataBindValue: "graceful_restart_params()." +
+                            "end_of_rib_receive_time",
+                            class: "col-xs-6"
+                        }
+                    }
+                ]
+            }
+        ];
     };
 
     return bgpOptionsEditView;
 });
-
