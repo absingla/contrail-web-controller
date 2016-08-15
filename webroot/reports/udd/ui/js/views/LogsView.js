@@ -16,7 +16,7 @@ define(function (require) {
                     self.render()
                 })
             })
-            self.template = window.contrail.getTemplate4Id('logList-template')
+            self.template = window.contrail.getTemplate4Id(ctwl.TMPL_LOG_LIST)
         },
 
         render: function () {

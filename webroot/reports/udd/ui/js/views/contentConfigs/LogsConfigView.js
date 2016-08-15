@@ -30,7 +30,7 @@ define(function (require) {
                                 {
                                     elementId: 'records', view: 'FormInputView',
                                     viewConfig: {
-                                        label: 'Number of records',
+                                        label: cowl.LOGS_NUMBER_OF_RECORDS,
                                         path: 'records',
                                         dataBindValue: 'records',
                                         class: 'col-xs-6',

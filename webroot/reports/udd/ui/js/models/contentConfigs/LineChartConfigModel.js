@@ -19,7 +19,6 @@ define(function (require) {
             validation: {
                 yAxisValue: {
                     required: true,
-                    msg: 'Y Axis Value is required',
                 },
             },
         },

@@ -15,8 +15,12 @@ define(function (require) {
             // TODO should it be in hashParams?
             var urlParams = window.layoutHandler.getURLHashObj()
             // get dashboard and tab ids from url params / loaded widgets or generate default
-            self.currentDashboard = urlParams.p.split('_').slice(-1).pop() || self.model.dashboardIds()[0] || 'udd0'
-            self.currentTab = urlParams.tab || self.model.tabIds(self.currentDashboard)[0] || qewu.generateQueryUUID().slice(0, 36)
+            self.currentDashboard = urlParams.p.split('_').slice(-1).pop() ||
+              self.model.dashboardIds()[0] ||
+              ctwl.TITLE_UDD_DEFAULT_DASHBOARD
+            self.currentTab = urlParams.tab ||
+              self.model.tabIds(self.currentDashboard)[0] ||
+              qewu.generateQueryUUID().slice(0, 36)
 
             // TODO render dashboards in menu
             self.renderView4Config(self.$el, null, self.getViewConfig())

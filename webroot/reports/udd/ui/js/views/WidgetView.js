@@ -80,7 +80,7 @@ define(function (require) {
             var model = dataConfigModel.getDataModel(parserOptions)
             var config = self.model.getViewConfig('contentView')
             var element = self.$('#' + config.elementId)
-            if (!model) element.html('No compatible data sources selected')
+            if (!model) element.html(ctwm.NO_COMPATIBLE_DATA_SOURCES)
             self.renderView4Config(element, model, config)
         },
         // render content config view on the back
@@ -130,7 +130,7 @@ define(function (require) {
                                 {
                                     elementId: 'dataConfigViewSelector', view: 'FormDropdownView',
                                     viewConfig: {
-                                        label: 'Data Source',
+                                        label: ctwl.TITLE_UDD_DATA_SOURCE,
                                         path: 'dataConfigView',
                                         dataBindValue: 'dataConfigView',
                                         class: 'col-xs-6',
@@ -142,7 +142,7 @@ define(function (require) {
                                 }, {
                                     elementId: 'contentViewSelector', view: 'FormDropdownView',
                                     viewConfig: {
-                                        label: 'Content View',
+                                        label: ctwl.TITLE_UDD_CONTENT_VIEW,
                                         path: 'contentView',
                                         dataBindValue: 'contentView',
                                         class: 'col-xs-6 hidden',
@@ -169,13 +169,13 @@ define(function (require) {
                                 {
                                     elementId: 'back', view: 'FormButtonView',
                                     viewConfig: {
-                                        label: 'Back',
+                                        label: ctwl.UDD_WIDGET_BACK,
                                         class: 'back display-inline-block',
                                     },
                                 }, {
                                     elementId: 'submit', view: 'FormButtonView',
                                     viewConfig: {
-                                        label: 'Next',
+                                        label: ctwl.UDD_WIDGET_NEXT,
                                         class: 'submit display-inline-block',
                                         elementConfig: {
                                             btnClass: 'btn-primary',
@@ -183,9 +183,8 @@ define(function (require) {
                                     },
                                 }, {
                                     elementId: 'reset-query', view: 'FormButtonView',
-                                    label: 'Reset',
                                     viewConfig: {
-                                        label: 'Reset',
+                                        label: ctwl.UDD_WIDGET_RESET,
                                         class: 'reset display-inline-block',
                                     },
                                 },
@@ -250,18 +249,18 @@ define(function (require) {
 
             var configTitle = ''
             if (step === self.steps.DATA_CONFIG) {
-                configTitle = 'Data Config: '
+                configTitle = ctwl.TITLE_UDD_DATA_CONFIG
                 self.$(self.selectors.back).hide()
                 self.$(self.selectors.contentConfigDropdown).hideElement()
                 self.$(self.selectors.dataConfigDropdown).showElement()
-                self.$('.submit button').html('Next')
+                self.$('.submit button').html(ctwl.UDD_WIDGET_NEXT)
             }
             if (step === self.steps.CONTENT_CONFIG) {
-                configTitle = 'Content View Config: '
+                configTitle = ctwl.TITLE_UDD_CONTENT_CONFIG
                 self.$(self.selectors.back).show()
                 self.$(self.selectors.dataConfigDropdown).hideElement()
                 self.$(self.selectors.contentConfigDropdown).showElement()
-                self.$('.submit button').html('Submit')
+                self.$('.submit button').html(ctwl.UDD_WIDGET_SUBMIT)
             }
             self.$(self.selectors.configTitle).html(configTitle)
 

@@ -30,21 +30,21 @@ define(function (require) {
                                 {
                                     elementId: 'yAxisValue', view: 'FormDropdownView',
                                     viewConfig: {
-                                        label: 'y Axis Value',
+                                        label: cowl.CHART_Y_AXIS_VALUE,
                                         path: 'yAxisValue',
                                         dataBindValue: 'yAxisValue',
                                         dataBindOptionList: 'yAxisValues',
                                         class: 'col-xs-6',
                                         elementConfig: {
-                                            placeholder: 'Select Y Axis Value',
-                                            defaultValueId: 0
+                                            placeholder: cowl.CHART_Y_AXIS_VALUE_PLACEHOLDER,
+                                            defaultValueId: 0,
                                         },
                                     },
                                 },
                                 {
                                     elementId: 'yAxisLabel', view: 'FormInputView',
                                     viewConfig: {
-                                        label: 'y Axis Label',
+                                        label: cowl.CHART_Y_AXIS_LABEL,
                                         path: 'yAxisLabel',
                                         dataBindValue: 'yAxisLabel',
                                         class: 'col-xs-6',
@@ -56,7 +56,7 @@ define(function (require) {
                                 {
                                     elementId: 'color', view: 'FormInputView',
                                     viewConfig: {
-                                        label: 'Line Color',
+                                        label: cowl.CHART_LINE_COLOR,
                                         path: 'color',
                                         dataBindValue: 'color',
                                         class: 'col-xs-6',

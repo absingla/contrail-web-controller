@@ -30,7 +30,7 @@ define(function (require) {
                                 {
                                     elementId: 'barColor', view: 'FormInputView',
                                     viewConfig: {
-                                        label: 'Bar Color',
+                                        label: cowl.CHART_BAR_COLOR,
                                         path: 'barColor',
                                         dataBindValue: 'barColor',
                                         class: 'col-xs-6',
@@ -38,7 +38,7 @@ define(function (require) {
                                 }, {
                                     elementId: 'lineColor', view: 'FormInputView',
                                     viewConfig: {
-                                        label: 'Line Color',
+                                        label: cowl.CHART_LINE_COLOR,
                                         path: 'lineColor',
                                         dataBindValue: 'lineColor',
                                         class: 'col-xs-6',
@@ -50,7 +50,7 @@ define(function (require) {
                                 {
                                     elementId: 'barLabel', view: 'FormInputView',
                                     viewConfig: {
-                                        label: 'Bar Label',
+                                        label: cowl.CHART_BAR_LABEL,
                                         path: 'barLabel',
                                         dataBindValue: 'barLabel',
                                         class: 'col-xs-6',
@@ -58,7 +58,7 @@ define(function (require) {
                                 }, {
                                     elementId: 'lineLabel', view: 'FormInputView',
                                     viewConfig: {
-                                        label: 'Line Label',
+                                        label: cowl.CHART_LINE_LABEL,
                                         path: 'lineLabel',
                                         dataBindValue: 'lineLabel',
                                         class: 'col-xs-6',
@@ -70,26 +70,26 @@ define(function (require) {
                                 {
                                     elementId: 'barValue', view: 'FormDropdownView',
                                     viewConfig: {
-                                        label: 'Bar Value',
+                                        label: cowl.CHART_BAR_VALUE,
                                         path: 'barValue',
                                         dataBindValue: 'barValue',
                                         dataBindOptionList: 'yAxisValues',
                                         class: 'col-xs-6',
                                         elementConfig: {
-                                            placeholder: 'Select Bar Value',
+                                            placeholder: cowl.CHART_BAR_VALUE_PLACEHOLDER,
                                             defaultValueId: 0,
                                         },
                                     },
                                 }, {
                                     elementId: 'lineValue', view: 'FormDropdownView',
                                     viewConfig: {
-                                        label: 'Line Value',
+                                        label: cowl.CHART_LINE_VALUE,
                                         path: 'lineValue',
                                         dataBindValue: 'lineValue',
                                         dataBindOptionList: 'yAxisValues',
                                         class: 'col-xs-6',
                                         elementConfig: {
-                                            placeholder: 'Select Bar Value',
+                                            placeholder: cowl.CHART_LINE_VALUE_PLACEHOLDER,
                                             defaultValueId: 1,
                                         },
                                     },

@@ -30,6 +30,7 @@ define([
 
         this.CASSANDRA_ERROR = 'Error: Cassandra client could not fetch data from server. Please check cassandra config parameters.';
         this.NO_RECORDS_IN_DB = 'No record found in DB.';
+        this.NO_COMPATIBLE_DATA_SOURCES = 'No compatible data sources selected'
 
         this.get = function () {
             var args = arguments;

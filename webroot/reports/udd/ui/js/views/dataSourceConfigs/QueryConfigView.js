@@ -67,7 +67,7 @@ define(function (require) {
                                 {
                                     elementId: 'table_name', view: 'FormComboboxView',
                                     viewConfig: {
-                                        label: 'Active Table',
+                                        label: cowl.TITLE_QE_ACTIVE_TABLE,
                                         path: 'table_name',
                                         dataBindValue: 'table_name',
                                         dataBindOptionList: 'table_name_data_object',
@@ -89,7 +89,8 @@ define(function (require) {
                             columns: [
                                 {
                                     elementId: 'log_level', view: 'FormDropdownView',
-                                    viewConfig: { path: 'log_level',
+                                    viewConfig: {
+                                        path: 'log_level',
                                         dataBindValue: 'log_level',
                                         class: 'col-xs-6',
                                         elementConfig: {
@@ -100,10 +101,12 @@ define(function (require) {
                                     },
                                 }, {
                                     elementId: 'keywords', view: 'FormInputView',
-                                    viewConfig: { path: 'keywords',
+                                    viewConfig: {
+                                        path: 'keywords',
                                         dataBindValue: 'keywords',
                                         class: 'col-xs-6',
-                                        placeholder: 'Comma separated keywords' },
+                                        placeholder: cowl.TITLE_QE_KEYWORDS_PLACEHOLDER,
+                                    },
                                 },
                             ],
                         }, {
@@ -130,7 +133,7 @@ define(function (require) {
                                         class: 'col-xs-6',
                                         style: 'display: none;',
                                         path: 'time_granularity',
-                                        label: 'Time Granularity',
+                                        label: cowl.TITLE_QE_TIME_GRANULARITY,
                                         visible: 'isSelectTimeChecked()',
                                         childView: [
                                             {

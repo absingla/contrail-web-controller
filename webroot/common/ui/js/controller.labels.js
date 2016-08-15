@@ -139,8 +139,6 @@ define([
             dnsserver_forwarder: 'DNS Forwarder',
             dnsserver_record_resolution_order: 'Record Resolution Order',
             dnsserver_floating_ip_record: 'Floating IP Record',
-            dns_time_to_live: 'Time To Live',
-            dns_associate_ipams: 'Associate IPAMs',
 
             /*DNS Records*/
             dnsrecords_domain_name: 'Domain Name',
@@ -696,8 +694,7 @@ define([
         this.ANALYTICSNODE_GENERATORS_TITLE = 'Generators';
         this.ANALYTICSNODE_QEQUERIES_GRID_ID = 'analytics_node_qequeries_grid';
         this.ANALYTICSNODE_QEQUERIES_TITLE = 'QE Queries';
-        this.ANALYTICSNODE_CONSOLE_LOGS_VIEW_ID =
-            'analytics_node_console_logs_view';
+        this.ANALYTICSNODE_CONSOLE_LOGS_VIEW_ID = 'analytics_node_console_logs_view';
         this.ANALYTICSNODE_ALARMS_GRID_VIEW_ID = "analytics_node_alarms_grid_view_id";
         this.ANALYTICS_NODE_ALARMS_GRID_SECTION_ID = "analytics_node_alarms_grid_section_view_id";
 
@@ -1178,6 +1175,19 @@ define([
         this.TITLE_PACKET_CAPTURE_DELETE = 'Delete Analyzer';
         this.TITLE_PACKET_CAPTURE_MULTI_DELETE = 'Delete Analyzer(s)';
         this.TITLE_ADD_PACKET_CAPTURE = 'Create Analyzer';
+
+        /* UDD Labels */
+        this.TMPL_LOG_LIST = 'logList-template';
+        this.TITLE_UDD_DEFAULT_DASHBOARD = 'udd0';
+        this.TITLE_UDD_DATA_SOURCE = 'Data Source';
+        this.TITLE_UDD_CONTENT_VIEW = 'Content View';
+        this.TITLE_UDD_DATA_CONFIG = 'Data Config: ';
+        this.TITLE_UDD_CONTENT_CONFIG = 'Content View Config: ';
+        this.UDD_WIDGET_NEXT = 'Next';
+        this.UDD_WIDGET_BACK = 'Back';
+        this.UDD_WIDGET_SUBMIT = 'Submit';
+        this.UDD_WIDGET_RESET = 'Reset';
+        this.UDD_WIDGET_URL = '/api/udd/widget/'; 
     };
     return CTLabels;
 });

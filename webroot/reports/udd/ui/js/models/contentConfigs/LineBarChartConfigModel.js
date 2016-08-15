@@ -22,11 +22,9 @@ define(function (require) {
             validation: {
                 'barValue': {
                     required: true,
-                    msg: 'Bar Value is required',
                 },
                 'lineValue': {
                     required: true,
-                    msg: 'Line Value is required',
                 },
             },
         },
