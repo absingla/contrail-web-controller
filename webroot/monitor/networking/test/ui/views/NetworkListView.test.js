@@ -100,6 +100,7 @@ define([
 
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig);
 
-    cotr.startTestRunner(pageTestConfig);
+    //cotr.startTestRunner(pageTestConfig);
+    return pageTestConfig;
 
 });
