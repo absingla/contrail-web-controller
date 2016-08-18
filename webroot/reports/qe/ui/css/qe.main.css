@@ -19,6 +19,11 @@ textarea[name="select"] {
     border-bottom: 1px solid #EEEEEE;
     padding: 5px 0;
 }
+
+.select-aggregate-link {
+    border-bottom: 1px solid #EEEEEE;
+    padding: 3px 0;
+}
 .select-aggregate-header h4 {
     margin: 0;
 }
