@@ -21,25 +21,25 @@ define([
         var routes = [];
 
         routes.push( {
-            url: '/api/tenants/config/domains',
+            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
             fnName: 'portDomainsData'
         });
         routes.push({
-            url: '/api/tenants/config/projects/default-domain',
+            url: cttu.getRegExForUrl('/api/tenants/config/projects/default-domain').toString(),
             fnName: 'portPojectsData'
         });
         routes.push( {
-            url:  '/api/tenants/config/get-config-uuid-list',
+            url:  cttu.getRegExForUrl('/api/tenants/config/get-config-uuid-list').toString(),
             fnName: 'portUUIDListData'
         });
         routes.push( {
-            url: '/api/tenants/config/get-virtual-machine-details-paged',
+            url: cttu.getRegExForUrl('/api/tenants/config/get-virtual-machine-details-paged').toString(),
             method : 'POST',
             fnName: 'portMockData'
         });
 
         routes.push({
-            url: '/api/tenants/get-project-role',
+            url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
             fnName: 'empty'
         });
         return routes;

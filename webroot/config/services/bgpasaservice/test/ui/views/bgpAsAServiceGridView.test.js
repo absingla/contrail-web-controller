@@ -20,20 +20,20 @@ define([
     var routes = [];
 
     routes.push({
-        url: '/api/tenants/config/domains',
+        url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
         fnName: 'bgpAsAServiceDomainsData'
     });
     routes.push( {
-        url: '/api/tenants/config/projects/default-domain',
+        url: cttu.getRegExForUrl('/api/tenants/config/projects/default-domain').toString(),
         fnName: 'bgpAsAServicePojectsData'
     });
 
     routes.push({
-        url: '/api/tenants/config/get-bgp-as-a-services/90ab868a-da21-4ed9-922f-a309967eb0a0',
+        url: cttu.getRegExForUrl('/api/tenants/config/get-bgp-as-a-services/90ab868a-da21-4ed9-922f-a309967eb0a0').toString(),
         fnName: 'bgpAsAServiceMockData'
     });
     routes.push({
-        url: '/api/tenants/get-project-role',
+        url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
         fnName: 'empty'
     });
         return routes;

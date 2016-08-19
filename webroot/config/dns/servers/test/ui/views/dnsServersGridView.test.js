@@ -21,12 +21,12 @@ define([
         var routes = [];
 
         routes.push({
-            url: '/api/tenants/config/domains' ,
+            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString() ,
             fnName: 'dnsServerDomainsMockData'
         });
 
         routes.push({
-            url : '/api/tenants/config/get-config-details',
+            url : cttu.getRegExForUrl('/api/tenants/config/get-config-details').toString(),
             method: "POST",
             fnName: 'dnsServersMockData'
         });

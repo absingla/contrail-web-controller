@@ -19,7 +19,7 @@ define([
 
         var routes = [];
         routes.push({
-            url: '/api/tenants/config/bgp/get-bgp-routers',
+            url: cttu.getRegExForUrl('/api/tenants/config/bgp/get-bgp-routers').toString(),
             fnName: 'bgpMockData'
         });
         return routes;

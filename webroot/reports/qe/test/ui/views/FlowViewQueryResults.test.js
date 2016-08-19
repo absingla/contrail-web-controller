@@ -20,13 +20,13 @@ define([
 
     routes.push({
         method: "POST",
-        url: cotc.URL_QE_QUERY,
+        url: cttu.getRegExForUrl(cotc.URL_QE_QUERY).toString(),
         fnName: 'getFlowViewQueryMockData'
     });
 
     routes.push({
         method: "GET",
-        url: '/api/qe/query/queue?queryQueue=fqq',
+        url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=fqq').toString(),
         fnName: "viewQueryQueueMockData"
     });
         return routes;

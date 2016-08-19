@@ -19,13 +19,13 @@ define([
 
         routes.push({
             method: "GET",
-            url: '/api/qe/query/queue?queryQueue=sqq',
+            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=sqq').toString(),
             fnName: 'statQueryQueueMockData'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/qe/query',
+            url: cttu.getRegExForUrl('/api/qe/query').toString(),
             fnName: 'statViewQueryQueueMockData'
         });
         return routes;

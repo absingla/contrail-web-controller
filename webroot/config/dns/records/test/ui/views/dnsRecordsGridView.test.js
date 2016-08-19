@@ -20,16 +20,16 @@ define([
     var testServerRoutes = function() {
         var routes = [];
         routes.push({
-            url :  '/api/tenants/config/domains',
+            url :  cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
             fnName: 'dnsRecordsDomainMockData'
         });
         routes.push({
-            url :  '/api/tenants/config/list-virtual-DNSs/07fbaa4b-c7b8-4f3d-996e-9d8b1830b288',
+            url :  cttu.getRegExForUrl('/api/tenants/config/list-virtual-DNSs/07fbaa4b-c7b8-4f3d-996e-9d8b1830b288').toString(),
             fnName: 'dnsServerListMockData'
         });
 
         routes.push({
-            url : '/api/tenants/config/get-config-details',
+            url : cttu.getRegExForUrl('/api/tenants/config/get-config-details').toString(),
             method: "POST",
             fnName: 'dnsRecordsMockData'
         });

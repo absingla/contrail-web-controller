@@ -21,7 +21,7 @@ define([
         var routes = [];
 
         routes.push( {
-            url: '/api/tenants/config/physical-routers-with-intf-count',
+            url: cttu.getRegExForUrl('/api/tenants/config/physical-routers-with-intf-count').toString(),
             fnName: 'physcalRoutersMockData'
         });
 

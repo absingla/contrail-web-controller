@@ -20,63 +20,63 @@ define([
         var routes = [];
 
         routes.push( {
-            url: '/api/tenants/config/domains',
+            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
             fnName: 'domainsMockData'
         });
         routes.push( {
-            url: '/api/tenants/config/projects',
+            url: cttu.getRegExForUrl('/api/tenants/config/projects').toString(),
             fnName: 'projectMockData'
         });
 
         routes.push( {
-            url: '/api/tenants/projects/default-domain',
+            url: cttu.getRegExForUrl('/api/tenants/projects/default-domain').toString(),
             fnName: 'projectMockData'
         });
 
         routes.push({
-            url: '/api/tenants/get-project-role',
+            url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
             fnName: 'empty'
         });
 
         routes.push({
             method: "GET",
-            url: '/api/tenant/networking/network/stats/top',
+            url: cttu.getRegExForUrl('/api/tenant/networking/network/stats/top').toString(),
             fnName: 'portDistributionMockData'
         });
 
         routes.push({
             method: "GET",
-            url: '/api/tenant/monitoring/project-connected-graph',
+            url: cttu.getRegExForUrl('/api/tenant/monitoring/project-connected-graph').toString(),
             fnName: 'projectConnectedGraph'
         });
 
         routes.push({
             method: "GET",
-            url: '/api/tenant/monitoring/project-config-graph',
+            url: cttu.getRegExForUrl('/api/tenant/monitoring/project-config-graph').toString(),
             fnName: 'projectConfigGraph'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/virtual-networks/details',
+            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-networks/details').toString(),
             fnName: 'networksMockData'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/virtual-machines/details',
+            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/details').toString(),
             fnName: 'virtualMachinesDetailsMockData'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/stats',
+            url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
             fnName: 'networksMockStatData'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/virtual-machine-interfaces/summary',
+            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary').toString(),
             fnName: 'virtualMachinesSummaryMockData'
         });
         return routes;

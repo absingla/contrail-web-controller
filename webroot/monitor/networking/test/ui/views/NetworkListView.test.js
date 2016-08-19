@@ -24,31 +24,31 @@ define([
         var routes = [];
 
         routes.push({
-            url: '/api/tenants/config/domains',
+            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
             fnName: 'domainsMockData'
         });
 
         routes.push({
-            url: '/api/tenants/config/projects/default-domain',
+            url: cttu.getRegExForUrl('/api/tenants/config/projects/default-domain').toString(),
             fnName: 'projectDomainMockData'
         });
 
         routes.push({
-            url: '/api/tenants/get-project-role',
+            url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
             fnName: 'empty'
         });
         routes.push({
-            url: '/api/tenants/networks/default-domain:admin',
+            url: cttu.getRegExForUrl('/api/tenants/networks/default-domain:admin').toString(),
             fnName: 'projectMockData'
         });
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/virtual-networks/details',
+            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-networks/details').toString(),
             fnName: 'networksMockData'
         });
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/stats',
+            url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
             fnName: 'networksMockStatData'
         });
 

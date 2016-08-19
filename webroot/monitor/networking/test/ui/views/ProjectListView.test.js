@@ -28,27 +28,27 @@ define([
         */
 
         routes.push({
-            url: '/api/tenants/config/domains',
+            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
             fnName: 'domainsMockData'
         });
         routes.push({
-            url: '/api/tenants/config/projects',
+            url: cttu.getRegExForUrl('/api/tenants/config/projects').toString(),
             fnName: 'projectMockData'
         });
 
         routes.push( {
-            url: '/api/tenants/projects',
+            url: cttu.getRegExForUrl('/api/tenants/projects').toString(),
             fnName: 'projectMockData'
         });
 
         routes.push({
             method:"POST",
-            url: '/api/tenant/networking/virtual-networks/details',
+            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-networks/details').toString(),
             fnName: 'networksMockData'
         });
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/stats',
+            url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
             fnName: 'networksMockStatData'
         });
         return routes;

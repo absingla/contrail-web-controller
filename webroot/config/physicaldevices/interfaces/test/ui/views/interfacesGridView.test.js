@@ -20,13 +20,13 @@ define([
         var routes = [];
 
         routes.push({
-            url: '/api/tenants/config/physical-routers-list',
+            url: cttu.getRegExForUrl('/api/tenants/config/physical-routers-list').toString(),
             fnName: 'physicalRouterListMockData'
         });
 
         routes.push({
             method : "POST",
-            url: '/api/tenants/config/get-interfaces',
+            url: cttu.getRegExForUrl('/api/tenants/config/get-interfaces').toString(),
             fnName: 'physicalInterfacesMockData'
         });
         return routes;

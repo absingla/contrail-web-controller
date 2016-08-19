@@ -29,45 +29,45 @@ define([
          */
 
         routes.push({
-            url: '/api/tenants/config/domains',
+            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
             fnName: 'domainsMockData'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/stats',
+            url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
             fnName: 'virtualMachinesMockStatData'
         });
 
         routes.push({
-            url: '/api/tenants/config/projects',
+            url: cttu.getRegExForUrl('/api/tenants/config/projects').toString(),
             fnName: 'projectMockData'
         });
 
         routes.push({
-            url: '/api/tenants/get-project-role',
+            url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
             fnName: 'empty'
         });
 
         routes.push({
-            url: '/api/tenants/projects/default-domain:admin',
+            url: cttu.getRegExForUrl('/api/tenants/projects/default-domain:admin').toString(),
             fnName: 'adminProjectMockData'
         });
 
          routes.push({
-             url: '/api/tenants/networks/default-domain:admin',
+             url: cttu.getRegExForUrl('/api/tenants/networks/default-domain:admin').toString(),
              fnName: 'tenantsNetworkMockData'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/virtual-machines/details',
+            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/details').toString(),
             fnName: 'virtualMachinesMockData'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/virtual-machine-interfaces/summary',
+            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary').toString(),
             fnName: 'virtualMachinesInterfacesMockData'
         });
         return routes;

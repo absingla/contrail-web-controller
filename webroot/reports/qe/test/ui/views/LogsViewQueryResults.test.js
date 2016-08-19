@@ -20,12 +20,12 @@ define([
         
         responses.push({
             method:"GET",
-            url: '/api/qe/query/queue?queryQueue=lqq',
+            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=lqq').toString(),
             fnName: 'logsQueryQueueMockData'
         });
         responses.push({
             method: "POST",
-            url: cotc.URL_QE_QUERY,
+            url: cttu.getRegExForUrl(cotc.URL_QE_QUERY).toString(),
             fnName: 'logsViewQueryMockData'
         });
         return responses;

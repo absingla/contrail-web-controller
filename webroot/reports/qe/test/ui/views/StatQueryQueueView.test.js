@@ -19,7 +19,7 @@ define([
 
         routes.push({
             method: "GET",
-            url: '/api/qe/query/queue?queryQueue=sqq',
+            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=sqq').toString(),
             fnName: "statQueryQueueMockData"
         });
         return routes;

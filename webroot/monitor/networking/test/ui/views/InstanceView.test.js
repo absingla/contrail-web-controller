@@ -32,74 +32,74 @@ define([
     var testServerRoutes = function() {
         var routes = [];
         routes.push({
-            url: '/api/tenants/config/domains',
+            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
             fnName: 'domainsMockData'
         });
 
         routes.push({
-            url: '/api/tenants/config/projects',
+            url: cttu.getRegExForUrl('/api/tenants/config/projects').toString(),
             fnName: 'projectMockData'
         });
 
         routes.push({
-            url: '/api/tenants/get-project-role',
+            url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
             fnName: 'empty'
         });
 
         routes.push({
-            url: '/api/tenants/networks/default-domain:admin',
+            url: cttu.getRegExForUrl('/api/tenants/networks/default-domain:admin').toString(),
             fnName: 'adminProjectMockData'
         });
 
         routes.push( {
-            url: '/api/tenants/projects/default-domain',
+            url: cttu.getRegExForUrl('/api/tenants/projects/default-domain').toString(),
             fnName: 'projectMockData'
         });
 
         routes.push({
-            url: '/api/tenants/networks/default-domain:demo',
+            url: cttu.getRegExForUrl('/api/tenants/networks/default-domain:demo').toString(),
             fnName: 'demoProjectMockData'
         });
 
         routes.push({
-            url: '/api/tenant/networking/virtual-machines/details',
+            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/details').toString(),
             fnName: 'virtualMachineMockData'
         });
 
         routes.push({
-            url: '/api/tenant/networking/virtual-machine',
+            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine').toString(),
             fnName: 'virtualMachineStatsMockData'
         });
 
         routes.push({
-            url:'/api/tenant/monitoring/instance-connected-graph',
+            url:cttu.getRegExForUrl('/api/tenant/monitoring/instance-connected-graph').toString(),
             fnName: 'virtualMachineConnectedGraphMockData'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/admin/reports/query',
+            url: cttu.getRegExForUrl('/api/admin/reports/query').toString(),
             fnName: 'reportsQueryMockData'
         });
 
         routes.push({
-            url: '/api/tenant/networking/flow-series/vm',
+            url: cttu.getRegExForUrl('/api/tenant/networking/flow-series/vm').toString(),
             fnName: 'virtualMachineFlowSeriesMockData'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/virtual-machine-interfaces/summary',
+            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary').toString(),
             fnName: 'virtualMachineInterfacesMockData'
         });
         routes.push({
-            url: '/api/tenant/networking/network/stats/top',
+            url: cttu.getRegExForUrl('/api/tenant/networking/network/stats/top').toString(),
             fnName: 'networkingStatsTopMockData'
         });
 
         routes.push({
             method: "POST",
-            url: '/api/tenant/networking/stats',
+            url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
             fnName: 'networkingStatsMockData'
         });
         return routes;
