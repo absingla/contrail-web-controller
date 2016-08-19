@@ -2,37 +2,47 @@
  * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 
- define(['underscore'], function(_){
-     this.bgpAsAServiceDomainsData = {
-         "domains": [
-           {
-             "href": "http://10.204.217.42:9100/domain/cd1ace9d-60c0-4cbf-aa12-6958722718d1",
-             "fq_name": [
-               "default-domain"
-             ],
-             "uuid": "cd1ace9d-60c0-4cbf-aa12-6958722718d1"
-           }
-         ]
-     };
-     this.bgpAsAServicePojectsData = {
-         "projects": [
-           {
-             "uuid": "90ab868a-da21-4ed9-922f-a309967eb0a0",
-             "fq_name": [
-               "default-domain",
-               "admin"
+    var methods = {};
+    module.exports= {
+      methods : methods
+    };
+
+
+    methods.bgpAsAServiceDomainsData = function(){
+      return {
+             "domains": [
+               {
+                 "href": "http://10.204.217.42:9100/domain/cd1ace9d-60c0-4cbf-aa12-6958722718d1",
+                 "fq_name": [
+                   "default-domain"
+                 ],
+                 "uuid": "cd1ace9d-60c0-4cbf-aa12-6958722718d1"
+               }
              ]
-           },
-           {
-             "uuid": "7943296d-ee0f-47ba-8d7e-ea276eeac9fb",
-             "fq_name": [
-               "default-domain",
-               "demo"
-             ]
-           }
-         ]
-     };
-     this.bgpAsAServiceMockData = {
+         }
+    };
+    methods.empty = function(){
+        return {}
+    };
+
+    methods.bgpAsAServicePojectsData = function(){
+        return {
+            "projects": [
+                {
+                    "uuid": "90ab868a-da21-4ed9-922f-a309967eb0a0",
+                    "fq_name": ["default-domain", "admin"
+                    ]
+                },
+                {
+                    "uuid": "7943296d-ee0f-47ba-8d7e-ea276eeac9fb",
+                    "fq_name": ["default-domain", "demo"
+                    ]
+                }
+            ]
+        }
+    };
+         methods.bgpAsAServiceMockData = function(){
+       return {
          "bgp-as-a-services": [
            {
              "bgp-as-a-service": {
@@ -334,10 +344,4 @@
              }
            }
          ]
-       };
-       return {
-           bgpAsAServiceDomainsData : bgpAsAServiceDomainsData,
-           bgpAsAServicePojectsData : bgpAsAServicePojectsData,
-           bgpAsAServiceMockData : bgpAsAServiceMockData
-       };
- });
+       }};

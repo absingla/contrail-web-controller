@@ -7,27 +7,28 @@ define([
     'co-test-runner',
     'ct-test-utils',
     'ct-test-messages',
-    'config/physicaldevices/physicalrouters/test/ui/views/physicalRoutersGridView.mock.data',
     'co-grid-contrail-list-model-test-suite',
     'co-grid-view-test-suite'
-], function (cotc, cotr, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite) {
+], function (cotc, cotr, cttu, cttm, GridListModelTestSuite, GridViewTestSuite) {
 
     var moduleId = cttm.PHYSICAL_ROUTERS_GRID_VIEW_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
 
-    var fakeServerConfig = cotr.getDefaultFakeServerConfig();
+    var testServerConfig = cotr.getDefaultTestServerConfig();
 
-    var fakeServerResponsesConfig = function() {
-        var responses = [];
+    var testServerRoutes = function() {
+        var routes = [];
 
-        responses.push(cotr.createFakeServerResponse( {
-            url: /\/api\/tenants\/config\/physical-routers-with-intf-count.*$/,
-            body: JSON.stringify(TestMockdata.physcalRoutersMockData)
-        }));
-        return responses;
+        routes.push( {
+            url: '/api/tenants/config/physical-routers-with-intf-count',
+            fnName: 'physcalRoutersMockData'
+        });
+
+        return routes;
     };
-    fakeServerConfig.getResponsesConfig = fakeServerResponsesConfig;
+    testServerConfig.getRoutesConfig = testServerRoutes;
+    testServerConfig.responseDataFile = 'config/physicaldevices/physicalrouters/test/ui/views/physicalRoutersGridView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -53,8 +54,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig);
-
-    cotr.startTestRunner(pageTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
+    return pageTestConfig;
 
 });

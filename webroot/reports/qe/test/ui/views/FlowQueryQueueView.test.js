@@ -6,28 +6,27 @@ define([
     'co-test-runner',
     'ct-test-utils',
     'ct-test-messages',
-    'reports/qe/test/ui/views/FlowQueryQueueView.mock.data',
     'co-grid-view-test-suite'
-], function (cotc, cotr, cttu, cttm, TestMockdata, GridViewTestSuite) {
+], function (cotc, cotr, cttu, cttm, GridViewTestSuite) {
 
     var moduleId = cttm.FLOW_QUERY_QUEUE_COMMON_TEST_MODULE;
 
+    var testServerConfig = cotr.getDefaultTestServerConfig();
+
     var testType = cotc.VIEW_TEST;
+    var testServerRoutes = function() {
+        var routes = [];
 
-    var fakeServerConfig = cotr.getDefaultFakeServerConfig();
-
-    var fakeServerResponsesConfig = function () {
-        var responses = [];
-
-        responses.push(cotr.createFakeServerResponse({
+        routes.push({
             method: "GET",
-            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=fqq'),
-            body: JSON.stringify(TestMockdata.viewQueryQueueMockData)
-        }));
-
-        return responses;
+            url: '/api/qe/query/queue?queryQueue=fqq',
+            fnName: "viewQueryQueueMockData"
+        });
+        return routes;
     };
-    fakeServerConfig.getResponsesConfig = fakeServerResponsesConfig;
+
+    testServerConfig.getRoutesConfig = testServerRoutes;
+    testServerConfig.responseDataFile = 'reports/qe/test/ui/views/FlowQueryQueueView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -68,8 +67,6 @@ define([
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
-
-    cotr.startTestRunner(pageTestConfig);
-
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig, testInitFn);
+    return pageTestConfig;
 });

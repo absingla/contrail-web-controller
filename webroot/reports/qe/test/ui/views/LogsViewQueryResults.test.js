@@ -6,33 +6,32 @@ define([
     'co-test-runner',
     'ct-test-utils',
     'ct-test-messages',
-    'reports/qe/test/ui/views/LogsQueryQueueView.mock.data',
     'co-grid-view-test-suite'
-], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite) {
+], function (cotc,cotr, cttu, cttm, GridViewTestSuite) {
 
     var moduleId = cttm.LOGS_VIEW_QUERY_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
+    var testServerConfig = cotr.getDefaultTestServerConfig();
 
-    var fakeServerConfig = cotr.getDefaultFakeServerConfig();
+    var testServerRoutes = function() {
 
-    var fakeServerResponsesConfig = function() {
         var responses = [];
         
-        responses.push(cotr.createFakeServerResponse({
+        responses.push({
             method:"GET",
-            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=lqq'),
-            body: JSON.stringify(TestMockdata.logsQueryQueueMockData)
-        }));
-        responses.push(cotr.createFakeServerResponse({
+            url: '/api/qe/query/queue?queryQueue=lqq',
+            fnName: 'logsQueryQueueMockData'
+        });
+        responses.push({
             method: "POST",
             url: cotc.URL_QE_QUERY,
-            body: JSON.stringify(TestMockdata.logsViewQueryMockData)
-        }));
-
+            fnName: 'logsViewQueryMockData'
+        });
         return responses;
     };
-    fakeServerConfig.getResponsesConfig = fakeServerResponsesConfig;
+    testServerConfig.getRoutesConfig = testServerRoutes;
+    testServerConfig.responseDataFile ='reports/qe/test/ui/views/LogsQueryQueueView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -76,7 +75,6 @@ define([
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
-
-    cotr.startTestRunner(pageTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig, testInitFn);
+    return pageTestConfig;
 });

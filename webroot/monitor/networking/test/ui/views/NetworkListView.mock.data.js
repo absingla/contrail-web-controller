@@ -2,9 +2,55 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore'], function (_) {
-    this.domainsMockData = {
-        "domains": [
+    var methods = {};
+    module.exports= {
+        methods : methods
+    };
+
+    methods.projectDomainMockData = function(){
+        return{
+        "projects": [
+        {
+            "uuid": "0a6f8592-669a-43f9-8c2b-fb3c489d6872",
+            "fq_name": [
+                "default-domain",
+                "p_1k_vn"
+            ]
+        },
+        {
+            "uuid": "29656532-a476-46f4-aeff-efa402c02d98",
+            "fq_name": [
+                "default-domain",
+                "admin"
+            ]
+        },
+        {
+            "uuid": "2f797364-9f83-475b-9aa3-da5890106844",
+            "fq_name": [
+                "default-domain",
+                "p_500_vm"
+            ]
+        },
+        {
+            "uuid": "5842a2d3-ee8f-4b18-b108-5d8ce2b4f49c",
+            "fq_name": [
+                "default-domain",
+                "p_1k_vm"
+            ]
+        },
+        {
+            "uuid": "c26c7741-8508-4e40-8daf-dcbebc289632",
+            "fq_name": [
+                "default-domain",
+                "p_500_vn"
+            ]
+        }
+    ]
+        }
+    };
+
+    methods.domainsMockData = function(){
+        return {    "domains": [
             {
                 "href"   : "http://10.84.30.249:8082/domain/f8a71b82-ec17-4869-8e34-5e967e6fce50",
                 "fq_name": [
@@ -12,8 +58,14 @@ define(['underscore'], function (_) {
                 "uuid"   : "f8a71b82-ec17-4869-8e34-5e967e6fce50"
             }
         ]
+    }};
+
+    methods.empty = function(){
+        return {}
     };
-    this.projectMockData = {
+
+    methods.projectMockData = function(){
+        return {
         "projects": [
             {
                 "fq_name": [
@@ -30,8 +82,10 @@ define(['underscore'], function (_) {
                 "uuid": "390a0374-239f-40c3-ac87-d0918d2abf8b"
             }
         ]
+        }
     };
-    this.networksMockData = {
+    methods.networksMockData = function(){
+        return{
         "data": {
             "value": [
                 {
@@ -765,8 +819,9 @@ define(['underscore'], function (_) {
         },
         "lastKey": "default-domain:admin:st_vn27",
         "more": false
-    };
-    this.networksMockStatData = [
+    }};
+    methods.networksMockStatData = function(){
+        return [
         {
             "value": [
                 {
@@ -946,11 +1001,6 @@ define(['underscore'], function (_) {
                 }
             ]
         }
-    ];
-    return {
-        domainsMockData: domainsMockData,
-        projectMockData: projectMockData,
-        networksMockData: networksMockData,
-        networksMockStatData: networksMockStatData
+        ]
     };
-});
+    

@@ -1,6 +1,10 @@
 
-define(['underscore'], function (_) {
-    this.statQueryQueueMockData = [
+var methods = {};
+module.exports= {
+    methods : methods
+};
+    methods.statQueryQueueMockData = function(){
+        return [
         {
             "startTime": 1468258056991,
             "queryJSON": {
@@ -99,9 +103,191 @@ define(['underscore'], function (_) {
             },
             "opsQueryId": "c2c0bab0-478c-11e6-9ee6-00000a541ef9"
         }
-    ],
+    ]
+    };
 
-        this.getMockData = function(){
+        methods.vrouterSchema = function () {
+            return {
+                "type": "STAT",
+                "columns": [
+                    {
+                        "datatype": "string",
+                        "index": true,
+                        "name": "Source",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "T",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "CLASS(T)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "T=",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "CLASS(T=)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "uuid",
+                        "index": false,
+                        "name": "UUID",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "COUNT(cql_stats.errors)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "cql_stats.errors.connection_timeouts",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "SUM(cql_stats.errors.connection_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "CLASS(cql_stats.errors.connection_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "MAX(cql_stats.errors.connection_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "MIN(cql_stats.errors.connection_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "percentiles",
+                        "index": false,
+                        "name": "PERCENTILES(cql_stats.errors.connection_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "avg",
+                        "index": false,
+                        "name": "AVG(cql_stats.errors.connection_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "cql_stats.errors.pending_request_timeouts",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "SUM(cql_stats.errors.pending_request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "CLASS(cql_stats.errors.pending_request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "MAX(cql_stats.errors.pending_request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "MIN(cql_stats.errors.pending_request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "percentiles",
+                        "index": false,
+                        "name": "PERCENTILES(cql_stats.errors.pending_request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "avg",
+                        "index": false,
+                        "name": "AVG(cql_stats.errors.pending_request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "cql_stats.errors.request_timeouts",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "SUM(cql_stats.errors.request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "CLASS(cql_stats.errors.request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "MAX(cql_stats.errors.request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "MIN(cql_stats.errors.request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "percentiles",
+                        "index": false,
+                        "name": "PERCENTILES(cql_stats.errors.request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "avg",
+                        "index": false,
+                        "name": "AVG(cql_stats.errors.request_timeouts)",
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "string",
+                        "index": true,
+                        "name": "name",
+                        "suffixes": null
+                    }
+                ]
+            }
+        };
+        methods.getMockData = function(){
 
             var mockData = [];
             for(var i=0; i<60; i++){
@@ -126,10 +312,11 @@ define(['underscore'], function (_) {
                 mockData.push(data);
             }
             return mockData;
-        },
+        };
 
-        this.statViewQueryQueueMockData = {
-            "data": getMockData(),
+        methods.statViewQueryQueueMockData = function(){
+            return {
+            "data": methods['getMockData'](),
             "total": 60,
             "queryJSON": {
                 "table": "StatTable.CollectorDbStats.cql_stats.errors",
@@ -168,9 +355,11 @@ define(['underscore'], function (_) {
             "chunk": 1,
             "chunkSize": 60,
             "serverSideChunking": true
-        },
+        }
+    };
 
-        this.webServerInfo = {
+        methods.webServerInfo = function(){
+            return  {
             "orchestrationModel": [
                 "openstack"
             ],
@@ -226,9 +415,11 @@ define(['underscore'], function (_) {
             "currentRegionName": null,
             "loggedInOrchestrationMode": "openstack",
             "insecureAccess": false
-        },
+        }
+    };
 
-        this.values = {
+        methods.values = function(){
+            return {
             "data": [
                 {
                     "fields.value": "StatTable.CollectorDbStats.cql_stats.errors",
@@ -357,9 +548,11 @@ define(['underscore'], function (_) {
             "chunk": 1,
             "chunkSize": 26,
             "serverSideChunking": true
-        },
+        }
+        };
 
-        this.cql_stats_errors = {
+        methods.cql_stats_errors = function(){
+            return {
             "type": "STAT",
             "columns": [
                 {
@@ -520,11 +713,4 @@ define(['underscore'], function (_) {
                 }
             ]
         }
-    return {
-        statQueryQueueMockData:statQueryQueueMockData,
-        statViewQueryQueueMockData:statViewQueryQueueMockData,
-        webServerInfo:webServerInfo,
-        values:values,
-        cql_stats_errors : cql_stats_errors
-    };
-});
+        };

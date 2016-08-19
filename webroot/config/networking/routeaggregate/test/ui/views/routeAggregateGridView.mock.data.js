@@ -2,8 +2,12 @@
  * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 
- define(['underscore'], function(_){
-     this.routeAggregateDomainsData = {
+     var methods = {};
+        module.exports= {
+        methods : methods
+     };
+     methods.routeAggregateDomainsData = function(){
+         return {
          "domains": [
            {
              "href": "http://10.204.216.12:9100/domain/efa3feca-769d-4583-b38f-86614cde1810",
@@ -13,8 +17,13 @@
              "uuid": "efa3feca-769d-4583-b38f-86614cde1810"
            }
          ]
+        }
      };
-     this.routeAggregatePojectsData = {
+    methods.empty = function(){
+        return {}
+    };
+     methods.routeAggregatePojectsData = function(){
+         return {
          "projects": [
            {
              "uuid": "ee14bbf4-a3fc-4f98-a7b3-f1fe1d8b29bb",
@@ -31,8 +40,10 @@
              ]
            }
          ]
+         }
      };
-     this.routeAggregateMockData = {
+     methods.routeAggregateMockData = function(){
+         return{
          "route-aggregates": [
            {
              "route-aggregate": {
@@ -84,10 +95,7 @@
              }
            }
          ]
-       };
-       return {
-           routeAggregateDomainsData : routeAggregateDomainsData,
-           routeAggregatePojectsData : routeAggregatePojectsData,
-           routeAggregateMockData : routeAggregateMockData
-       };
- });
+       }
+     };
+
+

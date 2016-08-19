@@ -2,8 +2,12 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore'], function (_) {
-    this.domainsMockData = {
+    var methods = {};
+    module.exports= {
+        methods : methods
+    };
+    methods.domainsMockData = function(){
+        return{
         "domains": [
             {
                 "href": "http://10.84.11.2:8082/domain/35468934-bfe5-4c0e-84e2-ddfc9b49af74",
@@ -13,8 +17,15 @@ define(['underscore'], function (_) {
                 "uuid": "35468934-bfe5-4c0e-84e2-ddfc9b49af74"
             }
         ]
+        }
     };
-    this.projectMockData = {
+
+    methods.empty = function(){
+     return {}
+    };
+
+    methods.projectMockData = function(){
+        return {
         "projects": [
             {
                 "uuid": "ba710bf3-922d-4cda-bbb4-a2e2e76533bf",
@@ -38,8 +49,10 @@ define(['underscore'], function (_) {
                 ]
             }
         ]
+        }
     };
-    this.networksForAdminProjectMockData = {
+    methods.networksForAdminProjectMockData = function(){
+        return {
         "virtual-networks": [
             {
                 "href": "http://10.84.11.2:8082/virtual-network/ad8a9efc-9b7e-4425-9735-03bda0d2726e",
@@ -60,8 +73,10 @@ define(['underscore'], function (_) {
                 "uuid": "2847747f-cb2c-4499-9b12-0f1711168e72"
             }
         ]
+        }
     };
-    this.networkSummaryForFrontEndNetworkMockData = {
+    methods.networkSummaryForFrontEndNetworkMockData = function(){
+        return {
         "value": [
             {
                 "name": "default-domain:admin:frontend",
@@ -211,8 +226,10 @@ define(['underscore'], function (_) {
                 }
             }
         ]
+        }
     };
-    this.flowSeriesForFrontendVNMockData = {
+    methods.flowSeriesForFrontendVNMockData = function(){
+        return{
         "summary": {
             "start_time": 1443553594000000,
             "end_time": 1443560794000000,
@@ -1255,8 +1272,10 @@ define(['underscore'], function (_) {
                 "totalBytes": 926726
             }
         ]
+        }
     };
-    this.networkStatsForFrontendVNMockData = {
+    methods.networkStatsForFrontendVNMockData = function(){
+        return {
         "sport": [
             {
                 "outBytes": 195250,
@@ -1839,8 +1858,10 @@ define(['underscore'], function (_) {
         ],
         "startTime": 1443560194000,
         "endTime": 1443560794000
+        }
     };
-    this.networksMockData = {
+    methods.networksMockData = function(){
+        return {
         "data": {
             "value": [
                 {
@@ -1895,8 +1916,10 @@ define(['underscore'], function (_) {
         },
         "lastKey": null,
         "more": false
+        }
     };
-    this.networkConnectedGraphForFrontEndNetworkMockData = {
+    methods.networkConnectedGraphForFrontEndNetworkMockData = function(){
+        return {
         "nodes": [
             {
                 "name": "default-domain:admin:frontend",
@@ -2882,8 +2905,10 @@ define(['underscore'], function (_) {
             ],
             "service-instances": []
         }
+        }
     };
-    this.networkConfigGraphForFrontEndNetworkMockData = {
+    methods.networkConfigGraphForFrontEndNetworkMockData = function(){
+        return {
         "configData": {
             "network-policys": [
                 {
@@ -2947,8 +2972,10 @@ define(['underscore'], function (_) {
                 }
             ]
         }
+        }
     };
-    this.virtualMachineDetailsByUUIDMockData = {
+    methods.virtualMachineDetailsByUUIDMockData = function(){
+        return {
         "data": {
             "value": [
                 {
@@ -2977,8 +3004,9 @@ define(['underscore'], function (_) {
         },
         "lastKey": null,
         "more": false
-    };
-    this.virtualMachineSummaryByUUIDMockData = {
+    }};
+    methods.virtualMachineSummaryByUUIDMockData = function(){
+        return {
         "value": [
             {
                 "name": "7c20fb79-1a0a-49e3-b31f-d53db046264e",
@@ -3003,8 +3031,9 @@ define(['underscore'], function (_) {
                 }
             }
         ]
-    };
-    this.networksMockStatData = [
+    }};
+    methods.networksMockStatData = function(){
+        return [
         {
             "value": [
                 {
@@ -3023,8 +3052,9 @@ define(['underscore'], function (_) {
                 }
             ]
         }
-    ];
-    this.portDistributionMockData = {
+    ]};
+    methods.portDistributionMockData = function(){
+        return {
         "sport": [
             {
                 "outBytes": 912072,
@@ -4183,8 +4213,9 @@ define(['underscore'], function (_) {
         ],
         "startTime": 1442869071000,
         "endTime": 1442869671000
-    };
-    this.projectConnectedGraph = {
+    }};
+    methods.projectConnectedGraph = function(){
+        return {
         "nodes": [
             {
                 "name": "default-domain:admin:backend",
@@ -5230,8 +5261,10 @@ define(['underscore'], function (_) {
             ],
             "service-instances": []
         }
+        }
     };
-    this.projectConfigGraph = {
+    methods.projectConfigGraph = function(){
+        return {
         "configData": {
             "network-policys": [
                 {
@@ -5325,8 +5358,10 @@ define(['underscore'], function (_) {
             ],
             "network-ipams": []
         }
+        }
     };
-    this.virtualMachinesDetailsMockData = {
+    methods.virtualMachinesDetailsMockData = function(){
+        return {
         "data": {
             "value": [
                 {
@@ -5377,8 +5412,10 @@ define(['underscore'], function (_) {
         },
         "lastKey": null,
         "more": false
+        }
     };
-    this.virtualMachinesSummaryMockData = {
+    methods.virtualMachinesSummaryMockData = function(){
+        return {
         "value": [
             {
                 "name": "default-domain:admin:4b5073eb-ee2e-4790-b106-e020a4e79e45",
@@ -5417,8 +5454,10 @@ define(['underscore'], function (_) {
                 }
             }
         ]
+        }
     };
-    this.virtualMachinesInterfacesMockData = {
+    methods.virtualMachinesInterfacesMockData = function(){
+        return {
         "value": [
             {
                 "name": "default-domain:admin:3683aa58-28ff-4ffb-8667-fb778d92ad0e",
@@ -5439,8 +5478,11 @@ define(['underscore'], function (_) {
                 }
             }
         ]
+        }
     };
-    this.networkingStatsMockData = [
+
+    methods.networkingStatsMockData = function(){
+        return [
         {
             "value": [
                 {
@@ -5459,8 +5501,10 @@ define(['underscore'], function (_) {
                 }
             ]
         }
-    ];
-    this.virtualMachinesStatsMockData = [
+        ]
+    };
+    methods.virtualMachinesStatsMockData = function(){
+        return [
         {
             "value": [
                 {
@@ -5472,27 +5516,6 @@ define(['underscore'], function (_) {
                 }
             ]
         }
-    ];
-    return {
-        domainsMockData                                : domainsMockData,
-        projectMockData                                : projectMockData,
-        networksForAdminProjectMockData                : networksForAdminProjectMockData,
-        networksMockData                               : networksMockData,
-        networkSummaryForFrontEndNetworkMockData       : networkSummaryForFrontEndNetworkMockData,
-        networkConnectedGraphForFrontEndNetworkMockData: networkConnectedGraphForFrontEndNetworkMockData,
-        networkConfigGraphForFrontEndNetworkMockData   : networkConfigGraphForFrontEndNetworkMockData,
-        flowSeriesForFrontendVNMockData                : flowSeriesForFrontendVNMockData,
-        networkStatsForFrontendVNMockData              : networkStatsForFrontendVNMockData,
-        virtualMachineDetailsByUUIDMockData            : virtualMachineDetailsByUUIDMockData,
-        virtualMachineSummaryByUUIDMockData            : virtualMachineSummaryByUUIDMockData,
-        networksMockStatData                           : networksMockStatData,
-        portDistributionMockData                       : portDistributionMockData,
-        projectConnectedGraph                          : projectConnectedGraph,
-        projectConfigGraph                             : projectConfigGraph,
-        virtualMachinesDetailsMockData                 : virtualMachinesDetailsMockData,
-        virtualMachinesSummaryMockData                 : virtualMachinesSummaryMockData,
-        virtualMachinesInterfacesMockData              : virtualMachinesInterfacesMockData,
-        networkingStatsMockData                        : networkingStatsMockData,
-        virtualMachinesStatsMockData                   : virtualMachinesStatsMockData
+        ]
     };
-});
+    

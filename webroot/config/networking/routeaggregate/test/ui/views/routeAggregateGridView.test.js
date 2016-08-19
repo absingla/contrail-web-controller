@@ -15,26 +15,23 @@ define([
 
     var testType = cotc.VIEW_TEST;
 
-    var fakeServerConfig = cotr.getDefaultFakeServerConfig();
-
-    var fakeServerResponsesConfig = function() {
+    var testServerRoutes = function() {
         var responses = [];
-        responses.push(cotr.createFakeServerResponse( {
-            url: /\/api\/tenants\/config\/domains.*$/,
-            body: JSON.stringify(TestMockdata.routeAggregateDomainsData)
-        }));
-        responses.push(cotr.createFakeServerResponse( {
-            url: /\/api\/tenants\/config\/projects\/default-domain.*$/,
-            body: JSON.stringify(TestMockdata.routeAggregatePojectsData)
-        }));
-        responses.push(cotr.createFakeServerResponse( {
-            url: /\/api\/tenants\/config\/route-aggregates\/ee14bbf4-a3fc-4f98-a7b3-f1fe1d8b29bb.*$/,
-            body: JSON.stringify(TestMockdata.routeAggregateMockData)
-        }));
+        responses.push({
+            url: '/tenants/config/domains',
+            fnName: 'routeAggregateDomainsData'
+        });
+        responses.push({
+            url:'/tenants/config/projects/default-domain',
+            fnName: 'routeAggregatePojectsData'
+        });
+        responses.push({
+            url: '/tenants/config/route-aggregates/ee14bbf4-a3fc-4f98-a7b3-f1fe1d8b29bb',
+            fnName: 'routeAggregateMockData'
+        });
 
         return responses;
     };
-    fakeServerConfig.getResponsesConfig = fakeServerResponsesConfig;
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -60,8 +57,10 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, pageConfig, getTestConfig);
+    pageTestConfig.mockDataFile = 'config/networking/routeaggregate/test/ui/views/routeAggregateGridView.mock.data.js';
 
-    cotr.startTestRunner(pageTestConfig);
+    pageTestConfig.getTestServerRoutes = testServerRoutes;
+    return pageTestConfig;
 
 });

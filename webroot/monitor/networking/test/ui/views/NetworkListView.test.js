@@ -6,45 +6,57 @@ define([
     'co-test-runner',
     'ct-test-utils',
     'ct-test-messages',
-    'monitor/networking/test/ui/views/NetworkListView.mock.data',
     'co-grid-contrail-list-model-test-suite',
     'co-grid-view-test-suite',
     'co-chart-view-zoom-scatter-test-suite',
     'network-list-view-custom-test-suite'
-], function (cotc,cotr, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite,
+], function (cotc,cotr, cttu, cttm, GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite,
              CustomTestSuite) {
 
     var moduleId = cttm.NETWORKS_LIST_VIEW_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
 
-    var fakeServerConfig = cotr.getDefaultFakeServerConfig();
+    var testServerConfig = cotr.getDefaultTestServerConfig();
 
-    var fakeServerResponsesConfig = function() {
-        var responses = [];
+    var testServerRoutes = function() {
 
-        responses.push(cotr.createFakeServerResponse( {
-            url: cttu.getRegExForUrl(ctwc.URL_ALL_DOMAINS),
-            body: JSON.stringify(TestMockdata.domainsMockData)
-        }));
-        responses.push(cotr.createFakeServerResponse( {
-            url: /\/api\/tenants\/projects\/default-domain.*$/,
-            body: JSON.stringify(TestMockdata.projectMockData)
-        }));
-        responses.push(cotr.createFakeServerResponse({
-            method:"POST",
-            url: cttu.getRegExForUrl(ctwc.URL_ALL_NETWORKS_DETAILS),
-            body: JSON.stringify(TestMockdata.networksMockData)
-        }));
-        responses.push(cotr.createFakeServerResponse({
+        var routes = [];
+
+        routes.push({
+            url: '/api/tenants/config/domains',
+            fnName: 'domainsMockData'
+        });
+
+        routes.push({
+            url: '/api/tenants/config/projects/default-domain',
+            fnName: 'projectDomainMockData'
+        });
+
+        routes.push({
+            url: '/api/tenants/get-project-role',
+            fnName: 'empty'
+        });
+        routes.push({
+            url: '/api/tenants/networks/default-domain:admin',
+            fnName: 'projectMockData'
+        });
+        routes.push({
             method: "POST",
-            url: cttu.getRegExForUrl(ctwc.URL_VM_VN_STATS),
-            body: JSON.stringify(TestMockdata.networksMockStatData)
-        }));
+            url: '/api/tenant/networking/virtual-networks/details',
+            fnName: 'networksMockData'
+        });
+        routes.push({
+            method: "POST",
+            url: '/api/tenant/networking/stats',
+            fnName: 'networksMockStatData'
+        });
 
-        return responses;
+        return routes;
     };
-    fakeServerConfig.getResponsesConfig = fakeServerResponsesConfig;
+
+    testServerConfig.getRoutesConfig = testServerRoutes;
+    testServerConfig.responseDataFile =  'monitor/networking/test/ui/views/NetworkListView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -98,8 +110,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig);
-
-    cotr.startTestRunner(pageTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
+    return pageTestConfig;
 
 });

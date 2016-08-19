@@ -2,8 +2,12 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore'], function (_) {
-    this.domainsMockData = {
+    var methods = {};
+    module.exports= {
+        methods : methods
+    };
+    methods.domainsMockData = function(){
+        return {
         "domains": [
             {
                 "href": "http://10.84.11.2:8082/domain/35468934-bfe5-4c0e-84e2-ddfc9b49af74",
@@ -13,9 +17,14 @@ define(['underscore'], function (_) {
                 "uuid": "35468934-bfe5-4c0e-84e2-ddfc9b49af74"
             }
         ]
+        }
     };
+    methods.empty = function(){
+        return {
+    }};
 
-    this.projectMockData = {
+    methods.projectMockData = function(){
+        return {
         "projects": [
             {
                 "uuid": "ba710bf3-922d-4cda-bbb4-a2e2e76533bf",
@@ -40,7 +49,9 @@ define(['underscore'], function (_) {
             }
         ]
     }
-    this.networksMockData = {
+    };
+    methods.networksMockData = function(){
+        return {
         "data": {
             "value": [
                 {
@@ -95,8 +106,10 @@ define(['underscore'], function (_) {
         },
         "lastKey": null,
         "more": false
+    }
     };
-    this.networksMockStatData = [
+    methods.networksMockStatData = function(){
+        return [
         {
             "value": [
                 {
@@ -115,8 +128,9 @@ define(['underscore'], function (_) {
                 }
             ]
         }
-    ];
-    this.portDistributionMockData = {
+    ]};
+    methods.portDistributionMockData = function(){
+        return {
         "sport": [
             {
                 "outBytes": 912072,
@@ -1275,8 +1289,9 @@ define(['underscore'], function (_) {
         ],
         "startTime": 1442869071000,
         "endTime": 1442869671000
-    };
-    this.projectConnectedGraph = {
+    }};
+    methods.projectConnectedGraph = function(){
+        return {
         "nodes": [
             {
                 "name": "default-domain:admin:backend",
@@ -2322,8 +2337,10 @@ define(['underscore'], function (_) {
             ],
             "service-instances": []
         }
+    }
     };
-    this.projectConfigGraph = {
+    methods.projectConfigGraph = function(){
+        return {
         "configData": {
             "network-policys": [
                 {
@@ -2417,8 +2434,10 @@ define(['underscore'], function (_) {
             ],
             "network-ipams": []
         }
+    }
     };
-    this.virtualMachinesDetailsMockData = {
+    methods.virtualMachinesDetailsMockData = function(){
+        return {
         "data": {
             "value": [
                 {
@@ -2469,8 +2488,10 @@ define(['underscore'], function (_) {
         },
         "lastKey": null,
         "more": false
+    }
     };
-    this.virtualMachinesSummaryMockData = {
+    methods.virtualMachinesSummaryMockData = function(){
+        return {
         "value": [
             {
                 "name": "default-domain:admin:4b5073eb-ee2e-4790-b106-e020a4e79e45",
@@ -2509,8 +2530,10 @@ define(['underscore'], function (_) {
                 }
             }
         ]
+    }
     };
-    this.networkingStatsMockData = [
+    methods.networkingStatsMockData = function(){
+        return [
         {
             "value": [
                 {
@@ -2529,8 +2552,9 @@ define(['underscore'], function (_) {
                 }
             ]
         }
-    ];
-    this.virtualMachinesStatsMockData = [
+    ]};
+    methods.virtualMachinesStatsMockData = function(){
+        return [
         {
             "value": [
                 {
@@ -2549,18 +2573,4 @@ define(['underscore'], function (_) {
                 }
             ]
         }
-    ];
-    return {
-        domainsMockData: domainsMockData,
-        projectMockData: projectMockData,
-        networksMockData: networksMockData,
-        networksMockStatData: networksMockStatData,
-        portDistributionMockData: portDistributionMockData,
-        projectConnectedGraph: projectConnectedGraph,
-        projectConfigGraph: projectConfigGraph,
-        virtualMachinesDetailsMockData: virtualMachinesDetailsMockData,
-        virtualMachinesSummaryMockData: virtualMachinesSummaryMockData,
-        networkingStatsMockData: networkingStatsMockData,
-        virtualMachinesStatsMockData: virtualMachinesStatsMockData
-    };
-});
+    ]};

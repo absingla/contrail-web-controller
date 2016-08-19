@@ -6,7 +6,7 @@ module("Configure Service instance", {
 	setup: function() {
     	document.body.innerHTML+=window.__html__['webroot/config/services/instances/views/svcinstances_config.view'];
         document.body.innerHTML+=window.__html__['webroot/config/services/instances/views/svcinstances_config_ut.view'];
-        this.server = sinon.fakeServer.create();
+       // this.server = sinon.fakeServer.create();
         this.server.autoRespond = true;
         $.ajaxSetup({
             cache:true

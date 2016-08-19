@@ -6,27 +6,23 @@ define([
     'co-test-runner',
     'ct-test-utils',
     'ct-test-messages',
-    'reports/qe/test/ui/views/LogsQueryQueueView.mock.data',
     'co-grid-view-test-suite'
-], function (cotc, cotr, cttu, cttm, TestMockdata, GridViewTestSuite) {
+], function (cotc, cotr, cttu, cttm, GridViewTestSuite) {
 
     var moduleId = cttm.LOGS_QUERY_QUEUE_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
+    var testServerConfig = cotr.getDefaultTestServerConfig();
 
-    var fakeServerConfig = cotr.getDefaultFakeServerConfig();
-
-    var fakeServerResponsesConfig = function () {
+    var testServerRoutes = function() {
         var responses = [];
-        responses.push(cotr.createFakeServerResponse({
+        responses.push({
             method: "GET",
-            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=lqq'),
-            body: JSON.stringify(TestMockdata.logsQueryQueueMockData)
-        }));
+            url: '/api/qe/query/queue?queryQueue=lqq',
+            fnName: 'logsQueryQueueMockData'
+        });
         return responses;
     };
-    fakeServerConfig.getResponsesConfig = fakeServerResponsesConfig;
-
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
         p: 'query_log_queue',
@@ -34,6 +30,10 @@ define([
             label: 'Query Queue'
         }
     };
+
+    testServerConfig.getRoutesConfig = testServerRoutes;
+    testServerConfig.responseDataFile ='reports/qe/test/ui/views/LogsQueryQueueView.mock.data.js';
+
     pageConfig.loadTimeout = cotc.PAGE_LOAD_TIMEOUT * 5;
 
     var getTestConfig = function () {
@@ -66,8 +66,6 @@ define([
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
-
-    cotr.startTestRunner(pageTestConfig);
-
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
+    return pageTestConfig;
 });

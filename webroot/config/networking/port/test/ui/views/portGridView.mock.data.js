@@ -2,8 +2,12 @@
  * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 
- define(['underscore'], function(_){
-     this.portDomainsData = {
+    var methods = {};
+        module.exports= {
+        methods : methods
+    };
+     methods.portDomainsData = function(){
+       return {
          "domains": [
            {
              "fq_name": [
@@ -12,9 +16,11 @@
              "uuid": "a62c5b74-808b-4295-9c83-8c61588e5d39"
            }
          ]
+        }
      };
 
-     this.portPojectsData = {
+     methods.portPojectsData = function(){
+       return {
          "projects": [
            {
              "uuid": "6ddecd27-6ac1-4007-8eaf-eb6fdc7442e4",
@@ -31,16 +37,18 @@
              ]
            }
          ]
+        }
      };
 
-     this.portUUIDListData =
-     [
+     methods.portUUIDListData =function(){
+       return [
        "b5577a6e-0102-448e-af7b-89ca473e6f3a",
        "704ccb89-94d6-43ab-a245-c7b825b409dd"
-     ];
+        ]
+     };
 
-     this.portMockData =
-       [
+     methods.portMockData =function(){
+       return [
          {
            "virtual-machine-interface": {
              "ecmp_hashing_include_fields": {},
@@ -293,11 +301,10 @@
              }
            }
          }
-       ];
-       return {
-           portDomainsData: portDomainsData,
-           portPojectsData: portPojectsData,
-           portUUIDListData: portUUIDListData,
-           portMockData: portMockData
-       };
- });
+       ]
+     };
+
+    methods.empty = function(){
+        return {}
+    };
+

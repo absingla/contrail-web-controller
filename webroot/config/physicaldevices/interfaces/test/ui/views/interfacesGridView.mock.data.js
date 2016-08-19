@@ -2,75 +2,83 @@
  * Copyright (c) 2015 Junper Networks, Inc. All rights reserved.
  */
 
- define(['underscore'], function(_){
-     this.physicalRouterListMockData = {
-         "physical-routers": [
+    var methods = {};
+    module.exports= {
+      methods : methods
+    };
+    methods.physicalRouterListMockData = function(){
+      return {
+             "physical-routers": [
+               {
+                 "href": "http://10.204.216.40:9100/physical-router/8d2dd1b7-279b-4237-873e-41cf4fbcfe1d",
+                 "fq_name": [
+                   "default-global-system-config",
+                   "pr1"
+                 ],
+                 "uuid": "8d2dd1b7-279b-4237-873e-41cf4fbcfe1d"
+               }
+             ]
+         }
+    };
+    methods.physicalInterfacesMockData = function(){
+        return [
            {
-             "href": "http://10.204.216.40:9100/physical-router/8d2dd1b7-279b-4237-873e-41cf4fbcfe1d",
-             "fq_name": [
-               "default-global-system-config",
-               "pr1"
-             ],
-             "uuid": "8d2dd1b7-279b-4237-873e-41cf4fbcfe1d"
-           }
-         ]
-     };
-     this.physicalInterfacesMockData = [
-       {
-         "physical-interface": {
-           "fq_name": [
-             "default-global-system-config",
-             "pr1",
-             "ge-1/1/1"
-           ],
-           "name": "ge-1/1/1",
-           "parent_uuid": "8d2dd1b7-279b-4237-873e-41cf4fbcfe1d",
-           "parent_href": "http://10.204.216.40:9100/physical-router/8d2dd1b7-279b-4237-873e-41cf4fbcfe1d",
-           "parent_type": "physical-router",
-           "perms2": {
-             "owner": "e9a7b1af07c147889169045c5f2caafb",
-             "owner_access": 7,
-             "global_access": 0,
-             "share": []
-           },
-           "href": "http://10.204.216.40:9100/physical-interface/b72f8214-23f0-480d-8694-d44ac59bef62",
-           "id_perms": {
-             "enable": true,
-             "uuid": {
-               "uuid_mslong": 13199912055860120000,
-               "uuid_lslong": 9697609315243520000
-             },
-             "created": "2015-11-23T10:06:27.234511",
-             "description": null,
-             "creator": null,
-             "user_visible": true,
-             "last_modified": "2015-11-23T10:06:27.234511",
-             "permissions": {
-               "owner": "admin",
-               "owner_access": 7,
-               "other_access": 7,
-               "group": "KeystoneServiceAdmin",
-               "group_access": 7
-             }
-           },
-           "display_name": "ge-1/1/1",
-           "logical_interfaces": [
-             {
-               "to": [
+             "physical-interface": {
+               "fq_name": [
                  "default-global-system-config",
                  "pr1",
-                 "ge-1/1/1",
-                 "ge-1/1/1.1"
+                 "ge-1/1/1"
                ],
-               "href": "http://10.204.216.40:9100/logical-interface/fe3d4a90-27a1-4fe6-80ea-82eb6fd8ae0d",
-               "uuid": "fe3d4a90-27a1-4fe6-80ea-82eb6fd8ae0d"
+               "name": "ge-1/1/1",
+               "parent_uuid": "8d2dd1b7-279b-4237-873e-41cf4fbcfe1d",
+               "parent_href": "http://10.204.216.40:9100/physical-router/8d2dd1b7-279b-4237-873e-41cf4fbcfe1d",
+               "parent_type": "physical-router",
+               "perms2": {
+                 "owner": "e9a7b1af07c147889169045c5f2caafb",
+                 "owner_access": 7,
+                 "global_access": 0,
+                 "share": []
+               },
+               "href": "http://10.204.216.40:9100/physical-interface/b72f8214-23f0-480d-8694-d44ac59bef62",
+               "id_perms": {
+                 "enable": true,
+                 "uuid": {
+                   "uuid_mslong": 13199912055860120000,
+                   "uuid_lslong": 9697609315243520000
+                 },
+                 "created": "2015-11-23T10:06:27.234511",
+                 "description": null,
+                 "creator": null,
+                 "user_visible": true,
+                 "last_modified": "2015-11-23T10:06:27.234511",
+                 "permissions": {
+                   "owner": "admin",
+                   "owner_access": 7,
+                   "other_access": 7,
+                   "group": "KeystoneServiceAdmin",
+                   "group_access": 7
+                 }
+               },
+               "display_name": "ge-1/1/1",
+               "logical_interfaces": [
+                 {
+                   "to": [
+                     "default-global-system-config",
+                     "pr1",
+                     "ge-1/1/1",
+                     "ge-1/1/1.1"
+                   ],
+                   "href": "http://10.204.216.40:9100/logical-interface/fe3d4a90-27a1-4fe6-80ea-82eb6fd8ae0d",
+                   "uuid": "fe3d4a90-27a1-4fe6-80ea-82eb6fd8ae0d"
+                 }
+               ],
+               "uuid": "b72f8214-23f0-480d-8694-d44ac59bef62"
              }
-           ],
-           "uuid": "b72f8214-23f0-480d-8694-d44ac59bef62"
-         }
-       }
-     ];
-     this.logicalInterfacesMockData = [
+           }
+         ]
+    };
+     methods.logicalInterfacesMockData = function(){
+       return [
        {
          "logical-interface": {
            "fq_name": [
@@ -273,10 +281,5 @@
            "uuid": "fe3d4a90-27a1-4fe6-80ea-82eb6fd8ae0d"
          }
        }
-     ];
-     return {
-         physicalRouterListMockData : physicalRouterListMockData,
-         physicalInterfacesMockData : physicalInterfacesMockData,
-         logicalInterfacesMockData : logicalInterfacesMockData
+        ]
      };
- });

@@ -6,34 +6,33 @@ define([
     'co-test-runner',
     'ct-test-utils',
     'ct-test-messages',
-    'config/infra/bgp/test/ui/views/bgpGridView.mock.data',
     'co-grid-contrail-list-model-test-suite',
     'co-grid-view-test-suite'
-], function (cotc, cotr, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite) {
+], function (cotc, cotr, cttu, cttm, GridListModelTestSuite, GridViewTestSuite) {
 
     var moduleId = cttm.BGP_GRID_VIEW_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
+    var testServerConfig = cotr.getDefaultTestServerConfig();
 
-    var fakeServerConfig = cotr.getDefaultFakeServerConfig();
+    var testServerRoutes = function() {
 
-    var fakeServerResponsesConfig = function() {
-        var responses = [];
-
-        responses.push(cotr.createFakeServerResponse( {
-            url: /\/api\/tenants\/config\/bgp\/get-bgp-routers.*$/,
-            body: JSON.stringify(TestMockdata.bgpMockData)
-        }));
-
-        return responses;
+        var routes = [];
+        routes.push({
+            url: '/api/tenants/config/bgp/get-bgp-routers',
+            fnName: 'bgpMockData'
+        });
+        return routes;
     };
-    fakeServerConfig.getResponsesConfig = fakeServerResponsesConfig;
+
+    testServerConfig.getRoutesConfig = testServerRoutes;
+    testServerConfig.responseDataFile = 'config/infra/bgp/test/ui/views/bgpGridView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
         p: 'config_infra_bgp',
     };
-    pageConfig.loadTimeout = cotc.PAGE_LOAD_TIMEOUT * 2;
+    pageConfig.loadTimeout = cotc.PAGE_LOAD_TIMEOUT * 5;
 
     var getTestConfig = function() {
         return {
@@ -53,8 +52,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig);
-
-    cotr.startTestRunner(pageTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
+    return pageTestConfig;
 
 });

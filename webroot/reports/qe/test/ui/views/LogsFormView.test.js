@@ -6,54 +6,53 @@ define([
     'co-test-runner',
     'ct-test-utils',
     'ct-test-messages',
-    'reports/qe/test/ui/views/LogsQueryQueueView.mock.data',
     'co-grid-view-test-suite',
     'logs-form-view-custom-test-suite',
     'co-test-utils',
-], function (cotc,cotr, cttu, cttm, TestMockdata, GridViewTestSuite, CustomTestSuite, cotu) {
+], function (cotc,cotr, cttu, cttm, GridViewTestSuite, CustomTestSuite, cotu) {
 
     var moduleId = cttm.LOGS_QUERY_QUEUE_COMMON_TEST_MODULE;
 
+    var testServerConfig = cotr.getDefaultTestServerConfig();
+
     var testType = cotc.VIEW_TEST;
-
-    var fakeServerConfig = cotr.getDefaultFakeServerConfig();
-
-    var fakeServerResponsesConfig = function() {
+    var testServerRoutes = function() {
         var responses = [];
 
-        responses.push(cotr.createFakeServerResponse({
+        responses.push({
             method:"GET",
-            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=lqq'),
-            body: JSON.stringify(TestMockdata.logsQueryQueueMockData)
-        }));
+            url: '/api/qe/query/queue?queryQueue=lqq',
+            fnName: 'logsQueryQueueMockData'
+        });
 
-        responses.push(cotr.createFakeServerResponse({
+        responses.push({
             method: "GET",
-            url: cttu.getRegExForUrl('/api/qe/table/schema/MessageTable'),
-            body: JSON.stringify(TestMockdata.logsSchemaTable)
-        }));
+            url: '/api/qe/table/schema/MessageTable',
+            fnName: 'logsSchemaTable'
+        });
 
-        responses.push(cotr.createFakeServerResponse({
+        responses.push({
             method: "GET",
-            url: cttu.getRegExForUrl('/api/service/networking/web-server-info'),
-            body: JSON.stringify(TestMockdata.serverInfo)
-        }));
+            url: '/api/service/networking/web-server-info',
+            fnName: 'serverInfo'
+        });
 
-        responses.push(cotr.createFakeServerResponse({
+        responses.push({
             method: "POST",
             url: cotc.URL_QE_QUERY,
-            body: JSON.stringify(TestMockdata.logsViewQueryMockData)
-        }));
+            fnName: 'logsViewQueryMockData'
+        });
 
-        responses.push(cotr.createFakeServerResponse({
+        responses.push({
             method: "POST",
             url: cotc.URL_COLUMN_VALUES,
-            body: JSON.stringify(TestMockdata.values)
-        }));
-
+            fnName: 'values'
+        });
         return responses;
     };
-    fakeServerConfig.getResponsesConfig = fakeServerResponsesConfig;
+
+    testServerConfig.getRoutesConfig = testServerRoutes;
+    testServerConfig.responseDataFile ='reports/qe/test/ui/views/LogsQueryQueueView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -98,6 +97,6 @@ define([
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig, testInitFn);
-    cotr.startTestRunner(pageTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig, testInitFn);
+    return pageTestConfig;
 });

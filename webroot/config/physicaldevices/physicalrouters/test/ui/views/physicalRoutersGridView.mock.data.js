@@ -2,8 +2,14 @@
  * Copyright (c) 2015 Junper Networks, Inc. All rights reserved.
  */
 
- define(['underscore'], function(_){
-     this.physcalRoutersMockData = [
+var methods = {};
+module.exports= {
+  methods : methods
+};
+
+
+methods.physcalRoutersMockData = function(){
+  return[
   {
     "physical-router": {
       "physical_router_vendor_name": "myvendor",
@@ -147,6 +153,5 @@
       "totalIntfCount": 2
     }
   }
-];
-return {physcalRoutersMockData : physcalRoutersMockData};
- });
+]};
+

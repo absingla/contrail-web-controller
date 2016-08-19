@@ -2,8 +2,13 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
- define(['underscore'], function(_){
-     this.bgpMockData = [
+    var methods = {};
+    module.exports= {
+      methods : methods
+    };
+
+     methods.bgpMockData = function(){
+       return [
          {
            "bgp-router": {
              "fq_name": [
@@ -68,6 +73,5 @@
              "uuid": "a6e0447a-ceb9-42fa-bf03-179ca3ead9e0"
            }
          }
-       ];
-       return { bgpMockData : bgpMockData };
- });
+       ]
+     };

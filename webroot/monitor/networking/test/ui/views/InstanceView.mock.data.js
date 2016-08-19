@@ -2,8 +2,12 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore'], function (_) {
-    this.domainsMockData = {
+var methods = {};
+module.exports= {
+    methods : methods
+};
+    methods.domainsMockData = function(){
+        return {
         "domains": [
             {
                 "href": "http://10.84.11.2:9100/domain/35468934-bfe5-4c0e-84e2-ddfc9b49af74",
@@ -13,33 +17,33 @@ define(['underscore'], function (_) {
                 "uuid": "35468934-bfe5-4c0e-84e2-ddfc9b49af74"
             }
         ]
+    }
     };
-    this.projectsMockData = {
-        "projects": [
-            {
-                "uuid": "ba710bf3-922d-4cda-bbb4-a2e2e76533bf",
-                "fq_name": [
-                    "default-domain",
-                    "admin"
-                ]
-            },
-            {
-                "uuid": "c3fa1bb4-b04d-4f29-8bb4-7343d8fbeb21",
-                "fq_name": [
-                    "default-domain",
-                    "scalevns"
-                ]
-            },
-            {
-                "uuid": "efdfd856-b362-4b5c-ad17-09cc3acfd859",
-                "fq_name": [
-                    "default-domain",
-                    "demo"
-                ]
-            }
-        ]
-    };
-    this.demoProjectMockData = {
+
+methods.networkingStatsMockData = function(){
+    return[
+        {
+            "value": [
+                {
+                    "name": "default-domain:admin:backend",
+                    "SUM(vn_stats.in_bytes)": 55374864,
+                    "SUM(vn_stats.in_tpkts)": 165032,
+                    "SUM(vn_stats.out_bytes)": 55166624,
+                    "SUM(vn_stats.out_tpkts)": 164956
+                },
+                {
+                    "name": "default-domain:admin:frontend",
+                    "SUM(vn_stats.in_bytes)": 55166624,
+                    "SUM(vn_stats.in_tpkts)": 164956,
+                    "SUM(vn_stats.out_bytes)": 55374864,
+                    "SUM(vn_stats.out_tpkts)": 165032
+                }
+            ]
+        }
+    ]};
+
+    methods.demoProjectMockData = function(){
+        return {
         "virtual-networks": [
             {
                 "href": "http://10.84.11.2:9100/virtual-network/5afff8c0-75bd-4063-b146-667885069bef",
@@ -60,9 +64,66 @@ define(['underscore'], function (_) {
                 "uuid": "e1a07ef5-ee3b-4422-b085-fa3641090626"
             }
         ]
+    }
+    };
+methods.adminProjectMockData = function(){
+    return{
+        "virtual-networks": [
+            {
+                "href"   : "http://10.84.11.2:8082/virtual-network/ad8a9efc-9b7e-4425-9735-03bda0d2726e",
+                "fq_name": [
+                    "default-domain",
+                    "admin",
+                    "frontend"
+                ],
+                "uuid"   : "ad8a9efc-9b7e-4425-9735-03bda0d2726e"
+            },
+            {
+                "href"   : "http://10.84.11.2:8082/virtual-network/2847747f-cb2c-4499-9b12-0f1711168e72",
+                "fq_name": [
+                    "default-domain",
+                    "admin",
+                    "backend"
+                ],
+                "uuid"   : "2847747f-cb2c-4499-9b12-0f1711168e72"
+            }
+        ]
+    }
+};
+methods.projectMockData = function(){
+    return{
+        "projects": [
+            {
+                "uuid"   : "ba710bf3-922d-4cda-bbb4-a2e2e76533bf",
+                "fq_name": [
+                    "default-domain",
+                    "admin"
+                ]
+            },
+            {
+                "uuid"   : "c3fa1bb4-b04d-4f29-8bb4-7343d8fbeb21",
+                "fq_name": [
+                    "default-domain",
+                    "scalevns"
+                ]
+            },
+            {
+                "uuid"   : "efdfd856-b362-4b5c-ad17-09cc3acfd859",
+                "fq_name": [
+                    "default-domain",
+                    "demo"
+                ]
+            }
+        ]
+    }
+};
+
+    methods.empty = function(){
+        return {}
     };
 
-    this.virtualMachineMockData = {
+    methods.virtualMachineMockData = function(){
+        return {
         "data"   : {
             "value": [
                 {
@@ -113,8 +174,9 @@ define(['underscore'], function (_) {
         },
         "lastKey": null,
         "more"   : false
-    };
-    this.virtualMachineStatsMockData = {
+    }};
+    methods.virtualMachineStatsMockData = function(){
+        return {
         "VirtualMachineStats": {
             "cpu_stats": [
                 {
@@ -165,8 +227,10 @@ define(['underscore'], function (_) {
                 "default-domain:demo:st101_port21"
             ]
         }
+    }
     };
-    this.virtualMachineInterfacesMockData = {
+    methods.virtualMachineInterfacesMockData = function(){
+        return {
         "value": [
             {
                 "name": "default-domain:demo:st101_port21",
@@ -238,8 +302,10 @@ define(['underscore'], function (_) {
                 }
             }
         ]
+    }
     };
-    this.virtualMachineConnectedGraphMockData = {
+    methods.virtualMachineConnectedGraphMockData = function(){
+        return {
         "nodes": [
             {
                 "name": "st_vn101_vm21",
@@ -379,8 +445,10 @@ define(['underscore'], function (_) {
                 }
             }
         ]
+    }
     };
-    this.reportsQueryMockData = {
+    methods.reportsQueryMockData = function(){
+        return {
         "data": [
             {
                 "Source": "a3s29",
@@ -1247,8 +1315,10 @@ define(['underscore'], function (_) {
                 ]
             ]
         }
+    }
     };
-    this.virtualMachineFlowSeriesMockData = {
+    methods.virtualMachineFlowSeriesMockData = function(){
+        return {
         "summary": {
             "start_time": 1445615662000000,
             "end_time": 1445622862000000,
@@ -2336,30 +2406,20 @@ define(['underscore'], function (_) {
                 "totalBytes": 3446428
             }
         ]
+    }
     };
-    this.networkingStatsTopMockData = {
+    methods.networkingStatsTopMockData = function(){
+        return {
         "sport": [],
         "dport": [],
         "startTime": 1441880529000,
         "endTime": 1441881129000
+    }
     };
-    this.networkingStatsMockData = [
+    methods.networkingStatsMockData = function(){
+        return[
         {
             "value": []
         }
-    ];
+    ]};
 
-    return {
-        domainsMockData                  : domainsMockData,
-        projectsMockData                 : projectsMockData,
-        demoProjectMockData              : demoProjectMockData,
-        virtualMachineMockData           : virtualMachineMockData,
-        virtualMachineStatsMockData      : virtualMachineStatsMockData,
-        virtualMachineInterfacesMockData : virtualMachineInterfacesMockData,
-        virtualMachineConnectedGraphMockData : virtualMachineConnectedGraphMockData,
-        reportsQueryMockData             : reportsQueryMockData,
-        virtualMachineFlowSeriesMockData : virtualMachineFlowSeriesMockData,
-        networkingStatsTopMockData       : networkingStatsTopMockData,
-        networkingStatsMockData          : networkingStatsMockData
-    };
-});

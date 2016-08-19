@@ -7,33 +7,34 @@ define([
     'co-test-runner',
     'ct-test-utils',
     'ct-test-messages',
-    'config/dns/servers/test/ui/views/dnsServersGridView.mock.data',
     'co-grid-contrail-list-model-test-suite',
     'co-grid-view-test-suite'
-], function (cotc, cotr, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite) {
+], function (cotc, cotr, cttu, cttm, GridListModelTestSuite, GridViewTestSuite) {
 
     var moduleId = cttm.DNS_SERVERS_GRID_VIEW_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
 
-    var fakeServerConfig = cotr.getDefaultFakeServerConfig();
+    var testServerConfig = cotr.getDefaultTestServerConfig();
 
-    var fakeServerResponsesConfig = function() {
-        var responses = [];
+    var testServerRoutes = function() {
+        var routes = [];
 
-        responses.push(cotr.createFakeServerResponse( {
-            url: /\/api\/tenants\/config\/domains.*$/,
-            body: JSON.stringify(TestMockdata.dnsServerDomainsMockData)
-        }));
-        responses.push(cotr.createFakeServerResponse({
-            url : /\/api\/tenants\/config\/get-config-details.*$/,
+        routes.push({
+            url: '/api/tenants/config/domains' ,
+            fnName: 'dnsServerDomainsMockData'
+        });
+
+        routes.push({
+            url : '/api/tenants/config/get-config-details',
             method: "POST",
-            body: JSON.stringify(TestMockdata.dnsServersMockData)
-        }));
-
-        return responses;
+            fnName: 'dnsServersMockData'
+        });
+        return routes;
     };
-    fakeServerConfig.getResponsesConfig = fakeServerResponsesConfig;
+
+    testServerConfig.getRoutesConfig = testServerRoutes;
+    testServerConfig.responseDataFile = 'config/dns/servers/test/ui/views/dnsServersGridView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -59,8 +60,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig);
-
-    cotr.startTestRunner(pageTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
+    return pageTestConfig;
 
 });

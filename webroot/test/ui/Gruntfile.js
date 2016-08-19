@@ -7,6 +7,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-qunit");
     grunt.loadNpmTasks('grunt-qunit-junit');
     grunt.loadNpmTasks('grunt-karma');
+
+    //grunt nodejs server
+    grunt.loadNpmTasks('grunt-express-server');
+
     //this option is to avoid interruption of test case execution on failure of one in sequence
     //grunt.option('force',true);
     grunt.option('stack', true);
@@ -113,19 +117,19 @@ module.exports = function (grunt) {
                     {
                         pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowQueryQueueView.test.js',
                         included: false
-                    },
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowRecordFormView.test.js',
-                        included: false
-                    },
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowRecordFormView.custom.test.suite.js',
-                        included: false
                     }
+                    // {
+                    //     pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowRecordFormView.test.js',
+                    //     included: false
+                    // },
+                    // {
+                    //     pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowRecordFormView.custom.test.suite.js',
+                    //     included: false
+                    // }
                 ],
-                preprocessors: {
-                    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
-                },
+                // preprocessors: {
+                //     'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+                // },
                 junitReporter: {
                     outputDir: __dirname + '/reports/tests/qe/views/',
                     outputFile: 'flow-record-view-test-results.xml',
@@ -149,15 +153,15 @@ module.exports = function (grunt) {
                     {
                         pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/LogsQueryQueueView.test.js',
                         included: false
-                    },
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/LogsFormView.test.js',
-                        included: false
-                    },
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/LogsFormView.custom.test.suite.js',
-                        included: false
-                    }
+                     }
+                    // {
+                    //     pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/LogsFormView.test.js',
+                    //     included: false
+                    // },
+                    // {
+                    //     pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/LogsFormView.custom.test.suite.js',
+                    //     included: false
+                    // }
                 ],
                 preprocessors: {
                     'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
@@ -186,14 +190,14 @@ module.exports = function (grunt) {
                         pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatQueryQueueView.test.js',
                         included: false
                     },
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatFormView.test.js',
-                        included: false
-                    },
-                    {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatFormView.custom.test.suite.js',
-                        included: false
-                    }
+                    // {
+                    //     pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatFormView.test.js',
+                    //     included: false
+                    // },
+                    // {
+                    //     pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatFormView.custom.test.suite.js',
+                    //     included: false
+                    // }
                 ],
                 preprocessors: {
                     'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
@@ -215,34 +219,34 @@ module.exports = function (grunt) {
                 feature: 'reports'
             }
         },
-        // flowViewQueryResults: {
-        //     options: {
-        //         files: [
-        //             {
-        //                 pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowViewQueryResults.test.js',
-        //                 included: false
-        //             }
-        //         ],
-        //         // preprocessors: {
-        //         //    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
-        //         // },
-        //         junitReporter: {
-        //             outputDir: __dirname + '/reports/tests/qe/views/',
-        //             outputFile: 'flow-view-query-results.xml',
-        //             suite: 'flowViewQueryResults',
-        //             useBrowserName: false
-        //         },
-        //         htmlReporter: {
-        //             outputFile: __dirname + '/reports/tests/reports/views/flow-view-query-results.html'
-        //         },
-        //         coverageReporter: {
-        //             type: 'html',
-        //             dir: __dirname + '/reports/coverage/reports/views/flowViewQueryResults/',
-        //             subdir: browserSubdirFn
-        //         },
-        //         feature: 'reports'
-        //     }
-        // },
+        flowViewQueryResults: {
+            options: {
+                files: [
+                    {
+                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/FlowViewQueryResults.test.js',
+                        included: false
+                    }
+                ],
+                // preprocessors: {
+                //    'contrail-web-controller/webroot/reports/qe/ui/js/**/*.js': ['coverage']
+                // },
+                junitReporter: {
+                    outputDir: __dirname + '/reports/tests/qe/views/',
+                    outputFile: 'flow-view-query-results.xml',
+                    suite: 'flowViewQueryResults',
+                    useBrowserName: false
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/tests/reports/views/flow-view-query-results.html'
+                },
+                coverageReporter: {
+                    type: 'html',
+                    dir: __dirname + '/reports/coverage/reports/views/flowViewQueryResults/',
+                    subdir: browserSubdirFn
+                },
+                feature: 'reports'
+            }
+        },
         logsViewQueryResults: {
             options: {
                 files: [
@@ -536,174 +540,174 @@ module.exports = function (grunt) {
                 feature: 'nm'
             }
         },
-        flowListView: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/FlowListView.test.js',
-                        included: false
-                    }
-                ],
-                preprocessors: {
-                    'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
-                },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/nm/views/',
-                    outputFile: 'flow-list-view-test-results.xml',
-                    suite: 'FlowListView',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/nm/views/flow-list-view-test-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/nm/views/flowListView/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'nm'
-            }
-        },
-        flowListViewError: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/FlowListViewError.test.js',
-                        included: false
-                    }
-                ],
-                preprocessors: {
-                    'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
-                },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/nm/views/',
-                    outputFile: 'flow-list-view-error-test-results.xml',
-                    suite: 'FlowListViewError',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/nm/views/flow-list-view-error-test-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/nm/views/flowListViewError/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'nm'
-            }
-        },
-        flowGridView: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/FlowGridView.test.js',
-                        included: false
-                    }
-                ],
-                preprocessors: {
-                    'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
-                },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/nm/views/',
-                    outputFile: 'flow-grid-view-test-results.xml',
-                    suite: 'FlowGridView',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/nm/views/flow-grid-view-test-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/nm/views/flowGridView/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'nm'
-            }
-        },
-        flowGridViewError: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/FlowGridViewError.test.js',
-                        included: false
-                    }
-                ],
-                preprocessors: {
-                    'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
-                },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/nm/views/',
-                    outputFile: 'flow-list-view-error-test-results.xml',
-                    suite: 'FlowGridViewError',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/nm/views/flow-grid-view-error-test-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/nm/views/flowGridViewError/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'nm'
-            }
-        },
-        nmUnit: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/unit/nm.unit.test.js',
-                        included: false
-                    }
-                ],
-                preprocessors: {
-                    'contrail-web-controller/webroot/monitor/networking/ui/js/*.js': ['coverage']
-                },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/nm/unit/',
-                    outputFile: 'nm-unit-test-results.xml',
-                    suite: 'unit',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/nm/unit/nm-unit-test-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/nm/unit/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'nm'
-            }
-        },
-        ctUnit: {
-            options: {
-                files: [
-                    {
-                        pattern: 'contrail-web-controller/webroot/common/test/ui/unit/ct.unit.test.js',
-                        included: false
-                    }
-                ],
-                preprocessors: {
-                    'contrail-web-controller/webroot/common/ui/js/*.js': ['coverage']
-                },
-                junitReporter: {
-                    outputDir: __dirname + '/reports/tests/webController/unit/',
-                    outputFile: 'ct-unit-test-results.xml',
-                    suite: 'unit',
-                    useBrowserName: false
-                },
-                htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/webController/unit/ct-unit-test-results.html'
-                },
-                coverageReporter: {
-                    type: 'html',
-                    dir: __dirname + '/reports/coverage/webController/unit/',
-                    subdir: browserSubdirFn
-                },
-                feature: 'ct'
-            }
-        },
+        // flowListView: {
+        //     options: {
+        //         files: [
+        //             {
+        //                 pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/FlowListView.test.js',
+        //                 included: false
+        //             }
+        //         ],
+        //         preprocessors: {
+        //             'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+        //         },
+        //         junitReporter: {
+        //             outputDir: __dirname + '/reports/tests/nm/views/',
+        //             outputFile: 'flow-list-view-test-results.xml',
+        //             suite: 'FlowListView',
+        //             useBrowserName: false
+        //         },
+        //         htmlReporter: {
+        //             outputFile: __dirname + '/reports/tests/nm/views/flow-list-view-test-results.html'
+        //         },
+        //         coverageReporter: {
+        //             type: 'html',
+        //             dir: __dirname + '/reports/coverage/nm/views/flowListView/',
+        //             subdir: browserSubdirFn
+        //         },
+        //         feature: 'nm'
+        //     }
+        // },
+        // flowListViewError: {
+        //     options: {
+        //         files: [
+        //             {
+        //                 pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/FlowListViewError.test.js',
+        //                 included: false
+        //             }
+        //         ],
+        //         preprocessors: {
+        //             'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+        //         },
+        //         junitReporter: {
+        //             outputDir: __dirname + '/reports/tests/nm/views/',
+        //             outputFile: 'flow-list-view-error-test-results.xml',
+        //             suite: 'FlowListViewError',
+        //             useBrowserName: false
+        //         },
+        //         htmlReporter: {
+        //             outputFile: __dirname + '/reports/tests/nm/views/flow-list-view-error-test-results.html'
+        //         },
+        //         coverageReporter: {
+        //             type: 'html',
+        //             dir: __dirname + '/reports/coverage/nm/views/flowListViewError/',
+        //             subdir: browserSubdirFn
+        //         },
+        //         feature: 'nm'
+        //     }
+        // },
+        // flowGridView: {
+        //     options: {
+        //         files: [
+        //             {
+        //                 pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/FlowGridView.test.js',
+        //                 included: false
+        //             }
+        //         ],
+        //         preprocessors: {
+        //             'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+        //         },
+        //         junitReporter: {
+        //             outputDir: __dirname + '/reports/tests/nm/views/',
+        //             outputFile: 'flow-grid-view-test-results.xml',
+        //             suite: 'FlowGridView',
+        //             useBrowserName: false
+        //         },
+        //         htmlReporter: {
+        //             outputFile: __dirname + '/reports/tests/nm/views/flow-grid-view-test-results.html'
+        //         },
+        //         coverageReporter: {
+        //             type: 'html',
+        //             dir: __dirname + '/reports/coverage/nm/views/flowGridView/',
+        //             subdir: browserSubdirFn
+        //         },
+        //         feature: 'nm'
+        //     }
+        // },
+        // flowGridViewError: {
+        //     options: {
+        //         files: [
+        //             {
+        //                 pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/FlowGridViewError.test.js',
+        //                 included: false
+        //             }
+        //         ],
+        //         preprocessors: {
+        //             'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
+        //         },
+        //         junitReporter: {
+        //             outputDir: __dirname + '/reports/tests/nm/views/',
+        //             outputFile: 'flow-list-view-error-test-results.xml',
+        //             suite: 'FlowGridViewError',
+        //             useBrowserName: false
+        //         },
+        //         htmlReporter: {
+        //             outputFile: __dirname + '/reports/tests/nm/views/flow-grid-view-error-test-results.html'
+        //         },
+        //         coverageReporter: {
+        //             type: 'html',
+        //             dir: __dirname + '/reports/coverage/nm/views/flowGridViewError/',
+        //             subdir: browserSubdirFn
+        //         },
+        //         feature: 'nm'
+        //     }
+        // },
+        // nmUnit: {
+        //     options: {
+        //         files: [
+        //             {
+        //                 pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/unit/nm.unit.test.js',
+        //                 included: false
+        //             }
+        //         ],
+        //         preprocessors: {
+        //             'contrail-web-controller/webroot/monitor/networking/ui/js/*.js': ['coverage']
+        //         },
+        //         junitReporter: {
+        //             outputDir: __dirname + '/reports/tests/nm/unit/',
+        //             outputFile: 'nm-unit-test-results.xml',
+        //             suite: 'unit',
+        //             useBrowserName: false
+        //         },
+        //         htmlReporter: {
+        //             outputFile: __dirname + '/reports/tests/nm/unit/nm-unit-test-results.html'
+        //         },
+        //         coverageReporter: {
+        //             type: 'html',
+        //             dir: __dirname + '/reports/coverage/nm/unit/',
+        //             subdir: browserSubdirFn
+        //         },
+        //         feature: 'nm'
+        //     }
+        // },
+        // ctUnit: {
+        //     options: {
+        //         files: [
+        //             {
+        //                 pattern: 'contrail-web-controller/webroot/common/test/ui/unit/ct.unit.test.js',
+        //                 included: false
+        //             }
+        //         ],
+        //         preprocessors: {
+        //             'contrail-web-controller/webroot/common/ui/js/*.js': ['coverage']
+        //         },
+        //         junitReporter: {
+        //             outputDir: __dirname + '/reports/tests/webController/unit/',
+        //             outputFile: 'ct-unit-test-results.xml',
+        //             suite: 'unit',
+        //             useBrowserName: false
+        //         },
+        //         htmlReporter: {
+        //             outputFile: __dirname + '/reports/tests/webController/unit/ct-unit-test-results.html'
+        //         },
+        //         coverageReporter: {
+        //             type: 'html',
+        //             dir: __dirname + '/reports/coverage/webController/unit/',
+        //             subdir: browserSubdirFn
+        //         },
+        //         feature: 'ct'
+        //     }
+        // },
         physicalRoutersGridView: {
             options: {
                 files: [
@@ -971,43 +975,43 @@ module.exports = function (grunt) {
                 },
                 feature: 'config'
             }
-        }
-//        routeAggregateGridView : {
-//            options: {
-//                files: [
-//                    {
-//                        pattern : 'contrail-web-controller/webroot/config/networking/routeaggregate/ui/js/*.js',
-//                        included : false
-//                    },
-//                    {
-//                        pattern : 'contrail-web-controller/webroot/config/networking/routeaggregate/ui/js/**/*.js',
-//                        included : false
-//                    },
-//                    {
-//                        pattern : 'contrail-web-controller/webroot/config/networking/routeaggregate/test/ui/views/*.js',
-//                        included : false
-//                    }
-//                ],
-//                preprocessors: {
-//                    'contrail-web-controller/webroot/config/networking/routeaggregate/ui/js/**/*.js': ['coverage']
-//                },
-//                junitReporter: {
-//                    outputDir:__dirname + '/reports/tests/config/views/',
-//                    outputFile: 'route-aggregate-grid-view-test-results.xml',
-//                    suite: 'routeAggregateGridView',
-//                    useBrowserName: false
-//                },
-//                htmlReporter: {
-//                    outputFile:__dirname + '/reports/tests/config/views/route-aggregate-grid-view-test-results.html'
-//                },
-//                coverageReporter: {
-//                    type: 'html',
-//                    dir: __dirname + '/reports/coverage/config/views/routeAggregateGridView/',
-//                    subdir : browserSubdirFn
-//                },
-//                feature: 'config'
-//            }
-//        }
+        },
+    //    routeAggregateGridView : {
+    //        options: {
+    //            files: [
+    //                {
+    //                    pattern : 'contrail-web-controller/webroot/config/networking/routeaggregate/ui/js/*.js',
+    //                    included : false
+    //                },
+    //                {
+    //                    pattern : 'contrail-web-controller/webroot/config/networking/routeaggregate/ui/js/**/*.js',
+    //                    included : false
+    //                },
+    //                {
+    //                    pattern : 'contrail-web-controller/webroot/config/networking/routeaggregate/test/ui/views/*.js',
+    //                    included : false
+    //                }
+    //            ],
+    //            preprocessors: {
+    //                'contrail-web-controller/webroot/config/networking/routeaggregate/ui/js/**/*.js': ['coverage']
+    //            },
+    //            junitReporter: {
+    //                outputDir:__dirname + '/reports/tests/config/views/',
+    //                outputFile: 'route-aggregate-grid-view-test-results.xml',
+    //                suite: 'routeAggregateGridView',
+    //                useBrowserName: false
+    //            },
+    //            htmlReporter: {
+    //                outputFile:__dirname + '/reports/tests/config/views/route-aggregate-grid-view-test-results.html'
+    //            },
+    //            coverageReporter: {
+    //                type: 'html',
+    //                dir: __dirname + '/reports/coverage/config/views/routeAggregateGridView/',
+    //                subdir : browserSubdirFn
+    //            },
+    //            feature: 'config'
+    //        }
+    //    }
     };
 
     var allTestFiles = [],
@@ -1183,6 +1187,20 @@ module.exports = function (grunt) {
             },
             files: ["Gruntfile.js"]
         },
+        express: {
+            options: {
+                options: {
+                    // Override the command used to start the server.
+                    background: true,
+                }
+            },
+            dev: {
+                options: {
+                    script: __dirname + "/../../../../contrail-web-core/webroot/test/server/testServer.js"
+                }
+            }
+        },
+
         nmNoMerge: {
             networkListView: 'networkListView',
             networkView: 'networkView',
@@ -1219,6 +1237,7 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('run', 'Web Controller Test Cases', function (feature) {
+        grunt.task.run('express:dev');
         if (feature == null) {
             grunt.log.writeln('>>>>>>>> No feature specified. will run all the feature tests. <<<<<<<');
             grunt.log.writeln('If you need to run specific feature tests only; then run: grunt run:nm\n\n');
@@ -1235,6 +1254,7 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('nm', 'Network Monitoring Test Cases', function (target) {
+        grunt.task.run('express:dev');
         if (target == null) {
             grunt.log.writeln('>>>>>>>> Running Network Monitoring feature tests. <<<<<<<');
             grunt.task.run('karma:runAllNMTests');
@@ -1273,6 +1293,7 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('config', 'Config Test Cases', function(target){
+        grunt.task.run('express:dev');
         var testDir = 'runAllConfigTests';
         switch(target) {
             case 'physicalrouters' :
@@ -1282,7 +1303,7 @@ module.exports = function (grunt) {
             case 'physicalinterfaces' :
                 grunt.task.run('karma:physicalInterfacesGridView');
                 break;
-            case 'bgprouters' :
+            // case 'bgprouters' :
                 grunt.task.run('karma:physicalRoutersGridView');
                 testDir = 'physicalInterfacesGridView';
                 break;
@@ -1301,13 +1322,13 @@ module.exports = function (grunt) {
             case 'port' :
                 grunt.task.run('karma:portGridView');
                 testDir = 'portGridView'
-                break;
-            /* case 'routeaggregates' :
+                beak;
+            case 'routeaggregates' :
              grunt.task.run('karma:routeAggregateGridView');
              testDir = 'routeAggregateGridView'
-             break; */
+             break;
             default :
-                grunt.task.run('karma:runAllConfigTests');
+                 grunt.task.run('karma:runAllConfigTests');
                 testDir = 'runAllConfigTests';
                 break;
         };
@@ -1316,6 +1337,11 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('reports', 'Reports Test Cases', function(target){
+      grunt.task.run('express:dev');
+       //  grunt.util.spawn({
+       //      cmd: 'node',
+       //      args: ['testServer.js']
+       //  });
         var testDir = 'runAllReportsTests';
         switch(target) {
             case 'flowQueryQueueView' :
@@ -1354,4 +1380,5 @@ module.exports = function (grunt) {
         grunt.log.writeln('Test results: ' + karmaConfig[testDir]['options']['htmlReporter']['outputFile']);
         printCoverageReportLoc(karmaConfig[testDir]['options']['coverageReporter']);
     });
+
 };

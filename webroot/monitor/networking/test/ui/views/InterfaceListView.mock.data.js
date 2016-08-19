@@ -2,8 +2,11 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore'], function (_) {
-    this.domainsMockData = {
+    var methods = {};
+    module.exports= {
+        methods : methods
+    };
+    methods.domainsMockData = {
         "domains": [
             {
                 "href"   : "http://10.84.11.2:8082/domain/35468934-bfe5-4c0e-84e2-ddfc9b49af74",
@@ -14,7 +17,7 @@ define(['underscore'], function (_) {
             }
         ]
     };
-    this.projectsMockData = {
+    methods.projectsMockData = {
         "projects": [
             {
                 "uuid"   : "ba710bf3-922d-4cda-bbb4-a2e2e76533bf",
@@ -39,7 +42,11 @@ define(['underscore'], function (_) {
             }
         ]
     };
-    this.adminProjectMockData = {
+    methods.empty = function(){
+        return {}
+    };
+
+    methods.adminProjectMockData = {
         "virtual-networks": [
             {
                 "href"   : "http://10.84.11.2:8082/virtual-network/ad8a9efc-9b7e-4425-9735-03bda0d2726e",
@@ -61,7 +68,7 @@ define(['underscore'], function (_) {
             }
         ]
     };
-    this.interfacesMockStatData = [
+    methods.interfacesMockStatData = [
         {
             "value": [
                 {
@@ -81,7 +88,7 @@ define(['underscore'], function (_) {
             ]
         }
     ];
-    this.virtualMachinesInterfacesMockData = {
+    methods.virtualMachinesInterfacesMockData = {
         "value": [
             {
                 "name" : "default-domain:admin:4b5073eb-ee2e-4790-b106-e020a4e79e45",
@@ -125,11 +132,4 @@ define(['underscore'], function (_) {
             }
         ]
     };
-    return {
-        domainsMockData                  : domainsMockData,
-        projectsMockData                 : projectsMockData,
-        adminProjectMockData             : adminProjectMockData,
-        interfacesMockStatData    : interfacesMockStatData,
-        virtualMachinesInterfacesMockData: virtualMachinesInterfacesMockData
-    };
-});
+    

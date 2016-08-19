@@ -1,6 +1,10 @@
-define(['underscore'], function (_) {
 
-    this.getMockData = function(){
+var methods = {};
+module.exports= {
+    methods : methods
+};
+
+methods.getMockData = function(){
 
         var mockData = [];
         for(var i=0; i<120; i++){
@@ -21,12 +25,13 @@ define(['underscore'], function (_) {
             mockData.push(data);
         }
         return mockData;
-    }
+    };
 
 
-    this.logsViewQueryMockData = {
-        "data": getMockData(),
-        "total": getMockData().length,
+methods.logsViewQueryMockData = function(){
+    return{
+        "data": methods['getMockData'](),
+        "total": methods['getMockData']().length,
         "queryJSON": {
             "table": "MessageTable",
             "start_time": 1468256700000000,
@@ -79,9 +84,11 @@ define(['underscore'], function (_) {
         "chunk": 1,
         "chunkSize": 1505,
         "serverSideChunking": true
-    },
+    }
+};
 
-        this.logsQueryQueueMockData = [
+    methods.logsQueryQueueMockData = function(){
+        return[
             {
                 "startTime": 1468257356092,
                 "queryJSON": {
@@ -171,239 +178,239 @@ define(['underscore'], function (_) {
                 },
                 "opsQueryId": "20fc1c63-478b-11e6-8d2b-00000a541ef9"
             }
-        ],
+        ]};
 
-        this.values = {
-            "data": [
-                {
-                    "fields.value": "contrail-analytics-api",
-                    "name": "MessageTable:ModuleId"
-                },
-                {
-                    "fields.value": "contrail-dns",
-                    "name": "MessageTable:ModuleId"
-                },
-                {
-                    "fields.value": "discClientLog",
-                    "name": "MessageTable:Messagetype"
-                },
-                {
-                    "fields.value": "discServiceLog",
-                    "name": "MessageTable:Messagetype"
-                },
-                {
-                    "fields.value": "QELog",
-                    "name": "MessageTable:Messagetype"
-                },
-                {
-                    "fields.value": "IFMapDSResp",
-                    "name": "MessageTable:Messagetype"
-                },
-                {
-                    "fields.value": "a3s31",
-                    "name": "MessageTable:Source"
-                },
-                {
-                    "fields.value": "contrail-discovery",
-                    "name": "MessageTable:ModuleId"
-                },
-                {
-                    "fields.value": "contrail-query-engine",
-                    "name": "MessageTable:ModuleId"
-                },
-                {
-                    "fields.value": "QEQueryLog",
-                    "name": "MessageTable:Messagetype"
-                },
-                {
-                    "fields.value": "contrail-control",
-                    "name": "MessageTable:ModuleId"
-                }
-            ],
-            "total": 11,
-            "queryJSON": {
-                "start_time": 1468619108000000,
-                "end_time": 1468619708000000,
-                "select_fields": [
-                    "name",
-                    "fields.value"
+        methods.values = function(){
+            return{
+                "data": [
+                    {
+                        "fields.value": "contrail-analytics-api",
+                        "name": "MessageTable:ModuleId"
+                    },
+                    {
+                        "fields.value": "contrail-dns",
+                        "name": "MessageTable:ModuleId"
+                    },
+                    {
+                        "fields.value": "discClientLog",
+                        "name": "MessageTable:Messagetype"
+                    },
+                    {
+                        "fields.value": "discServiceLog",
+                        "name": "MessageTable:Messagetype"
+                    },
+                    {
+                        "fields.value": "QELog",
+                        "name": "MessageTable:Messagetype"
+                    },
+                    {
+                        "fields.value": "IFMapDSResp",
+                        "name": "MessageTable:Messagetype"
+                    },
+                    {
+                        "fields.value": "a3s31",
+                        "name": "MessageTable:Source"
+                    },
+                    {
+                        "fields.value": "contrail-discovery",
+                        "name": "MessageTable:ModuleId"
+                    },
+                    {
+                        "fields.value": "contrail-query-engine",
+                        "name": "MessageTable:ModuleId"
+                    },
+                    {
+                        "fields.value": "QEQueryLog",
+                        "name": "MessageTable:Messagetype"
+                    },
+                    {
+                        "fields.value": "contrail-control",
+                        "name": "MessageTable:ModuleId"
+                    }
                 ],
-                "table": "StatTable.FieldNames.fields",
-                "where": [
-                    [
-                        {
-                            "name": "name",
-                            "value": "MessageTable",
-                            "op": 7
-                        }
+                "total": 11,
+                "queryJSON": {
+                    "start_time": 1468619108000000,
+                    "end_time": 1468619708000000,
+                    "select_fields": [
+                        "name",
+                        "fields.value"
+                    ],
+                    "table": "StatTable.FieldNames.fields",
+                    "where": [
+                        [
+                            {
+                                "name": "name",
+                                "value": "MessageTable",
+                                "op": 7
+                            }
+                        ]
                     ]
+                },
+                "chunk": 1,
+                "chunkSize": 11,
+                "serverSideChunking": true
+            }
+        };
+
+        methods.serverInfo = function(){
+            return{
+                "orchestrationModel": [
+                    "openstack"
+                ],
+                "serverUTCTime": 1468619708000,
+                "hostName": "pjagadeesh-mbp",
+                "role": [
+                    "member",
+                    "superAdmin"
+                ],
+                "featurePkg": {
+                    "webController": true,
+                    "serverManager": true,
+                    "webStorage": true
+                },
+                "uiConfig": {
+                    "nodemanager": {
+                        "installed": true
+                    },
+                    "dropdown_value_separator": ";"
+                },
+                "isAuthenticated": true,
+                "discoveryEnabled": false,
+                "configServer": {
+                    "port": "8082",
+                    "ip": "10.84.11.2"
+                },
+                "optFeatureList": {
+                    "mon_infra_underlay": false,
+                    "mon_infra_mx": false
+                },
+                "featurePkgsInfo": {
+                    "webController": {
+                        "path": "/Users/pjagadeesh/testAuto/contrail-web-controller",
+                        "enable": true
+                    },
+                    "serverManager": {
+                        "path": "/Users/pjagadeesh/testAuto/contrail-web-server-manager",
+                        "enable": true
+                    },
+                    "webStorage": {
+                        "path": "/Users/pjagadeesh/testAuto/contrail-web-storage",
+                        "enable": true
+                    }
+                },
+                "sessionTimeout": 3600000,
+                "_csrf": "L+ou5PaLVsLrRB+qOOmpcdNn",
+                "serviceEndPointFromConfig": true,
+                "regionList": [],
+                "isRegionListFromConfig": false,
+                "configRegionList": {
+                    "RegionOne": "http://127.0.0.1:5000/v2.0"
+                },
+                "currentRegionName": null,
+                "loggedInOrchestrationMode": "openstack",
+                "insecureAccess": false
+            }
+        };
+
+        methods.logsSchemaTable = function(){
+                return{
+                "type": "LOG",
+                "columns": [
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "MessageTS",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "string",
+                        "index": true,
+                        "name": "Source",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "string",
+                        "index": true,
+                        "name": "ModuleId",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "string",
+                        "index": true,
+                        "name": "Category",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": true,
+                        "name": "Level",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "Type",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "string",
+                        "index": false,
+                        "name": "InstanceId",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "string",
+                        "index": false,
+                        "name": "NodeType",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "string",
+                        "index": true,
+                        "name": "Messagetype",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "int",
+                        "index": false,
+                        "name": "SequenceNum",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "string",
+                        "index": false,
+                        "name": "Context",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "string",
+                        "index": true,
+                        "name": "Keyword",
+                        "select": null,
+                        "suffixes": null
+                    },
+                    {
+                        "datatype": "string",
+                        "index": false,
+                        "name": "Xmlmessage",
+                        "select": null,
+                        "suffixes": null
+                    }
                 ]
-            },
-            "chunk": 1,
-            "chunkSize": 11,
-            "serverSideChunking": true
-        },
+            }
+        };
 
-        this.serverInfo = {
-            "orchestrationModel": [
-                "openstack"
-            ],
-            "serverUTCTime": 1468619708000,
-            "hostName": "pjagadeesh-mbp",
-            "role": [
-                "member",
-                "superAdmin"
-            ],
-            "featurePkg": {
-                "webController": true,
-                "serverManager": true,
-                "webStorage": true
-            },
-            "uiConfig": {
-                "nodemanager": {
-                    "installed": true
-                },
-                "dropdown_value_separator": ";"
-            },
-            "isAuthenticated": true,
-            "discoveryEnabled": false,
-            "configServer": {
-                "port": "8082",
-                "ip": "10.84.11.2"
-            },
-            "optFeatureList": {
-                "mon_infra_underlay": false,
-                "mon_infra_mx": false
-            },
-            "featurePkgsInfo": {
-                "webController": {
-                    "path": "/Users/pjagadeesh/testAuto/contrail-web-controller",
-                    "enable": true
-                },
-                "serverManager": {
-                    "path": "/Users/pjagadeesh/testAuto/contrail-web-server-manager",
-                    "enable": true
-                },
-                "webStorage": {
-                    "path": "/Users/pjagadeesh/testAuto/contrail-web-storage",
-                    "enable": true
-                }
-            },
-            "sessionTimeout": 3600000,
-            "_csrf": "L+ou5PaLVsLrRB+qOOmpcdNn",
-            "serviceEndPointFromConfig": true,
-            "regionList": [],
-            "isRegionListFromConfig": false,
-            "configRegionList": {
-                "RegionOne": "http://127.0.0.1:5000/v2.0"
-            },
-            "currentRegionName": null,
-            "loggedInOrchestrationMode": "openstack",
-            "insecureAccess": false
-        },
 
-        this.logsSchemaTable = {
-            "type": "LOG",
-            "columns": [
-                {
-                    "datatype": "int",
-                    "index": false,
-                    "name": "MessageTS",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "string",
-                    "index": true,
-                    "name": "Source",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "string",
-                    "index": true,
-                    "name": "ModuleId",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "string",
-                    "index": true,
-                    "name": "Category",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "int",
-                    "index": true,
-                    "name": "Level",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "int",
-                    "index": false,
-                    "name": "Type",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "string",
-                    "index": false,
-                    "name": "InstanceId",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "string",
-                    "index": false,
-                    "name": "NodeType",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "string",
-                    "index": true,
-                    "name": "Messagetype",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "int",
-                    "index": false,
-                    "name": "SequenceNum",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "string",
-                    "index": false,
-                    "name": "Context",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "string",
-                    "index": true,
-                    "name": "Keyword",
-                    "select": null,
-                    "suffixes": null
-                },
-                {
-                    "datatype": "string",
-                    "index": false,
-                    "name": "Xmlmessage",
-                    "select": null,
-                    "suffixes": null
-                }
-            ]
-        }
 
-    return {
-        logsQueryQueueMockData:logsQueryQueueMockData,
-        logsViewQueryMockData:logsViewQueryMockData,
-        values : values,
-        serverInfo : serverInfo,
-        logsSchemaTable:logsSchemaTable
-    };
-});
