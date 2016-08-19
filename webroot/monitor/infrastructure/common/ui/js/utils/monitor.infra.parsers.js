@@ -26,7 +26,7 @@ define(
                         }
                         var memCpuUsage = getValueByJsonPath(d,
                                 'value;NodeStatus;process_mem_cpu_usage;contrail-control',{});
-                        obj['x'] = parseInt(getValueByJsonPath(memCpuUsage,'cpu_share'));
+                        obj['x'] = parseFloat(getValueByJsonPath(memCpuUsage,'cpu_share'));
                         obj['y'] = parseInt(getValueByJsonPath(memCpuUsage,'mem_res'))/1024;
                         obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : NaN;
                         obj['memory'] = formatBytes(obj['y'] * 1024 * 1024);
@@ -377,7 +377,7 @@ define(
                         var obj = {};
                         var memCpuUsage = getValueByJsonPath(d,
                                 'value;NodeStatus;process_mem_cpu_usage;contrail-collector',{});
-                        obj['x'] = parseInt(getValueByJsonPath(memCpuUsage,'cpu_share'));
+                        obj['x'] = parseFloat(getValueByJsonPath(memCpuUsage,'cpu_share'));
                         obj['y'] = parseInt(getValueByJsonPath(memCpuUsage,'mem_res'))/1024;
                         obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : NaN;
                         obj['memory'] = formatBytes(obj['y'] * 1024 * 1024);
@@ -490,7 +490,7 @@ define(
                         for (var key in memCpuUsage) {
                             if (memCpuUsage.hasOwnProperty(key) && key.indexOf('contrail-api') != -1) {
                                 var memcpu = memCpuUsage[key];
-                                cpu += parseInt(getValueByJsonPath(memcpu,'cpu_share'),0);
+                                cpu += parseFloat(getValueByJsonPath(memcpu,'cpu_share'),0);
                                 mem += parseInt(getValueByJsonPath(memcpu,'mem_res'),0)/1024;
                             }
                           }
@@ -2370,6 +2370,68 @@ define(
                     var ret = ifNotNumeric(cpu,noCpuText)
                     return ret;
                 }
+
+                self.getDBNodeCPUdata = function(respData, grpKey, timeKey, dataKey){
+                      var parsedData = [],
+                        cf = crossfilter(respData),
+                        groupDim = cf.dimension(function(d) { return d[grpKey];}),
+                        tsDim = cf.dimension(function (d) {return d[timeKey];}),
+                        buckets = self.bucketizeConfigNodeStats(respData, null, null, null, timeKey),
+                        colorCodes = monitorInfraUtils.getMonitorInfraNodeColors(groupDim.group().all().length),
+                        colorCodes = colorCodes.slice(0, groupDim.group().all().length),
+                        i, j,
+                        timestampExtent,
+                        nodeGrp,
+                        dataGrp,
+                        dataGrpMap = {},
+                        dataGrpArr = [],
+                        arrLen = 0,
+                        dataCnt = 0,
+                        lineDataMap = {},
+                        grpCountsArr = [],
+                        grpCountsMap = {};
+
+                    nodeGrp =  groupDim.group().all();
+                    arrLen = nodeGrp.length;
+
+                    for(j = 0; j < arrLen; j++) {
+                        lineData = {};
+                        lineData['key'] = nodeGrp[j]['key'];
+                        lineData['values'] = [];
+                        lineData['color'] = colorCodes[j];
+                        lineData['colorCodes'] = colorCodes;
+                        lineDataMap[nodeGrp[j]['key']] = lineData;
+                    }
+
+                    for(i in buckets){
+                        timestampExtent = buckets[i]['timestampExtent'];
+                        tsDim.filter(timestampExtent);
+                        dataGrp = groupDim.group().reduceSum(function (d) {
+                            return d[dataKey];
+                        });
+
+                        grpCountsArr = groupDim.group().reduceCount().all();
+                        arrLen = grpCountsArr.length;
+                        for (j = 0; j < arrLen; j++) {
+                            grpCountsMap[grpCountsArr[j]['key']] = grpCountsArr[j]['value'];
+                        }
+
+                        dataGrpArr = dataGrp.top(Infinity);
+                        arrLen = dataGrpArr.length;
+                        for(j = 0; j < arrLen; j++){
+                            if(lineDataMap[dataGrpArr[j]['key']])
+                                lineDataMap[dataGrpArr[j]['key']]['values'].push(
+                                        {x: Math.round(i/1000),
+                                            y: dataGrpArr[j]['value'] / grpCountsMap[dataGrpArr[j]['key']]});
+                        }
+                    }
+
+                    for(i in lineDataMap){
+                        parsedData.push(lineDataMap[i]);
+                    }
+
+                    return parsedData;
+                };
             };
 
             return MonInfraParsers;
