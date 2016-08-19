@@ -10,6 +10,7 @@ define([
             {
                 field: 'name',
                 name: 'Network',
+                // for the meaning of arguments, refer to slickgrid formatter
                 formatter: function (r, c, v, cd, dc) {
                     return cowf.formatElementName({name: 'network', value: dc['name'], cssClass: 'cell-hyperlink-blue'});
                 },

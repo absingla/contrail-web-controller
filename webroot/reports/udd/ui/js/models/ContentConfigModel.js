@@ -3,22 +3,22 @@
  */
 
 define(function (require) {
-    var ContrailModel = require('contrail-model')
+    var ContrailModel = require("contrail-model");
 
     return ContrailModel.extend({
-        onDataModelChange: function (viewModel) {
+        onDataModelChange: function () {
         },
 
         toJSON: function () {
-            return {}
+            return {};
         },
 
         getParserOptions: function () {
-            return {}
+            return {};
         },
 
         getContentViewOptions: function () {
-            return {}
+            return {};
         },
-    })
-})
+    });
+});

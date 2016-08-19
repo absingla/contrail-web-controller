@@ -3,27 +3,27 @@
  */
 
 define(function (require) {
-    var ContentConfigModel = require('reports/udd/ui/js/models/ContentConfigModel.js')
-    var cowc = require('core-constants')
-    var cowf = new (require('core-formatters'))
+    var ContentConfigModel = require("reports/udd/ui/js/models/ContentConfigModel.js");
+    var cowc = require("core-constants");
+    var cowf = new (require("core-formatters"));
 
     return ContentConfigModel.extend({
         defaultConfig: {
-            barColor: '1f77b4',
-            lineColor: 'green',
-            barLabel: '',
-            barValue: '',
-            lineLabel: '',
-            lineValue: '',
+            barColor: "1f77b4",
+            lineColor: "green",
+            barLabel: "",
+            barValue: "",
+            lineLabel: "",
+            lineValue: "",
             yAxisValues: [],
         },
 
         validations: {
             validation: {
-                'barValue': {
+                "barValue": {
                     required: true,
                 },
-                'lineValue': {
+                "lineValue": {
                     required: true,
                 },
             },
@@ -31,12 +31,12 @@ define(function (require) {
 
         // update fields dependent on data model
         onDataModelChange: function (viewModel) {
-            var self = this
-            self.yAxisValues(viewModel.timeSeries())
+            var self = this;
+            self.yAxisValues(viewModel.timeSeries());
         },
 
         toJSON: function () {
-            var self = this
+            var self = this;
             return {
                 barColor: self.barColor(),
                 lineColor: self.lineColor(),
@@ -44,19 +44,19 @@ define(function (require) {
                 barValue: self.barValue(),
                 lineLabel: self.lineLabel(),
                 lineValue: self.lineValue(),
-            }
+            };
         },
 
         getParserOptions: function () {
-            var self = this
+            var self = this;
             return {
-                parserName: 'timeSeriesParser',
+                parserName: "timeSeriesParser",
                 dataFields: [self.barValue(), self.lineValue()],
-            }
+            };
         },
 
         getContentViewOptions: function () {
-            var self = this
+            var self = this;
             return {
                 chartOptions: {
                     axisLabelDistance: 5,
@@ -67,7 +67,7 @@ define(function (require) {
                     y1Formatter: cowf.getFormattedValue.bind(cowf, cowc.QUERY_COLUMN_FORMATTER[self.barValue()]),
                     y2Formatter: cowf.getFormattedValue.bind(cowf, cowc.QUERY_COLUMN_FORMATTER[self.lineValue()]),
                 },
-            }
+            };
         },
-    })
-})
+    });
+});

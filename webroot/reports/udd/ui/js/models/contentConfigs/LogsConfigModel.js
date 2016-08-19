@@ -3,7 +3,7 @@
  */
 
 define(function (require) {
-    var ContentConfigModel = require('reports/udd/ui/js/models/ContentConfigModel.js')
+    var ContentConfigModel = require("reports/udd/ui/js/models/ContentConfigModel.js");
 
     return ContentConfigModel.extend({
         defaultConfig: {
@@ -11,17 +11,17 @@ define(function (require) {
         },
 
         toJSON: function () {
-            var self = this
+            var self = this;
             return {
                 records: self.records(),
-            }
+            };
         },
 
         getContentViewOptions: function () {
-            var self = this
+            var self = this;
             return {
                 totalRecords: self.records(),
-            }
+            };
         },
-    })
-})
+    });
+});

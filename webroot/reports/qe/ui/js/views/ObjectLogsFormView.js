@@ -3,11 +3,11 @@
  */
 
 define([
-    'underscore',
-    'query-form-view',
-    'knockback',
-    'controller-basedir/reports/qe/ui/js/models/ObjectLogsFormModel',
-    'core-basedir/js/common/qe.utils',
+    "underscore",
+    "query-form-view",
+    "knockback",
+    "controller-basedir/reports/qe/ui/js/models/ObjectLogsFormModel",
+    "core-basedir/js/common/qe.utils",
 ], function (_, QueryFormView, Knockback, ObjectLogsFormModel,qewu) {
 
     var ObjectLogsFormView = QueryFormView.extend({
@@ -18,7 +18,6 @@ define([
                 modelMap = contrail.handleIfNull(self.modelMap, {}),
                 hashParams = layoutHandler.getURLHashParams(),
                 queryPrefix = cowc.OBJECT_LOGS_PREFIX,
-                queryPageTmpl = contrail.getTemplate4Id(ctwc.TMPL_QUERY_PAGE),
                 queryType = contrail.checkIfExist(hashParams.queryType) ? hashParams.queryType : null,
                 widgetConfig = contrail.checkIfExist(viewConfig.widgetConfig) ? viewConfig.widgetConfig : null,
                 queryFormId = cowc.QE_HASH_ELEMENT_PREFIX + cowc.OBJECT_LOGS_PREFIX + cowc.QE_FORM_SUFFIX,
@@ -30,14 +29,14 @@ define([
                 queryFormAttributes.to_time = parseInt(queryFormAttributes.to_time_utc);
             }
 
-            self.model = new ObjectLogsFormModel(queryFormAttributes),
+            self.model = new ObjectLogsFormModel(queryFormAttributes);
             self.$el.append(queryPageTmpl({queryPrefix: cowc.OBJECT_LOGS_PREFIX }));
 
             self.renderView4Config($(self.$el).find(queryFormId), this.model, self.getViewConfig(), cowc.KEY_RUN_QUERY_VALIDATION, null, modelMap, function () {
                 self.model.showErrorAttr(objectLogsId, false);
                 Knockback.applyBindings(self.model, document.getElementById(objectLogsId));
                 kbValidation.bind(self);
-                $("#run_query").on('click', function() {
+                $("#run_query").on("click", function() {
                     if (self.model.model().isValid(true, cowc.KEY_RUN_QUERY_VALIDATION)) {
                         self.renderQueryResult();
                     }
@@ -66,13 +65,12 @@ define([
                 queryResultTabId = cowl.QE_OBJECT_LOGS_TAB_ID;
 
             if (widgetConfig !== null) {
-                $(queryFormId).parents('.widget-box').data('widget-action').collapse();
+                $(queryFormId).parents(".widget-box").data("widget-action").collapse();
             }
 
             queryFormModel.is_request_in_progress(true);
             qewu.fetchServerCurrentTime(function(serverCurrentTime) {
-                var timeRange = parseInt(queryFormModel.time_range()),
-                    queryRequestPostData = queryFormModel.getQueryRequestPostData(serverCurrentTime);
+                var queryRequestPostData = queryFormModel.getQueryRequestPostData(serverCurrentTime);
 
                 self.renderView4Config($(queryResultId), self.model,
                     getQueryResultTabViewConfig(queryRequestPostData, queryResultTabId), null, null, modelMap,
@@ -96,26 +94,26 @@ define([
                         {
                             columns: [
                                 {
-                                    elementId: 'time_range', view: "FormDropdownView",
+                                    elementId: "time_range", view: "FormDropdownView",
                                     viewConfig: {
-                                        path: 'time_range', dataBindValue: 'time_range', class: "col-xs-3",
+                                        path: "time_range", dataBindValue: "time_range", class: "col-xs-3",
                                         elementConfig: {dataTextField: "text", dataValueField: "id", data: cowc.TIMERANGE_DROPDOWN_VALUES}}
                                 },
                                 {
-                                    elementId: 'from_time', view: "FormDateTimePickerView",
+                                    elementId: "from_time", view: "FormDateTimePickerView",
                                     viewConfig: {
-                                        style: 'display: none;',
-                                        path: 'from_time', dataBindValue: 'from_time', class: "col-xs-3",
-                                        elementConfig: qewu.getFromTimeElementConfig('from_time', 'to_time'),
+                                        style: "display: none;",
+                                        path: "from_time", dataBindValue: "from_time", class: "col-xs-3",
+                                        elementConfig: qewu.getFromTimeElementConfig("from_time", "to_time"),
                                         visible: "time_range() == -1"
                                     }
                                 },
                                 {
-                                    elementId: 'to_time', view: "FormDateTimePickerView",
+                                    elementId: "to_time", view: "FormDateTimePickerView",
                                     viewConfig: {
-                                        style: 'display: none;',
-                                        path: 'to_time', dataBindValue: 'to_time', class: "col-xs-3",
-                                        elementConfig: qewu.getToTimeElementConfig('from_time', 'to_time'),
+                                        style: "display: none;",
+                                        path: "to_time", dataBindValue: "to_time", class: "col-xs-3",
+                                        elementConfig: qewu.getToTimeElementConfig("from_time", "to_time"),
                                         visible: "time_range() == -1"
                                     }
                                 }
@@ -124,12 +122,12 @@ define([
                         {
                             columns: [
                                 {
-                                    elementId: 'table_name', view: "FormComboboxView",
+                                    elementId: "table_name", view: "FormComboboxView",
                                     viewConfig: {
-                                        label: 'Active Table',
-                                        path: 'table_name',
-                                        dataBindValue: 'table_name',
-                                        dataBindOptionList: 'table_name_data_object',
+                                        label: "Active Table",
+                                        path: "table_name",
+                                        dataBindValue: "table_name",
+                                        dataBindOptionList: "table_name_data_object",
                                         class: "col-xs-6",
                                         elementConfig: {
                                             defaultValueId: 0, allowClear: false, placeholder: cowl.QE_SELECT_OBJECT_TABLE,
@@ -141,13 +139,13 @@ define([
                         },
                         {
                             viewConfig: {
-                                visible: 'isTableNameAvailable()'
+                                visible: "isTableNameAvailable()"
                             },
                             columns: [
                                 {
-                                    elementId: 'select', view: "FormTextAreaView",
+                                    elementId: "select", view: "FormTextAreaView",
                                     viewConfig: {
-                                        path: 'select', dataBindValue: 'select', class: "col-xs-9",
+                                        path: "select", dataBindValue: "select", class: "col-xs-9",
                                         editPopupConfig: {
                                             renderEditFn: function() {
                                                 var tableName = self.model.table_name();
@@ -160,13 +158,13 @@ define([
                         },
                         {
                             viewConfig: {
-                                visible: 'show_advanced_options() && isTableNameAvailable()'
+                                visible: "show_advanced_options() && isTableNameAvailable()"
                             },
                             columns: [
                                 {
-                                    elementId: 'where', view: "FormTextAreaView",
+                                    elementId: "where", view: "FormTextAreaView",
                                     viewConfig: {
-                                        path: 'where', dataBindValue: 'where', class: "col-xs-9", placeHolder: "*",
+                                        path: "where", dataBindValue: "where", class: "col-xs-9", placeHolder: "*",
                                         editPopupConfig: {
                                             renderEditFn: function() {
                                                 self.renderWhere({className: cowc.QE_MODAL_CLASS_700});
@@ -178,13 +176,13 @@ define([
                         },
                         {
                             viewConfig: {
-                                visible: 'show_advanced_options() && isTableNameAvailable()'
+                                visible: "show_advanced_options() && isTableNameAvailable()"
                             },
                             columns: [
                                 {
-                                    elementId: 'filters', view: "FormTextAreaView",
+                                    elementId: "filters", view: "FormTextAreaView",
                                     viewConfig: {
-                                        path: 'filters', dataBindValue: 'filters', class: "col-xs-9", label: cowl.TITLE_QE_FILTER,
+                                        path: "filters", dataBindValue: "filters", class: "col-xs-9", label: cowl.TITLE_QE_FILTER,
                                         editPopupConfig: {
                                             renderEditFn: function() {
                                                 self.renderFilters({className: cowc.QE_MODAL_CLASS_700});
@@ -196,18 +194,18 @@ define([
                         },
                         {
                             viewConfig: {
-                                visible: 'isTableNameAvailable()'
+                                visible: "isTableNameAvailable()"
                             },
                             columns: [
                                 {
-                                    elementId: 'advanced_options', view: "FormTextView",
+                                    elementId: "advanced_options", view: "FormTextView",
                                     viewConfig: {
-                                        text: 'getAdvancedOptionsText()',
+                                        text: "getAdvancedOptionsText()",
                                         class: "col-xs-6 margin-0-0-10",
                                         elementConfig : {
                                             class: "advanced-options-link"
                                         },
-                                        click: 'toggleAdvancedFields'
+                                        click: "toggleAdvancedFields"
                                     }
                                 }
                             ]
@@ -215,20 +213,20 @@ define([
                         {
                             columns: [
                                 {
-                                    elementId: 'run_query', view: "FormButtonView", label: "Run Query",
+                                    elementId: "run_query", view: "FormButtonView", label: "Run Query",
                                     viewConfig: {
-                                        class: 'display-inline-block margin-0-0-0-15',
-                                        disabled: 'is_request_in_progress()',
+                                        class: "display-inline-block margin-0-0-0-15",
+                                        disabled: "is_request_in_progress()",
                                         elementConfig: {
-                                            btnClass: 'btn-primary'
+                                            btnClass: "btn-primary"
                                         }
                                     }
                                 },
                                 {
-                                    elementId: 'reset_query', view: "FormButtonView", label: "Reset",
+                                    elementId: "reset_query", view: "FormButtonView", label: "Reset",
                                     viewConfig: {
                                         label: "Reset",
-                                        class: 'display-inline-block margin-0-0-0-15',
+                                        class: "display-inline-block margin-0-0-0-15",
                                         elementConfig: {
                                             onClick: "reset"
                                         }
@@ -259,12 +257,12 @@ define([
         return {
             elementId: queryResultGridId,
             title: cowl.TITLE_RESULTS,
-            iconClass: 'fa fa-table',
-            view: 'QueryResultGridView',
+            iconClass: "fa fa-table",
+            view: "QueryResultGridView",
             tabConfig: {
-                activate: function (event, ui) {
-                    if ($('#' + queryResultGridId).data('contrailGrid')) {
-                        $('#' + queryResultGridId).data('contrailGrid').refreshView();
+                activate: function () {
+                    if ($("#" + queryResultGridId).data("contrailGrid")) {
+                        $("#" + queryResultGridId).data("contrailGrid").refreshView();
                     }
                 }
             },
@@ -277,7 +275,7 @@ define([
                     fixedRowHeight: false
                 }
             }
-        }
+        };
     }
 
     return ObjectLogsFormView;

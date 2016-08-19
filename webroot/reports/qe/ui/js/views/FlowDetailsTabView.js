@@ -3,37 +3,36 @@
  */
 
 define([
-    'underscore',
-    'contrail-view',
-    'knockback',
-    'controller-basedir/reports/qe/ui/js/models/FlowSeriesFormModel',
-    'core-basedir/js/common/qe.utils'
+    "underscore",
+    "contrail-view",
+    "knockback",
+    "controller-basedir/reports/qe/ui/js/models/FlowSeriesFormModel",
+    "core-basedir/js/common/qe.utils"
 ], function (_, ContrailView, Knockback, FlowSeriesFormModel,qewu) {
 
     var FormRecordDetailsTabView = ContrailView.extend({
-        render: function (renderConfig) {
+        render: function () {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 queryPrefix = cowc.FS_QUERY_PREFIX,
                 modalId = queryPrefix + cowl.QE_RECORD_DETAILS_MODAL_SUFFIX,
-                className = viewConfig['className'],
-                queryFormAttributes = viewConfig['queryFormAttributes'],
+                className = viewConfig.className,
+                queryFormAttributes = viewConfig.queryFormAttributes,
                 queryFormModel = new FlowSeriesFormModel(queryFormAttributes),
-                selectedFlowRecord = viewConfig['selectedFlowRecord'];
+                selectedFlowRecord = viewConfig.selectedFlowRecord;
 
             cowu.createModal({
-                'modalId': modalId,
-                'className': className,
-                'title': cowl.TITLE_SESSION_DETAILS,
-                'body': "<div id='" + modalId + "-body" + "'></div>",
-                'onClose': function () {
-                    $("#" + modalId).modal('hide');
+                "modalId": modalId,
+                "className": className,
+                "title": cowl.TITLE_SESSION_DETAILS,
+                "body": "<div id='" + modalId + "-body' ></div>",
+                "onClose": function () {
+                    $("#" + modalId).modal("hide");
                 }
             });
 
             qewu.fetchServerCurrentTime(function(serverCurrentTime) {
-                var timeRange = parseInt(queryFormModel.time_range()),
-                    queryResultPostData;
+                var timeRange = parseInt(queryFormModel.time_range());
 
                 if (timeRange !== -1) {
                     queryFormModel.to_time(serverCurrentTime);
@@ -45,9 +44,8 @@ define([
         },
 
         getFlowDetailsTabViewConfig: function (serverCurrentTime, queryFormModel, selectedFlowRecord) {
-            var flowClassPrefix = selectedFlowRecord['flow_class_id'],
-                flowDetailsTabPrefix = cowl.QE_FLOW_DETAILS_TAB_ID + "-" + flowClassPrefix,
-                flowDetailsGridPrefix = cowl.QE_FLOW_DETAILS_GRID_ID + "-" + flowClassPrefix;
+            var flowClassPrefix = selectedFlowRecord.flow_class_id,
+                flowDetailsTabPrefix = cowl.QE_FLOW_DETAILS_TAB_ID + "-" + flowClassPrefix;
 
             var viewConfig = {
                     elementId: flowDetailsTabPrefix,
@@ -60,9 +58,9 @@ define([
                                 title: cowl.TITLE_INGRESS,
                                 view: "QueryResultGridView",
                                 tabConfig: {
-                                    activate: function (event, ui) {
-                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_INGRESS_SUFFIX_ID).data('contrailGrid')) {
-                                            $("#" + flowDetailsTabPrefix + cowl.QE_INGRESS_SUFFIX_ID).data('contrailGrid').refreshView();
+                                    activate: function () {
+                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_INGRESS_SUFFIX_ID).data("contrailGrid")) {
+                                            $("#" + flowDetailsTabPrefix + cowl.QE_INGRESS_SUFFIX_ID).data("contrailGrid").refreshView();
                                         }
                                     }
                                 },
@@ -81,9 +79,9 @@ define([
                                 title: cowl.TITLE_EGRESS,
                                 view: "QueryResultGridView",
                                 tabConfig: {
-                                    activate: function (event, ui) {
-                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_EGRESS_SUFFIX_ID).data('contrailGrid')) {
-                                            $("#" + flowDetailsTabPrefix + cowl.QE_EGRESS_SUFFIX_ID).data('contrailGrid').refreshView();
+                                    activate: function () {
+                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_EGRESS_SUFFIX_ID).data("contrailGrid")) {
+                                            $("#" + flowDetailsTabPrefix + cowl.QE_EGRESS_SUFFIX_ID).data("contrailGrid").refreshView();
                                         }
                                     }
                                 },
@@ -102,9 +100,9 @@ define([
                                 title: cowl.TITLE_REVERSE_INGRESS,
                                 view: "QueryResultGridView",
                                 tabConfig: {
-                                    activate: function (event, ui) {
-                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID).data('contrailGrid')) {
-                                            $("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID).data('contrailGrid').refreshView();
+                                    activate: function () {
+                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID).data("contrailGrid")) {
+                                            $("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_INGRESS_SUFFIX_ID).data("contrailGrid").refreshView();
                                         }
                                     }
                                 },
@@ -123,9 +121,9 @@ define([
                                 title: cowl.TITLE_REVERSE_EGRESS,
                                 view: "QueryResultGridView",
                                 tabConfig: {
-                                    activate: function (event, ui) {
-                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID).data('contrailGrid')) {
-                                            $("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID).data('contrailGrid').refreshView();
+                                    activate: function () {
+                                        if ($("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID).data("contrailGrid")) {
+                                            $("#" + flowDetailsTabPrefix + cowl.QE_REVERSE_EGRESS_SUFFIX_ID).data("contrailGrid").refreshView();
                                         }
                                     }
                                 },
@@ -153,21 +151,21 @@ define([
             queryFormAttributes = queryResultPostData.formModelAttrs,
             newQueryFormAttributes = $.extend(true, {}, queryFormAttributes, {table_name: cowc.FLOW_SERIES_TABLE, table_type: cowc.QE_FLOW_TABLE_TYPE, query_prefix: cowc.FS_QUERY_PREFIX}),
             appendWhereClause = "", newWhereClause = "",
-            oldWhereClause = queryFormAttributes["where"],
+            oldWhereClause = queryFormAttributes.where,
             oldWhereArray;
 
-        newQueryFormAttributes['select'] = "vrouter, sourcevn, sourceip, destvn, destip, protocol, sport, dport, flow_count, bytes, T, packets";
-        newQueryFormAttributes['direction'] = (direction == "ingress") ? "1" : "0";
+        newQueryFormAttributes.select = "vrouter, sourcevn, sourceip, destvn, destip, protocol, sport, dport, flow_count, bytes, T, packets";
+        newQueryFormAttributes.direction = (direction === "ingress") ? "1" : "0";
 
         for (var key in selectedFlowRecord) {
             switch (key) {
                 case "sourcevn":
                     if(contrail.checkIfExist(selectedFlowRecord[key])) {
-                        appendWhereClause += appendWhereClause.length > 0 ? " AND " : '';
+                        appendWhereClause += appendWhereClause.length > 0 ? " AND " : "";
                         appendWhereClause += (isReversed ? "destvn = " : "sourcevn = ") + selectedFlowRecord[key];
 
-                        if(contrail.checkIfExist(selectedFlowRecord['sourceip'])) {
-                            appendWhereClause += (isReversed ? " AND destip = " : " AND sourceip = ") + selectedFlowRecord["sourceip"];
+                        if(contrail.checkIfExist(selectedFlowRecord.sourceip)) {
+                            appendWhereClause += (isReversed ? " AND destip = " : " AND sourceip = ") + selectedFlowRecord.sourceip;
 
                         }
                     }
@@ -175,11 +173,11 @@ define([
 
                 case "destvn":
                     if(contrail.checkIfExist(selectedFlowRecord[key])) {
-                        appendWhereClause += appendWhereClause.length > 0 ? " AND " : '';
+                        appendWhereClause += appendWhereClause.length > 0 ? " AND " : "";
                         appendWhereClause += (isReversed ? "sourcevn = " : "destvn = ") + selectedFlowRecord[key];
 
-                        if(contrail.checkIfExist(selectedFlowRecord['destip'])) {
-                            appendWhereClause += (isReversed ? " AND sourceip = " : " AND destip = ") + selectedFlowRecord["destip"];
+                        if(contrail.checkIfExist(selectedFlowRecord.destip)) {
+                            appendWhereClause += (isReversed ? " AND sourceip = " : " AND destip = ") + selectedFlowRecord.destip;
 
                         }
                     }
@@ -187,16 +185,16 @@ define([
 
                 case "protocol":
                     if(contrail.checkIfExist(selectedFlowRecord[key])) {
-                        appendWhereClause += appendWhereClause.length > 0 ? " AND " : '';
+                        appendWhereClause += appendWhereClause.length > 0 ? " AND " : "";
                         appendWhereClause += "protocol = " + selectedFlowRecord[key];
 
-                        if(contrail.checkIfExist(selectedFlowRecord['sport'])) {
-                            appendWhereClause += (isReversed ? " AND dport = " : " AND sport = ") + selectedFlowRecord["sport"];
+                        if(contrail.checkIfExist(selectedFlowRecord.sport)) {
+                            appendWhereClause += (isReversed ? " AND dport = " : " AND sport = ") + selectedFlowRecord.sport;
 
                         }
 
-                        if(contrail.checkIfExist(selectedFlowRecord['dport'])) {
-                            appendWhereClause += (isReversed ? " AND sport = " : " AND dport = ") + selectedFlowRecord["dport"];
+                        if(contrail.checkIfExist(selectedFlowRecord.dport)) {
+                            appendWhereClause += (isReversed ? " AND sport = " : " AND dport = ") + selectedFlowRecord.dport;
 
                         }
                     }
@@ -205,17 +203,17 @@ define([
 
         }
 
-        if(contrail.checkIfExist(oldWhereClause) && oldWhereClause != '') {
+        if(contrail.checkIfExist(oldWhereClause) && oldWhereClause !== "") {
             oldWhereArray = oldWhereClause.split(" OR ");
             for(var i = 0; i < oldWhereArray.length; i++) {
-                newWhereClause += newWhereClause.length > 0 ? " OR " : '';
-                newWhereClause += "(" + oldWhereArray[i].substring(1, oldWhereArray[i].length - 1) + " AND " + appendWhereClause + ")"
+                newWhereClause += newWhereClause.length > 0 ? " OR " : "";
+                newWhereClause += "(" + oldWhereArray[i].substring(1, oldWhereArray[i].length - 1) + " AND " + appendWhereClause + ")";
             }
 
-            newQueryFormAttributes["where"] = newWhereClause;
+            newQueryFormAttributes.where = newWhereClause;
 
         } else {
-            newQueryFormAttributes["where"] = "(" + appendWhereClause + ")";
+            newQueryFormAttributes.where = "(" + appendWhereClause + ")";
         }
 
         newQueryResultPostData.formModelAttrs = newQueryFormAttributes;

@@ -38,7 +38,8 @@
     "ctwm": true,
     "ctwl": true,
     "globalObj": true,
-    "grUtils": true
+    "grUtils": true,
+    "assert": true // eslint doesn't recognize this as a native global from nodeJS
   },
   "rules": {
     // relax/customize the essential rule set for R3.2

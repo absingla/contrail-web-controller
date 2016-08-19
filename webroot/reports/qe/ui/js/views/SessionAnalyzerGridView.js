@@ -3,10 +3,11 @@
  */
 
 define([
-    'underscore',
-    'contrail-view',
-    'contrail-list-model'
-], function (_, ContrailView, ContrailListModel) {
+    "underscore",
+    "contrail-view",
+    "contrail-list-model",
+    "core-basedir/js/common/qe.grid.config"
+], function (_, ContrailView, ContrailListModel, qewgc) {
 
     var SessionAnalyzerGridView = ContrailView.extend({
         render: function () {
@@ -23,7 +24,7 @@ define([
                 formModelAttrs = resultDataMap[resultModelKey].queryRequestPostData.formModelAttrs;
             }
 
-            if (resultModelKey == cowc.SESSION_ANALYZER_KEY) { // Render the summary grid
+            if (resultModelKey === cowc.SESSION_ANALYZER_KEY) { // Render the summary grid
 
                 gridOptions.gridColumns = getSessionAnalyzerSummaryGridColumnConfig(modelMap,
                     formModelAttrs, gridOptions.summaryRowOnClick);
@@ -34,7 +35,7 @@ define([
             } else { // Get the respective model and render the child grid
                 var gridDataModel = new ContrailListModel({data: []});
                 _.each(self.model.childModelObjs, function(modelObj) {
-                    if (modelObj.modelConfig.id == resultModelKey) {
+                    if (modelObj.modelConfig.id === resultModelKey) {
                         gridDataModel = modelObj.model;
                     }
                 });
@@ -59,7 +60,7 @@ define([
         }
 
     });
-    
+
     function getSessionAnalyzerGridConfig(formModelAttrs, gridOptions) {
         var gridColumns = (contrail.checkIfExist(gridOptions.gridColumns)) ? gridOptions.gridColumns : [];
 
@@ -101,15 +102,15 @@ define([
                 pager: contrail.handleIfNull(gridOptions.pagerOptions, { options: { pageSize: 100, pageSizeSelect: [100, 200, 500] } })
             }
         };
-    };
+    }
 
     function getSessionAnalyzerSummaryGridColumnConfig(modelMap, formModelAttrs, summaryRowOnClickFn) {
         return [
             {
-                id: 'fc-badge', field:"", name:"", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: { allow: false },
+                id: "fc-badge", field:"", name:"", resizable: false, sortable: false, width: 30, minWidth: 30, searchable: false, exportConfig: { allow: false },
                 formatter: function(r, c, v, cd, dc){
                     return '<span class="label-icon-badge label-icon-badge-' + dc.key +
-                        ' icon-badge-color-' + r + ' " data-color_key="' + r + '"><i class="fa fa-square"></i></span>';
+                        " icon-badge-color-" + r + ' " data-color_key="' + r + '"><i class="fa fa-square"></i></span>';
                 },
                 events: {
                     onClick: function(e, dc) {
@@ -127,21 +128,21 @@ define([
             {id:"destip", field:"destip", width:120, name:"Destination IP", groupable:false, formatter: function(r, c, v, cd, dc){ return cowu.handleNull4Grid(dc.destip);}},
             {id:"sport", field:"sport", width:100, name:"Source Port", groupable:false, formatter: function(r, c, v, cd, dc){ return cowu.handleNull4Grid(dc.sport);}},
             {id:"dport", field:"dport", width:130, name:"Destination Port", groupable:false, formatter: function(r, c, v, cd, dc){ return cowu.handleNull4Grid(dc.dport);}},
-            {id:"direction_ing", field:"direction_ing", width:100, name:"Direction", groupable:true, formatter: function(r, c, v, cd, dc){ return cowu.handleNull4Grid((dc.direction_ing == 1) ? "Ingress" : "Egress");}},
+            {id:"direction_ing", field:"direction_ing", width:100, name:"Direction", groupable:true, formatter: function(r, c, v, cd, dc){ return cowu.handleNull4Grid((dc.direction_ing === 1) ? "Ingress" : "Egress");}},
             {id:"protocol", field:"protocol", width:100, name:"Protocol", groupable:true, formatter: function(r, c, v, cd, dc){ return cowu.handleNull4Grid(getProtocolName(dc.protocol));}},
         ];
-    };
+    }
 
     function getSessionAnalyzerGridConfig(saSummaryRemoteConfig, queryFormAttributes, gridOptions) {
         var selectArray = queryFormAttributes.select.replace(/ /g, "").split(","),
             saSummaryGridColumns = qewgc.getColumnDisplay4Grid(queryFormAttributes.table_name, queryFormAttributes.table_type, selectArray);
 
         if (contrail.checkIfExist(gridOptions.gridColumns)) {
-            saSummaryGridColumns = gridOptions.gridColumns.concat(saSummaryGridColumns)
+            saSummaryGridColumns = gridOptions.gridColumns.concat(saSummaryGridColumns);
         }
 
         return qewgc.getQueryGridConfig(saSummaryRemoteConfig, saSummaryGridColumns, gridOptions);
-    };
+    }
 
     return SessionAnalyzerGridView;
 });
