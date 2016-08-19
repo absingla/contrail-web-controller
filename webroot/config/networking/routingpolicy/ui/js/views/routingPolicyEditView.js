@@ -87,7 +87,10 @@ define([
                         kbValidation.bind(self, {collection: termModels[i].model().attributes['then_terms']});
                     }
 
-                });
+                    //permissions
+                    ctwu.bindPermissionsValidation(self);
+
+                }, null, true);
             return;
         },
         renderDeleteRoutingPolicy: function (options) {
@@ -147,13 +150,14 @@ define([
             elementId: cowu.formatElementId(
                 [prefixId, ctwl.TITLE_ROUTING_POLICY_EDIT]),
             view: "SectionView",
+            title: "Routing Policy",
             viewConfig: {
                 rows: [{
                     columns: [{
                         elementId: 'routingPolicyname',
                         view: "FormInputView",
                         viewConfig: {
-                            class: "span12",
+                            class: "col-xs-12",
                             placeholder: "Routing Policy Name",
                             disabled: isDisable,
                             path: 'routingPolicyname',
@@ -176,11 +180,11 @@ define([
                             },
                             rowActions: [
                                 {
-                                    onClick: 'addTermAtIndex()', iconClass: 'icon-plus',
+                                    onClick: 'addTermAtIndex()', iconClass: 'fa fa-plus',
                                     viewConfig: {width: 20}
                                 },
                                 {
-                                    onClick: "deleteTerm()", iconClass: 'icon-remove',
+                                    onClick: "deleteTerm()", iconClass: 'fa fa-remove',
                                     viewConfig: {width: 20}
                                 }
                             ],
@@ -198,11 +202,11 @@ define([
                                                     {
                                                         rowActions: [
                                                             {
-                                                                onClick: "deleteFromTerm()", iconClass: 'icon-remove',
+                                                                onClick: "deleteFromTerm()", iconClass: 'fa fa-remove',
                                                                 viewConfig: {width: 20}
                                                             },
                                                             {
-                                                                onClick: "addFromTermAtIndex()", iconClass: 'icon-plus',
+                                                                onClick: "addFromTermAtIndex()", iconClass: 'fa fa-plus',
                                                                 viewConfig: {width: 20}
                                                             }
                                                         ],
@@ -275,11 +279,11 @@ define([
                                                     {
                                                         rowActions: [
                                                             {
-                                                                onClick: "deleteThenTerm()", iconClass: 'icon-remove',
+                                                                onClick: "deleteThenTerm()", iconClass: 'fa fa-remove',
                                                                 viewConfig: {width: 20}
                                                             },
                                                             {
-                                                                onClick: "addThenTermAtIndex()", iconClass: 'icon-plus',
+                                                                onClick: "addThenTermAtIndex()", iconClass: 'fa fa-plus',
                                                                 viewConfig: {width: 20}
                                                             }
                                                         ],

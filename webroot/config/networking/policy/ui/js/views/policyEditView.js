@@ -71,7 +71,9 @@ define([
                                             document.getElementById(modalId));
                             kbValidation.bind(self,{collection:
                                   self.model.model().attributes.PolicyRules});
-                   });
+                            //permissions
+                            ctwu.bindPermissionsValidation(self);
+                   }, null, true);
                    return;
                }
            );
@@ -364,7 +366,7 @@ define([
                     var addrFields = [];
                     addrFields.push({text : 'CIDR', value : 'subnet',
                                     children : [{
-                                        text:'Enter VN:CIDR',
+                                        text:'Enter CIDR or VN:CIDR',
                                         value:"dummy",
                                         disabled : true }]},
                                    {text : 'Network', value : 'virtual_network',
@@ -396,6 +398,7 @@ define([
             elementId: cowu.formatElementId(
                             [prefixId, ctwl.TITLE_EDIT_POLICY]),
             view: "SectionView",
+            title: "Policy", //permissions
             viewConfig:{
             rows: [{
                     columns: [{
@@ -407,7 +410,7 @@ define([
                             path: 'policyName',
                             label:'Policy Name',
                             dataBindValue: 'policyName',
-                            class: "span6"}
+                            class: "col-xs-6"}
                     }]
                 },{
                     columns: [{
@@ -417,16 +420,17 @@ define([
                         viewConfig: {
                             label:"Policy Rule(s)",
                             path: "PolicyRules",
+                            class: 'col-xs-12',
                             validation: 'ruleValidation',
                             templateId: cowc.TMPL_COLLECTION_HEADING_VIEW,
                             collection: "PolicyRules",
                             rows:[{
                                rowActions: [
                                    {onClick: "function() { $root.addRule(); }",
-                                   iconClass: 'icon-plus'},
+                                   iconClass: 'fa fa-plus'},
                                    {onClick:
                                    "function() { $root.deleteRules($data, this); }",
-                                    iconClass: 'icon-minus'}
+                                    iconClass: 'fa fa-minus'}
                                ],
                             columns: [
                                 {
@@ -549,7 +553,7 @@ define([
                                     view:
                                         "FormHierarchicalDropdownView",
                                     name: 'Destination',
-                                    class: "span2",
+                                    class: "col-xs-2",
                                     width: 200,
                                     viewConfig: {
                                         templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
@@ -655,13 +659,13 @@ define([
                             },{
                             columns: [
                                 {
-                                     elementId: 'service_instance',
+                                     elementId: 'service_instances',
                                      name: 'Services',
                                      view: "FormMultiselectView",
                                      width: 100,
                                      viewConfig: {
                                          colSpan: "10",
-                                         class: "span10",
+                                         class: "col-xs-10",
                                          placeholder:"Select a service to apply...",
                                          //visible: "$root.showService",
                                          visible: "apply_service_check()",
@@ -705,7 +709,7 @@ define([
                         },{
                             columns: [
                                 {
-                                    elementId: 'qos',
+                                    elementId: 'QoS',
                                     name: 'QoS',
                                     width: 100,
                                     view: "FormDropdownView",

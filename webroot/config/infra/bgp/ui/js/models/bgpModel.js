@@ -4,11 +4,11 @@
 
 define([
     'underscore',
-    'contrail-model',
+    'contrail-config-model',
     'config/infra/bgp/ui/js/models/bgpPeersModel'
-], function (_, ContrailModel, BGPPeersModel) {
+], function (_, ContrailConfigModel, BGPPeersModel) {
     var self;
-    var bgpCfgModel = ContrailModel.extend({
+    var bgpCfgModel = ContrailConfigModel.extend({
         defaultConfig: {
             'name': null,
             'display_name' : null,
@@ -148,14 +148,15 @@ define([
             };
             peerCollectionModel = new Backbone.Collection(peerModels);
             modelConfig['peers'] = peerCollectionModel;
+            //permissions
+            this.formatRBACPermsModelConfig(modelConfig);
             return modelConfig;
         },
 
         subscribePeerModelChangeEvents: function(peerModel) {
             peerModel.__kb.view_model.model().on('change:user_created_auth_key_type',
                 function(model, newValue){
-                     var currPeer = self.getCurrentPeer(
-                         this.attributes.peerName);
+                     var currPeer = self.getCurrentPeer(model.cid);
                     if(newValue === 'none') {
                         currPeer.user_created_auth_key('');
                         currPeer.disableAuthKey(true);
@@ -199,11 +200,11 @@ define([
             data.model().collection.remove(kbInterface.model());
         },
 
-        getCurrentPeer: function(name){
+        getCurrentPeer: function(id){
             var model;
             var peers = this.model().attributes['peers'].toJSON();
             for(var i = 0; i < peers.length; i++) {
-                if(peers[i].peerName() === name) {
+                if(peers[i].model().cid === id) {
                     model = peers[i];
                     break;
                 }
@@ -261,7 +262,9 @@ define([
                     key : ["peers", "family_attrs"],
                     type : cowc.OBJECT_TYPE_COLLECTION_OF_COLLECTION,
                     getValidation : "familyAttrValidation"
-                }
+                },
+                //permissions
+                ctwu.getPermissionsValidation()
             ];
 
             if (this.isDeepValid(validations)) {
@@ -358,6 +361,8 @@ define([
                 if(!port) {
                    delete newBGPRouterCfgData.bgp_router_parameters.source_port;
                 }
+                //permissions
+                this.updateRBACPermsAttrs(newBGPRouterCfgData);
 
                 ctwu.deleteCGridData(newBGPRouterCfgData);
 

@@ -17,7 +17,7 @@ define([
             var editLayout = editTemplate({prefixId: prefixId});
             self = this;
 
-            cowu.createModal({'modalId': modalId, 'className': 'modal-480',
+            cowu.createModal({'modalId': modalId, 'className': 'modal-700',
                 'title': options['title'], 'body': editLayout,
                  'onSave': function () {
                         self.configEditForwardingClass(options);
@@ -61,7 +61,9 @@ define([
                     Knockback.applyBindings(self.model,
                         document.getElementById(modalId));
                    kbValidation.bind(self);
-                }
+                   //permissions
+                   ctwu.bindPermissionsValidation(self);
+                }, null, true
             );
         },
 
@@ -108,7 +110,7 @@ define([
         var fwdClassViewConfig = {
             elementId: cowu.formatElementId([prefixId,
                                             ctwl.TITLE_FORWARDING_CLASS]),
-            title: ctwl.TITLE_CREATE_FORWARDING_CLASS,
+            title: "Forwarding Class",
             view: "SectionView",
             viewConfig: {
                 rows: [{
@@ -119,7 +121,7 @@ define([
                             viewConfig: {
                                 label: 'Forwarding Class',
                                 path : 'forwarding_class_id',
-                                class: 'span6',
+                                class: 'col-xs-6',
                                 disabled: disableOnEdit,
                                 dataBindValue : 'forwarding_class_id',
                                 placeholder: 'Enter Forwarding Class ID'
@@ -131,7 +133,7 @@ define([
                             viewConfig: {
                                 label: 'DSCP bits',
                                 path : 'forwarding_class_dscp',
-                                class: 'span6',
+                                class: 'col-xs-6',
                                 dataBindValue : 'forwarding_class_dscp',
                                 elementConfig: {
                                     dataTextField: "text",
@@ -152,7 +154,7 @@ define([
                             viewConfig: {
                                 label: 'MPLS EXP bits',
                                 path : 'forwarding_class_mpls_exp',
-                                class: 'span6',
+                                class: 'col-xs-6',
                                 dataBindValue : 'forwarding_class_mpls_exp',
                                 elementConfig: {
                                     dataTextField: "text",
@@ -171,7 +173,7 @@ define([
                             viewConfig: {
                                 label: 'VLAN Priority bits',
                                 path : 'forwarding_class_vlan_priority',
-                                class: 'span6',
+                                class: 'col-xs-6',
                                 dataBindValue :
                                     'forwarding_class_vlan_priority',
                                 elementConfig: {

@@ -72,15 +72,15 @@ define([
                 },
                 statusMessages: {
                     loading: {
-                        text: 'Loading User Defined Counters..'
+                        text: 'Loading Patterns..'
                     },
                     empty: {
-                        text: 'No User Defined Counters Found.'
+                        text: 'No Patterns Found.'
                     },
                     errorGettingData: {
                         type: 'error',
-                        iconClasses: 'icon-warning',
-                        text: 'Error in getting User Defined Counters.'
+                        iconClasses: 'fa fa-warning',
+                        text: 'Error in getting Patterns.'
                     }
                 }
             },
@@ -155,7 +155,7 @@ define([
               {
                   "type" : "link",
                   "title" :  ctwl.COUNTERS_MUTI_SELECT_DELETE,
-                  "iconClass": 'icon-trash',
+                  "iconClass": 'fa fa-trash',
                   "linkElementId": 'btnDeleteCounters',
                   "onClick" : function() {
                       var gridObj = $(gridElId).data('contrailGrid'),
@@ -184,7 +184,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_CREATE_USER_DEFINDED_COUNTER,
-                "iconClass": 'icon-plus',
+                "iconClass": 'fa fa-plus',
                 "onClick": function() {
                     var gridObj = $(gridElId).data('contrailGrid'),
                         userDefinedCountersModel = new UserDefinedCountersModel();

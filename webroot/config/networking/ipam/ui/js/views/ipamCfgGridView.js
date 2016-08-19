@@ -131,7 +131,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_IPAM_TITLE_DELETE,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "linkElementId": "linkIpamDelete",
                 "onClick": function () {
                     var gridElId = '#' + ctwl.CFG_IPAM_GRID_ID;
@@ -149,12 +149,12 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_IPAM_TITLE_CREATE,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     ipamCfgEditView.model = new IpamCfgModel();
 
                     ipamCfgEditView.renderAddIpamCfg({
-                                              "title": ctwl.CFG_IPAM_TITLE_CREATE,
+                                              "title": ctwl.CREATE,
                                               callback: function () {
                     $('#' + ctwl.CFG_IPAM_GRID_ID).data("contrailGrid")._dataView.refreshData();
                     }});
@@ -170,7 +170,7 @@ define([
             dataView = $('#' + ctwl.CFG_IPAM_GRID_ID).data("contrailGrid")._dataView;
             ipamCfgEditView.model = new IpamCfgModel(dataView.getItem(rowIndex));
             ipamCfgEditView.renderEditIpamCfg({
-                                  "title": ctwl.CFG_IPAM_TITLE_EDIT,
+                                  "title": ctwl.EDIT,
                                   callback: function () {
                                       dataView.refreshData();
             }});
@@ -201,7 +201,7 @@ define([
                         templateGeneratorConfig: {
                             columns: [
                                 {
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     rows: [
                                         {
                                             title: ctwl.CFG_IPAM_TITLE_DETAILS,
@@ -255,7 +255,9 @@ define([
                                                     }
                                                 },
                                             ]
-                                        }
+                                        },
+                                        //permissions
+                                        ctwu.getRBACPermissionExpandDetails()
                                     ]
                                 }
                             ]

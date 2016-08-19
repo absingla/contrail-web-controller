@@ -5,19 +5,19 @@
 
 define([
     'underscore',
-    'contrail-model',
+    'contrail-config-model',
     'config/networking/port/ui/js/views/portFormatters',
     'config/networking/port/ui/js/models/fixedIPModel',
     'config/networking/port/ui/js/models/allowAddressPairModel',
     'config/networking/port/ui/js/models/dhcpOptionModel',
     'config/networking/port/ui/js/models/fatFlowModel',
     'config/networking/port/ui/js/models/portBindingModel'
-], function (_, ContrailModel, PortFormatters, FixedIPModel,
+], function (_, ContrailConfigModel, PortFormatters, FixedIPModel,
              AllowAddressPairModel, DHCPOptionModel, FatFlowModel,
              PortBindingModel) {
     var portFormatters = new PortFormatters();
     var self;
-    var PortModel = ContrailModel.extend({
+    var PortModel = ContrailConfigModel.extend({
         defaultConfig: {
             'name': '',
             'display_name': null,
@@ -65,22 +65,26 @@ define([
                 'sub_interface_vlan_tag':'',
                 'local_preference' : "",
                 'interface_mirror' : {
-                    /*'traffic_direction' : "",
+                    'traffic_direction' : "both",
                     'mirror_to' : {
-                        'analyzer_name':"",
-                        'encapsulation':"",
-                        'analyzer_ip_address':"",
-                        'routing_instance':"",
-                        'udp_port':""
-                    }*/
+                        'analyzer_name': null,
+                        'analyzer_ip_address': null,
+                        'routing_instance': null,
+                        'udp_port': null,
+                        'analyzer_mac_address': null,
+                        'juniper_header': "enabled",
+                        'nh_mode': null,
+                        'static_nh_header': {
+                            'vtep_dst_ip_address': null,
+                            'vtep_dst_mac_address': null,
+                            'vni': null
+                        }
+                    }
                 }
             },
-            'mirrorToTrafficDirection' : "ingress",
-            'mirrorToAnalyzerName':"",
-            'mirrorToAnalyzerIpAddress':"",
-            'mirrorToRoutingInstance':"",
-            'mirrorToUdpPort':"",
             'is_mirror' : false,
+            'mirrorToRoutingInstance': "",
+            'mirrorToNHMode': "dynamic",
             'fixedIPCollection': [],
             'display_name': '',
             'virtual_machine_interface_refs': [],
@@ -314,29 +318,36 @@ define([
             modelConfig['ecmp_hashing_include_fields'] =
                 ecmpHashIncFields.join(',');
 
-            var direction = getValueByJsonPath(modelConfig,
-                          "virtual_machine_interface_properties;interface_mirror;traffic_direction",
+            //mirroring
+            var mirrorAnalyzerIP = getValueByJsonPath(modelConfig,
+                          "virtual_machine_interface_properties;" +
+                          "interface_mirror;mirror_to;analyzer_ip_address",
                           "");
-            if (direction != "") {
-                modelConfig['mirrorToTrafficDirection'] = direction;
-            }
-            var mirrorObj = getValueByJsonPath(modelConfig,
-                          "virtual_machine_interface_properties;interface_mirror;mirror_to",
-                          "");
-            if(mirrorObj != "") {
-                modelConfig['mirrorToAnalyzerName']
-                       = getValueByJsonPath(mirrorObj, "analyzer_name", null);
-                modelConfig['mirrorToAnalyzerIpAddress']
-                       = getValueByJsonPath(mirrorObj, "analyzer_ip_address", null);
-                modelConfig['mirrorToUdpPort']
-                       = getValueByJsonPath(mirrorObj, "udp_port", null);
-                var routingInst = getValueByJsonPath(mirrorObj, "routing_instance", "");
+            if(mirrorAnalyzerIP) {
+                var routingInst =  getValueByJsonPath(modelConfig,
+                        "virtual_machine_interface_properties;" +
+                        "interface_mirror;mirror_to;routing_instance",
+                        ""),
+                    nhMode = getValueByJsonPath(modelConfig,
+                            "virtual_machine_interface_properties;" +
+                            "interface_mirror;mirror_to;nh_mode",
+                            ctwc.MIRROR_DYNAMIC),
+                    jnprHeader = getValueByJsonPath(modelConfig,
+                            "virtual_machine_interface_properties;" +
+                            "interface_mirror;mirror_to;juniper_header",
+                            true);
                 if (routingInst != "") {
                     modelConfig['mirrorToRoutingInstance'] = routingInst;
                 } else {
                     modelConfig['mirrorToRoutingInstance'] = null;
                 }
+                modelConfig["mirrorToNHMode"] = nhMode;
+                modelConfig["virtual_machine_interface_properties"]
+                    ["interface_mirror"]["mirror_to"]["juniper_header"] =
+                        jnprHeader === true ? "enabled" : "disabled";
                 modelConfig['is_mirror'] = true;
+            } else {
+                modelConfig['is_mirror'] = false;
             }
 
             //Modal config default Fat Flow option formatting
@@ -462,6 +473,10 @@ define([
                 }
             }
             modelConfig['deviceOwnerValue'] = deviceOwnerValue;
+
+            //permissions
+            this.formatRBACPermsModelConfig(modelConfig);
+
             return modelConfig;
         },
         validations: {
@@ -592,38 +607,23 @@ define([
                         }
                     }
                 },
-                'mirrorToTrafficDirection': function(value, attr, finalObj) {
+                'virtual_machine_interface_properties.interface_mirror.mirror_to.analyzer_ip_address': function(value, attr, finalObj) {
                     if(finalObj.is_mirror == true) {
-                        if (value.trim() == "") {
-                            return "Select direction for mirror";
-                        }
-                    }
-                },
-                'mirrorToAnalyzerIpAddress': function(value, attr, finalObj) {
-                    if(finalObj.is_mirror == true) {
-                        if (value.trim() == "") {
-                            return "Enter Analyzer IP Address";
-                        }
-                        var ip = value.trim();
-                        if(!isValidIP(ip)) {
+                        if(!isValidIP(value)) {
                             return "Enter a valid IP In the format xxx.xxx.xxx.xxx";
                         }
-                        if(ip.split("/").length > 1) {
+                        if(value && value.split("/").length > 1) {
                             return "Enter a valid IP In the format xxx.xxx.xxx.xxx";
                         }
                     }
                 },
-                'mirrorToUdpPort': function(value, attr, finalObj) {
+                'virtual_machine_interface_properties.interface_mirror.mirror_to.udp_port': function(value, attr, finalObj) {
                     if(finalObj.is_mirror == true) {
-                        if (String(value).trim() == "") {
-                            return "Enter UDP port";
-                        }
-                        if (!isNumber(String(value).trim())){
-                            return "UDP port has to be a number.";
-                        }
-                        var vlanVal = Number(String(value).trim());
-                        if (vlanVal < 1 || vlanVal > 65535) {
-                            return "Enter UDP port between 1 to 65535";
+                        if(value !== "" && value !== null) {
+                            var vlanVal = Number(String(value).trim());
+                            if (vlanVal < 1 || vlanVal > 65535) {
+                                return "Enter UDP port between 1 to 65535";
+                            }
                         }
                     }
                 },
@@ -631,6 +631,45 @@ define([
                     if(finalObj.is_mirror == true) {
                         if (value.trim() == "") {
                             return "Select Routing Instance";
+                        }
+                    }
+                },
+                'virtual_machine_interface_properties.interface_mirror.mirror_to.analyzer_mac_address': function(value, attr, finalObj) {
+                    if(finalObj.is_mirror == true) {
+                        if(value !== null && value !== "") {
+                            if(!isValidMACAddress(value)) {
+                                return "Enter valid Analyzer MAC Address";
+                            }
+                        }
+                    }
+                },
+                'virtual_machine_interface_properties.interface_mirror.mirror_to.static_nh_header.vtep_dst_mac_address': function(value, attr, finalObj) {
+                    if(finalObj.is_mirror == true &&
+                            finalObj.mirrorToNHMode === ctwc.MIRROR_STATIC) {
+                        if(value !== null && value !== "") {
+                            if(!isValidMACAddress(value)) {
+                                return "Enter valid VTEP Destination MAC Address";
+                            }
+                        }
+                    }
+                },
+                'virtual_machine_interface_properties.interface_mirror.mirror_to.static_nh_header.vtep_dst_ip_address': function(value, attr, finalObj) {
+                    if(finalObj.is_mirror == true &&
+                            finalObj.mirrorToNHMode === ctwc.MIRROR_STATIC) {
+                       if(!isValidIP(value)) {
+                            return "Enter a valid IP In the format xxx.xxx.xxx.xxx";
+                        }
+                        if(value && value.split("/").length > 1) {
+                            return "Enter a valid IP In the format xxx.xxx.xxx.xxx";
+                        }
+                    }
+                },
+                'virtual_machine_interface_properties.interface_mirror.mirror_to.static_nh_header.vni': function(value, attr, finalObj) {
+                    if(finalObj.is_mirror == true &&
+                            finalObj.mirrorToNHMode === ctwc.MIRROR_STATIC) {
+                        var vlanVal = Number(String(value).trim());
+                        if (vlanVal < 1 || vlanVal > 65535) {
+                            return "Enter VxLAN ID between 1 to 65535";
                         }
                     }
                 },
@@ -837,7 +876,9 @@ define([
                     key : 'portBindingCollection',
                     type : cowc.OBJECT_TYPE_COLLECTION,
                     getValidation : 'portBindingValidations'
-                }
+                },
+                //permissions
+                ctwu.getPermissionsValidation()
             ];
             if(this.isDeepValid(validations)) {
                 var newPortData = $.extend(true, {}, this.model().attributes),
@@ -1015,7 +1056,7 @@ define([
                     newPortData.service_health_check_refs[0].to = healthCheckArr[0].split(":");
                     newPortData.service_health_check_refs[0].uuid = healthCheckArr[1];
                 } else {
-                    newPortData.service_health_checks_refs = [];
+                    newPortData.service_health_check_refs = [];
                 }
 
          //QoS
@@ -1183,18 +1224,53 @@ define([
                         newPortData.virtual_machine_interface_refs = [];
                     }
                 }
-                newPortData.virtual_machine_interface_properties.interface_mirror = {}
-                if (newPortData.is_mirror == true) {
-                    var mirror = {};
-                    mirror.traffic_direction = newPortData.mirrorToTrafficDirection;
-                    mirror.mirror_to = {};
-                    mirror.mirror_to.analyzer_name = newPortData.mirrorToAnalyzerName;
-                    mirror.mirror_to.analyzer_ip_address = newPortData.mirrorToAnalyzerIpAddress;
-                    var ri = getValueByJsonPath(newPortData, 'mirrorToRoutingInstance', '');
-                    mirror.mirror_to.routing_instance = ri;
-                    mirror.mirror_to.udp_port = Number(newPortData.mirrorToUdpPort);
-                    newPortData.virtual_machine_interface_properties.interface_mirror = mirror;
+
+                //mirroring
+                if(newPortData.is_mirror === true) {
+                    var udpPort = getValueByJsonPath(newPortData,
+                            "virtual_machine_interface_properties;" +
+                            "interface_mirror;mirror_to;udp_port", null),
+                        routingInstance = getValueByJsonPath(newPortData,
+                                    'mirrorToRoutingInstance', ''),
+                        jnprHeader = getValueByJsonPath(newPortData,
+                            "virtual_machine_interface_properties;" +
+                            "interface_mirror;mirror_to;juniper_header", "enabled");
+                    if(udpPort) {
+                        newPortData["virtual_machine_interface_properties"]
+                            ["interface_mirror"]["mirror_to"]["udp_port"] =
+                                Number(udpPort);
+                    }
+                    if(routingInstance) {
+                        newPortData["virtual_machine_interface_properties"]
+                        ["interface_mirror"]["mirror_to"]["routing_instance"] =
+                            routingInstance;
+                    }
+                    newPortData["virtual_machine_interface_properties"]
+                    ["interface_mirror"]["mirror_to"]["nh_mode"] =
+                        newPortData["mirrorToNHMode"];
+                    if(newPortData["mirrorToNHMode"] === ctwc.MIRROR_DYNAMIC) {
+                        newPortData["virtual_machine_interface_properties"]
+                        ["interface_mirror"]["mirror_to"]["static_nh_header"] =
+                            null;
+                    } else {
+                        var vni = getValueByJsonPath(newPortData,
+                                "virtual_machine_interface_properties;" +
+                                "interface_mirror;mirror_to;static_nh_header;vni", null);
+                        if(vni) {
+                            newPortData["virtual_machine_interface_properties"]
+                            ["interface_mirror"]["mirror_to"]["static_nh_header"]["vni"] =
+                                Number(vni);
+                        }
+                    }
+                    newPortData["virtual_machine_interface_properties"]
+                    ["interface_mirror"]["mirror_to"]["juniper_header"] =
+                        jnprHeader === "enabled" ? true : false;
+
+                } else {
+                    newPortData["virtual_machine_interface_properties"]
+                    ["interface_mirror"] = null;
                 }
+
                 newPortData.virtual_machine_interface_properties.local_preference =
                     parseInt(newPortData.virtual_machine_interface_properties.local_preference);
 
@@ -1236,6 +1312,9 @@ define([
                     delete(newPortData.routing_instance_refs);
                 }
 
+                //permissions
+                this.updateRBACPermsAttrs(newPortData);
+
                 ctwu.deleteCGridData(newPortData);
 
                 delete(newPortData.virtualNetworkName);
@@ -1258,18 +1337,14 @@ define([
                 delete(newPortData.templateGeneratorData);
                 delete(newPortData.rawData);
                 delete(newPortData.vmi_ref);
-                delete(newPortData.perms2);
                 delete(newPortData.disablePort);
                 delete(newPortData.disable_sub_interface);
                 delete(newPortData.subnetGroupVisible);
                 delete(newPortData.disablePort);
                 delete(newPortData.is_mirror);
-                delete(newPortData.mirrorToTrafficDirection);
-                delete(newPortData.mirrorToAnalyzerName);
-                delete(newPortData.mirrorToAnalyzerIpAddress);
                 delete(newPortData.mirrorToRoutingInstance);
-                delete(newPortData.mirrorToUdpPort);
                 delete(newPortData.isParent);
+                delete(newPortData.mirrorToNHMode);
                 if("parent_href" in newPortData) {
                     delete(newPortData.parent_href);
                 }

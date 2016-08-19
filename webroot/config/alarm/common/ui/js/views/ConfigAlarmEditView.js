@@ -63,13 +63,10 @@ define([
                     'body': editLayout,
                     'footer': footer
                 });
-            var disableElement = false
-            if (options['mode'] == "edit") {
-                disableElement = true;
-            }
+
             self.renderView4Config(
                 $("#" + modalId).find("#" + modalId + "-form"), self.model,
-                    getConfigureViewConfig(disableElement), 'configAlarmValidations', null, null, function () {
+                    getConfigureViewConfig(options), 'configAlarmValidations', null, null, function () {
                     self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
                     Knockback.applyBindings(self.model, document.getElementById(modalId));
                     var orRuleCollection = self.model.model().attributes.orRules,
@@ -79,8 +76,10 @@ define([
                     for (var i = 0; i < orRuleModels.length; i++) {
                         kbValidation.bind(self, {collection: orRuleModels[i].model().attributes['andRules']});
                     }
+                    //permissions
+                    ctwu.bindPermissionsValidation(self);
 
-                });
+                }, null, true);
             return;
         },
         renderDeleteRule: function (options) {
@@ -135,18 +134,21 @@ define([
         }
     });
 
-    var getConfigureViewConfig = function (isDisable) {
+    var getConfigureViewConfig = function(options) {
+        var isDisable = options['mode'] == ctwl.EDIT_ACTION ? true : false;
+        var isProject = options.isProject;
         return {
             elementId: cowu.formatElementId(
                     [prefixId, ctwl.TITLE_EDIT_ALARM_RULE]),
                 view: "SectionView",
+                title: "Alarm Rule",
                 viewConfig: {
                     rows: [{
                         columns: [{
                             elementId: 'display_name',
                             view: "FormInputView",
                             viewConfig: {
-                                class: "span6",
+                                class: "col-xs-6",
                                 placeholder: "Enter Rule Name",
                                 disabled: isDisable,
                                 path: 'display_name',
@@ -157,7 +159,7 @@ define([
                             elementId: 'severity',
                             view: "FormDropdownView",
                             viewConfig: {
-                                class: "span6",
+                                class: "col-xs-6",
                                 path: 'alarm_severity',
                                 label: 'Severity',
                                 dataBindValue: 'alarm_severity',
@@ -170,33 +172,27 @@ define([
                                     },
                                     dataSource: {
                                         type: 'local',
-                                        data: function () {
-                                            var template = contrail.getTemplate4Id(ctwc.CONFIG_ALARM_SEVERITY_TEMPLATE);
-                                            return [
-                                             {value: '2', text: template({
-                                                 showText : true,
-                                                 color : 'red',
-                                                 text : ctwl.CONFIG_ALARM_TEXT_MAP[2],
-                                             })},
-                                             {value: '3', text: template({
-                                                 showText : true,
-                                                 color : 'red',
-                                                 text : ctwl.CONFIG_ALARM_TEXT_MAP[3],
-                                             })},
-                                             {value: '4', text: template({
-                                                 showText : true,
-                                                 color : 'orange',
-                                                 text : ctwl.CONFIG_ALARM_TEXT_MAP[4],
-                                             })},
-                                             {value: '0', text: '0'},
-                                             {value: '1', text: '1'},
-                                             {value: '5', text: '5'},
-                                             {value: '6', text: '6'},
-                                             {value: '7', text: '7'},
-                                          ];
-                                        }()
+                                      data: function () {
+                                           var template = contrail.getTemplate4Id(ctwc.CONFIG_ALARM_SEVERITY_TEMPLATE);
+                                           return [
+                                            {value: '0', text: template({
+                                                showText : true,
+                                                color : 'red',
+                                                text : ctwl.CONFIG_ALARM_TEXT_MAP[0],
+                                            })},
+                                            {value: '1', text: template({
+                                                showText : true,
+                                                color : 'red',
+                                                text : ctwl.CONFIG_ALARM_TEXT_MAP[1],
+                                            })},
+                                            {value: '2', text: template({
+                                                showText : true,
+                                                color : 'orange',
+                                                text : ctwl.CONFIG_ALARM_TEXT_MAP[2],
+                                            })},
+                                         ];
+                                       }()
                                     }
-
                                 }
                             }
                         }]
@@ -205,10 +201,10 @@ define([
                             elementId: 'uve_keys',
                             view: "FormMultiselectView",
                             viewConfig: {
-                                class: "span6",
-                                path: 'uve_keys',
+                                class: "col-xs-6",
+                                path: 'uve_keys.uve_key',
                                 label: "UVE Keys",
-                                dataBindValue: 'uve_keys',
+                                dataBindValue: 'uve_keys().uve_key',
                                 elementConfig: {
                                     placeholder: "Select UVE",
                                     dataTextField : "text",
@@ -216,15 +212,14 @@ define([
                                     tags: true,
                                     dataSource : {
                                         type: 'remote',
-                                        url: '/api/admin/monitor/get-uve-keys',
+                                        url: '/api/admin/monitor/get-uve-keys?isProject='+isProject,
                                         parse: function(uveList) {
                                             var uveList = ifNull(uveList, []),
                                                 uveListLen = uveList.length,
                                                 multiSelectData = [];
                                             for (var i = 0; i < uveListLen; i++) {
-                                                var uveObj = uveList[i];
-                                                if (uveObj != null && uveObj['name']!= null) {
-                                                    var uveKey = uveObj['name'].slice(0, -1);
+                                                var uveKey = uveList[i];
+                                                if (uveKey != null) {
                                                     multiSelectData.push({
                                                         text: uveKey,
                                                         value: uveKey
@@ -240,7 +235,7 @@ define([
                             elementId: 'enable',
                             view: "FormCheckboxView",
                             viewConfig: {
-                                class: "span6",
+                                class: "col-xs-6",
                                 path: 'id_perms.enable',
                                 label: "Enabled",
                                 dataBindValue: 'id_perms().enable',
@@ -253,7 +248,7 @@ define([
                         columns: [{ elementId: 'description',
                             view: "FormTextAreaView",
                             viewConfig: {
-                                class: "span12",
+                                class: "col-xs-12",
                                 path: 'id_perms.description',
                                 label: "Description",
                                 dataBindValue: 'id_perms().description',
@@ -266,6 +261,7 @@ define([
                             viewConfig: {
                                 label: "Rule",
                                 collection: 'orRules()',
+                                class: 'col-xs-12',
                                 templateId: cowc.TMPL_QUERY_OR_COLLECTION_VIEW,
                                 accordionable: true,
                                 accordionConfig: {
@@ -275,11 +271,11 @@ define([
                                     {
                                         rowActions: [
                                             {
-                                                onClick: 'addOrRuleAtIndex()', iconClass: 'icon-plus',
+                                                onClick: 'addOrRuleAtIndex()', iconClass: 'fa fa-plus',
                                                 viewConfig: {width: 20}
                                             },
                                             {
-                                                onClick: "deleteOrRule()", iconClass: 'icon-remove',
+                                                onClick: "deleteOrRule()", iconClass: 'fa fa-remove',
                                                 viewConfig: {width: 20}
                                             },
                                         ],
@@ -294,11 +290,11 @@ define([
                                                         {
                                                             rowActions: [
                                                                 {
-                                                                    onClick: "deleteRule()", iconClass: 'icon-remove',
+                                                                    onClick: "deleteRule()", iconClass: 'fa fa-remove',
                                                                     viewConfig: {width: 20}
                                                                 },
                                                                 {
-                                                                    onClick: "addRuleAtIndex()", iconClass: 'icon-plus',
+                                                                    onClick: "addRuleAtIndex()", iconClass: 'fa fa-plus',
                                                                     viewConfig: {width: 20}
                                                                 }
                                                             ],
@@ -320,7 +316,7 @@ define([
                                                                         templateId: cowc.TMPL_EDITABLE_GRID_TEXTAREA_VIEW,
                                                                         path: "operand1",
                                                                         dataBindValue: "operand1()",
-                                                                        width: 200,
+                                                                        width: 230,
                                                                         placeHolder: 'Operand1',
                                                                     }
                                                                 },
@@ -332,21 +328,90 @@ define([
                                                                         templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
                                                                         path: "operation",
                                                                         dataBindValue: "operation()",
-                                                                        width: 80,
+                                                                        width: 130,
                                                                         elementConfig: {
                                                                             dataTextField: 'text',
-                                                                            dataValueField: 'value',
+                                                                            dataValueField: 'id',
+                                                                            showParentInSelection: true,
                                                                             dataSource: {
                                                                                 type: 'local',
                                                                                 data: [
-                                                                                  {value: '==', text: '=='},
-                                                                                  {value: '!=', text: '!='},
-                                                                                  {value: '>=', text: '>='},
-                                                                                  {value: '<=', text: '<='},
-                                                                                  {value: 'in', text: 'in'},
-                                                                                  {value: 'not in', text: 'not in'},
-                                                                                  {value: 'size ==', text: 'size=='},
-                                                                                  {value: 'size!=', text: 'size!='},
+                                                                                   {
+                                                                                       text:"UVE Key",
+                                                                                       children: [
+                                                                                          {
+                                                                                              id: '==' + cowc.DROPDOWN_VALUE_SEPARATOR + 'uve_attribute',
+                                                                                              text: '==',
+                                                                                              parent: 'uve_attribute',
+                                                                                          },{
+                                                                                              id: '!=' + cowc.DROPDOWN_VALUE_SEPARATOR + 'uve_attribute',
+                                                                                              text: '!=',
+                                                                                              parent: 'uve_attribute',
+                                                                                          },{
+                                                                                              id: '>=' + cowc.DROPDOWN_VALUE_SEPARATOR + 'uve_attribute',
+                                                                                              text: '>=',
+                                                                                              parent: 'uve_attribute',
+                                                                                          },{
+                                                                                              id: '<=' + cowc.DROPDOWN_VALUE_SEPARATOR + 'uve_attribute',
+                                                                                              text: '<=',
+                                                                                              parent: 'uve_attribute',
+                                                                                          },{
+                                                                                              id: 'in' + cowc.DROPDOWN_VALUE_SEPARATOR + 'uve_attribute',
+                                                                                              text: 'in',
+                                                                                              parent: 'uve_attribute',
+                                                                                          },{
+                                                                                              id: 'not in' + cowc.DROPDOWN_VALUE_SEPARATOR + 'uve_attribute',
+                                                                                              text: 'not in',
+                                                                                              parent: 'uve_attribute',
+                                                                                          },{
+                                                                                              id: 'size ==' + cowc.DROPDOWN_VALUE_SEPARATOR + 'uve_attribute',
+                                                                                              text: 'size==',
+                                                                                              parent: 'uve_attribute',
+                                                                                          },{
+                                                                                              id: 'size!=' + cowc.DROPDOWN_VALUE_SEPARATOR + 'uve_attribute',
+                                                                                              text: 'size!=',
+                                                                                              parent: 'uve_attribute',
+                                                                                          }
+                                                                                       ]
+                                                                                   },
+                                                                                   {
+                                                                                       text:"Value",
+                                                                                       children: [
+                                                                                                  {
+                                                                                                      id: '==' + cowc.DROPDOWN_VALUE_SEPARATOR + 'json_value',
+                                                                                                      text: '==',
+                                                                                                      parent: 'json_value',
+                                                                                                  },{
+                                                                                                      id: '!=' + cowc.DROPDOWN_VALUE_SEPARATOR + 'json_value',
+                                                                                                      text: '!=',
+                                                                                                      parent: 'json_value',
+                                                                                                  },{
+                                                                                                      id: '>=' + cowc.DROPDOWN_VALUE_SEPARATOR + 'json_value',
+                                                                                                      text: '>=',
+                                                                                                      parent: 'json_value',
+                                                                                                  },{
+                                                                                                      id: '<=' + cowc.DROPDOWN_VALUE_SEPARATOR + 'json_value',
+                                                                                                      text: '<=',
+                                                                                                      parent: 'json_value',
+                                                                                                  },{
+                                                                                                      id: 'in' + cowc.DROPDOWN_VALUE_SEPARATOR + 'json_value',
+                                                                                                      text: 'in',
+                                                                                                      parent: 'json_value',
+                                                                                                  },{
+                                                                                                      id: 'not in' + cowc.DROPDOWN_VALUE_SEPARATOR + 'json_value',
+                                                                                                      text: 'not in',
+                                                                                                      parent: 'json_value',
+                                                                                                  },{
+                                                                                                      id: 'size ==' + cowc.DROPDOWN_VALUE_SEPARATOR + 'json_value',
+                                                                                                      text: 'size==',
+                                                                                                      parent: 'json_value',
+                                                                                                  },{
+                                                                                                      id: 'size!=' + cowc.DROPDOWN_VALUE_SEPARATOR + 'json_value',
+                                                                                                      text: 'size!=',
+                                                                                                      parent: 'json_value',
+                                                                                                  }
+                                                                                               ]
+                                                                                   }
                                                                                 ]
                                                                             }
                                                                          }
@@ -366,15 +431,15 @@ define([
                                                                     }
                                                                 },
                                                                 {
-                                                                    elementId: 'vars',
+                                                                    elementId: 'variables',
                                                                     view: "FormInputView",
                                                                     class: "",
                                                                     viewConfig: {
                                                                         templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
-                                                                        path: "vars",
-                                                                        dataBindValue: "vars()",
+                                                                        path: "variables",
+                                                                        dataBindValue: "variables()",
                                                                         width: 200,
-                                                                        placeholder: 'Vars',
+                                                                        placeholder: 'Variables',
                                                                     }
                                                                 }
                                                             ]

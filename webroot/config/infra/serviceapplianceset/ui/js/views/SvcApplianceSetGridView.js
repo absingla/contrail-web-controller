@@ -54,8 +54,7 @@ define([
             var svcApplianceSetModel = new SvcApplianceSetModel(dataItem);
             svcApplianceSetEditView.model = svcApplianceSetModel;
             svcApplianceSetEditView.renderEditSvcApplianceSet({
-                        "title": ctwl.TITLE_EDIT_SVC_APPLIANCE_SET +
-                            ' (' + dataItem['display_name'] + ")",
+                        "title": ctwl.EDIT,
                         rowIndex: rowIndex,
                         dataItem: dataItem,
                         isEdit: true,
@@ -189,7 +188,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span8',
+                            class: 'col-xs-8',
                             rows: [{
                                 title: ctwl.SVC_APPLIANCE_SET_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',
@@ -220,7 +219,7 @@ define([
                                     {
                                         key: 'service_template',
                                         label: 'Service Template',
-                                        valueClass: 'span8',
+                                        valueClass: 'col-xs-8',
                                         templateGenerator: 'TextGenerator',
                                         templateGeneratorConfig: {
                                             formatter: 'svcTemplateFormatter'
@@ -244,7 +243,9 @@ define([
                                         }
                                     }
                                 ]
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails()]
                         }]
                     }
                 }]
@@ -318,7 +319,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_DEL_SVC_APPLIANCE_SET,
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnActionDelSecGrp',
                 "onClick": function() {
                      var svcApplianceSetModel = new SvcApplianceSetModel();
@@ -338,12 +339,12 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_CREATE_SVC_APPLIANCE_SET,
-                "iconClass": 'icon-plus',
+                "iconClass": 'fa fa-plus',
                 "onClick": function() {
                     svcApplianceSetModel = new SvcApplianceSetModel();
                     svcApplianceSetEditView.model = svcApplianceSetModel;
                     svcApplianceSetEditView.renderEditSvcApplianceSet({
-                                  "title": ctwl.TITLE_CREATE_SVC_APPLIANCE_SET,
+                                  "title": ctwl.CREATE,
                                   callback: function() {
                         var dataView =
                             $(gridElId).data("contrailGrid")._dataView;

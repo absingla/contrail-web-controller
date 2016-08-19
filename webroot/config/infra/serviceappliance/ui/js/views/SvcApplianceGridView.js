@@ -61,8 +61,7 @@ define([
                     (null != dataItem['display_name']) ? dataItem['display_name'] :
                         dataItem['fq_name'][2];
                 svcApplianceEditView.renderEditSvcAppliance({
-                            "title": ctwl.TITLE_EDIT_SVC_APPLIANCE +
-                                ' (' + svcApplName + ")",
+                            "title": ctwl.EDIT,
                             rowIndex: rowIndex,
                             dataItem: dataItem,
                             isEdit: true,
@@ -196,7 +195,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span8',
+                            class: 'col-xs-8',
                             rows: [{
                                 title: ctwl.SVC_APPLIANCE_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',
@@ -229,7 +228,7 @@ define([
                                         key: 'service_template',
                                         label: 'Service Template',
                                         templateGenerator: 'TextGenerator',
-                                        valueClass: 'span8',
+                                        valueClass: 'col-xs-8',
                                         templateGeneratorConfig: {
                                             formatter: 'svcTemplateFormatter'
                                         }
@@ -257,7 +256,9 @@ define([
                                         }
                                     }
                                 ]
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails()]
                         }]
                     }
                 }]
@@ -354,7 +355,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_DEL_SVC_APPLIANCE,
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnActionDelSecGrp',
                 "onClick": function() {
                      var svcApplianceModel = new SvcApplianceModel();
@@ -374,7 +375,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_CREATE_SVC_APPLIANCE,
-                "iconClass": 'icon-plus',
+                "iconClass": 'fa fa-plus',
                 "onClick": function() {
                     var svcApplianceModel = new SvcApplianceModel({
                         service_template: viewConfig.svcApplData.svcApplSetSvcTmpl
@@ -382,7 +383,7 @@ define([
                     svcApplianceModel.svcApplData = viewConfig.svcApplData;
                     svcApplianceEditView.model = svcApplianceModel;
                     svcApplianceEditView.renderEditSvcAppliance({
-                                  "title": ctwl.TITLE_CREATE_SVC_APPLIANCE,
+                                  "title": ctwl.CREATE,
                                   callback: function() {
                         var dataView =
                             $(gridElId).data("contrailGrid")._dataView;

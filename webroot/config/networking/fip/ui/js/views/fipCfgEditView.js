@@ -20,7 +20,7 @@ define([
             var editLayout = editTemplate({prefixId: prefixId}),
                 self = this;
 
-            cowu.createModal({'modalId': modalId, 'className': 'modal-480',
+            cowu.createModal({'modalId': modalId, 'className': 'modal-700',
                              'title': options['title'], 'body': editLayout,
                              'onSave': function () {
                 self.model.allocateFipCfg({
@@ -54,7 +54,9 @@ define([
                     Knockback.applyBindings(self.model,
                                 document.getElementById(modalId));
                     kbValidation.bind(self);
-                                   });
+                    //permissions
+                    ctwu.bindPermissionsValidation(self);
+                                   }, null, true);
         },
 
         renderAssociateFipCfg: function(options) {
@@ -182,7 +184,7 @@ define([
         var prefixId = ctwl.CFG_FIP_PREFIX_ID;
         var fipCfgViewConfig = {
             elementId: cowu.formatElementId([prefixId, ctwl.CFG_FIP_TITLE_ALLOCATE]),
-            title: ctwl.CFG_FIP_TITLE_ALLOCATE,
+            title: "Floating IP",
             view: "SectionView",
             viewConfig: {
                 rows: [
@@ -194,7 +196,7 @@ define([
                                 viewConfig: {
                                     path : 'user_created_floating_ip_pool',
                                     label: 'Floating IP Pool',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue : 'user_created_floating_ip_pool',
                                     elementConfig : {
                                         placeholder: 'Select Floating IP Pool',
@@ -222,7 +224,7 @@ define([
                                 viewConfig: {
                                     label: 'Allocation Type',
                                     path : 'user_created_alloc_type',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue : 'user_created_alloc_type',
                                     elementConfig : {
                                         dataTextField : "text",
@@ -243,7 +245,7 @@ define([
                                     label: 'Number of IP Addresses',
                                     visible: "user_created_alloc_type() == 'dynamic'",
                                     path: 'user_created_alloc_count',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue: 'user_created_alloc_count'
                                 }
                             }
@@ -259,7 +261,7 @@ define([
                                     visible: "user_created_alloc_type() == 'specific'",
                                     placeHolder: 'Enter a Floating IP',
                                     path: 'floating_ip_address',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue: 'floating_ip_address'
                                 }
                             }
@@ -288,7 +290,7 @@ define([
                                     label: 'Map Specific Fixed IP',
                                     templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                     path: 'is_specific_ip',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     dataBindValue: 'is_specific_ip'
                                 }
                             }
@@ -301,7 +303,7 @@ define([
                                 viewConfig: {
                                     label: 'Port',
                                     path : 'virtual_machine_interface_refs',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue : 'virtual_machine_interface_refs',
                                     elementConfig : {
                                         placeholder: 'Select Port to Associate',

@@ -189,7 +189,7 @@ define([
                         'true' ?  true : false;
                 interfacesEditView.model.clearPorts(isClearPorts);
                 interfacesEditView.renderAddEditInterface(
-                    {"title": title, checkedRow: checkedRow,
+                    {"title": ctwl.EDIT, checkedRow: checkedRow,
                         callback: function () {
                             var dataView =
                                 $('#' + ctwl.INTERFACES_GRID_ID).
@@ -274,13 +274,13 @@ define([
             {
                 "type": "dropdown",
                 "title": ctwl.TITLE_DELETE_CONFIG,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "actions": dropdownActions
             },
             {
                 "type" : "link",
                 "title" : ctwl.TITLE_ADD_INTERFACE,
-                "iconClass" : "icon-plus",
+                "iconClass" : "fa fa-plus",
                 "onClick" : function() {
                     var interfacesModel = new InterfacesModel();
                     interfacesModel.interfaceData = self.interfaceData;
@@ -288,7 +288,7 @@ define([
                     showHideModelAttrs(interfacesModel);
                     interfacesEditView.model = interfacesModel;
                     interfacesEditView.renderAddEditInterface(
-                        {"title": ctwl.TITLE_ADD_INTERFACE,
+                        {"title": ctwl.CREATE,
                             callback: function () {
                                 var dataView =
                                     $('#' + ctwl.INTERFACES_GRID_ID).
@@ -314,7 +314,7 @@ define([
                         templateGeneratorConfig: {
                             columns: [
                                 {
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     rows: [
                                         {
                                             title : ctwl.INF_PROPERTIES,
@@ -398,7 +398,9 @@ define([
                                                    }
                                                 }
                                             ]
-                                        }
+                                        },
+                                        //permissions
+                                        ctwu.getRBACPermissionExpandDetails()
                                     ]
                                 }
                             ]

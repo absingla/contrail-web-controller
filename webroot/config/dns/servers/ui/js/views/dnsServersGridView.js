@@ -52,9 +52,7 @@ define([
             dnsServersModel = new DnsServersModel(dataItem);
             dnsServersEditView.model = dnsServersModel;
             dnsServersEditView.renderAddEditDNSServer({
-                "title": ctwl.TITLE_EDIT_DNS_SERVER +
-                    ' (' + dataItem['display_name'] +
-                    ')',
+                "title": ctwl.EDIT,
                 callback: function() {
                     var dataView =
                         $(gridElId).data(
@@ -156,7 +154,7 @@ define([
                     },
                     errorGettingData: {
                         type: 'error',
-                        iconClasses: 'icon-warning',
+                        iconClasses: 'fa fa-warning',
                         text: 'Error in getting DNS Servers.'
                     }
                 }
@@ -216,7 +214,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span6',
+                            class: 'col-xs-6',
                             rows: [{
                                 title: ctwl.TITLE_DNS_SERVER,
                                 templateGenerator: 'BlockListTemplateGenerator',
@@ -289,7 +287,9 @@ define([
                                         }
                                     }
                                 ]
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails()]
                         }]
                     }
                 }]
@@ -321,7 +321,7 @@ define([
         var headerActionConfig = [{
             "type": "link",
             "title": ctwl.TITLE_DNS_SERVER_MULTI_DELETE,
-            "iconClass": 'icon-trash',
+            "iconClass": 'fa fa-trash',
             "linkElementId": 'btnActionDelDNS',
             "onClick": function() {
 
@@ -346,7 +346,7 @@ define([
         }, {
             "type": "link",
             "title": ctwl.TITLE_CREATE_DNS_SERVER,
-            "iconClass": "icon-plus",
+            "iconClass": "fa fa-plus",
             "onClick": function() {
                 var gridData =
                     $(gridElId).data('contrailGrid')._dataView
@@ -357,7 +357,7 @@ define([
                 var dnsServersModel = new DnsServersModel();
                 dnsServersEditView.model = dnsServersModel;
                 dnsServersEditView.renderAddEditDNSServer({
-                    "title": ctwl.TITLE_CREATE_DNS_SERVER,
+                    "title": ctwl.CREATE,
                     gridData: gridData,
                     configData: configData,
                     callback: function() {

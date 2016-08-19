@@ -87,6 +87,10 @@ module.exports = function (grunt) {
                         included: false
                     },
                     {
+                        pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/NetworkGridViewError.test.js',
+                        included: false
+                    },
+                    {
                         pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/NetworkListView.custom.test.suite.js',
                         included: false
                     }

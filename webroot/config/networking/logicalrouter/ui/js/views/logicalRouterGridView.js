@@ -61,8 +61,7 @@ define([
             var logicalRouterModel = new LogicalRouterModel(dataItem);
             logicalRouterCreateEditView.model = logicalRouterModel;
             logicalRouterCreateEditView.renderLogicalRouterPopup({
-                                  "title": ctwl.TITLE_EDIT_LOGICAL_ROUTER +
-                                  ' (' + dataItem.name + ')',
+                                  "title": ctwl.EDIT,
                                   mode: "edit",
                                   callback: function () {
                 var dataView =
@@ -101,11 +100,11 @@ define([
                     autoRefresh: false,
                     checkboxSelectable: {
                         onNothingChecked: function(e){
-                            $('.icon-trash').parent().addClass(
+                            $('.fa-trash').parent().addClass(
                                                          'disabled-link');
                         },
                         onSomethingChecked: function(e){
-                            $('.icon-trash').parent().removeClass(
+                            $('.fa-trash').parent().removeClass(
                                                          'disabled-link');
                         }
                     },
@@ -182,7 +181,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_LOGICAL_ROUTER_DELETE,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "onClick": function () {
                     var dataItem =
                         $("#"+gridElId).data('contrailGrid').getCheckedRows();
@@ -203,12 +202,12 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_ADD_LOGICAL_ROUTER,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     var logicalRouterModel = new LogicalRouterModel();
                     logicalRouterCreateEditView.model = logicalRouterModel;
                     logicalRouterCreateEditView.renderLogicalRouterPopup({
-                                     "title": ctwl.TITLE_ADD_LOGICAL_ROUTER,
+                                     "title": ctwl.CREATE,
                                      mode : "add",
                                      callback: function () {
                         var dataView =
@@ -229,23 +228,23 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'row-fluid',
+                            class: 'row',
                             rows: [{
                                 title: ctwl.TITLE_LOGICAL_ROUTER_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',
                                 templateGeneratorConfig: [{
                                     key: 'name',
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     name: 'name',
                                     templateGenerator: 'TextGenerator'
                                 }, {
                                     key: 'uuid',
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     name: 'uuid',
                                     templateGenerator: 'TextGenerator'
                                 }, {
                                     key: 'virtual_network_refs',
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     name: 'virtual_network_refs',
                                     label:"External Gateway",
                                     templateGenerator: 'TextGenerator',
@@ -254,7 +253,7 @@ define([
                                     }
                                 }, {
                                     key: 'id_perms',
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     name: 'id_perms',
                                     label:'SNAT',
                                     templateGenerator: 'TextGenerator',
@@ -263,7 +262,7 @@ define([
                                     }
                                 }, {
                                     key: 'id_perms',
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     name: 'id_perms',
                                     label:"Connected Network",
                                     templateGenerator: 'TextGenerator',
@@ -272,7 +271,7 @@ define([
                                     }
                                 }, {
                                     key: 'id_perms',
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     name: 'id_perms',
                                     label:"Router Interfaces",
                                     templateGenerator: 'TextGenerator',
@@ -281,7 +280,7 @@ define([
                                     }
                                 }, {
                                     key: 'id_perms',
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     name: 'id_perms',
                                     label:"Route Target(s)",
                                     templateGenerator: 'TextGenerator',
@@ -289,7 +288,9 @@ define([
                                         formatter: "routeTargetFormatterCommon"
                                     }
                                 }]
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails('span3')]
                         }]
                     }
                 }]

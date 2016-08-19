@@ -127,27 +127,29 @@ define([
                                     {
                                         key: 'display_name',
                                         label: 'Display Name',
-                                        keyClass: 'span3',
+                                        keyClass: 'col-xs-3',
                                         templateGenerator: 'TextGenerator'
                                     },
                                     {
                                         key: 'uuid',
                                         label: 'UUID',
-                                        keyClass: 'span3',
+                                        keyClass: 'col-xs-3',
                                         templateGenerator: 'TextGenerator'
                                     },
                                     {
                                         key: 'route',
                                         templateGenerator: 'TextGenerator',
                                         label: 'Routes',
-                                        keyClass: 'span3',
-                                        valueClass: 'span9',
+                                        keyClass: 'col-xs-3',
+                                        valueClass: 'col-xs-9',
                                         templateGeneratorConfig: {
                                             formatter: 'routetTablesFormatter'
                                         }
                                     }
                                 ]
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails('span3')]
                         }]
                     }
                 }]
@@ -193,9 +195,7 @@ define([
             var rtTableModel = new RtTableModel(dataItem);
             rtTableEditView.model = rtTableModel;
             rtTableEditView.renderConfigureRtTable({
-                                  "title": 'Edit ' + getRtTableDisplayName() +
-                                  ' (' + dataItem['display_name'] +
-                                     ')',
+                                  "title": ctwl.EDIT,
                                   rowIndex: rowIndex,
                                   type: getRTTableName(),
                                   dataItem: dataItem,
@@ -306,7 +306,7 @@ define([
             {
                 "type": "link",
                 "title": 'Delete ' + rtTableName,
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnActionDelRtTable' + tabText,
                 "onClick": function() {
                      var rtTableModel = new RtTableModel();
@@ -328,14 +328,14 @@ define([
             {
                 "type": "link",
                 "title": 'Create ' + rtTableName,
-                "iconClass": 'icon-plus',
+                "iconClass": 'fa fa-plus',
                 "onClick": function() {
                     var projFqn = [getCookie('domain'),
                         getCookie('project')];
                     rtTableModel = new RtTableModel();
                     rtTableEditView.model = rtTableModel;
                     rtTableEditView.renderConfigureRtTable({
-                                  "title": 'Create ' + rtTableName,
+                                  "title": ctwl.CREATE,
                                   "isEdit": false,
                                   type: getRTTableName(),
                                   projFqn: projFqn,
