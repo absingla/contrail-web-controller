@@ -30,7 +30,7 @@
 
 #PolicyRules #simple_action .select2-container-disabled .select2-choice,
 #PolicyRules #simple_action .select2-container,
-#PolicyRules #protocol .custom-combobox .add-on,
+#PolicyRules #protocol .custom-combobox .input-group-addon,
 #PolicyRules #src_address .select2-container,
 #PolicyRules #direction .select2-container,
 #PolicyRules #direction .select2-container-disabled .select2-choice,
@@ -80,7 +80,7 @@
     width: -moz-calc(100% - 20px);
     width: -webkit-calc(100% - 20px);
     width: calc(100% - 20px);
-    margin-left:3px;
+    margin-left: -5px;
 }
 
 .rule-format {
@@ -322,7 +322,7 @@ tr.collapsibleChildContainer> td{
 #peer_selection>table tr.data-row  td{
     padding-top:5px;}
 #peer_selection th.action-cell, #peer_selection td.action-cell{
-    text-align:right;
+    text-align:left;
     padding-right:12px;}
 #peer_selection>table table, #peer_selection>table table input{
     font-size:12px;}
@@ -430,7 +430,7 @@ td.action-cell a{color:#787878;}
 #interfaces-collection tr.collapsibleChildContainer .data-row td, #interfaces-collection tr.collapsibleChildContainer .error-row td{height:0px;}
 #interfaces th.text-center{
     text-align:center!important}
-#PolicyRules .custom-combobox>span.add-on{
+#PolicyRules .custom-combobox>span.input-group-addon{
     background:transparent;
     border:transparent solid 1px;
     position:absolute;
@@ -439,15 +439,34 @@ td.action-cell a{color:#787878;}
 #PolicyRules .custom-combobox-input:focus{
     outline:none;
 }
-#PolicyRules .custom-combobox-input+span i.icon-caret-down{
+#PolicyRules .custom-combobox-input+span i.fa-caret-down{
     display:none;
 }
-#PolicyRules .custom-combobox-input:focus +span i.icon-caret-down{
+#PolicyRules .custom-combobox-input:focus +span i.fa-caret-down{
     display:block;
 }
 /*
 Added for severity bubble in config alarms
 */
 .circle.mini {
-	border: 1px;
+    border: 1px;
 }
+#PolicyRules>table>tbody>tr>td>div>div.select2-container, #PolicyRules>table>tbody>tr>td .select2-container-disabled a{
+    border:0px;
+}
+#PolicyRules>table>tbody>tr>td.data-cell-mirror>div>div.select2-container, #PolicyRules>table>tbody>tr>td.data-cell-QoS>div>div.select2-container{
+    border:1px solid #dadada;
+}
+#PolicyRules>table>tbody>tr>td .select2-container-disabled{
+    border: 1px solid #f4f4f4;
+}
+#PolicyRules .custom-combobox-input+span i.icon-caret-down{
+    display:block;vertical-align:top;
+}
+#PolicyRules .custom-combobox .ui-autocomplete-input {
+    margin: 0;
+    padding: 0 19px 0 5px;
+}
+#PolicyRules td.data-cell-service_instances .form-element.span10, #PolicyRules td.data-cell-mirror .select2-container.span10, #PolicyRules td.data-cell-QoS .select2-container.span10{margin-left:3px;}
+#PolicyRules th>a.editable-grid-add-link{
+    margin-left:5px;}

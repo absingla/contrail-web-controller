@@ -6,16 +6,18 @@ define([
     'underscore',
     'backbone',
     'knockout',
-    'contrail-model',
+    'contrail-config-model',
     'config/alarm/common/ui/js/models/AlarmRuleOrModel'
-], function (_, Backbone, Knockout, ContrailModel, AlarmRuleOrModel) {
-    var AlarmModel = ContrailModel.extend({
+], function (_, Backbone, Knockout, ContrailConfigModel, AlarmRuleOrModel) {
+    var AlarmModel = ContrailConfigModel.extend({
 
         defaultConfig: {
             name: null,
             display_name: null,
-            alarm_severity: 4, //Default minor severity
-            uve_keys: null,
+            alarm_severity: 2, //Default minor severity
+            uve_keys: {
+                uve_key: []
+            },
             orRules: null,
             alarm_rules: {
                 or_list: []
@@ -44,6 +46,8 @@ define([
             modelConfig['orRules'] = orRuleCollection;
             modelConfig['display_name'] =
                 ctwu.getDisplayNameOrName(modelConfig);
+            //permissions
+            this.formatRBACPermsModelConfig(modelConfig);
             return modelConfig;
         },
 
@@ -57,7 +61,9 @@ define([
                 key: ['orRules', 'andRules'],
                 type: cowc.OBJECT_TYPE_COLLECTION_OF_COLLECTION,
                 getValidation: 'alarmRuleValidations'
-            }];
+            },
+            //permissions
+            ctwu.getPermissionsValidation()];
             if (this.isDeepValid(validations)) {
                 var newRuleData = $.extend(true, {}, this.model().attributes);
                 var url = ctwc.URL_CREATE_CONFIG_OBJECT, reqUrl = "/alarms";
@@ -69,17 +75,33 @@ define([
                         andRulePostObjArr = [];
                     for (var j = 0; j < andRuleList.length; j++) {
                         var andRuleObj = andRuleList[j];
-                        var vars = andRuleObj.vars()();
+                        var vars = andRuleObj.variables()();
                         if (vars != null && vars != "" && typeof vars == 'string') {
                             vars = vars.split(',')
+                            vars = $.map(vars, $.trim);
                         } else if (vars == "") {
                             vars = [];
                         }
+                        var operation = andRuleObj.operation()();
+                            operationArr = operation.split(cowc.DROPDOWN_VALUE_SEPARATOR),
+                            operand2 = andRuleObj.operand2()(),
+                            operand1 = andRuleObj.operand1()(),
+                            operand2Obj = {};
+                            operand2 = operand2.toString().trim();
+                        if (operationArr[1] == 'uve_attribute') {
+                            operand2Obj = {
+                                uve_attribute: operand2
+                            }
+                        } else if (operationArr[1] == 'json_value') {
+                            operand2Obj = {
+                                json_value: operand2
+                            }
+                        }
                         andRulePostObjArr.push({
-                            operand1: andRuleObj.operand1()(),
-                            operand2: andRuleObj.operand2()(),
-                            operation: andRuleObj.operation()(),
-                            vars: vars
+                            operand1: operand1.toString().trim(),
+                            operand2: operand2Obj,
+                            operation: operationArr[0],
+                            variables: vars
                         });
                     }
                     orRuleList.push({
@@ -90,8 +112,13 @@ define([
                     or_list: orRuleList
                 };
                 newRuleData['alarm_severity'] = parseInt(newRuleData['alarm_severity']);
-                newRuleData['uve_keys'] = newRuleData['uve_keys'] != null && newRuleData['uve_keys'] != ""?
-                        newRuleData['uve_keys'].split(',') : [];
+                var uve_keys = getValueByJsonPath(newRuleData, 'uve_keys;uve_key', []);
+                if (typeof uve_keys == 'string') {
+                    uve_keys = uve_keys.split(',');
+                }
+                if (newRuleData['uve_keys'] != null) {
+                    newRuleData['uve_keys']['uve_key'] = uve_keys;
+                }
                 if (options['mode'] === ctwl.CREATE_ACTION) {
                     var parent = 'global-system-config'
                         fqName = ['default-global-system-config', newRuleData['name']];
@@ -115,6 +142,8 @@ define([
                     url = ctwc.URL_UPDATE_CONFIG_OBJECT;
                     reqUrl = '/alarm/'+newRuleData['uuid'];
                 }
+                //permissions
+                this.updateRBACPermsAttrs(newRuleData);
                 delete newRuleData['orRules'];
                 delete newRuleData['enable'];
                 delete newRuleData['description'];
@@ -187,10 +216,10 @@ define([
                 'display_name': {
                     required: true,
                     msg: 'Enter Name'
-                }, /*'uve_keys': {
+                }, 'uve_keys.uve_key': {
                     required: true,
                     msg: "Select UVE"
-                },*/'id_perms.description': {
+                },'id_perms.description': {
                     required: true,
                     msg: 'Enter Description'
                 }

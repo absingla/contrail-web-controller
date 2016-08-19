@@ -14,6 +14,22 @@ textarea[name="select"] {
 .advanced-options-link:hover{
     color:#3182bd;
 }
+
+.select-aggregate-header {
+    border-bottom: 1px solid #EEEEEE;
+    padding: 5px 0;
+}
+
+.select-aggregate-link {
+    border-bottom: 1px solid #EEEEEE;
+    padding: 3px 0;
+}
+.select-aggregate-header h4 {
+    margin: 0;
+}
+.select-aggregate-body {
+    padding: 8px 0;
+}
 .where-textarea, .filter-textarea {
     padding-right: 30px;
     resize: none;
@@ -66,10 +82,10 @@ textarea[name="select"] {
 .or-clause-item .new-or-text {
     padding: 0 5px;
 }
-.or-clause-item .icon-remove{
+.or-clause-item .fa-remove{
     color:#aaa;
 }
-.and-clause-item .icon-remove{
+.and-clause-item .fa-remove{
     font-size:11px;
 }
 a.selectAllLink{
@@ -103,10 +119,10 @@ a.selectAllLink:hover {
 .or-clause-collection .or-clause:first-child .or-text {
     visibility: hidden;
 }
-.or-clause-collection > .or-clause.row-fluid > .span1 {
+.or-clause-collection > .or-clause.row-fluid > .col-xs-1 {
     width: 3%;
 }
-.or-clause-collection > .or-clause.row-fluid > .span10 {
+.or-clause-collection > .or-clause.row-fluid > .col-xs-10 {
     width: 89.2%;
 }
 .or-clause-collection .or-text {
@@ -114,7 +130,7 @@ a.selectAllLink:hover {
     color: #000;
     padding: 10px 0 0;
     font-weight: normal;
-    float: right;
+    text-align: center;
 }
 .or-clause-collection .or-clause-text {
     padding: 5px 10px;
@@ -141,4 +157,7 @@ a.selectAllLink:hover {
 }
 .and-clause-collection .collection-actions-add a {
     color: #3182bd;
+}
+.paddingright{
+    padding-right: 20px;
 }

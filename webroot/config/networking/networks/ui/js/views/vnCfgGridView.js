@@ -168,7 +168,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_VN_TITLE_DELETE,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "linkElementId": "linkVNDelete",
                 "onClick": function () {
                     var gridElId = '#' + ctwl.CFG_VN_GRID_ID;
@@ -186,13 +186,13 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_VN_TITLE_CREATE,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     var vnModel = new VNCfgModel();
                     vnCfgEditView.model = vnModel;
                     subscribeModelChangeEvents(vnModel);
                     vnCfgEditView.renderAddVNCfg({
-                                              "title": ctwl.CFG_VN_TITLE_CREATE,
+                                              "title": ctwl.CREATE,
                                               callback: function () {
                     $('#' + ctwl.CFG_VN_GRID_ID).data("contrailGrid")._dataView.refreshData();
                     }});
@@ -210,7 +210,7 @@ define([
             vnCfgEditView.model = vnModel;
             subscribeModelChangeEvents(vnModel);
             vnCfgEditView.renderEditVNCfg({
-                                  "title": ctwl.CFG_VN_TITLE_EDIT,
+                                  "title": ctwl.EDIT,
                                   callback: function () {
                                       dataView.refreshData();
             }});
@@ -239,7 +239,7 @@ define([
                         templateGeneratorConfig: {
                             columns: [
                                 {
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     rows: [
                                         {
                                             title: ctwl.CFG_VN_TITLE_DETAILS,
@@ -331,6 +331,14 @@ define([
                                                     templateGenerator: 'TextGenerator',
                                                     templateGeneratorConfig: {
                                                         formatter: 'allowTransitFormatter',
+                                                    }
+                                                },
+                                                {
+                                                    label: 'Mirroring',
+                                                    key: 'uuid',
+                                                    templateGenerator: 'TextGenerator',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'mirrorDestinationFormatter',
                                                     }
                                                 },
                                                 {
@@ -448,7 +456,9 @@ define([
                                                     }
                                                 }
                                             ]
-                                        }
+                                        },
+                                        //permissions
+                                        ctwu.getRBACPermissionExpandDetails()
                                     ]
                                 }
                             ]
@@ -522,6 +532,10 @@ define([
     }
     this.allowTransitFormatter = function (v, dc) {
         return formatVNCfg.allowTransitFormatter(null,
+                                        null, null, null, dc);
+    }
+    this.mirrorDestinationFormatter = function (v, dc) {
+        return formatVNCfg.mirrorDestinationFormatter(null,
                                         null, null, null, dc);
     }
     this.rpfFormatter = function (v, dc) {

@@ -30,7 +30,7 @@
                          path: 'virtualNetworkName',
                          dataBindValue: 'virtualNetworkName',
                          dropdownAutoWidth : false,
-                         class: "span6",
+                         class: "col-xs-6",
                          elementConfig:{
                              allowClear: true,
                              dataTextField: "text",
@@ -59,7 +59,7 @@
                          label: 'Name',
                          placeholder: 'Port Name',
                          dataBindValue: 'display_name',
-                         class: "span6"
+                         class: "col-xs-6"
                      }
                  }]
              };
@@ -74,6 +74,7 @@
                      visible : "subnetGroupVisible()",
                      label:"Fixed IPs",
                      path: "subnetDataSource",
+                     class: 'col-xs-12',
                      validation: 'fixedIPValidations',
                      templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
                      collection: "fixedIPCollection",
@@ -86,7 +87,7 @@
                              path: 'subnet_uuid',
                              dataBindValue: 'subnet_uuid()',
                              dataBindOptionList : "subnetDataSource()",
-                             class: "span6",
+                             class: "col-xs-6",
                              label: 'Subnet',
                              width:275,
                              templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
@@ -105,19 +106,19 @@
                              placeholder: 'Fixed IP',
                              templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                              dataBindValue: 'fixedIp()',
-                             class: "span6",
+                             class: "col-xs-6",
                              width:275,
                              label: 'IP'
                          }
                      }],
                      rowActions: [{
                          onClick: "function() { $root.addFixedIP(); }",
-                         iconClass: 'icon-plus',
+                         iconClass: 'fa fa-plus',
                      },
                      {
                          onClick:
                          "function() { $root.deleteFixedIP($data, this);}",
-                          iconClass: 'icon-minus'
+                          iconClass: 'fa fa-minus'
                      }],
                      gridActions: [{
                          name:"fixedIPAddBtn",
@@ -137,8 +138,9 @@
                      viewConfig: {
                          label:"Allowed address pair(s)",
                          path: "allowedAddressPairCollection",
+                         class: 'col-xs-12',
                          validation: 'allowedAddressPairValidations',
-                     templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
+                         templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
                          collection: "allowedAddressPairCollection",
                          columns: [{
                              elementId: 'ipPrefixVal',
@@ -167,12 +169,12 @@
                          }],
                          rowActions: [{
                           onClick: "function() { $root.addAAP(); }",
-                         iconClass: 'icon-plus',
+                         iconClass: 'fa fa-plus',
                          },
                          {
                              onClick:
                              "function() { $root.deleteAAP($data, this);}",
-                              iconClass: 'icon-minus'
+                              iconClass: 'fa fa-minus'
                          }],
                          gridActions: [{
                              onClick: "function() { addAAP(); }",
@@ -204,7 +206,7 @@
                                          disabled: isDisable,
                                          path: 'macAddress',
                                          label: 'MAC Address',
-                                         class: 'span6',
+                                         class: 'col-xs-6',
                                          placeholder: 'Specify MAC Address',
                                          dataBindValue: 'macAddress'
                                      }
@@ -215,7 +217,7 @@
                                      viewConfig: {
                                          path: 'id_perms.enable',
                                          dataBindValue: 'id_perms().enable',
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          label: 'Admin State',
                                          elementConfig:{
                                              allowClear: true,
@@ -237,6 +239,7 @@
                                      viewConfig: {
                                          label:'Static Routes',
                                          path: 'staticRoute',
+                                         class: 'col-xs-12',
                                          dataBindValue: 'staticRoute',
                                          elementConfig:{
                                              allowClear: true,
@@ -266,7 +269,7 @@
                                      name: 'Static Routes',
                                      viewConfig: {
                                          label:'Service Health Check',
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          path: 'service_health_check_refs',
                                          dataBindValue: 'service_health_check_refs',
                                          elementConfig:{
@@ -296,7 +299,7 @@
                                      viewConfig: {
                                          label: "QoS",
                                          path : 'qos_config_refs',
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          dataBindValue :
                                              'qos_config_refs',
                                          elementConfig : {
@@ -324,7 +327,7 @@
                                          path: 'virtual_machine_interface_properties.local_preference',
                                          label: 'Local Preference',
                                          dataBindValue: 'virtual_machine_interface_properties().local_preference',
-                                         class: "",
+                                         class: 'col-xs-12',
                                          elementConfig: {
                                              dataTextField: "text",
                                              dataValueField: "value",
@@ -346,7 +349,7 @@
                                          viewConfig: {
                                              label: 'ECMP Hashing Fields',
                                              path: 'ecmp_hashing_include_fields',
-                                             class: 'span12',
+                                             class: 'col-xs-12',
                                              dataBindValue:
                                                      'ecmp_hashing_include_fields',
                                              elementConfig: {
@@ -379,7 +382,7 @@
                                          visible : "!isVCenter()",
                                          path: 'deviceOwnerValue',
                                          dataBindValue: 'deviceOwnerValue',
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          label: "Device Owner",
                                          elementConfig:{
                                              allowClear: true,
@@ -402,7 +405,7 @@
                                      path: 'virtualMachineValue',
                                      label: "Compute UUID",
                                      dataBindValue: 'virtualMachineValue',
-                                     class: "span6",
+                                     class: "col-xs-6",
                                      visible: "deviceComputeShow()",
                                      elementConfig:{
                                          dataTextField: "text",
@@ -427,7 +430,7 @@
                                      path: 'logicalRouterValue',
                                      label: "Router",
                                      dataBindValue: 'logicalRouterValue',
-                                     class: "span6",
+                                     class: "col-xs-6",
                                      visible: "deviceRouterShow()",
                                      elementConfig:{
                                          dataTextField: "text",
@@ -454,6 +457,7 @@
                                  viewConfig: {
                                      label:"Port Binding(s)",
                                      path: "portBindingCollection",
+                                     class: 'col-xs-12',
                                      validation: 'portBindingValidations',
                                      templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
                                      collection: "portBindingCollection",
@@ -466,7 +470,7 @@
                                              templateId: cowc.TMPL_EDITABLE_GRID_COMBOBOX_VIEW,
                                              dataBindValue: 'key()',
                                              placeholder: 'Key',
-                                             class: "span6",
+                                             class: "col-xs-6",
                                              width:275,
                                              label: 'Key',
                                              disabled: "disablePortBindKey()",
@@ -495,7 +499,7 @@
                                              placeholder: 'Value',
                                              templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                                              dataBindValue: 'value()',
-                                             class: "span6",
+                                             class: "col-xs-6",
                                              width:275,
                                              label: 'Value',
                                              disabled: "disablePortBindValue()"
@@ -503,12 +507,12 @@
                                      }],
                                      rowActions: [{
                                          onClick: "function() { $root.addPortBinding(); }",
-                                         iconClass: 'icon-plus',
+                                         iconClass: 'fa fa-plus',
                                          },
                                          {
                                          onClick:
                                          "function() { $root.deletePortBinding($data, this); }",
-                                         iconClass: 'icon-minus',
+                                         iconClass: 'fa fa-minus',
                                          visible : "hideDeleteButtonPortBinding"
                                      }],
                                      gridActions: [{
@@ -526,7 +530,7 @@
                                          label: "Disable Policy",
                                          templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                          dataBindValue: 'virtual_machine_interface_disable_policy',
-                                         class: "span6"
+                                         class: "col-xs-6"
                                      }
                                  }]
                              }, {
@@ -541,7 +545,7 @@
                                          label: "Sub Interface",
                                          templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                          dataBindValue: 'is_sub_interface',
-                                         class: "span6"
+                                         class: "col-xs-6"
                                      }
                                  }]
                              }, {
@@ -555,7 +559,7 @@
                                          placeholder: 'Specify VLAN',
                                          path: 'virtual_machine_interface_properties.sub_interface_vlan_tag',
                                          dataBindValue: 'virtual_machine_interface_properties().sub_interface_vlan_tag',
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          label: 'VLAN',
                                      }
                                  },{
@@ -568,7 +572,7 @@
                                          visible: "is_sub_interface",
                                          placeholder: 'Primary Interface',
                                          disabled: "disable_sub_interface()",
-                                         class: "span6",
+                                         class: "col-xs-6",
                                          label: "Primary Interface",
                                          dataBindValue: 'subInterfaceVMIValue',
                                          elementConfig:{
@@ -632,80 +636,70 @@
                                          label: "Mirroring",
                                          templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                          dataBindValue: 'is_mirror',
-                                         class: "span6"
+                                         class: "col-xs-6"
                                      }
                                  }]
-                             }, {
+                             },
+                             self.mirroringSection(portFormatter, isDisable, portEditView)]
+                         }
+                     }]
+                 }]
+             };
+         };
+
+         self.mirroringSection = function(portFormatter, isDisable, portEditView) {
+             return {
+                 columns: [{
+                         elementId: 'mirroringOptions',
+                         view: "SectionView",
+                         viewConfig : {
+                             visible: "is_mirror",
+                             rows: [{
                                  columns: [{
-                                     elementId: 'mirrorToTrafficDirection',
-                                     name: "Direction",
-                                     view: "FormDropdownView",
+                                     elementId: 'analyzer_ip_address',
+                                     view: "FormInputView",
                                      viewConfig: {
-                                         path: 'mirrorToTrafficDirection',
-                                         dataBindValue: 'mirrorToTrafficDirection',
-                                         placeholder: 'Direction',
-                                         label: 'Direction',
                                          visible: "is_mirror",
-                                         elementConfig: {
-                                             dataTextField: "text",
-                                             dataValueField: "value",
-                                             data : [
-                                                 {'text':'Ingress', 'value':'ingress'},
-                                                 {'text':'Egress', 'value':'egress'},
-                                                 {'text':'Both', 'value':'both'}
-                                             ]
-                                         }
-                                     }
-                                 }]
-                             }, {
-                                 columns: [{
-                                     elementId: 'mirrorToAnalyzerName',
-                                     name: "Analyzer Name",
-                                     view: "FormInputView",
-                                     viewConfig: {
-                                         path: 'mirrorToAnalyzerName',
-                                         dataBindValue: 'mirrorToAnalyzerName',
-                                         placeholder: 'Analyzer Name',
-                                         label: 'Analyzer Name',
-                                         visible: "is_mirror"
-                                     }
-                                 }]
-                             }, {
-                                 columns: [{
-                                     elementId: 'mirrorToAnalyzerIpAddress',
-                                     name: "Analyzer IP Address",
-                                     view: "FormInputView",
-                                     viewConfig: {
-                                         class: "span6",
-                                         path: 'mirrorToAnalyzerIpAddress',
+                                         class: "col-xs-6",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.analyzer_ip_address',
                                          placeholder: 'xxx.xxx.xxx.xxx',
-                                         dataBindValue: 'mirrorToAnalyzerIpAddress',
-                                         label: 'Analyzer IP Address',
-                                         visible: "is_mirror"
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.analyzer_ip_address',
+                                         label: 'Analyzer IP Address'
                                      }
                                  }, {
-                                     elementId: 'mirrorToUdpPort',
+                                     elementId: 'udp_port',
                                      name: "UDP Port",
                                      view: "FormInputView",
                                      viewConfig: {
-                                         class: "span6",
-                                         path: 'mirrorToUdpPort',
+                                         visible: "is_mirror",
+                                         class: "col-xs-6",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.udp_port',
                                          placeholder: '1 to 65535',
-                                         dataBindValue: 'mirrorToUdpPort',
-                                         label: 'UDP Port',
-                                         visible: "is_mirror"
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.udp_port',
+                                         label: 'UDP Port'
                                      }
                                  }]
                              }, {
                                  columns: [{
+                                     elementId: 'analyzer_name',
+                                     view: "FormInputView",
+                                     viewConfig: {
+                                         visible: "is_mirror",
+                                         class: "col-xs-6",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.analyzer_name',
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.analyzer_name',
+                                         placeholder: 'Enter Analyzer Name',
+                                         label: 'Analyzer Name'
+                                     }
+                                 },{
                                      elementId: 'mirrorToRoutingInstance',
-                                     name: "Routing Instance",
                                      view: "FormDropdownView",
                                      viewConfig: {
+                                         visible: "is_mirror",
+                                         class: "col-xs-6",
                                          path: 'mirrorToRoutingInstance',
                                          dataBindValue: 'mirrorToRoutingInstance',
                                          label: 'Routing Instance',
-                                         visible: "is_mirror",
                                          elementConfig: {
                                              placeholder: 'Select Routing Instance',
                                              dataTextField: "text",
@@ -724,9 +718,126 @@
                                          }
                                      }
                                  }]
+                             }, {
+                                 columns: [{
+                                     elementId: 'juniper_header',
+                                     view: "FormDropdownView",
+                                     viewConfig: {
+                                         visible: "is_mirror",
+                                         class: "col-xs-6",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.juniper_header',
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.juniper_header',
+                                         label: 'Juniper Header',
+                                         elementConfig: {
+                                             dataTextField: "text",
+                                             dataValueField: "value",
+                                             data : [
+                                                 {'text':'Enabled', 'value':'enabled'},
+                                                 {'text':'Disabled', 'value':'disabled'}]
+                                         }
+                                     }
+                                 },{
+                                     elementId: 'analyzer_mac_address',
+                                     view: "FormInputView",
+                                     viewConfig: {
+                                         visible: "is_mirror",
+                                         class: "col-xs-6",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.analyzer_mac_address',
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.analyzer_mac_address',
+                                         placeholder: 'Enter Analyzer MAC',
+                                         label: 'Analyzer MAC Address'
+                                     }
+                                 }]
+                             },{
+                                 columns: [{
+                                     elementId: 'traffic_direction',
+                                     name: "Traffic Direction",
+                                     view: "FormDropdownView",
+                                     viewConfig: {
+                                         class: "col-xs-6",
+                                         visible: "is_mirror",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.traffic_direction',
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.traffic_direction',
+                                         placeholder: 'Direction',
+                                         label: 'Direction',
+                                         elementConfig: {
+                                             placeholder: "Select Direction",
+                                             dataTextField: "text",
+                                             dataValueField: "value",
+                                             data : [
+                                                 {'text':'Ingress', 'value':'ingress'},
+                                                 {'text':'Egress', 'value':'egress'},
+                                                 {'text':'Both', 'value':'both'}
+                                             ]
+                                         }
+                                     }
+                                 }]
+                             }, {
+                                 columns: [{
+                                 elementId: 'mirrorToNHMode',
+                                 view: "FormDropdownView",
+                                 viewConfig: {
+                                     visible: "is_mirror",
+                                     class: "col-xs-6",
+                                     path: 'mirrorToNHMode',
+                                     dataBindValue: 'mirrorToNHMode',
+                                     placeholder: 'Enter Next Hop Mode',
+                                     label: 'Nexthop Mode',
+                                     elementConfig: {
+                                         placeholder: "Select Direction",
+                                         dataTextField: "text",
+                                         dataValueField: "value",
+                                         data : [
+                                             {'text':'Static', 'value':'static'},
+                                             {'text':'Dynamic', 'value':'dynamic'}]
+                                     }
+                                 }
                              }]
-                         }
-                     }]
+                          },{
+                              columns:[{
+                                  elementId: 'staticNHHeaderSection',
+                                  view: "SectionView",
+                                  viewConfig: {
+                                      visible: "is_mirror() && (mirrorToNHMode() == 'static')",
+                                      rows: [{
+                                          columns:[{
+                                              elementId: 'vtep_dst_ip_address',
+                                              view: "FormInputView",
+                                              viewConfig: {
+                                                  class: "col-xs-6",
+                                                  path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.static_nh_header.vtep_dst_ip_address',
+                                                  placeholder: 'Enter IP Address',
+                                                  dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.static_nh_header.vtep_dst_ip_address',
+                                                  label: 'VTEP Destination IP Address'
+                                              }
+                                          }, {
+                                              elementId: 'vtep_dst_mac_address',
+                                              view: "FormInputView",
+                                              viewConfig: {
+                                                  class: "col-xs-6",
+                                                  path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.static_nh_header.vtep_dst_mac_address',
+                                                  placeholder: 'Enter MAC Address',
+                                                  dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.static_nh_header.vtep_dst_mac_address',
+                                                  label: 'VTEP Destination MAC Address'
+                                              }
+                                          }]
+                                      },{
+                                          columns:[{
+                                              elementId: 'vni',
+                                              view: "FormInputView",
+                                              viewConfig: {
+                                                  class: "col-xs-6",
+                                                  path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.static_nh_header.vni',
+                                                  placeholder: 'Enter VxLAN ID',
+                                                  dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.static_nh_header.vni',
+                                                  label: 'VxLAN ID'
+                                              }
+                                          }]
+                                      }]
+                                  }
+                              }]
+                          }]
+                     }
                  }]
              };
          };
@@ -748,6 +859,7 @@
                                      view: 'FormEditableGridView',
                                      viewConfig: {
                                          path: "dhcpOptionCollection",
+                                         class: 'col-xs-12',
                                          validation: 'dhcpValidations',
                                          templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
                                          collection: "dhcpOptionCollection",
@@ -787,12 +899,12 @@
                                          }],
                                          rowActions: [{
                                              onClick: "function() { $root.addDHCP(); }",
-                                             iconClass: 'icon-plus',
+                                             iconClass: 'fa fa-plus',
                                              },
                                              {
                                              onClick:
                                              "function() { $root.deleteDHCP($data, this); }",
-                                             iconClass: 'icon-minus'
+                                             iconClass: 'fa fa-minus'
                                          }],
                                          gridActions: [{
                                              onClick: "function() { addDHCP(); }",
@@ -824,6 +936,7 @@
                                      view: 'FormEditableGridView',
                                      viewConfig: {
                                          path: "fatFlowCollection",
+                                         class: 'col-xs-12',
                                          validation: 'fatFlowValidations',
                                          templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
                                          collection: "fatFlowCollection",
@@ -836,7 +949,7 @@
                                                  templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
                                                  dataBindValue: 'protocol()',
                                                  placeholder: 'Protocol',
-                                                 class: "span6",
+                                                 class: "col-xs-6",
                                                  width:275,
                                                  label: 'Protocol',
                                                  elementConfig:{
@@ -860,19 +973,19 @@
                                                  templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                                                  dataBindValue: 'port()',
                                                  disabled: "disablePort()",
-                                                 class: "span6",
+                                                 class: "col-xs-6",
                                                  width:275,
                                                  label: 'Value'
                                              }
                                          }],
                                          rowActions: [{
                                              onClick: "function() { $root.addFatFlow(); }",
-                                             iconClass: 'icon-plus',
+                                             iconClass: 'fa fa-plus',
                                              },
                                              {
                                              onClick:
                                              "function() { $root.deleteFatFlow($data, this); }",
-                                             iconClass: 'icon-minus'
+                                             iconClass: 'fa fa-minus'
                                          }],
                                          gridActions: [{
                                              onClick: "function() { addFatFlow(); }",
@@ -896,7 +1009,7 @@
                      viewConfig: {
                          path: 'floatingIpValue',
                          dataBindValue: 'floatingIpValue',
-                         class: 'span12',
+                         class: 'col-xs-12',
                          label:"Floating IPs",
                          elementConfig:{
                              allowClear: true,
@@ -925,7 +1038,7 @@
                              label: 'Security Group(s)',
                              templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                              path: 'is_sec_grp',
-                             class: 'span12',
+                             class: 'col-xs-12',
                              dataBindValue: 'is_sec_grp'
                          }
                      }
@@ -943,7 +1056,7 @@
                          viewConfig: {
                              path: 'securityGroupValue',
                              dataBindValue: 'securityGroupValue',
-                             class: 'span12',
+                             class: 'col-xs-12',
                              disabled : "is_sec_grp_disabled",
                              elementConfig:{
                                  allowClear: true,

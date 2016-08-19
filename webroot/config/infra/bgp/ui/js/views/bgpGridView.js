@@ -135,7 +135,7 @@ define([
                 bgpModel.bgpData = $('#' + ctwl.BGP_GRID_ID).
 	                data("contrailGrid")._dataView.getItems();
                 bgpEditView.renderAddEditBGP(
-                    {"title": title, checkedRow: checkedRow,
+                    {"title": ctwl.EDIT, checkedRow: checkedRow,
                         callback: function () {
                             var dataView =
                                 $('#' + ctwl.BGP_GRID_ID).
@@ -174,7 +174,7 @@ define([
 	            {
                     "type" : "link",
 	                "title" : ctwl.TITLE_BGP_MULTI_DELETE,
-	                "iconClass": 'icon-trash',
+	                "iconClass": 'fa fa-trash',
                     "linkElementId": 'btnDeleteBGP',
 	                "onClick" : function() {
 	                    var bgpModel = new BGPModel();
@@ -201,7 +201,7 @@ define([
 	            {
 	                "type" : "link",
 	                "title" : ctwl.TITLE_ADD_BGP,
-	                "iconClass" : "icon-plus",
+	                "iconClass" : "fa fa-plus",
 	                "onClick" : function() {
 	                    var bgpModel = new BGPModel();
                         subscribeModelChangeEvents(bgpModel);
@@ -210,7 +210,7 @@ define([
                         bgpModel.bgpData = $('#' + ctwl.BGP_GRID_ID).
 	                        data("contrailGrid")._dataView.getItems();
 	                    bgpEditView.renderAddEditBGP(
-	                        {"title": ctwl.TITLE_ADD_BGP,
+	                        {"title": ctwl.CREATE,
 	                            callback: function () {
 	                                var dataView =
 	                                    $('#' + ctwl.BGP_GRID_ID).
@@ -308,7 +308,7 @@ define([
                         templateGeneratorConfig: {
                             columns: [
                                 {
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     rows: [
                                         {
                                             title: ctwl.TITLE_BGP_DETAILS,
@@ -448,7 +448,9 @@ define([
                                                     }
                                                 }
                                             ]
-                                        }
+                                        },
+                                        //permissions
+                                        ctwu.getRBACPermissionExpandDetails()
                                     ]
                                 }
                             ]

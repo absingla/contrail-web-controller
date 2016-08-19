@@ -179,7 +179,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_SVC_TEMPLATE_TITLE_MULTI_DELETE,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "linkElementId": "linkSvcTemplateDelete",
                 "onClick": function () {
                     var gridElId = '#' + ctwl.CFG_SVC_TEMPLATE_GRID_ID;
@@ -199,13 +199,13 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_SVC_TEMPLATE_TITLE_CREATE,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     svcTemplateCfgEditView.model = new SvcTemplateCfgModel();
 
                     addModelAttr(svcTemplateCfgEditView.model);
                     svcTemplateCfgEditView.renderAddSvcTemplateCfg({
-                              "title": ctwl.CFG_SVC_TEMPLATE_TITLE_CREATE,
+                              "title": ctwl.CREATE,
                               callback: function () {
                     $('#' +
                     ctwl.CFG_SVC_TEMPLATE_GRID_ID).data("contrailGrid")._dataView.refreshData();
@@ -243,7 +243,7 @@ define([
                         templateGeneratorConfig: {
                             columns: [
                                 {
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     rows: [
                                         {
                                             title:
@@ -358,7 +358,9 @@ define([
                                                     }
                                                 },
                                             ]
-                                        }
+                                        },
+                                        //permissions
+                                        ctwu.getRBACPermissionExpandDetails()
                                     ]
                                 }
                             ]

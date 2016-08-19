@@ -121,7 +121,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_FIP_TITLE_RELEASE,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "linkElementId": 'linkFipRelease',
                 "onClick": function () {
                     var gridElId = '#' + ctwl.CFG_FIP_GRID_ID;
@@ -139,12 +139,12 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_FIP_TITLE_ALLOCATE,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     fipCfgEditView.model = new FipCfgModel();
 		    
                     fipCfgEditView.renderAllocateFipCfg({
-                                              "title": ctwl.CFG_FIP_TITLE_ALLOCATE,
+                                              "title": "Allocate",
                                               callback: function () {
                     $('#' + ctwl.CFG_FIP_GRID_ID).data("contrailGrid")._dataView.refreshData();
                     }});
@@ -187,7 +187,7 @@ define([
                         templateGeneratorConfig: {
                             columns: [
                                 {
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     rows: [
                                         {
                                             title: ctwl.CFG_FIP_TITLE_DETAILS,
@@ -219,7 +219,9 @@ define([
                                                     }
                                                 }
                                             ]
-                                        }
+                                        },
+                                        //permissions
+                                        ctwu.getRBACPermissionExpandDetails()
                                     ]
                                 }
                             ]

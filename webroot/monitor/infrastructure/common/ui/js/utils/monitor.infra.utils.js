@@ -381,10 +381,10 @@ define([
 
         self.getGridPaginationControls = function() {
             return [
-                        '<a class="widget-toolbar-icon"><i class="icon-step-forward"></i></a>',
-                        '<a class="widget-toolbar-icon"><i class="icon-forward"></i></a>',
-                        '<a class="widget-toolbar-icon"><i class="icon-backward"></i></a>',
-                        '<a class="widget-toolbar-icon"><i class="icon-step-backward"></i></a>'
+                        '<a class="widget-toolbar-icon"><i class="fa fa-step-forward"></i></a>',
+                        '<a class="widget-toolbar-icon"><i class="fa fa-forward"></i></a>',
+                        '<a class="widget-toolbar-icon"><i class="fa fa-backward"></i></a>',
+                        '<a class="widget-toolbar-icon"><i class="fa fa-step-backward"></i></a>'
                     ];
         }
 
@@ -1234,7 +1234,12 @@ define([
          */
         self.getOverallNodeStatusForDetails = function (data){
             var statusObj = this.getNodeStatusForSummaryPages(data);
-            var templateData = {result:statusObj['alerts'],showMore:true,defaultItems:1};
+            var templateData = {
+                result : statusObj['alerts'],
+                sevColor : statusObj['sevColor'],
+                showMore : true,
+                defaultItems : 1
+            };
             return contrail.getTemplate4Id('overallNodeStatusTemplate')(templateData);
         }
 
@@ -1265,10 +1270,7 @@ define([
             result['nodeSeverity'] = data['alerts'][0] != null ?
                     data['alerts'][0]['sevLevel'] : sevLevels['INFO'];
             result['messages'] = msgs;
-             var statusTemplate = contrail.getTemplate4Id('statusTemplate');
-            if(page == 'summary')
-                return statusTemplate({sevLevel:result['nodeSeverity'],
-                    sevLevels:sevLevels});
+            result['sevColor'] = data['color'];
             return result;
         }
         /**
@@ -1372,10 +1374,18 @@ define([
                     })
                 }
                 var ipDeferredObj = $.Deferred();
+                var footerlinks = [];
+                if (type == 'ApiServer') {
+                    footerlinks.push({
+                        name:'documentation',
+                        onClick: function () {
+                                    window.open('/documentation/contrail_openapi.html');
+                              }
+                      });
+                }
                 self.getReachableIpFromList(ipPortList,
                                             ipDeferredObj);
                 ipDeferredObj.done (function (res){
-                    var footerlinks = [];
                     if (res != null) {
                         footerlinks.push({
                           name:'introspect',
@@ -1554,7 +1564,7 @@ define([
                             {
                                 type: 'link',
                                 text: 'View',
-                                iconClass: 'icon-external-link'
+                                iconClass: 'fa fa-external-link'
                                 // callback: onScatterChartClick
                             }
                         ]
@@ -1595,7 +1605,7 @@ define([
                             {
                                 type: 'link',
                                 text: 'View',
-                                iconClass: 'icon-external-link',
+                                iconClass: 'fa fa-external-link',
                                 callback: cfg.onClickHandler
                             }
                         ]
@@ -1766,12 +1776,12 @@ define([
         self.bindPaginationListeners = function(cfg) {
             var cfg = ifNull(cfg,{});
             var gridSel = cfg['gridSel'];
-            gridSel.find('i.icon-forward').parent().click(function() {
+            gridSel.find('i.fa-forward').parent().click(function() {
                 controlNodePrevNextClick(cfg['obj'], { gridSel: gridSel,
                     getUrlFn: cfg['getUrlFn'], step: 'forward',
                     parseFn: cfg['parseFn']});
             });
-            gridSel.find('i.icon-backward').parent().click(function() {
+            gridSel.find('i.fa-backward').parent().click(function() {
                 controlNodePrevNextClick(cfg['obj'], { gridSel: gridSel,
                     getUrlFn: cfg['getUrlFn'], step: 'backward',
                     parseFn: cfg['parseFn']});
@@ -1809,7 +1819,7 @@ define([
             var cfg = ifNull(cfg,{});
             var gridSel = cfg['gridSel'];
             var paginationInfo;
-            gridSel.find('i.icon-step-forward').parent().click(function() {
+            gridSel.find('i.fa-step-forward').parent().click(function() {
                 paginationInfo = cfg['paginationInfoFn']();
                 //Ignore if already on first page
                 if(paginationInfo['last_page'] == '') {
@@ -1823,7 +1833,7 @@ define([
                     parseFn: cfg['parseFn']
                 });
             });
-            gridSel.find('i.icon-forward').parent().click(function() {
+            gridSel.find('i.fa-forward').parent().click(function() {
                 paginationInfo = cfg['paginationInfoFn']();
                 //Ignore if already on first page
                 if(paginationInfo['next_page'] == '') {
@@ -1837,7 +1847,7 @@ define([
                     parseFn: cfg['parseFn']
                 });
             });
-            gridSel.find('i.icon-step-backward').parent().click(function() {
+            gridSel.find('i.fa-step-backward').parent().click(function() {
                 paginationInfo = cfg['paginationInfoFn']();
                 //Ignore if already on last page
                 if(paginationInfo['first_page'] == '') {
@@ -1851,7 +1861,7 @@ define([
                     parseFn: cfg['parseFn']
                 });
             });
-            gridSel.find('i.icon-backward').parent().click(function() {
+            gridSel.find('i.fa-backward').parent().click(function() {
                 paginationInfo = cfg['paginationInfoFn']();
                 //Ignore if already on last page
                 if(paginationInfo['prev_page'] == '') {
@@ -1971,7 +1981,10 @@ define([
         Handlebars.registerHelper('renderStatusTemplate', function(sevLevel, options) {
             var selector = '#statusTemplate',
                 source = $(selector).html(),
-                html = Handlebars.compile(source)({sevLevel:sevLevel,sevLevels:sevLevels});
+                 html = Handlebars.compile(source)({
+                        color : cowc.COLOR_SEVERITY_MAP[cowc.SEV_TO_COLOR_MAP[sevLevel]],
+                        colorSevMap : cowc.COLOR_SEVERITY_MAP
+                    });
             return new Handlebars.SafeString(html);
         });
 
@@ -2032,9 +2045,13 @@ define([
                         postData['select'] = 'Source, name, T, cpu_info.cpu_share, cpu_info.mem_res';
                     } else if (moduleType == 'vRouterSystem') {
                         postData['select'] = 'Source, name, T, cpu_info.one_min_cpuload, cpu_info.used_sys_mem';
-                    } else if (moduleType == 'vRouterBandwidth') {
-                        postData['table'] = 'StatTable.VrouterStatsAgent.phy_if_band';
-                        postData['select'] = 'Source, name, T=, phy_if_band.in_bandwidth_usage, phy_if_band.out_bandwidth_usage';
+                    } else if (moduleType == 'vRouterBandwidthIn') {
+                        postData['table'] = 'StatTable.VrouterStatsAgent.phy_band_in_bps';
+                        postData['select'] = 'Source, name, T=, phy_band_in_bps.__value';
+                        postData['tgValue'] = 60;
+                    } else if (moduleType == 'vRouterBandwidthOut') {
+                        postData['table'] = 'StatTable.VrouterStatsAgent.phy_band_out_bps';
+                        postData['select'] = 'Source, name, T=, phy_band_out_bps.__value';
                         postData['tgValue'] = 60;
                     } else if (moduleType == 'vRouterFlowRate') {
                         postData['table'] = 'StatTable.VrouterStatsAgent.flow_rate';
@@ -2184,28 +2201,28 @@ define([
                    title : 'Node Color',
                    items : [ {
                        text : 'Critical',
-                       labelCssClass : 'icon-circle error',
+                       labelCssClass : 'fa-circle error',
                        events : {
                            click : function(event) {
                            }
                        }
                    },{
                        text : 'Error',
-                       labelCssClass : 'icon-circle warning',
+                       labelCssClass : 'fa-circle warning',
                        events : {
                            click : function(event) {
                            }
                        }
                    },{
                        text : 'Intialized',
-                       labelCssClass : 'icon-circle medium',
+                       labelCssClass : 'fa-circle medium',
                        events : {
                            click : function(event) {
                            }
                        }
                    },{
                        text : 'Up',
-                       labelCssClass : 'icon-circle okay',
+                       labelCssClass : 'fa-circle okay',
                        events : {
                            click : function(event) {
                            }
@@ -2217,7 +2234,7 @@ define([
                     items: [
                         {
                             text: 'Bandwidth',
-                            labelCssClass: 'icon-circle',
+                            labelCssClass: 'fa-circle',
                             events: {
                                 click: function (event) {}
                             }
@@ -2336,9 +2353,15 @@ define([
                 label = options['label'],
                 cssClass = options['cssClass'] != null ? options['cssClass'] : 'contrail-legend',
                 dataLen = data.length,
+                nodeColorMap = options['nodeColorMap'],
                 clickFn = options['clickFn'];
             if (color != null && !$.isArray(color)) {
                 color = [color];
+            }
+            if (nodeColorMap != null && !cowu.isEmptyObject(nodeColorMap)) {
+                color = _.values(nodeColorMap);
+                data = _.keys(nodeColorMap);
+                dataLen = data.length;
             }
             container.selectAll('g.'+cssClass)
                 .data(data)
@@ -2352,6 +2375,10 @@ define([
                 .attr('height', 8)
                 .attr('fill', function (d, i) {
                     return (color != null && color[i] != null) ? color[i] : d['color'];
+                })
+                .append('title')
+                .text(function (d){
+                    return d;
                 });
             container.append('g')
                 .attr('transform', 'translate('+ (- ((dataLen * 20 + 10) + offset))+', 0)')
@@ -2361,6 +2388,29 @@ define([
                 .attr('text-anchor', 'end')
                 .text(label);
         }
+        self.constructNodeColorMap = function (nodeList) {
+            nodeList = ifNull(nodeList, []);
+            nodeList = _.sortBy(nodeList, 'name');
+            var colors = self.getMonitorInfraNodeColors(nodeList.length);
+            var colorMap = {};
+            $.each(nodeList, function (idx, obj){
+                if (colorMap[obj['name']] == null && colors[idx] != null) {
+                    colorMap[obj['name']] = colors[idx];
+                }
+            });
+            return colorMap;
+        }
+        self.getMonitorInfraNodeColors = function (nodeCnt) {
+            var colors = [];
+            if (nodeCnt == 1) {
+                colors = monitorInfraConstants.SINGLE_NODE_COLOR;
+            } else if (nodeCnt > 1 && nodeCnt <=3) {
+                colors = monitorInfraConstants.THREE_NODE_COLOR;
+            } else if (nodeCnt > 3 && nodeCnt <=5) {
+                colors = monitorInfraConstants.FIVE_NODE_COLOR;
+            }
+            return colors.slice(0, nodeCnt);
+        };
     };
     return MonitorInfraUtils;
 });

@@ -102,7 +102,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span6',
+                            class: 'col-xs-6',
                             rows: [{
                                 title: ctwl.SEC_GRP_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',
@@ -134,7 +134,9 @@ define([
                                         }
                                     }
                                 ]
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails()]
                         }]
                     }
                 }]
@@ -174,9 +176,7 @@ define([
             showHideModelAttr(secGrpModel);
             secGrpEditView.model = secGrpModel;
             secGrpEditView.renderConfigureSecGrp({
-                                  "title": ctwl.TITLE_EDIT_SEC_GRP +
-                                  ' (' + dataItem['display_name'] +
-                                     ')',
+                                  "title": ctwl.EDIT,
                                   rowIndex: rowIndex,
                                   dataItem: dataItem,
                                   isEdit: true,
@@ -229,7 +229,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_DEL_SEC_GRP,
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnActionDelSecGrp',
                 "onClick": function() {
                      var secGrpModel = new SecGrpModel();
@@ -250,7 +250,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_CREATE_SEC_GRP,
-                "iconClass": 'icon-plus',
+                "iconClass": 'fa fa-plus',
                 "onClick": function() {
                     var projFqn = [getCookie('domain'),
                         getCookie('project')];
@@ -258,7 +258,7 @@ define([
                     showHideModelAttr(secGrpModel);
                     secGrpEditView.model = secGrpModel;
                     secGrpEditView.renderConfigureSecGrp({
-                                  "title": ctwl.TITLE_CREATE_SEC_GRP,
+                                  "title": ctwl.CREATE,
                                   "isEdit": false,
                                   projFqn: projFqn,
                                   callback: function() {

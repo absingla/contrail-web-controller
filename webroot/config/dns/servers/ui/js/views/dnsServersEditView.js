@@ -24,7 +24,7 @@ define([
             self.mode = options.mode;
             cowu.createModal({
                 'modalId': modalId,
-                'className': 'modal-680',
+                'className': 'modal-700',
                 'title': options['title'],
                 'body': editLayout,
                 'onSave': function() {
@@ -80,7 +80,9 @@ define([
                         document.getElementById(
                             modalId));
                     kbValidation.bind(self);
-                });
+                    //permissions
+                    ctwu.bindPermissionsValidation(self);
+                }, null, true);
         },
 
         renderDeleteDnsServer: function(options) {
@@ -204,7 +206,7 @@ define([
     function getAddDnsServerViewConfig(isDisable) {
         var dnsViewConfig = {
             elementId: cowu.formatElementId([prefixId, ctwl.TITLE_CREATE_DNS_SERVER]),
-            title: ctwl.TITLE_CREATE_DNS_SERVER,
+            title: "DNS Server",
             view: "SectionView",
             viewConfig: {
                 rows: [{
@@ -215,7 +217,7 @@ define([
                             label: 'Name',
                             disabled: isDisable,
                             path: 'display_name',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'display_name'
                         }
                     },{
@@ -225,7 +227,7 @@ define([
                             label: 'Domain Name',
                             disabled: isDisable,
                             path: 'virtual_DNS_data.domain_name',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'virtual_DNS_data().domain_name'
                         }
                     }]
@@ -236,7 +238,7 @@ define([
                         viewConfig: {
                             label: 'DNS Forwarder',
                             path: 'virtual_DNS_data.next_virtual_DNS',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'virtual_DNS_data().next_virtual_DNS',
                             elementConfig: {
                                 placeholder: 'Enter Forwarder IP or Select a DNS Server',
@@ -255,7 +257,7 @@ define([
                         viewConfig: {
                             label: 'Record Resolution Order',
                             path: 'virtual_DNS_data.record_order',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'virtual_DNS_data().record_order',
                             elementConfig: {
                                 dataTextField: "text",
@@ -280,7 +282,7 @@ define([
                         viewConfig: {
                             label: 'Floating IP Record',
                             path: 'virtual_DNS_data.floating_ip_record',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'virtual_DNS_data().floating_ip_record',
                             elementConfig: {
                                 dataTextField: "text",
@@ -307,7 +309,7 @@ define([
                             label: 'Time To Live',
                             placeholder: 'TTL (86400 sec)',
                             path: 'virtual_DNS_data.default_ttl_seconds',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'virtual_DNS_data().default_ttl_seconds'
                         }
                     }]
@@ -318,7 +320,7 @@ define([
                         viewConfig: {
                             label: 'External Visibility',
                             path: 'virtual_DNS_data.external_visible',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'virtual_DNS_data().external_visible'
                         }
                     },{
@@ -327,7 +329,7 @@ define([
                         viewConfig: {
                             label: 'Reverse Resolution',
                             path: 'virtual_DNS_data.reverse_resolution',
-                            class: 'span6',
+                            class: 'col-xs-6',
                             dataBindValue: 'virtual_DNS_data().reverse_resolution'
                         }
                     }]
@@ -338,7 +340,7 @@ define([
                         viewConfig: {
                             label: 'Associate IPAMs',
                             path: 'user_created_network_ipams',
-                            class: 'span12',
+                            class: 'col-xs-12',
                             dataBindValue: 'user_created_network_ipams',
                             elementConfig: {
                                 dataTextField: "text",

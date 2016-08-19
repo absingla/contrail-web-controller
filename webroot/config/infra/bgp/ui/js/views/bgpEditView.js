@@ -26,6 +26,10 @@ define([
                 if((!self.model.isAutoMeshEnabled() ||
                     self.model.user_created_router_type() !== ctwl.CONTROL_NODE_TYPE) &&
                     self.model.getPeers(self.model.model().attributes).length === 0) {
+                    /* the below line is required to solve Maximum
+                        call stack size exceeded issue  */
+                    $.fn.modal.Constructor.prototype.enforceFocus =
+                        function() {};
                     var confTemplate = contrail.getTemplate4Id("controller-bgp-peer-conf-form-template");
                     var confTempLayout = confTemplate();
                     cowu.createModal({"modalId": modalId + "_conf", "className": "modal-280",
@@ -107,7 +111,9 @@ define([
                                 {collection: peerModels[i].model().attributes.family_attrs});
                         }
                     }
-                }
+                    //permissions
+                    ctwu.bindPermissionsValidation(self);
+                }, null, true
             );
         },
 
@@ -155,7 +161,7 @@ define([
             var bgpViewConfig = {
                 elementId: cowu.formatElementId([prefixId,
                                    ctwl.TITLE_ADD_BGP]),
-                title: ctwl.TITLE_ADD_BGP,
+                title: "BGP",
                 view: "SectionView",
                 viewConfig :{
                     rows : [
@@ -168,7 +174,7 @@ define([
                                         label: "Router Type",
                                         path: "user_created_router_type",
                                         dataBindValue: "user_created_router_type",
-                                        class:"span6",
+                                        class:"col-xs-6",
                                         elementConfig: {
                                             dataTextField: "text",
                                             dataValueField: "value",
@@ -209,7 +215,7 @@ define([
                                         path: 'display_name',
                                         dataBindValue: 'display_name',
                                         label : 'Host Name',
-                                        class: 'span6'
+                                        class: 'col-xs-6'
                                     }
                                 },
                                 {
@@ -220,7 +226,7 @@ define([
                                         path: 'user_created_vendor',
                                         dataBindValue: 'user_created_vendor',
                                         label : 'Vendor ID',
-                                        class: "span6"
+                                        class: "col-xs-6"
                                     }
                                 }
                             ]
@@ -235,7 +241,7 @@ define([
                                         path: 'user_created_address',
                                         dataBindValue: 'user_created_address',
                                         label : 'IP Address',
-                                        class: "span6"
+                                        class: "col-xs-6"
                                     }
                                 },
                                 {
@@ -246,7 +252,7 @@ define([
                                         path: 'user_created_identifier',
                                         dataBindValue: 'user_created_identifier',
                                         label : 'Router ID',
-                                        class: "span6"
+                                        class: "col-xs-6"
                                     }
                                 }
                             ]
@@ -265,7 +271,7 @@ define([
                                         dataBindValue:
                                             'user_created_autonomous_system',
                                         label : 'Autonomous System',
-                                        class: 'span6'
+                                        class: 'col-xs-6'
                                     }
                                 },
                                 {
@@ -276,7 +282,7 @@ define([
                                        placeholder : '1 - 65535',
                                        dataBindValue: "bgp_router_parameters().local_autonomous_system",
                                        label: "BGP Router ASN",
-                                       class: "span6"
+                                       class: "col-xs-6"
                                     }
                                 }
                             ]
@@ -292,7 +298,7 @@ define([
                                             'user_created_address_family',
                                         dataBindOptionList: 'addressFamilyData',
                                         label : 'Address Families',
-                                        class: 'span12',
+                                        class: 'col-xs-12',
                                         elementConfig: {
                                              dataTextField: "text",
                                              dataValueField: "value",

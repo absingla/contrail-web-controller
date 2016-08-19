@@ -753,9 +753,12 @@ define([
         this.PORT_GRID_ID = "port-grid-id";
         this.PORT_PREFIX_ID = "Ports";
         this.TEXT_PORT = 'port';
+        this.MIRROR_STATIC = 'static';
+        this.MIRROR_DYNAMIC = 'dynamic';
 
         /* Policy */
         this.VN_SUBNET_DELIMITER = ":";
+        this.SUBNET_ONLY = "subnet_only";
 
         /* BGP as a Service */
         this.CONFIG_BGP_AS_A_SERVICE_LIST_ID = "config-bgp-as-a-service-list";
