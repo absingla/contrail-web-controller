@@ -670,7 +670,9 @@ define([
                         }
                     }
                 },
-                noDataMessage: cowm.DATA_SUCCESS_EMPTY,
+                message: {
+                    noDataMessage: cowm.DATA_SUCCESS_EMPTY,
+                }
             }
         };
 
