@@ -11,7 +11,7 @@
           * uve_keys formatter
           */
          self.uveKeysFormatter = function(r, c, v, cd, dc) {
-             var uve_keys = getValueByJsonPath(dc,'uve_keys',[]);
+             var uve_keys = getValueByJsonPath(dc,'uve_keys;uve_key',[]);
              return uve_keys.length > 0 ? uve_keys.join(',</br>') : '-';
          };
          /*
@@ -21,7 +21,7 @@
              var template = contrail.getTemplate4Id(ctwc.CONFIG_ALARM_SEVERITY_TEMPLATE);
              if (ctwl.CONFIG_ALARM_TEXT_MAP[getValueByJsonPath(dc, 'alarm_severity', null)] != null) {
                  var color = 'red';
-                 if (dc['alarm_severity'] == '4') {
+                 if (dc['alarm_severity'] == '2') {
                      color = 'orange';
                  }
                  return template({
@@ -64,16 +64,16 @@
                      }
                  }
              }
-             return returnString;
+             return returnString != "" ? returnString: '-';
          };
 
          self.getRuleFormat = function (alarmObj) {
              var returnString = "";
              returnString += alarmObj['operand1'] + " ";
              returnString += '<span class="rule-format">'+ alarmObj['operation'] +'</span>';
-             returnString += " "+alarmObj['operand2'];
-             if (ifNull(alarmObj['vars'], []).length) {
-                 returnString += ", <span class='rule-format'>vars</span> " +alarmObj['vars'];
+             returnString += " "+getValueByJsonPath(alarmObj,'operand2;uve_attribute',getValueByJsonPath(alarmObj,'operand2;json_value'));
+             if (ifNull(alarmObj['variables'], []).length) {
+                 returnString += ", <span class='rule-format'>variables</span> " +alarmObj['variables'];
              }
              return returnString;
          };

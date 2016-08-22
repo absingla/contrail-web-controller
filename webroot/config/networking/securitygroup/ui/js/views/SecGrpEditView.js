@@ -59,7 +59,9 @@ define([
                 kbValidation.bind(self,
                                   {collection:
                                   self.model.model().attributes.rules});
-            });
+                //permissions
+                ctwu.bindPermissionsValidation(self);
+            }, null, true);
         },
         renderDeleteSecGrps: function(options) {
             var delTemplate =
@@ -104,7 +106,7 @@ define([
         var prefixId = ctwl.SEC_GRP_PREFIX_ID;
         var secGrpViewConfig = {
             elementId: cowu.formatElementId([prefixId, ctwl.TITLE_EDIT_SEC_GRP]),
-            title: ctwl.TITLE_EDIT_SEC_GRP,
+            title: "Security Group",//permissions
             view: "SectionView",
             viewConfig: {
                 rows: [
@@ -116,7 +118,7 @@ define([
                                 viewConfig: {
                                     label: 'Name',
                                     path: 'display_name',
-                                    class: 'span9',
+                                    class: 'col-xs-9',
                                     dataBindValue: 'display_name',
                                     placeHolder: 'Security Group Name',
                                     onBlur: function() {
@@ -134,7 +136,7 @@ define([
                                 viewConfig: {
                                     label: 'Security Group ID',
                                     path: 'is_sec_grp_id_auto',
-                                    class: 'span3',
+                                    class: 'col-xs-3',
                                     dataBindValue: 'is_sec_grp_id_auto',
                                     elementConfig: {
                                         dataTextField: 'text',
@@ -155,7 +157,7 @@ define([
                                     label: "",
                                     visible: 'showConfigSecGrpID',
                                     path: 'configured_security_group_id',
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     dataBindValue:
                                             'configured_security_group_id',
                                     placeHolder: 'Enter Security Group ID'

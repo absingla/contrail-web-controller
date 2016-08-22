@@ -59,8 +59,10 @@ define([
                                              false);
                     Knockback.applyBindings(self.model,
                         document.getElementById(modalId));
-                   kbValidation.bind(self);
-                }
+                   kbValidation.bind(self, {collection:self.model.model().attributes.routes});
+                   //permissions
+                   ctwu.bindPermissionsValidation(self);
+                }, null, true
             );
         },
 
@@ -104,7 +106,7 @@ define([
             var rtAggregateConfig = {
                 elementId: cowu.formatElementId([prefixId,
                                    ctwl.TITLE_ADD_ROUTE_AGGREGATE]),
-                title: ctwl.TITLE_ADD_ROUTE_AGGREGATE,
+                title: "Route Aggregate",
                 view: "SectionView",
                 viewConfig :{
                     rows : [
@@ -118,7 +120,7 @@ define([
                                         path: "display_name",
                                         dataBindValue: "display_name",
                                         label: "Name",
-                                        class: "span6"
+                                        class: "col-xs-6"
                                     }
                                 }
                             ]
@@ -136,14 +138,16 @@ define([
                                                     viewConfig: {
                                                         path: "routes",
                                                         collection: "routes",
+                                                        validation:
+                                                            "rtAggregateRoutesValidation",
                                                         templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
                                                         columns: [{
                                                             elementId: "route",
-                                                            name: "Routes",
+                                                            name: "Route Prefix",
                                                             view: "FormInputView",
                                                             width: 350,
                                                             viewConfig: {
-                                                                placeholder: "Enter Route",
+                                                                placeholder: "xxx.xxx.xxx.xxx/xx",
                                                                 width: 350,
                                                                 path: "route",
                                                                 templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
@@ -154,13 +158,13 @@ define([
                                                             {
                                                                 onClick: "function() {\
                                                                 $root.addRoute(); }",
-                                                                iconClass: 'icon-plus'
+                                                                iconClass: 'fa fa-plus'
                                                             },
                                                             {
                                                                 onClick: "function() {\
                                                                 $root.deleteRoute($data, this)\
                                                                 ;}",
-                                                                iconClass: 'icon-minus'
+                                                                iconClass: 'fa fa-minus'
                                                             }
                                                         ],
                                                         gridActions: [

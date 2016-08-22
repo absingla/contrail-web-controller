@@ -57,12 +57,7 @@ define([
                 subscribeModelAttrChanges(dnsRecordsModel);
                 dnsRecordsEditView.model = dnsRecordsModel;
                 dnsRecordsEditView.renderAddEditDnsRecords({
-                    "title": ctwl.TITLE_EDIT_DNS_RECORD +
-                        ' (' + dataItem[
-                            'virtual_DNS_record_data'][
-                            'record_name'
-                        ] +
-                        ')',
+                    "title": ctwl.EDIT,
                     callback: function() {
                         var dataView =
                             $(gridElId).data(
@@ -134,7 +129,7 @@ define([
                     },
                     errorGettingData: {
                         type: 'error',
-                        iconClasses: 'icon-warning',
+                        iconClasses: 'fa fa-warning',
                         text: 'Error in getting DNS Records.'
                     }
                 }
@@ -181,7 +176,7 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span6',
+                            class: 'col-xs-6',
                             rows: [{
                                 title: "DNS Records",
                                 templateGenerator: 'BlockListTemplateGenerator',
@@ -220,7 +215,9 @@ define([
                                     label: 'MX Preference',
                                     templateGenerator: 'TextGenerator'
                                 }]
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails()]
                         }]
                     }
                 }]
@@ -275,7 +272,7 @@ define([
         var headerActionConfig = [{
             "type": "link",
             "title": ctwl.TITLE_DNS_RECORD_MULTI_DELETE,
-            "iconClass": 'icon-trash',
+            "iconClass": 'fa fa-trash',
             "linkElementId": 'btnActionDelDNS',
             "onClick": function() {
 
@@ -300,14 +297,14 @@ define([
         }, {
             "type": "link",
             "title": ctwl.TITLE_CREATE_DNS_RECORD,
-            "iconClass": "icon-plus",
+            "iconClass": "fa fa-plus",
             "onClick": function() {
                 var dnsRecordsModel = new DnsRecordsModel();
                 dnsRecordsModel.dnsServerData = viewConfig.dnsServerData;
                 subscribeModelAttrChanges(dnsRecordsModel);
                 dnsRecordsEditView.model = dnsRecordsModel;
                 dnsRecordsEditView.renderAddEditDnsRecords({
-                    "title": ctwl.TITLE_CREATE_DNS_RECORD,
+                    "title": ctwl.CREATE,
                     callback: function() {
                         var dataView = $(
                                 gridElId).data(

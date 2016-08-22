@@ -58,8 +58,7 @@ define([
             var routingPolicyModel = new RoutingPolicyModel(dataItem);
             routingPolicyEditView.model = routingPolicyModel;
             routingPolicyEditView.renderRoutingPolicyPopup({
-                                  "title": ctwl.TITLE_ROUTING_POLICY_EDIT +
-                                  ' (' + dataItem.name + ')',
+                                  "title": ctwl.EDIT,
                                   mode: "edit",
                                   callback: function () {
                 var dataView =
@@ -167,7 +166,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_REMOVE_GRID,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "linkElementId": "btnDeleteRoutingPolicy",
                 "onClick": function () {
                     var dataItem =
@@ -190,12 +189,12 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_ROUTING_ADD_POLICY,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     var routingPolicyModel = new RoutingPolicyModel();
                     routingPolicyEditView.model = routingPolicyModel;
                     routingPolicyEditView.renderRoutingPolicyPopup({
-                                     "title": ctwl.TITLE_ROUTING_ADD_POLICY,
+                                     "title": ctwl.CREATE,
                                      mode : "add",
                                      callback: function () {
                         var dataView =
@@ -220,7 +219,7 @@ define([
                                 title: ctwl.TITLE_ROUTING_POLICY_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',
                                 templateGeneratorConfig: [{
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     key: 'fq_name',
                                     label:'Display Name',
                                     templateGenerator: 'TextGenerator',
@@ -228,12 +227,12 @@ define([
                                         formatter: "RoutingPoliceyNameFormatter"
                                     }
                                 }, {
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     key: 'uuid',
                                     templateGenerator: 'TextGenerator'
                                 }, {
-                                    keyClass:'span3',
-                                    valueClass:'span11',
+                                    keyClass:'col-xs-3',
+                                    valueClass:'col-xs-11',
                                     label:'Term',
                                     key: 'routing_policy_entries',
                                     templateGenerator: 'TextGenerator',
@@ -242,7 +241,9 @@ define([
                                             "RoutingPolicyTermExpandFormatter"
                                     }
                                 }]
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails('span3')]
                         }]
                     }
                 }]

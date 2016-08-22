@@ -58,7 +58,9 @@ define([
                 kbValidation.bind(self,
                                   {collection:
                                   self.model.model().attributes.routes});
-            });
+                //permissions
+                ctwu.bindPermissionsValidation(self);
+            }, null, true);
         },
         renderDeleteRtTables: function(options) {
             var delTemplate =
@@ -186,7 +188,7 @@ define([
         var prefixId = ctwl.RT_TABLE_PREFIX_ID;
         var rtTableViewConfig = {
             elementId: cowu.formatElementId([prefixId, ctwl.TITLE_EDIT_RT_TABLE]),
-            title: ctwl.TITLE_EDIT_RT_TABLE,
+            title: "Route Table",
             view: "SectionView",
             viewConfig: {
                 rows: [{
@@ -198,7 +200,7 @@ define([
                             disabled: isDisable,
                             placeholder: 'Enter Route Table Name',
                             path: 'display_name',
-                            class: 'span9',
+                            class: 'col-xs-9',
                             dataBindValue: 'display_name',
                             placeHolder: 'Security Group Name',
                         }
@@ -216,20 +218,21 @@ define([
                         view: 'FormEditableGridView',
                         viewConfig: {
                             path: 'routes',
+                            class: 'col-xs-12',
                             collection: 'routes',
                             validation: 'rtTableRoutesValidation',
                             templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
-                            class: "span12",
+                            class: "col-xs-12",
                             columns: getRouteTableColViewConfigs(),
                             rowActions: [
                                 { onClick: "function() { $root.addRtTable($data, this); }",
-                                  iconClass: 'icon-plus'},
+                                  iconClass: 'fa fa-plus'},
                                 { onClick: "function() { $root.deleteRtTable($data, this); }",
-                                  iconClass: 'icon-minus'},
+                                  iconClass: 'fa fa-minus'},
                             ],
                             gridActions: [
                                 { onClick: "function() { $root.addRtTable(); }",
-                                  iconClass: 'icon-plus',
+                                  iconClass: 'fa fa-plus',
                                   buttonTitle: ''}
                             ]
                         }

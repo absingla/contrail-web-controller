@@ -49,9 +49,9 @@ define([
                     try{
                         overallStatus = monitorInfraUtils.
                             getOverallNodeStatusForDetails(obj);
-                    }catch(e){overallStatus = "<span> "+
-                        statusTemplate({sevLevel:sevLevels['ERROR'],
-                            sevLevels:sevLevels})+" Down</span>";
+                    }catch(e){
+                        overallStatus = "<span> "+ statusTemplate({color:'red',
+                            colorSevMap:cowc.COLOR_SEVERITY_MAP})+" Down</span>";
                     }
 
                     try{
@@ -95,7 +95,7 @@ define([
             templateGeneratorConfig: {
                 columns: [
                     {
-                        class: 'span12',
+                        class: 'col-xs-12',
                         rows: [
                             {
                                 title: 'Database Node',
@@ -167,7 +167,7 @@ define([
                 [
                     {
                         key: 'databaseUsage',
-                        label: 'Database Usage',
+                        label: 'Disk Usage',
                         templateGenerator: 'TextGenerator'
                     },
                     {

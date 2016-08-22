@@ -135,7 +135,7 @@ define([
                         ctwl.TITLE_EDIT_FORWARDING_CLASS;
                 forwardingClassEditView.model = forwardingClassModel;
                 forwardingClassEditView.renderAddEditForwardingClass(
-                    {"title": title, checkedRow: checkedRow,
+                    {"title": ctwl.EDIT, checkedRow: checkedRow,
                         callback: function () {
                             gridObj._dataView.refreshData();
                         },
@@ -169,7 +169,7 @@ define([
             {
                 "type" : "link",
                 "title" : ctwl.TITLE_FORWARDING_CLASS_MULTI_DELETE,
-                "iconClass": 'icon-trash',
+                "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnDeleteForwardingClass',
                 "onClick" : function() {
                     var gridObj = $(gridElId).data('contrailGrid'),
@@ -196,14 +196,14 @@ define([
             {
                 "type" : "link",
                 "title" : ctwl.TITLE_CREATE_FORWARDING_CLASS,
-                "iconClass" : "icon-plus",
+                "iconClass" : "fa fa-plus",
                 "onClick" : function() {
                     var gridObj = $(gridElId).data('contrailGrid'),
                         gridData = gridObj._dataView.getItems(),
                         forwardingClassModel = new ForwardingClassModel();
                     forwardingClassEditView.model = forwardingClassModel;
                     forwardingClassEditView.renderAddEditForwardingClass(
-                        {"title": ctwl.TITLE_CREATE_FORWARDING_CLASS,
+                        {"title": ctwl.CREATE,
                             callback: function () {
                                 gridObj._dataView.refreshData();
                             },
@@ -224,13 +224,13 @@ define([
                     templateGenerator: 'ColumnSectionTemplateGenerator',
                     templateGeneratorConfig: {
                         columns: [{
-                            class: 'span6',
+                            class: 'col-xs-6',
                             rows: [{
                                 title: 'Details',
                                 templateGenerator:
                                     'BlockListTemplateGenerator',
                                 templateGeneratorConfig: [{
-                                    key: "forwarding_class_id",
+                                    key: "uuid",
                                     templateGenerator: "TextGenerator",
                                     label: "Forwarding Class",
                                     templateGeneratorConfig: {
@@ -258,7 +258,9 @@ define([
                                         formatter: "FormatForwardingClassVLAN"
                                     }
                                 }]
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails()]
                         }]
                     }
                 }]

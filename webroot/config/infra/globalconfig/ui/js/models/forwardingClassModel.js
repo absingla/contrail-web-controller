@@ -4,11 +4,11 @@
 
 define([
     'underscore',
-    'contrail-model',
+    'contrail-config-model',
     'config/infra/globalconfig/ui/js/globalConfig.utils'
-], function (_, ContrailModel, GlobalConfigUtils) {
+], function (_, ContrailConfigModel, GlobalConfigUtils) {
     var gcUtils = new GlobalConfigUtils();
-    var forwardingClassModel = ContrailModel.extend({
+    var forwardingClassModel = ContrailConfigModel.extend({
 
         defaultConfig: {
             'name': null,
@@ -25,7 +25,9 @@ define([
         validations: {
             fwdClassConfigValidations: {
                 'forwarding_class_id': function(value, attr, finalObj){
-                    if(!value || isNaN(Number(value))) {
+                    if(value === null ||
+                        value.toString().trim() === "" ||
+                        isNaN(Number(value))) {
                         return "Forwarding Class ID should be a number";
                     }
                 }
@@ -57,7 +59,8 @@ define([
                 modelConfig["forwarding_class_mpls_exp"] =
                     gcUtils.getTextByValue(ctwc.QOS_MPLS_EXP_VALUES, mpls);
             }
-
+            //permissions
+            this.formatRBACPermsModelConfig(modelConfig);
             return modelConfig;
         },
 
@@ -70,7 +73,9 @@ define([
                                key : null,
                                type : cowc.OBJECT_TYPE_MODEL,
                                getValidation : "fwdClassConfigValidations"
-                           }];
+                           },
+                           //permissions
+                           ctwu.getPermissionsValidation()];
             if (self.isDeepValid(validations)) {
                 var newForwardingClass = $.extend(true,
                                                 {}, self.model().attributes);
@@ -102,15 +107,16 @@ define([
                 fcId = fcId.trim().length != 0 ? Number(fcId) : null;
                 newForwardingClass['forwarding_class_id'] = fcId;
 
-                dscp = dscp.trim().length != 0 ? Number(dscp) : null;
+                dscp = dscp.toString().trim().length != 0 ? Number(dscp) : null;
                 newForwardingClass['forwarding_class_dscp'] = dscp;
 
-                vlan = vlan.trim().length != 0 ? Number(vlan) : null;
+                vlan = vlan.toString().trim().length != 0 ? Number(vlan) : null;
                 newForwardingClass['forwarding_class_vlan_priority'] = vlan;
 
-                mpls = mpls.trim().length != 0 ? Number(mpls) : null;
+                mpls = mpls.toString().trim().length != 0 ? Number(mpls) : null;
                 newForwardingClass['forwarding_class_mpls_exp'] = mpls;
-
+                //permissions
+                this.updateRBACPermsAttrs(newForwardingClass);
                 ctwu.deleteCGridData(newForwardingClass);
                 delete newForwardingClass.id_perms;
                 delete newForwardingClass.href;

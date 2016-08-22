@@ -58,8 +58,8 @@ define([
             var policyModel = new PolicyModel(dataItem);
             policyCreateEditView.model = policyModel;
             policyCreateEditView.renderPolicyPopup({
-                                  "title": ctwl.TITLE_POLICY_EDIT +
-                                  ' (' + dataItem.name + ')',
+                                  //permissions
+                                  "title": ctwl.EDIT,
                                   mode: "edit",
                                   callback: function () {
                 var dataView =
@@ -177,7 +177,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_REMOVE,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "onClick": function () {
                     var dataItem =
                         $("#"+gridElId).data('contrailGrid').getCheckedRows();
@@ -198,13 +198,14 @@ define([
             {
                 "type": "link",
                 "title": ctwl.TITLE_ADD_POLICY,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
 
                     var policyModel = new PolicyModel();
                     policyCreateEditView.model = policyModel;
                     policyCreateEditView.renderPolicyPopup({
-                                     "title": ctwl.TITLE_ADD_POLICY,
+                                     //permissions
+                                     "title": ctwl.CREATE,
                                      mode : "add",
                                      callback: function () {
                         var dataView =
@@ -229,7 +230,7 @@ define([
                                 title: ctwl.TITLE_POLICY_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',
                                 templateGeneratorConfig: [{
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     key: 'fq_name',
                                     label:'Display Name',
                                     templateGenerator: 'TextGenerator',
@@ -240,11 +241,11 @@ define([
                                         }
                                     }
                                 }, {
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     key: 'uuid',
                                     templateGenerator: 'TextGenerator'
                                 }, {
-                                    keyClass:'span3',
+                                    keyClass:'col-xs-3',
                                     key: 'virtual_network_back_refs',
                                     label:'Connected networks',
                                     templateGenerator: 'TextGenerator',
@@ -255,8 +256,8 @@ define([
                                         }
                                     }
                                 }, {
-                                    keyClass:'span3',
-                                    valueClass:'span11',
+                                    keyClass:'col-xs-3',
+                                    valueClass:'col-xs-11',
                                     label:'Rules',
                                     key: 'network_policy_entries',
                                     templateGenerator: 'TextGenerator',
@@ -267,7 +268,9 @@ define([
                                         }
                                     }
                                 }]
-                            }]
+                            },
+                            //permissions
+                            ctwu.getRBACPermissionExpandDetails('span3')]
                         }]
                     }
                 }]

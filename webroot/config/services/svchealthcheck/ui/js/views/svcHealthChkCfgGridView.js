@@ -137,7 +137,7 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_SVC_HEALTH_CHK_TITLE_DELETE,
-                "iconClass": "icon-trash",
+                "iconClass": "fa fa-trash",
                 "linkElementId": "linkSvcHealthChkDelete",
                 "onClick": function () {
                     var gridElId = '#' + ctwl.CFG_SVC_HEALTH_CHK_GRID_ID;
@@ -155,12 +155,12 @@ define([
             {
                 "type": "link",
                 "title": ctwl.CFG_SVC_HEALTH_CHK_TITLE_CREATE,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "onClick": function () {
                     svcHealthChkEditView.model = new SvcHealthChkModel();
 
                     svcHealthChkEditView.renderAddSvcHealthChkCfg({
-                                              "title": ctwl.CFG_SVC_HEALTH_CHK_TITLE_CREATE,
+                                              "title": ctwl.CREATE,
                                               callback: function () {
                     $('#' + ctwl.CFG_SVC_HEALTH_CHK_GRID_ID).data("contrailGrid")._dataView.refreshData();
                     }});
@@ -176,7 +176,7 @@ define([
             dataView = $('#' + ctwl.CFG_SVC_HEALTH_CHK_GRID_ID).data("contrailGrid")._dataView;
             svcHealthChkEditView.model = new SvcHealthChkModel(dataView.getItem(rowIndex));
             svcHealthChkEditView.renderEditSvcHealthChkCfg({
-                                  "title": ctwl.CFG_SVC_HEALTH_CHK_TITLE_EDIT,
+                                  "title": ctwl.EDIT,
                                   callback: function () {
                                       dataView.refreshData();
             }});
@@ -204,7 +204,7 @@ define([
                         templateGeneratorConfig: {
                             columns: [
                                 {
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     rows: [
                                         {
                                             title: ctwl.CFG_SVC_HEALTH_CHK_TITLE_DETAILS,
@@ -272,7 +272,9 @@ define([
                                                     }
                                                 },
                                             ]
-                                        }
+                                        },
+                                        //permissions
+                                        ctwu.getRBACPermissionExpandDetails()
                                     ]
                                 }
                             ]

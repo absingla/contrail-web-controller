@@ -11,7 +11,8 @@ define([
     //Remove all query references once it is moved to core
 ], function (_, Knockback, ContrailView, ContrailListModel, ControlNodeRoutesModel) {
     var routingInstancesDropdownList = [{text:'All',value:'All'}],
-    backwardRouteStack = [], forwardRouteStack = [];
+    backwardRouteStack = [], forwardRouteStack = [], filteredPrefix = '',
+    routInstance = '', showRouteStack;
     var ControlNodeRoutesFormView = ContrailView.extend({
         render: function (options) {
             var self = this, viewConfig = self.attributes.viewConfig,
@@ -41,6 +42,9 @@ define([
                     }
             };
             var routingInstanceListModel = new ContrailListModel(remoteAjaxConfig);
+            routingInstanceListModel.onDataUpdate.subscribe(function(){
+                self.model.routingInstanceOptionList(routingInstanceListModel.getItems());
+            })
 
             self.renderView4Config($(self.$el).find(routesFormId),
                     this.model,
@@ -81,7 +85,17 @@ define([
 
             //Making the Routes call here as the result also needs to be update
             //prefix value in this form
-            var routesQueryString = self.model.getControlRoutesQueryString()
+            var routesQueryString = self.model.getControlRoutesQueryString();
+            if(routesQueryString.prefix !== undefined){
+                filteredPrefix = routesQueryString.prefix;
+            }else{
+                filteredPrefix = '';
+            }
+            if(routesQueryString.routingInst !== undefined){
+                routInstance = routesQueryString.routingInst;
+            }else{
+                routInstance = '';
+            }
             var routesRemoteConfig = {
                     url: monitorInfraConstants.
                         monitorInfraUrls['CONTROLNODE_ROUTES'] +
@@ -94,6 +108,7 @@ define([
                         ajaxConfig : routesRemoteConfig,
                         dataParser : function (response) {
                             var selValues = {};
+                            showRouteStack = undefined;
                             backwardRouteStack = []; forwardRouteStack = [];
                             var parsedData = monitorInfraParsers.
                                         parseRoutes(response,routesQueryString);
@@ -101,12 +116,11 @@ define([
                                 backwardRoutes(response);
                                 forwardRoutes(response);
                             }
-                            //TODO need to update the prefix autocomplete
-                            var prefixArray = [];
+                            var prefixList = [];
                             $.each(parsedData,function(i,d){
-                                prefixArray.push(d.dispPrefix);
+                                prefixList.push({text:d.dispPrefix,value:d.dispPrefix});
                             });
-                            $('#prefix').find('input').autocomplete( "option", "source" ,prefixArray);
+                            self.model.prefixOptionList(prefixList);
                             return parsedData;
                         }
                     },
@@ -131,25 +145,28 @@ define([
                 }else{
                     prefix = showRoute[0].prefix;
                 }
-                if(checkNonExistRoute(backwardRouteStack, routingTable, prefix)){
+                if(showRouteStack === undefined){
+                    showRouteStack = showRouteTable;
                     backwardRouteStack.push({
                         limit: routesQueryString.limit,
                         startRoutingTable: routingTable,
                         startRoutingInstance: routingInstance,
-                        startPrefix: prefix
+                        startPrefix: prefix,
+                        prefix: filteredPrefix,
+                        routingInst: routInstance
                     });
-                }
-            };
-            var checkNonExistRoute = function(existingStack,routeTable,prefix){
-                var nonExistRecord = false;
-                if(existingStack.length !== 0){
-                    var lastRecord = existingStack[existingStack.length - 1];
-                    if(lastRecord.startRoutingTable !== routeTable && lastRecord.startPrefix !== prefix){
-                        nonExistRecord = true;
-                    }
-                 return nonExistRecord;
                 }else{
-                    return true;
+                    if(!_.isEqual(showRouteStack, showRouteTable)){
+                        showRouteStack = showRouteTable;
+                        backwardRouteStack.push({
+                            limit: routesQueryString.limit,
+                            startRoutingTable: routingTable,
+                            startRoutingInstance: routingInstance,
+                            startPrefix: prefix,
+                            prefix: filteredPrefix,
+                            routingInst: routInstance
+                        });
+                    }
                 }
             };
             var forwardRoutes = function(model){
@@ -173,7 +190,9 @@ define([
                     limit: routesQueryString.limit,
                     startRoutingTable: routingTable,
                     startRoutingInstance: routingInstance,
-                    startPrefix: prefix
+                    startPrefix: prefix,
+                    prefix: filteredPrefix,
+                    routingInst:routInstance
                 });
             };
             var model = new ContrailListModel(listModelConfig);
@@ -238,27 +257,30 @@ define([
                                     viewConfig: {
                                         path: 'routing_instance',
                                         dataBindValue: 'routing_instance',
-                                        class: "span6",
+                                        class: "col-xs-6",
+                                        dataBindOptionList: 'routingInstanceOptionList',
                                         elementConfig: {
                                             defaultValueId: 0,
                                             dropdownAutoWidth : false,
                                             dataTextField:'text',
-                                            dataValueField:'value',
-                                            dataBindOptionList: routingInstanceListModel
+                                            dataValueField:'value'
                                         }
                                     }
                                 },
                                 {
                                     elementId: 'prefix',
-                                    view: "FormAutoCompleteTextBoxView",
+                                    view: "FormComboboxView",
                                     viewConfig: {
+                                        label:'Prefix',
                                         path: 'prefix',
-                                        placeHolder:'Prefix',
+                                        class: "col-xs-2",
                                         dataBindValue: 'prefix',
-                                        class: "span2",
+                                        dataBindOptionList: 'prefixOptionList',
                                         elementConfig: {
-                                            source : []
-                                        }
+                                            dataTextField: "text",
+                                            dataValueField: "value",
+                                            placeholder: 'Prefix'
+                                         }
                                     }
                                 },
                                 {
@@ -268,7 +290,7 @@ define([
                                         path: 'routes_limit',
                                         label: 'Limit',
                                         dataBindValue: 'routes_limit',
-                                        class: "span2",
+                                        class: "col-xs-2",
                                         elementConfig: {
                                             dataTextField: "text",
                                             dataValueField: "value",
@@ -286,7 +308,7 @@ define([
                                     viewConfig: {
                                         path: 'peer_source',
                                         dataBindValue: 'peer_source',
-                                        class: "span2",
+                                        class: "col-xs-2",
                                         elementConfig: {
                                             dataSource: {
                                                 type: 'remote',
@@ -312,7 +334,7 @@ define([
                                     viewConfig: {
                                         path: 'address_family',
                                         dataBindValue: 'address_family',
-                                        class: "span2",
+                                        class: "col-xs-2",
                                         elementConfig: {
                                             data: addressFamilyList
                                         }
@@ -324,7 +346,7 @@ define([
                                     viewConfig: {
                                         path: 'protocol',
                                         dataBindValue: 'protocol',
-                                        class: "span2",
+                                        class: "col-xs-2",
                                         elementConfig: {
                                             data: protocols
                                         }
@@ -376,12 +398,7 @@ define([
             }
 
         }
-        var ddRoutingInstance = $( "#routing_instance_dropdown" ).data('contrailDropdown');
-        if(ddRoutingInstance != null) {
-            ddRoutingInstance.setData(routingInstancesDropdownList);
-        }
-
-        return ret;
+        return routingInstancesDropdownList;
 
     }
     return ControlNodeRoutesFormView;

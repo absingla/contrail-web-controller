@@ -21,7 +21,7 @@ define([
             var editLayout = editTemplate({prefixId: prefixId}),
                 self = this;
 
-            cowu.createModal({'modalId': modalId, 'className': 'modal-480',
+            cowu.createModal({'modalId': modalId, 'className': 'modal-700',
                              'title': options['title'], 'body': editLayout,
                              'onSave': function () {
                 self.model.addEditIpamCfg({
@@ -59,7 +59,9 @@ define([
                                         document.getElementById(modalId));
                 kbValidation.bind(self,
                     {collection: self.model.model().attributes.tenant_dns_server});
-                                    });
+                //permissions
+                ctwu.bindPermissionsValidation(self);
+                                    }, null, true);
         },
 
         renderEditIpamCfg: function(options) {
@@ -67,7 +69,7 @@ define([
                 contrail.getTemplate4Id(cowc.TMPL_EDIT_FORM);
             var editLayout = editTemplate({prefixId: prefixId}),
                 self = this;
-            cowu.createModal({'modalId': modalId, 'className': 'modal-480',
+            cowu.createModal({'modalId': modalId, 'className': 'modal-700',
                              'title': options['title'], 'body': editLayout,
                              'onSave': function () {
                 self.model.addEditIpamCfg({
@@ -105,7 +107,9 @@ define([
                                         document.getElementById(modalId));
                 kbValidation.bind(self,
                     {collection: self.model.model().attributes.tenant_dns_server});
-                                    });
+                //permissions
+                ctwu.bindPermissionsValidation(self);
+                                    }, null, true);
         },
 
         renderMultiDeleteIpamCfg: function(options) {
@@ -155,7 +159,7 @@ define([
         var ipamCfgViewConfig = {
             elementId: cowu.formatElementId([prefixId,
                                             ctwl.CFG_IPAM_TITLE_CREATE]),
-            title: ctwl.CFG_IPAM_TITLE_CREATE,
+            title: "IPAM",
             view: "SectionView",
             viewConfig: {
                 rows: [
@@ -167,7 +171,7 @@ define([
                                 view: 'FormInputView',
                                 viewConfig: {
                                     path: 'name',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue: 'name',
                                     disabled: disableOnEdit
                                 }
@@ -182,7 +186,7 @@ define([
                                 viewConfig: {
                                     //path : 'network_ipam_mgmt.ipam_dns_method',
                                     path : 'user_created_dns_method',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue :
                                         'user_created_dns_method',
                                     label: 'DNS Method',
@@ -213,7 +217,7 @@ define([
                                     visible: "user_created_dns_method() == 'virtual-dns-server'",
                                     path :
                                     'network_ipam_mgmt.ipam_dns_server.virtual_dns_server_name',
-                                    class: 'span12',
+                                    class: 'col-xs-12',
                                     dataBindValue :
                                     'network_ipam_mgmt().ipam_dns_server.virtual_dns_server_name',
                                     elementConfig : {
@@ -271,11 +275,11 @@ define([
                                                          {onClick: "function() {\
                                                              $root.addTenantDNS();\
                                                              }",
-                                                             iconClass: 'icon-plus'},
+                                                             iconClass: 'fa fa-plus'},
                                                          {onClick: "function() {\
                                                              $root.deleteTenantDNS($data, this);\
                                                             }",
-                                                          iconClass: 'icon-minus'}
+                                                          iconClass: 'fa fa-minus'}
                                                      ],
                                                      gridActions: [
                                                          {onClick: "function() {\
@@ -300,7 +304,7 @@ define([
                             viewConfig: {
                                 label: 'NTP Server IP',
                                 path : 'user_created.ntp_server',
-                                class: 'span12',
+                                class: 'col-xs-12',
                                 dataBindValue : 'user_created().ntp_server',
                                 placeholder: 'Enter NTP Server IP'
                            }
@@ -317,7 +321,7 @@ define([
                                 label:'Domain Name',
                                 path : 'user_created.domain_name',
                                 visible: "user_created_dns_method() != 'virtual-dns-server'",
-                                class: 'span12',
+                                class: 'col-xs-12',
                                 dataBindValue : 'user_created().domain_name',
                                 placeholder: 'Enter domain name'
                            }

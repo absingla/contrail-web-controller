@@ -218,7 +218,7 @@ define([
                 }), pRouterModel);
                 physicalRouterEditView.model = pRouterModel;
                 physicalRouterEditView.renderEditPhysicalRouter(
-                    {"title": title, checkedRows: checkedRow,
+                    {"title": ctwl.EDIT, checkedRows: checkedRow,
                         callback: function () {
                             var dataView =
                                 $('#' + ctwl.PHYSICAL_ROUTERS_GRID_ID).
@@ -276,7 +276,7 @@ define([
         var dropdownActions;
         dropdownActions = [
             {
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "title": ctwl.PHYSICAL_ROUTER_ADD,
                 "readOnly" : true
             },
@@ -288,7 +288,7 @@ define([
                     showHideModelAttrs(physicalRouterModel);
                     physicalRouterEditView.model = physicalRouterModel;
                     physicalRouterEditView.renderAddOVSDBManagedToR(
-                        {"title": ctwl.TITLE_OVSDB_MANAGED_TOR,
+                        {"title": ctwl.CREATE,
                             callback: function () {
                                 var dataView =
                                     $('#' + ctwl.PHYSICAL_ROUTERS_GRID_ID).
@@ -306,7 +306,7 @@ define([
                     showHideModelAttrs(physicalRouterModel);
                     physicalRouterEditView.model = physicalRouterModel;
                     physicalRouterEditView.renderAddNetconfMngdPR(
-                        {"title": ctwl.TITLE_NETCONF_MANAGED_TOR,
+                        {"title": ctwl.CREATE,
                             callback: function () {
                                 var dataView =
                                     $('#' + ctwl.PHYSICAL_ROUTERS_GRID_ID).
@@ -323,7 +323,7 @@ define([
                     var physicalRouterModel = new PhysicalRouterModel();
                     physicalRouterEditView.model = physicalRouterModel;
                     physicalRouterEditView.renderAddCPERouter(
-                        {"title": ctwl.TITLE_CPE_ROUTER,
+                        {"title": ctwl.CREATE,
                             callback: function () {
                                 var dataView =
                                     $('#' + ctwl.PHYSICAL_ROUTERS_GRID_ID).
@@ -346,7 +346,7 @@ define([
                     }), physicalRouterModel);
                     physicalRouterEditView.model = physicalRouterModel;
                     physicalRouterEditView.renderAddPhysicalRouter(
-                        {"title": ctwl.TITLE_ADD_PHYSICAL_ROUTER,
+                        {"title": ctwl.CREATE,
                             callback: function () {
                                 var dataView =
                                     $('#' + ctwl.PHYSICAL_ROUTERS_GRID_ID).
@@ -362,7 +362,7 @@ define([
             {
                 "type" : "link",
                 "title" : ctwl.TITLE_PHYSICAL_ROUTER_MULTI_DELETE,
-                "iconClass" : "icon-trash",
+                "iconClass" : "fa fa-trash",
                 "linkElementId": 'btnDeletePhysicalRouter',
                 "onClick" : function() {
                     var pRouterModel = new PhysicalRouterModel();
@@ -388,7 +388,7 @@ define([
             {
                 "type": "dropdown",
                 "title": ctwl.TITLE_ADD_PHYSICAL_ROUTER,
-                "iconClass": "icon-plus",
+                "iconClass": "fa fa-plus",
                 "linkElementId": 'btnAddPhysicalRouter',
                 "actions": dropdownActions
             }
@@ -406,11 +406,13 @@ define([
                         templateGeneratorConfig: {
                             columns: [
                                 {
-                                    class: 'span6',
+                                    class: 'col-xs-6',
                                     rows: [
                                         prProperties(),
                                         prNetconfSettings(),
-                                        snmpSettings()
+                                        snmpSettings(),
+                                        //permissions
+                                        ctwu.getRBACPermissionExpandDetails()
                                     ]
                                 }
                             ]
