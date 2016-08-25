@@ -667,6 +667,21 @@ define([
                                     return formatBytes(value * 1024, false, 2, 3);
                                 }
                             }
+                        },
+                        'y2' : {
+                            label: 'Bandwidth (Last 10 Mins)',
+                            enable: true,
+                            y: 2,
+                            sizeAccessor: 'flowCnt',
+                            shape: 'circle',
+                            tooltip : {
+                                nameFormatter: function(name) {
+                                    return "Bandwidth";
+                                },
+                                valueFormatter: function(value) {
+                                    return formatBytes(value * 1024, false, 2, 3);
+                                }
+                            }
                         }
                     }
                 },
