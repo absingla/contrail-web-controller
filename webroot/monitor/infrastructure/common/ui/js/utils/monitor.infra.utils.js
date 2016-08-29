@@ -1977,7 +1977,8 @@ define([
         },
 
         //Start: Handlebar register helpers
-        Handlebars.registerPartial('statusTemplate', $('#statusTemplate').html());
+        //StatusTemplate Partial not getting used
+        //Handlebars.registerPartial('statusTemplate', $('#statusTemplate').html());
 
         Handlebars.registerHelper('renderStatusTemplate', function(sevLevel, options) {
             var selector = '#statusTemplate',
