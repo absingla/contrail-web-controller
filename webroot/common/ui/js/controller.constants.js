@@ -7,6 +7,8 @@ define([
     'core-constants',
     'contrail-common'
 ], function (_, cowc, Contrail) {
+    var contrail = new Contrail()
+
     var CTConstants = function () {
 
         this.URL_ALL_DOMAINS = '/api/tenants/config/domains';
