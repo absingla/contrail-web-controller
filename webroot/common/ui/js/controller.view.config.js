@@ -61,20 +61,20 @@ define([
                         }
                     }
                 },
-                // "cpu_five_min_avg" : {
-                //     color: cowc.D3_COLOR_CATEGORY5[2],
-                //     min : 0,
-                //     enable: true,
-                //     y: 1,
-                //     tooltip : {
-                //         nameFormatter: function(name) {
-                //             return "CPU 5min average";
-                //         },
-                //         valueFormatter: function(value) {
-                //             return d3.round(value, 1) + " %";
-                //         }
-                //     }
-                // },
+                "cpu_five_min_avg" : {
+                    color: cowc.D3_COLOR_CATEGORY5[2],
+                    min : 0,
+                    enable: true,
+                    y: 1,
+                    tooltip : {
+                        nameFormatter: function(name) {
+                            return "CPU 5min average";
+                        },
+                        valueFormatter: function(value) {
+                            return d3.round(value, 1) + " %";
+                        }
+                    }
+                },
                 "rss": {
                     color: cowc.D3_COLOR_CATEGORY5[3],
                     label: 'Memory Usage',
@@ -90,19 +90,19 @@ define([
                         }
                     }
                 },
-                // "rss_buffer": {
-                //     color: cowc.D3_COLOR_CATEGORY5[4],
-                //     enable: true,
-                //     y: 2,
-                //     tooltip : {
-                //         nameFormatter: function(name) {
-                //             return "Buffer Memory Usage";
-                //         },
-                //         valueFormatter: function(value) {
-                //             return formatBytes(value * 1024, false, 2, 3);
-                //         }
-                //     }
-                // }
+                "rss_buffer": {
+                    color: cowc.D3_COLOR_CATEGORY5[4],
+                    enable: true,
+                    y: 2,
+                    tooltip : {
+                        nameFormatter: function(name) {
+                            return "Buffer Memory Usage";
+                        },
+                        valueFormatter: function(value) {
+                            return formatBytes(value * 1024, false, 2, 3);
+                        }
+                    }
+                }
             };
 
             return [
@@ -211,10 +211,58 @@ define([
                         }
                     },
                     //This is the new LineBar chart view config. Enabled following for testing.
+                    // {
+                    //     elementId: ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new",
+                    //     title: ctwl.TITLE_CPU_MEMORY,
+                    //     view: "LineBarChartView",
+                    //     tabConfig: {
+                    //         renderOnActivate: true,
+                    //         // activate: function(event, ui) {
+                    //         //     $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find('.coCharts-container').data('chart').refreshView();
+                    //         // }
+                    //     },
+                    //     viewConfig: {
+                    //         widgetConfig: {
+                    //             elementId: 'aa' + '-widget',
+                    //             view: "WidgetView",
+                    //             viewConfig: {
+                    //                 header: false,
+                    //                 controls: {
+                    //                     top: false,
+                    //                     right: {
+                    //                         custom: {
+                    //                             filterY: {
+                    //                                 enable: true
+                    //                             }
+                    //                         },
+                    //                         expandedContainerWidth: 350,
+                    //                         expandedContainerHeight: 280
+                    //                     }
+                    //                 }
+                    //             }
+                    //         },
+                    //         modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
+                    //         parseFn: ctwp.parseCPUMemLineChartData,
+                    //         chartOptions: {
+                    //             forceY1: [0, undefined],
+                    //             forceY2: [0, undefined],
+                    //             xAccessor: 'x',
+                    //             xFormatter: function(value) {
+                    //                 return d3.time.format("%H:%M")(value);
+                    //             },
+                    //             y1Formatter: d3.format(".01f"),
+                    //             y2Formatter: function (y2Value) {
+                    //                 return formatBytes(y2Value * 1024, true);
+                    //             },
+                    //             metaData : CPUMemChartMetadata
+                    //         }
+                    //     }
+                    // },
                     {
-                        elementId: ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new",
+                        elementId: ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new2",
                         title: ctwl.TITLE_CPU_MEMORY,
-                        view: "LineBarChartView",
+                        view: "ChartView",
+                        viewPathPrefix: 'js/charts/',
                         tabConfig: {
                             renderOnActivate: true,
                             // activate: function(event, ui) {
@@ -244,17 +292,25 @@ define([
                             modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
                             parseFn: ctwp.parseCPUMemLineChartData,
                             chartOptions: {
-                                forceY1: [0, undefined],
-                                forceY2: [0, undefined],
-                                xAccessor: 'x',
-                                xFormatter: function(value) {
-                                    return d3.time.format("%H:%M")(value);
+                                mainChart: {
+                                    forceY1: [0, undefined],
+                                    forceY2: [0, undefined],
+                                    xAccessor: 'x',
+                                    xFormatter: function(value) {
+                                        return d3.time.format("%H:%M")(value);
+                                    },
+                                    y1Formatter: d3.format(".01f"),
+                                    y2Formatter: function (y2Value) {
+                                        return formatBytes(y2Value * 1024, true);
+                                    },
+                                    y1Chart: "bar", //LineBarChart specific conf
+                                    y2Chart: "line", //LineBarChart specific conf
+                                    accessorData : CPUMemChartMetadata,
                                 },
-                                y1Formatter: d3.format(".01f"),
-                                y2Formatter: function (y2Value) {
-                                    return formatBytes(y2Value * 1024, true);
-                                },
-                                metaData : CPUMemChartMetadata
+                                controlPanel: {
+                                    enable: true,
+                                    accessorData: CPUMemChartMetadata
+                                }
                             }
                         }
                     }
@@ -653,7 +709,7 @@ define([
                     },
                     marginLeft: 70,
                     accessorData: {
-                        'y' : {
+                        'sum(bytes)' : {
                             label: 'Bandwidth (Last 10 Mins)',
                             enable: true,
                             y: 1,
