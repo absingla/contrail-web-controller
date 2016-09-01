@@ -162,7 +162,8 @@ define(
                           detail : false,
                           enableAsyncPostRender:true,
                           checkboxSelectable : false,
-                          fixedRowHeight: 30
+                          fixedRowHeight: 30,
+                          lazyLoading: true
                         },
                         dataSource : {
                         },
