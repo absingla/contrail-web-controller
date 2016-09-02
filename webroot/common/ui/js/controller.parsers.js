@@ -416,6 +416,7 @@ define([
                         endTime: parserConfig['endTime'],
                         x: x,
                         y: totalBytes,
+                        y2: totalBytes * .2,
                         name: name,
                         type: portType == 'src' ? 'sport' : 'dport',
                         range: range,
