@@ -139,9 +139,10 @@ define(
                     },
                     body : {
                         options : {
-                          detail : false,
-                          checkboxSelectable : false,
-                          fixedRowHeight: 30
+                            detail : false,
+                            checkboxSelectable : false,
+                            fixedRowHeight: 30,
+                            lazyLoading: true
                         },
                         dataSource : {
                             remote : {

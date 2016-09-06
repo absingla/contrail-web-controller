@@ -96,6 +96,13 @@ define(
                        searchFn:function(d) {
                            return monitorInfraUtils.getNodeStatusContentForSummayPages(d,'text');
                        },
+                       exportConfig: {
+                           allow: true,
+                           advFormatter: function(dc) {
+                               return monitorInfraUtils.getNodeStatusContentForSummayPages(dc,
+                                   'text');
+                           }
+                       },
                        sortable:{
                            sortBy: function (d) {
                                return monitorInfraUtils.getNodeStatusContentForSummayPages(d,'text');
@@ -165,7 +172,8 @@ define(
                           detail : false,
                           checkboxSelectable : false,
                           enableAsyncPostRender:true,
-                          fixedRowHeight: 30
+                          fixedRowHeight: 30,
+                          lazyLoading: true
                         },
                         dataSource : {
                             remote : {

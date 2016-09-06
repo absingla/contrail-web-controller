@@ -110,8 +110,7 @@ define(
                        exportConfig: {
                            allow: true,
                            advFormatter: function(dc) {
-                               return
-                                   monitorInfraUtils.getNodeStatusContentForSummayPages(dc,'text');
+                               return monitorInfraUtils.getNodeStatusContentForSummayPages(dc,'text');
                            }
                        },
                        sortable:{
@@ -163,7 +162,8 @@ define(
                           detail : false,
                           enableAsyncPostRender:true,
                           checkboxSelectable : false,
-                          fixedRowHeight: 30
+                          fixedRowHeight: 30,
+                          lazyLoading: true
                         },
                         dataSource : {
                         },

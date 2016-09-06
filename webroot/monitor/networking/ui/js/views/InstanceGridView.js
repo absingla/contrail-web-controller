@@ -62,7 +62,8 @@ define([
                     detail: {
                         template: cowu.generateDetailTemplateHTML(ctwvc.getDetailRowInstanceTemplateConfig(), cowc.APP_CONTRAIL_CONTROLLER, 'value')
                     },
-                    fixedRowHeight: 30
+                    fixedRowHeight: 30,
+                    lazyLoading: true
                 },
                 dataSource: {
                     remote: {
