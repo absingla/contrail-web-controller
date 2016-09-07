@@ -162,15 +162,26 @@ define([
                 var ts = Math.floor(responseArray[i]['T'] / 1000);
                 cpuUtilization.values.push({
                     x: ts,
-                    y: responseArray[i]['cpu_stats.cpu_one_min_avg'],
-                    cpu_one_min_avg: responseArray[i]['cpu_stats.cpu_one_min_avg'],
-                    cpu_five_min_avg: responseArray[i]['cpu_stats.cpu_one_min_avg'] % .5
+                    y: responseArray[i]['cpu_stats.cpu_one_min_avg']
                 });
                 memoryUsage.values.push({
                     x: ts,
-                    y: responseArray[i]['cpu_stats.rss'],
+                    y: responseArray[i]['cpu_stats.rss']
+                });
+            }
+            return chartData;
+        };
+
+        this.parseCPUMemChartData = function(responseArray) {
+            var chartData = [];
+            for (var i = 0; i < responseArray.length; i++) {
+                var ts = Math.floor(responseArray[i]['T'] / 1000);
+                chartData.push({
+                    x: ts,
+                    cpu_one_min_avg: responseArray[i]['cpu_stats.cpu_one_min_avg'],
+                    cpu_five_min_avg: responseArray[i]['cpu_stats.cpu_one_min_avg'] * Math.random(), //Additional attr 4 testing
                     rss: responseArray[i]['cpu_stats.rss'],
-                    rss_buffer: responseArray[i]['cpu_stats.rss'] * 3,
+                    rss_buffer: responseArray[i]['cpu_stats.rss'] * Math.random(), //Additional attr for testing
                 });
             }
             return chartData;

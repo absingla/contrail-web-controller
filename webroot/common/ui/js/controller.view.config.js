@@ -292,7 +292,7 @@ define([
                                 }
                             },
                             modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
-                            parseFn: ctwp.parseCPUMemLineChartData,
+                            parseFn: ctwp.parseCPUMemChartData,
                             chartOptions: {
                                 mainChart: {
                                     forceY1: [0, undefined],
