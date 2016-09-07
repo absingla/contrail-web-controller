@@ -52,6 +52,7 @@ define([
                     min : 0,
                     enable: true,
                     y: 1,
+                    chartType: "line",
                     tooltip : {
                         nameFormatter: function(name) {
                             return "CPU average";
@@ -80,6 +81,7 @@ define([
                     label: 'Memory Usage',
                     enable: true,
                     y: 2,
+                    chartType: "line",
                     interpolate: chUtils.interpolateSankey,
                     tooltip : {
                         nameFormatter: function(name) {
