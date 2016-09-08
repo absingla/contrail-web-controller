@@ -81,7 +81,6 @@ define([
                     label: 'Memory Usage',
                     enable: true,
                     y: 2,
-                    chartType: "line",
                     interpolate: chUtils.interpolateSankey,
                     tooltip : {
                         nameFormatter: function(name) {
@@ -96,6 +95,7 @@ define([
                     color: cowc.D3_COLOR_CATEGORY5[4],
                     enable: true,
                     y: 2,
+                    chartType: "line",
                     tooltip : {
                         nameFormatter: function(name) {
                             return "Buffer Memory Usage";
