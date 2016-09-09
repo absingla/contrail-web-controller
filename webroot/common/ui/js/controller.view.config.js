@@ -82,7 +82,7 @@ define([
                     label: 'Memory Usage',
                     enable: true,
                     y: 2,
-                    chartType: "line",
+                    chartType: "bar",
                     interpolate: chUtils.interpolateSankey,
                     tooltip : {
                         nameFormatter: function(name) {
@@ -297,18 +297,27 @@ define([
                             parseFn: ctwp.parseCPUMemChartData,
                             chartOptions: {
                                 mainChart: {
-                                    forceY1: [0, undefined],
-                                    forceY2: [0, undefined],
-                                    xAccessor: 'x',
-                                    xFormatter: function(value) {
-                                        return d3.time.format("%H:%M")(value);
+                                    axis: {
+                                        x: {
+                                            accessor: 'x',
+                                            formatter: function(value) {
+                                                return d3.time.format("%H:%M")(value);
+                                            }
+                                        },
+                                        y1: {
+                                            formatter: d3.format(".01f"),
+                                            forceRange: [0, undefined],
+                                        },
+                                        y2: {
+                                            formatter: function (y2Value) {
+                                                return formatBytes(y2Value * 1024, true);
+                                            },
+                                            //[min, max] when a value is set to undefined, will use whatever chart calculated value
+                                            //with following config, will force min to 0 and max to chart calculated max scale.
+                                            forceRange: [0, undefined],
+                                            chartStyle: "grouped" //for Bar chart
+                                        }
                                     },
-                                    y1Formatter: d3.format(".01f"),
-                                    y2Formatter: function (y2Value) {
-                                        return formatBytes(y2Value * 1024, true);
-                                    },
-                                    y1Chart: "bar", //LineBarChart specific conf
-                                    y2Chart: "line", //LineBarChart specific conf
                                     accessorData : CPUMemChartMetadata,
                                 },
                                 controlPanel: {
