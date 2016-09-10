@@ -7,8 +7,9 @@ define([
     'contrail-view',
     'contrail-graph-model',
     'graph-view',
-    'contrail-element'
-], function (_, ContrailView, ContrailGraphModel, GraphView, ContrailElement) {
+    'contrail-element',
+    'core-basedir/js/common/graph.utils'
+], function (_, ContrailView, ContrailGraphModel, GraphView, ContrailElement, grUtils) {
 
     var NetworkingGraphView = ContrailView.extend({
         render: function () {
