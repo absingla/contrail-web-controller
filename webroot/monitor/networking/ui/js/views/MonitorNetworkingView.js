@@ -170,7 +170,7 @@ define([
             };
 
         return ctwvc.getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions)
-    };
+    }
 
     function getProjectViewConfig() {
 
@@ -258,6 +258,7 @@ define([
                 viewPathPrefix: "monitor/networking/ui/js/views/",
                 app: cowc.APP_CONTRAIL_CONTROLLER,
                 viewConfig: $.extend(true, {}, viewConfig, {networkSelectedValueData: networkSelectedValueData})
+
             }
         }
     };
