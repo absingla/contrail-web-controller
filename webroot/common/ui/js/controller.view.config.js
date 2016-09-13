@@ -736,6 +736,8 @@ define([
                         return formattedValue;
                     },
                     marginLeft: 70,
+                    marginInner: 10,
+                    rRange: [2, 10],
                     accessorData: {
                         'sum(bytes)' : {
                             label: 'Bandwidth (Last 10 Mins)',
@@ -756,6 +758,7 @@ define([
                             label: 'Bandwidth (Last 10 Mins)',
                             enable: true,
                             y: 2,
+                            chartType: 'scatterBubble',
                             sizeAccessor: 'flowCnt',
                             shape: 'circle',
                             tooltip : {
