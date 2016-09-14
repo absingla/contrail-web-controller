@@ -347,6 +347,7 @@ define([
 
     function getLineChartFilterConfig(queryId, aggregateSelectFields, saLineChartId) {
         var filterConfig = {
+            groupType: '1-cols',
             groups: [
                 {
                     id: 'by-node-color-sa-' + queryId,

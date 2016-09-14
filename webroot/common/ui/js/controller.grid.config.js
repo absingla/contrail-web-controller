@@ -135,7 +135,7 @@ define([
                         errorMessage = ctwm.HEALTH_CHECK_STATUS_INACTIVE;
                     }
 
-                    return (errorMessage !== '') ? '<i class="icon-warning-sign red" title="' + errorMessage + '"></i>' : '';
+                    return (errorMessage !== '') ? '<i class="fa fa-exclamation-triangle red" title="' + errorMessage + '"></i>' : '';
                  }
             }
         ];
@@ -227,7 +227,7 @@ define([
                 maxWidth: 30,
                 formatter: function (r, c, v, cd, dc) {
                     if (dc['is_health_check_active'] === false) {
-                        return '<i class="icon-warning-sign red" title="' + ctwm.HEALTH_CHECK_STATUS_INACTIVE + '"></i>';
+                        return '<i class="fa fa-exclamation-triangle red" title="' + ctwm.HEALTH_CHECK_STATUS_INACTIVE + '"></i>';
                     }
 
                     return '';
