@@ -172,8 +172,7 @@ define(
                           detail : false,
                           checkboxSelectable : false,
                           enableAsyncPostRender:true,
-                          fixedRowHeight: 30,
-                          lazyLoading: true
+                          fixedRowHeight: 30
                         },
                         dataSource : {
                             remote : {
