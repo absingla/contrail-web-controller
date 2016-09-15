@@ -47,7 +47,7 @@ define([
         this.URL_GET_INSTANCES_LIST = '/api/tenant/networking/get-instances-list?via={0}&type={1}&count={2}&nextCount={3}&startAt={4}';
         this.URL_GET_VMI_UUID_LIST = '/api/tenants/config/get-config-uuid-list?type=virtual-machine-interface&parentUUID={0}';
         this.URL_CONFIG_GET_VM_DETAILS_PAGED = '/api/tenants/config/get-virtual-machine-details-paged';
-        
+
         this.URL_VM_VN_STATS = '/api/tenant/networking/stats';
         this.URL_VM_INTERFACES = '/api/tenant/networking/virtual-machine-interfaces/summary';
 
@@ -116,6 +116,7 @@ define([
         this.URL_LOGICAL_ROUTER_VIEW_PATH_PREFIX = 'config/networking/logicalrouter/ui/js/views/';
 
         this.URL_POLICIES_VIEW_PATH_PREFIX = 'config/networking/policy/ui/js/views/';
+        this.URL_NETWORK_POLICY_DETAIL = '/api/tenants/config/policy/{0}';
         this.URL_POLICIES_IN_CHUNKS = '/api/admin/config/get-data?type=network-policy&count={0}&fqnUUID={1}';
 
         this.URL_ROUTING_POLICY_PATH_PREFIX = 'config/networking/routingpolicy/ui/js/views/';
@@ -188,6 +189,10 @@ define([
 
         this.UCID_NODE_CPU_MEMORY_LIST = 'node_details' + "{0}:cpu-memory";
 
+        this.UCID_NETWORK_POLICY_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:network-policy";
+        this.UCID_SECURITY_GROUP_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:security-group";
+        this.UCID_NETWORK_IPAM_LIST = this.UCID_PREFIX_MN_LISTS + "{0}:network-ipam";
+
         this.GRAPH_DIR_LR = "LR";
         this.GRAPH_DIR_TB = "TB";
 
@@ -214,6 +219,8 @@ define([
         this.GRAPH_ELEMENT_INSTANCE = 'virtual-machine';
         this.GRAPH_ELEMENT_CONNECTED_NETWORK = 'connected-network';
         this.GRAPH_ELEMENT_NETWORK_POLICY = 'network-policy';
+        this.GRAPH_ELEMENT_SECURITY_GROUP = 'security-group';
+        this.GRAPH_ELEMENT_NETWORK_IPAM = 'network-ipam';
 
         this.TOP_IN_LAST_MINS = 10;
         this.NUM_DATA_POINTS_FOR_FLOW_SERIES = 120;

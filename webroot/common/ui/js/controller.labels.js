@@ -195,13 +195,21 @@ define([
         this.MONITOR_NETWORK_LIST_ID = "monitor-network-list";
         this.MONITOR_NETWORK_VIEW_ID = "monitor-network-view";
         this.MONITOR_INSTANCE_LIST_ID = "monitor-instance-list";
+        this.MONITOR_INTERFACE_LIST_ID = "monitor-interface-list";
         this.MONITOR_INSTANCE_PAGE_ID = "monitor-instance-page";
         this.MONITOR_INSTANCE_LIST_PAGE_ID = "monitor-instances-list-page";
         this.MONITOR_INSTANCE_LIST_VIEW_ID = "monitor-instance-list-view";
-        this.MONITOR_INSTANCE_ID = "monitor-instance";
+        this.MONITOR_INTERFACE_LIST_PAGE_ID = "monitor-interfaces-list-page";
         this.MONITOR_INSTANCE_VIEW_ID = "monitor-instance-view";
         this.MONITOR_FLOW_LIST_ID = "monitor-flow-list";
         this.MONITOR_FLOWS_PAGE_ID = "monitor-flows-page";
+        this.MONITOR_NETWORK_CONFIG_VIEW_ID = "monitor-network-config-view";
+        this.MONITOR_NETWORK_CONFIG_TABS_ID = "monitor-network-config-tabs";
+        this.MONITOR_NETWORK_POLICY_DETAILS_ID = "monitor-network-policy-details";
+        this.MONITOR_NETWORK_POLICY_RULES_ID = "monitor-network-policy-rules";
+        this.MONITOR_SECURITY_GROUP_DETAILS_ID = "monitor-security-group-details";
+        this.MONITOR_SECURITY_GROUP_RULES_ID = "monitor-security-group-rules";
+        this.MONITOR_NETWORK_IPAM_DETAILS_ID = "monitor-network-ipam-details";
 
         this.DOMAINS_BREADCRUMB_DROPDOWN = "domains-breadcrumb-dropdown";
         this.SASET_BREADCRUMB_DROPDOWN = "service-appliance-set-breadcrumb-dropdown";
@@ -251,6 +259,9 @@ define([
         this.INSTANCE_INTERFACE_ID = "instance-interface";
         this.INSTANCE_BREADCRUMB_TEXT = "instance-breadcrumb-text";
 
+        this.INTERFACE_GRID_ID = "interface-grid";
+        this.INTERFACES_TRAFFIC_THROUGHPUT_CHART_ID = "instances-traffic-throughput-chart";
+
         this.NETWORKING_GRAPH_ID = "networking-graph";
         this.GRAPH_CONNECTED_ELEMENTS_ID = "graph-connected-elements";
         this.GRAPH_CONFIG_ELEMENTS_ID = "graph-config-elements";
@@ -276,6 +287,13 @@ define([
         this.TITLE_NETWORKS = "Networks";
         this.TITLE_NETWORKS_SUMMARY = "Networks Summary";
         this.TITLE_NETWORK_DETAILS = "Network Details";
+
+        this.TITLE_MONITOR_NETWORK_POLICY_SUMMARY = "Policy Summary";
+        this.TITLE_RULES = "Rules";
+        this.TITLE_MONITOR_NETWORK_POLICY_RULES = "Policy Rules";
+        this.TITLE_MONITOR_SECURITY_GROUP_SUMMARY = "Security Group Summary";
+        this.TITLE_MONITOR_SECURITY_GROUP_RULES = "Security Group Rules";
+        this.TITLE_MONITOR_NETWORK_IPAM_SUMMARY = "IPAM Summary";
 
         this.TITLE_INSTANCES = "Instances";
         this.TITLE_INSTANCES_SUMMARY = "Instances Summary";
@@ -337,6 +355,9 @@ define([
         this.TITLE_GRAPH_ELEMENT_VIRTUAL_NETWORK = 'virtual network';
         this.TITLE_GRAPH_ELEMENT_VIRTUAL_MACHINE = 'virtual machine';
         this.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK = 'link';
+
+        this.TITLE_GRAPH_ELEMENT_INTERFACE = 'interface';
+        this.TITLE_NO_INTERFACES_AVAIL= 'No Interfaces Available.';
 
         //Underlay labels
         this.UNDERLAY_TOPOLOGY_PAGE_ID = 'underlay-topology-page';
