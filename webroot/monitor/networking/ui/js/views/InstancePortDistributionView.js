@@ -5,9 +5,9 @@
 define([
     'underscore',
     'contrail-view',
-    'core-basedir/js/views/ZoomScatterChartView',
-    'core-basedir/js/charts/ZoomScatterChart'
-], function (_, ContrailView, ZoomScatterChartView, ZoomScatterChart) {
+    'core-basedir/js/charts/ZoomScatterChart',
+    'core-basedir/js/charts/ChartView'
+], function (_, ContrailView, ZoomScatterChart, ChartView) {
     var InstancePortDistributionView = ContrailView.extend({
         render: function () {
             var instanceTrafficStatsTemplate = contrail.getTemplate4Id(ctwc.TMPL_TRAFFIC_STATS_TAB),
@@ -96,13 +96,22 @@ define([
             //     attributes: {viewConfig: chartViewConfig}
             // });
 
+            /*
             var zoomScatterChartView = new ZoomScatterChart({
                 el: instancePortDistChart,
                 model: null,
                 attributes: {viewConfig: chartViewConfig}
             });
-
             zoomScatterChartView.render();
+            */
+
+            var chartView = new ChartView({
+                el: instancePortDistChart,
+                model: null,
+                attributes: {viewConfig: chartViewConfig}
+            });
+            chartView.render();
+
         }
     };
 
