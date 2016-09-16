@@ -297,6 +297,7 @@ define([
                             parseFn: ctwp.parseCPUMemChartData,
                             chartOptions: {
                                 mainChart: {
+                                    tab: "CPUMemChart",
                                     axis: {
                                         x: {
                                             accessor: 'x',
@@ -688,12 +689,14 @@ define([
                 navigation: {
                     enable: true,
                     marginLeft: 70,
+                    marginRight: 70,
                     xAccessor: 'x',
                     accessorData: {
                         'y' : {
                             label: 'Bandwidth (Last 10 Mins)',
                             enable: true,
                             y: 1,
+                            chartType: 'line',
                             tooltip : {
                                 nameFormatter: function(name) {
                                     return "Bandwidth";
@@ -707,8 +710,7 @@ define([
                             label: 'Bandwidth (Last 10 Mins)',
                             enable: true,
                             y: 2,
-                            sizeAccessor: 'flowCnt',
-                            shape: 'circle',
+                            chartType: 'line',
                             tooltip : {
                                 nameFormatter: function(name) {
                                     return "Bandwidth";
@@ -718,9 +720,17 @@ define([
                                 }
                             }
                         }
+                    },
+                    axis: {
+                        x: {
+                            formatter: d3.format(".2f"),
+                            scale: 'scaleLinear',
+                            domain: [0, 20000]
+                        }
                     }
                 },
                 mainChart: {
+                    tab: "PortDistChart",
                     xLabel: ctwl.X_AXIS_TITLE_PORT,
                     yLabel: ctwl.Y_AXIS_TITLE_BW,
                     forceX: [0, 1000],
@@ -769,6 +779,12 @@ define([
                                     return formatBytes(value * 1024, false, 2, 3);
                                 }
                             }
+                        }
+                    },
+                    axis: {
+                        x: {
+                            formatter: d3.format(".01f"),
+                            scale: 'scalePow'
                         }
                     }
                 },
