@@ -4,8 +4,9 @@
 
 define([
     'underscore',
-    'contrail-view-model'
-], function (_, ContrailViewModel) {
+    'contrail-view-model',
+    'chart-utils',
+], function (_, ContrailViewModel, chUtils) {
     var CTViewConfig = function () {
         var self = this;
 
