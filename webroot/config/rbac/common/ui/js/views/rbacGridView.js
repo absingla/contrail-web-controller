@@ -27,6 +27,16 @@ define([
         }
     });
 
+    function showHideModelAttrs(model) {
+        model.showDomain = ko.computed(function(){
+            return false;
+        }, model);
+
+        model.showProject = ko.computed(function(){
+            return false;
+        }, model);
+    };
+
     function getRBACGridViewConfig (viewConfig) {
         return {
             elementId:
@@ -106,6 +116,7 @@ define([
                     title =
                         ctwl.TITLE_EDIT_RBAC;
                 rbacEditView.model = rbacModel;
+                showHideModelAttrs(rbacModel);
                 rbacEditView.renderAddEditRBAC(
                     {"title": title, checkedRow: checkedRow,
                         callback: function () {
@@ -129,6 +140,7 @@ define([
                         gridData = gridObj._dataView.getItems(),
                         rbacModel = new RBACModel();
                     rbacEditView.model = rbacModel;
+                    showHideModelAttrs(rbacModel);
                     rbacEditView.renderAddEditRBAC(
                         {"title": ctwl.TITLE_INSERT_RBAC,
                             callback: function () {
@@ -208,6 +220,7 @@ define([
                         gridData = gridObj._dataView.getItems(),
                         rbacModel = new RBACModel();
                     rbacEditView.model = rbacModel;
+                    showHideModelAttrs(rbacModel);
                     rbacEditView.renderAddEditRBAC(
                         {"title": ctwl.TITLE_CREATE_RBAC,
                             callback: function () {

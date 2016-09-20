@@ -14,7 +14,7 @@ define(
 
                 //Parser for controlnode Dashboard data
                 this.parseControlNodesDashboardData = function (result) {
-
+                    result = ifNull(result,[]);
                     var retArr = [];
                     $.each(result,function(idx,d) {
                         var obj = {};
@@ -184,6 +184,7 @@ define(
 
                 //Parser for vRouters data
                 this.parsevRoutersDashboardData = function (result) {
+                    result = ifNull(result,[]);
                     var retArr = [];
                     if(result.data != null) {
                         result = result.data;
@@ -371,7 +372,7 @@ define(
 
               //Parser for analytics node dashboard data
                 this.parseAnalyticsNodesDashboardData = function (result) {
-
+                    result = ifNull(result,[]);
                     var retArr = [];
                     $.each(result, function(idx, d) {
                         var obj = {};
@@ -482,6 +483,7 @@ define(
                 };
 
                 this.parseConfigNodesDashboardData = function (result) {
+                    result = ifNull(result,[]);
                     var retArr = [];
                     $.each(result,function(idx,d) {
                         var obj = {};
@@ -589,7 +591,7 @@ define(
 
                 //Parser for DBNode
                 this.parseDatabaseNodesDashboardData = function (result) {
-
+                    result = ifNull(result,[]);
                     var retArr = [];
                     $.each(result,function(idx,d) {
                         var obj = {};
@@ -1715,7 +1717,7 @@ define(
                                 var rawJson = currPath;
                                 if(j == 0)
                                     paths.push({
-                                        mac: mac,
+                                        prefix: mac,
                                         searchMac: mac,
                                         path: currPath,
                                         src_vrf: srcVRF,
@@ -1723,7 +1725,7 @@ define(
                                     });
                                 else
                                     paths.push({
-                                        mac: '',
+                                        prefix: mac,
                                         searchMac: mac,
                                         path: currPath,
                                         src_vrf: srcVRF,
@@ -1916,7 +1918,7 @@ define(
                     response = getValueByJsonPath(response,"__AclResp_list;AclResp;acl_list;list;AclSandeshData");
                     //Loop through ACLs
                     if(response != null){
-                        if(!(response instanceof Array)) {
+                        if(!(response instanceof Array)){
                             response = [response];
                         }
                         for (var i = 0; i < response.length; i++) {

@@ -4,10 +4,11 @@
 
 define([
     'underscore',
+    'moment',
     'query-form-view',
     'knockback',
     'searchflow-model'
-], function (_, QueryFormView, Knockback, SearchFlowFormModel) {
+], function (_, moment, QueryFormView, Knockback, SearchFlowFormModel) {
     var SearchFlowFormView = QueryFormView.extend({
         render: function() {
             var self = this, viewConfig = self.attributes.viewConfig,
@@ -32,6 +33,8 @@ define([
                             $("#" + ctwc.UNDERLAY_SEARCHFLOW_TAB_ID + "-widget").data('widget-action').collapse();
                             self.renderQueryResult();
                         });
+                        $("#" + ctwc.UNDERLAY_SEARCHFLOW_TAB_ID + "-widget").data('widget-action').collapse();
+                        self.renderQueryResult();
             });
 
             if (widgetConfig !== null) {

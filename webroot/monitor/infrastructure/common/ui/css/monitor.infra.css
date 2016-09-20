@@ -43,10 +43,22 @@
     font-weight:600;
     font-size:11px !important;
 }
+#config-nodes-donutchart-section{
+    margin-top:40px;
+}
 #analytics-nodes-chart .chartMargin{
     margin:0 10px 0 10px !important;
 }
 #database-nodes-chart .chartMargin{
     margin:0 10px -15px 10px !important;
 }
+#config-nodes-donutchart-one .nvd3-svg{
+    margin-left:20%;
+}
 /******Config Node chart and Analytics node chart Ends here****/
+
+/******VRouter Radio Button Css Starts Here****/
+#vrouter_routes_radio .form-element .ace-lbl {
+  margin-right: 15px;
+}
+/******VRouter Radio Button Css Ends Here****/

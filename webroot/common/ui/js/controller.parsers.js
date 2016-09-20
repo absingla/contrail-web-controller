@@ -74,11 +74,6 @@ define([
 
                     if(contrail.checkIfExist(interface['if_stats'])) {
                         interface['throughput'] = interface['in_bw_usage'] + interface['out_bw_usage'];
-                        interface['x'] = interface['out_bw_usage'];
-                        interface['y'] = interface['in_bw_usage'];
-                    } else {
-                        interface['x'] = 0;
-                        interface['y'] = 0;
                     }
 
                     interfaceMap[interface['name']] = interface;

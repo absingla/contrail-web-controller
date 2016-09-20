@@ -805,7 +805,6 @@ function getVirtualInterfacesSummary(req, res, appData) {
     var reqPostData = req.body,
         parentType = reqPostData['parentType'],
         kfilt = reqPostData['kfilt'], cfilt = reqPostData['cfilt'],
-        domainFQN = reqPostData['domainFQN'],
         projectFQN = reqPostData['projectFQN'],
         networkFQN = reqPostData['networkFQN'],
         vmiUrl = '/analytics/uves/virtual-machine-interface',
@@ -816,21 +815,7 @@ function getVirtualInterfacesSummary(req, res, appData) {
         opServerPostData['cfilt'] = cfilt.split(",");
     }
 
-    if (parentType == 'domain') {
-        vmiUrl += "/" + domainFQN + ":*";
-
-        if (cfilt != null && cfilt != '') {
-            vmiUrl += '?cfilt=' + cfilt;
-        }
-
-        opServer.api.get(vmiUrl, function (err, data) {
-            if (err || (null == data)) {
-                commonUtils.handleJSONResponse(err, res, null);
-            } else {
-                commonUtils.handleJSONResponse(null, res, data);
-            }
-        });
-    } else if (parentType == 'project') {
+    if (parentType == 'project') {
         vmiUrl += "/" + projectFQN + ":*";
 
         if (cfilt != null && cfilt != '') {

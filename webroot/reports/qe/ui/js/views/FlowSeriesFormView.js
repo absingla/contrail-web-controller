@@ -7,8 +7,8 @@ define([
     'query-form-view',
     'knockback',
     'controller-basedir/reports/qe/ui/js/models/FlowSeriesFormModel',
-    'core-basedir/js/common/qe.utils',
-], function (_, QueryFormView, Knockback, FlowSeriesFormModel,qewu) {
+    'core-basedir/reports/qe/ui/js/common/qe.utils',
+], function (_, QueryFormView, Knockback, FlowSeriesFormModel, qeUtils) {
 
     var FlowSeriesFormView = QueryFormView.extend({
         render: function () {
@@ -42,7 +42,7 @@ define([
                     }
                 });
 
-               qewu.adjustHeight4FormTextarea(queryPrefix);
+               qeUtils.adjustHeight4FormTextarea(queryPrefix);
 
                 if (queryType === cowc.QUERY_TYPE_RERUN) {
                     self.renderQueryResult();
@@ -69,7 +69,7 @@ define([
             }
 
             queryFormModel.is_request_in_progress(true);
-            qewu.fetchServerCurrentTime(function(serverCurrentTime) {
+            qeUtils.fetchServerCurrentTime(function(serverCurrentTime) {
                 var timeRange = parseInt(queryFormModel.time_range()),
                     queryRequestPostData = queryFormModel.getQueryRequestPostData(serverCurrentTime);
 
@@ -133,7 +133,8 @@ define([
                                 {
                                     elementId: 'time_range', view: "FormDropdownView",
                                     viewConfig: {
-                                        path: 'time_range', dataBindValue: 'time_range', class: "col-xs-3", help: 'reports/qe/flows/flow_series/time_range',
+                                        path: 'time_range', dataBindValue: 'time_range', class: "col-xs-3",
+                                        help: {target: 'modal', content: 'reports/qe/flows/flow_series/time_range'},
                                         elementConfig: {dataTextField: "text", dataValueField: "id", data: cowc.TIMERANGE_DROPDOWN_VALUES}}
                                 },
                                 {
@@ -141,7 +142,7 @@ define([
                                     viewConfig: {
                                         style: 'display: none;',
                                         path: 'from_time', dataBindValue: 'from_time', class: "col-xs-3",
-                                        elementConfig: qewu.getFromTimeElementConfig('from_time', 'to_time'),
+                                        elementConfig: qeUtils.getFromTimeElementConfig('from_time', 'to_time'),
                                         visible: "time_range() == -1"
                                     }
                                 },
@@ -150,7 +151,7 @@ define([
                                     viewConfig: {
                                         style: 'display: none;',
                                         path: 'to_time', dataBindValue: 'to_time', class: "col-xs-3",
-                                        elementConfig: qewu.getToTimeElementConfig('from_time', 'to_time'),
+                                        elementConfig: qeUtils.getToTimeElementConfig('from_time', 'to_time'),
                                         visible: "time_range() == -1"
                                     }
                                 }
@@ -160,11 +161,15 @@ define([
                             columns: [
                                 {
                                     elementId: 'select', view: "FormTextAreaView",
-                                    viewConfig: {path: 'select', dataBindValue: 'select', class: "col-xs-9", help: 'reports/qe/flows/flow_series/select', editPopupConfig: {
-                                        renderEditFn: function() {
-                                            self.renderSelect({className: cowc.QE_MODAL_CLASS_700});
+                                    viewConfig: {
+                                        path: 'select', dataBindValue: 'select', class: "col-xs-9",
+                                        help: {target: 'modal', content: 'reports/qe/flows/flow_series/select'},
+                                        editPopupConfig: {
+                                            renderEditFn: function() {
+                                                self.renderSelect({className: cowc.QE_MODAL_CLASS_700});
+                                            }
                                         }
-                                    }}
+                                    }
                                 },
                                 {
                                     elementId: 'time-granularity-section',
@@ -274,7 +279,7 @@ define([
                                         label: "Reset",
                                         class: 'display-inline-block margin-0-0-0-15',
                                         elementConfig: {
-                                            onClick: "reset"
+                                            onClick: "function(data, event) {reset(data, event, true, false);}"
                                         }
                                     }
                                 }

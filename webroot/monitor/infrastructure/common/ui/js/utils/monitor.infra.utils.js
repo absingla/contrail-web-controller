@@ -1,8 +1,9 @@
 define([
     'underscore',
+    'handlebars',
     'contrail-list-model',
     'core-alarm-utils'
-], function (_, ContrailListModel,coreAlarmUtils) {
+], function (_, Handlebars, ContrailListModel,coreAlarmUtils) {
     var MonitorInfraUtils = function () {
         var self = this;
         var noDataStr = monitorInfraConstants.noDataStr;
@@ -1503,13 +1504,13 @@ define([
                             .html(htmlString);
                         $(leftColumnContainer)
                             .find('.widget-box')
-                            .find('.list-view').hide();
+                            .find('.list-view').hideElement();
                         $(leftColumnContainer)
                             .find('.widget-box')
-                            .find('.advanced-view').hide();
+                            .find('.advanced-view').hideElement();
                         $(leftColumnContainer)
                             .find('.widget-box')
-                            .find('.contrail-status-view').show();
+                            .find('.contrail-status-view').showElement();
                     }
                 });
             });
@@ -1976,7 +1977,8 @@ define([
         },
 
         //Start: Handlebar register helpers
-        Handlebars.registerPartial('statusTemplate',$('#statusTemplate').html());
+        //StatusTemplate Partial not getting used
+        //Handlebars.registerPartial('statusTemplate', $('#statusTemplate').html());
 
         Handlebars.registerHelper('renderStatusTemplate', function(sevLevel, options) {
             var selector = '#statusTemplate',

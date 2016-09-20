@@ -11,18 +11,20 @@ define([
     var VRouterRoutesGridView = ContrailView.extend({
         render: function () {
             var self = this, viewConfig = self.attributes.viewConfig;
-
+            var gridGroupingOpt = {
+                    groupingField :"prefix",
+                    groupHeadingPrefix : 'Prefix: ',
+                    rowCountSuffix : ['Route','Routes']
+            };
+            if(viewConfig.route_type == 'l2'){
+                gridGroupingOpt.groupHeadingPrefix = 'MAC: ';
+            }
             self.renderView4Config(self.$el, self.model, 
                     self.getViewConfig(self.attributes),null,null,null,
                     function(){
-                        cowu.addGridGrouping ('vrouter_routes-results',{
-                            groupingField :"prefix",
-                            groupHeadingPrefix : 'Prefix: ',
-                            rowCountSuffix : ['Route','Routes']
-                        });
+                        cowu.addGridGrouping ('vrouter_routes-results', gridGroupingOpt);
                     });
         },
-
         getViewConfig: function (attributes) {
             var viewConfig = attributes.viewConfig,
                 hostname = viewConfig['hostname'],
@@ -54,48 +56,16 @@ define([
                                     minWidth:200,
                                     formatter:function(r,c,v,cd,dc){
                                         return monitorInfraParsers.getNextHopDetails(dc);
-                                    }
-                                }
-                            ];
-            var multicastRouteColums = [
-                                {
-                                    field:"dispPrefix",
-                                    id:"Prefix",
-                                    name:"Source / Group",
-                                    searchFn:function(d){
-                                        return d['prefix'];
                                     },
-                                    minWidth:150
-                                },
-                                {
-                                    field:"next_hop",
-                                    id:"next_hop",
-                                    name:"Next hop Type",
-                                    formatter:function(r,c,v,cd,dc){
-                                        return monitorInfraParsers.getNextHopType(dc);
-                                    },
-                                    minWidth:100
-                                },
-                                {
-                                    field:"label",
-                                    id:"label",
-                                    name:"Next hop details",
-                                    minWidth:200,
-                                    formatter:function(r,c,v,cd,dc){
-                                        return monitorInfraParsers.getNextHopDetailsForMulticast(dc);
+                                    exportConfig: {
+                                        allow: true,
+                                        advFormatter: function(dc) {
+                                            return $(monitorInfraParsers.getNextHopDetails(dc)).text();
+                                        }
                                     }
                                 }
                             ];
             var l2RouteColumns = [
-                                {
-                                    field:"mac",
-                                    id:"Mac",
-                                    name:"Mac",
-                                    searchFn:function(d){
-                                        return d['searchMac'];
-                                    },
-                                    minWidth:150
-                                },
                                 {
                                     field:"next_hop",
                                     id:"next_hop",
@@ -112,6 +82,12 @@ define([
                                     minWidth:200,
                                     formatter:function(r,c,v,cd,dc){
                                         return monitorInfraParsers.getNextHopDetailsForL2(dc);
+                                    },
+                                    exportConfig: {
+                                        allow: true,
+                                        advFormatter: function(dc) {
+                                            return $(monitorInfraParsers.getNextHopDetails(dc)).text();
+                                        }
                                     }
                                 }
                             ];
@@ -141,12 +117,17 @@ define([
                                     minWidth:200,
                                     formatter:function(r,c,v,cd,dc){
                                         return monitorInfraParsers.getNextHopDetails(dc);
+                                    },
+                                    exportConfig: {
+                                        allow: true,
+                                        advFormatter: function(dc) {
+                                            return $(monitorInfraParsers.getNextHopDetails(dc)).text();
+                                        }
                                     }
                                 }
                             ];
             var routeColumnMap = {
                 'ucast' : unicastRouteColumns,
-                'mcast' : multicastRouteColums,
                 'ucast6' : unicast6RouteColums,
                 'l2'    : l2RouteColumns
             };
