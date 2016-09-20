@@ -83,7 +83,7 @@ define([
                     label: 'Memory Usage',
                     enable: true,
                     y: 2,
-                    chartType: "bar",
+                    chartType: "stackedBar",
                     interpolate: chUtils.interpolateSankey,
                     tooltip : {
                         nameFormatter: function(name) {
@@ -98,7 +98,7 @@ define([
                     color: cowc.D3_COLOR_CATEGORY5[4],
                     enable: true,
                     y: 2,
-                    chartType: "bar",
+                    chartType: "stackedBar",
                     tooltip : {
                         nameFormatter: function(name) {
                             return "Buffer Memory Usage";
@@ -298,7 +298,6 @@ define([
                             parseFn: ctwp.parseCPUMemChartData,
                             chartOptions: {
                                 mainChart: {
-                                    tab: "CPUMemChart",
                                     axis: {
                                         x: {
                                             accessor: 'x',
@@ -308,7 +307,7 @@ define([
                                         },
                                         y1: {
                                             formatter: d3.format(".01f"),
-                                            forceRange: [0, undefined],
+                                            domain: [0, undefined],
                                         },
                                         y2: {
                                             formatter: function (y2Value) {
@@ -316,7 +315,7 @@ define([
                                             },
                                             //[min, max] when a value is set to undefined, will use whatever chart calculated value
                                             //with following config, will force min to 0 and max to chart calculated max scale.
-                                            forceRange: [0, undefined],
+                                            domain: [0, undefined],
                                             chartStyle: "grouped" //for Bar chart
                                         }
                                     },
@@ -731,21 +730,20 @@ define([
                     }
                 },
                 mainChart: {
-                    tab: "PortDistChart",
                     xLabel: ctwl.X_AXIS_TITLE_PORT,
                     yLabel: ctwl.Y_AXIS_TITLE_BW,
-                    forceX: [0, 1000],
-                    forceY: [0, 1000],
+                    //forceX: [0, 1000],
+                    //forceY: [0, 1000],
                     tooltip: {
                         contentCB: ctwgrc.getPortDistributionTooltipConfig(onScatterChartClick),
                         clickCB: onScatterChartClick,
                     },
                     xAccessor: 'x',
-                    xLabelFormat: d3.format(','),
-                    yLabelFormat: function (yValue) {
-                        var formattedValue = formatBytes(yValue, false, null, 1);
-                        return formattedValue;
-                    },
+                    //xLabelFormat: d3.format(','),
+                    //yLabelFormat: function (yValue) {
+                    //    var formattedValue = formatBytes(yValue, false, null, 1);
+                    //    return formattedValue;
+                    //},
                     marginLeft: 70,
                     marginInner: 10,
                     rRange: [2, 10],
@@ -784,7 +782,7 @@ define([
                     },
                     axis: {
                         x: {
-                            formatter: d3.format(".01f"),
+                            formatter: d3.format(".0f"),
                             scale: 'scalePow'
                         }
                     }
