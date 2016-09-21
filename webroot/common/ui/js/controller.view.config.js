@@ -677,14 +677,79 @@ define([
 
         self.getPortDistChartOptions = function() {
             return {
+                bindingHandler: {
+                    sync: {
+                        mainChart: {
+                            config: {
+                                accessorData: {
+                                    controlPanel: {
+                                        config: function( mainChartConfig, controlPanelConfig ) {
+                                            // Iterate the mainChart accessorData and pass it in a readable way for the control panel to render.
+                                            var variableFilters = [];
+                                            _.each( mainChartConfig.get( 'accessorData' ), function( accessor, key ) {
+                                                var variableFilter = {
+                                                    name: key,
+                                                    label: accessor.label,
+                                                    enable: accessor.enable
+                                                };
+                                                variableFilters.push( variableFilter );
+                                            });
+                                            controlPanelConfig.set( { variableFilters: variableFilters } );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    handle: {
+                        controlPanel: {
+                            events: {
+                                filterVariables: {
+                                    mainChart: {
+                                        config: function( eventProperties, mainChartConfig ) {
+                                            console.log( eventProperties );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 controlPanel: {
                     enable: true,
+                    buttons: [
+                        {
+                            name: "filter",
+                            title: "Filter",
+                            iconClass: 'fa fa-filter',
+                            events: {
+                                click: "filterVariables"
+                            }
+                        },
+                        {
+                            name: "zoomIn",
+                            title: "Zoom In",
+                            iconClass: 'fa fa-search-plus'
+                        },
+                        {
+                            name: "zoomOut",
+                            title: "Zoom Out",
+                            iconClass: 'fa fa-search-minus'
+                        },
+                        {
+                            name: "zoomReset",
+                            title: "Zoom Reset",
+                            iconClass: 'fa fa-times-circle-o'
+                        }
+                    ]
+                    /*
                     filter: {
                         enable: true,
                         iconClass: 'fa fa-filter',
                         title: 'Filter',
                         viewConfig: getControlPanelFilterConfig()
                     }
+                    */
                 },
                 navigation: {
                     enable: true,
