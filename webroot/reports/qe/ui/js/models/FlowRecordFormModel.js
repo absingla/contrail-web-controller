@@ -3,14 +3,12 @@
  */
 
 define([
-    'underscore',
-    'knockout',
-    'query-form-model',
-    'core-basedir/reports/qe/ui/js/common/qe.model.config'
-], function (_, Knockout, QueryFormModel, qeModelConfig) {
+    "query-form-model",
+    "core-basedir/reports/qe/ui/js/common/qe.model.config"
+], function (QueryFormModel, qeModelConfig) {
     var FormRecordFormModel = QueryFormModel.extend({
 
-        defaultSelectFields: ['direction_ing'],
+        defaultSelectFields: ["direction_ing"],
 
         constructor: function (modelData, queryReqConfig) {
             var defaultConfig = qeModelConfig.getQueryModelConfig({

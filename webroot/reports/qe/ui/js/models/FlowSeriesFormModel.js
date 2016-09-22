@@ -3,14 +3,12 @@
  */
 
 define([
-    'underscore',
-    'knockout',
-    'query-form-model',
-    'core-basedir/reports/qe/ui/js/common/qe.model.config'
-], function (_, Knockout, QueryFormModel, qeModelConfig) {
+    "query-form-model",
+    "core-basedir/reports/qe/ui/js/common/qe.model.config"
+], function (QueryFormModel, qeModelConfig) {
     var FormSeriesFormModel = QueryFormModel.extend({
 
-        defaultSelectFields: ['flow_class_id', 'direction_ing'],
+        defaultSelectFields: ["flow_class_id", "direction_ing"],
 
         constructor: function (modelData, queryReqConfig) {
             var defaultConfig = qeModelConfig.getQueryModelConfig({

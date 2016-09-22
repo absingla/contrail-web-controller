@@ -3,11 +3,10 @@
  */
 
 define([
-    'underscore',
-    'contrail-view'
-], function (_, ContrailView) {
+    "contrail-view"
+], function (ContrailView) {
     var ControllerQEView = ContrailView.extend({
-        el: $(contentContainer),
+        el: $(window.contentContainer),
 
         renderFlowSeries: function (viewConfig) {
             this.renderView4Config(this.$el, null, getFlowSeriesViewConfig(viewConfig));
@@ -22,9 +21,7 @@ define([
         }
     });
 
-    function getFlowSeriesViewConfig(config) {
-        var hashParams = config['hashParams'];
-
+    function getFlowSeriesViewConfig() {
         return {
             view: "SectionView",
             viewConfig: {
@@ -38,7 +35,7 @@ define([
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {
                                     widgetConfig: {
-                                        elementId: cowl.QE_FLOW_SERIES_ID + '-widget',
+                                        elementId: cowl.QE_FLOW_SERIES_ID + "-widget",
                                         view: "WidgetView",
                                         viewConfig: {
                                             header: {
@@ -60,12 +57,10 @@ define([
                     }
                 ]
             }
-        }
-    };
+        };
+    }
 
-    function getFlowRecordViewConfig(config) {
-        var hashParams = config['hashParams'];
-
+    function getFlowRecordViewConfig() {
         return {
             view: "SectionView",
             viewConfig: {
@@ -79,7 +74,7 @@ define([
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {
                                     widgetConfig: {
-                                        elementId: cowl.QE_FLOW_RECORD_ID + '-widget',
+                                        elementId: cowl.QE_FLOW_RECORD_ID + "-widget",
                                         view: "WidgetView",
                                         viewConfig: {
                                             header: {
@@ -101,12 +96,10 @@ define([
                     }
                 ]
             }
-        }
-    };
+        };
+    }
 
     function getQueueViewConfig(config, queueType) {
-        var hashParams = config['hashParams'];
-
         return {
             view: "SectionView",
             viewConfig: {
@@ -126,8 +119,8 @@ define([
                     }
                 ]
             }
-        }
-    };
+        };
+    }
 
     return ControllerQEView;
 });
