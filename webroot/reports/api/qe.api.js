@@ -6,15 +6,19 @@
  * API for communication with Query Engine.
  */
 
-var assert = require("assert"), util = require("util"),
+var assert = require("assert"),
+    util = require("util"),
+    _ = require("lodash"),
+    redisReadStream = require("redis-rstream"),
     config = process.mainModule.exports.config,
     logutils = require(process.mainModule.exports.corePath + "/src/serverroot/utils/log.utils"),
     commonUtils = require(process.mainModule.exports.corePath + "/src/serverroot/utils/common.utils"),
     messages = require(process.mainModule.exports.corePath + "/src/serverroot/common/messages"),
     global = require(process.mainModule.exports.corePath + "/src/serverroot/common/global"),
     redisUtils = require(process.mainModule.exports.corePath + "/src/serverroot/utils/redis.utils"),
-    opApiServer = require(process.mainModule.exports.corePath + "/src/serverroot/common/opServer.api"),
-    redisReadStream = require("redis-rstream"), _ = require("lodash");
+    opApiServer = require(process.mainModule.exports.corePath + "/src/serverroot/common/opServer.api");
+
+
 
 var redisServerPort = (config.redis_server_port) ? config.redis_server_port : global.DFLT_REDIS_SERVER_PORT,
     redisServerIP = (config.redis_server_ip) ? config.redis_server_ip : global.DFLT_REDIS_SERVER_IP,
@@ -81,19 +85,20 @@ function initPollingConfig(options, fromTime, toTime) {
 }
 
 function parseOpsQueryIdFromUrl(url) {
-    var opsQueryId = "",
-        urlArray;
+    var opsQueryId = "", urlArray;
+
     if (!_.isNil(url)) {
         urlArray = url.split("/");
         opsQueryId = urlArray[urlArray.length - 1];
     }
+
     return opsQueryId;
 }
 
 function fetchQueryResults(res, jsonData, options, appData) {
     var progress;
 
-    opApiServer.apiGet(jsonData.href, appData, function (error, queryResults) {
+    opApiServer.apiGet(jsonData.href, appData, function(error, queryResults) {
         progress = queryResults.progress;
         options.counter += 1;
         if (error) {
@@ -101,6 +106,7 @@ function fetchQueryResults(res, jsonData, options, appData) {
             clearInterval(options.intervalId);
             clearTimeout(options.timeoutId);
             options.progress = progress;
+
             if (options.status === "run") {
                 commonUtils.handleJSONResponse(error, res, null);
             } else if (options.status === "queued") {
@@ -117,6 +123,7 @@ function fetchQueryResults(res, jsonData, options, appData) {
             fetchQueryResults(res, jsonData, options, appData);
         } else if (_.isNil(progress)) {
             processQueryResults(res, queryResults, options);
+
             if (options.status === "queued") {
                 options.endTime = new Date().getTime();
                 options.status = "completed";
@@ -126,7 +133,7 @@ function fetchQueryResults(res, jsonData, options, appData) {
             options.progress = progress;
             options.status = "queued";
             updateQueryStatus(options);
-            commonUtils.handleJSONResponse(null, res, {status: "queued", value: []});
+            commonUtils.handleJSONResponse(null, res, { status: "queued", value: [] });
         }
     });
 }
@@ -139,19 +146,32 @@ function stopFetchQueryResult(options) {
 
 function updateQueryStatus(options) {
     var queryStatus = {
-        startTime: options.startTime, queryId: options.queryId,
-        url: options.url, queryJSON: options.queryJSON, progress: options.progress, status: options.status,
-        tableName: options.queryJSON.table, count: options.count, timeTaken: -1, errorMessage: options.errorMessage,
-        reRunTimeRange: options.reRunTimeRange, reRunQueryString: getReRunQueryString(options.reRunQuery, options.reRunTimeRange),
-        opsQueryId: options.opsQueryId, engQueryStr: options.engQueryStr
+        startTime: options.startTime,
+        queryId: options.queryId,
+        url: options.url,
+        queryJSON: options.queryJSON,
+        progress: options.progress,
+        status: options.status,
+        tableName: options.queryJSON.table,
+        count: options.count,
+        timeTaken: -1,
+        errorMessage: options.errorMessage,
+        reRunTimeRange: options.reRunTimeRange,
+        reRunQueryString: getReRunQueryString(options.reRunQuery, options.reRunTimeRange),
+        opsQueryId: options.opsQueryId,
+        engQueryStr: options.engQueryStr
     };
-    if (queryStatus.tableName === "FlowSeriesTable" || queryStatus.tableName.indexOf("StatTable.") !== -1) {
+
+    if (queryStatus.tableName === "FlowSeriesTable"
+        || queryStatus.tableName.indexOf("StatTable.") !== -1) {
         queryStatus.tg = options.tg;
         queryStatus.tgUnit = options.tgUnit;
     }
+
     if (options.progress === 100) {
         queryStatus.timeTaken = (options.endTime - queryStatus.startTime) / 1000;
     }
+
     redisClient.hmset(options.queryQueue, options.queryId, JSON.stringify(queryStatus));
 }
 
@@ -169,31 +189,44 @@ function getReRunQueryString(reRunQuery, reRunTimeRange) {
         delete reRunQuery.toTimeUTC;
         delete reRunQuery.reRunTimeRange;
     }
-//   reRunQueryString = qs.stringify(reRunQuery);
+
     return reRunQuery;
 }
 
 function processQueryResults(res, queryResults, options) {
-    var startDate = new Date(), startTime = startDate.getTime(),
-        queryId = options.queryId, pageSize = options.pageSize,
-        queryJSON = options.queryJSON, endDate = new Date(), table = queryJSON.table,
-        endTime, total, responseJSON, resultJSON;
+    var startDate = new Date(),
+        startTime = startDate.getTime(),
+        queryId = options.queryId,
+        pageSize = options.pageSize,
+        queryJSON = options.queryJSON,
+        endDate = new Date(),
+        table = queryJSON.table,
+        endTime = endDate.getTime(),
+        total, responseJSON, resultJSON;
 
-    endTime = endDate.getTime();
     resultJSON = (queryResults && !isEmptyObject(queryResults)) ? queryResults.value : [];
-    logutils.logger.debug("Query results (" + resultJSON.length + " records) received from opserver at " + endDate + " in " + ((endTime - startTime) / 1000) + "secs. " + JSON.stringify(queryJSON));
+    logutils.logger.debug("Query results ("
+        + resultJSON.length
+        + " records) received from opserver at "
+        + endDate + " in " + ((endTime - startTime) / 1000) + "secs. "
+        + JSON.stringify(queryJSON));
+
     resultJSON = formatQueryResultJSON(queryJSON.table, resultJSON);
-    logutils.logger.debug("Formatting of query-results on webserver completed in " + (((new Date()).getTime() - endTime) / 1000) + "secs. " + JSON.stringify(queryJSON));
+    logutils.logger.debug("Formatting of query-results on webserver completed in "
+        + (((new Date()).getTime() - endTime) / 1000) + "secs. "
+        + JSON.stringify(queryJSON));
+
     total = resultJSON.length;
+
     if (options.status === "run") {
         if (_.isNil(queryId) || total <= pageSize) {
             responseJSON = resultJSON;
         } else {
             responseJSON = resultJSON.slice(0, pageSize);
         }
-        commonUtils.handleJSONResponse(null, res, {data: responseJSON, total: total, queryJSON: queryJSON});
+        commonUtils.handleJSONResponse(null, res, { data: responseJSON, total: total, queryJSON: queryJSON });
     }
-    if (!_.isNil(options.saveQuery) && (options.saveQuery === false || options.saveQuery === "false")) {
+    if (!_.isNil(options.saveQuery) && (!options.saveQuery || options.saveQuery === "false")) {
         return;
     }
     saveQueryResult2Redis(resultJSON, total, queryId, pageSize, getSortStatus4Query(queryJSON), queryJSON);
@@ -206,13 +239,14 @@ function processQueryResults(res, queryResults, options) {
 
 function saveQueryResult2Redis(resultData, total, queryId, pageSize, sort, queryJSON) {
     var endRow;
+
     if (!_.isNil(sort)) {
         redisClient.set(queryId + ":sortStatus", JSON.stringify(sort));
     }
     // TODO: Should we need to save every page?
-    redisClient.set(queryId, JSON.stringify({data: resultData, total: total, queryJSON: queryJSON}));
+    redisClient.set(queryId, JSON.stringify({ data: resultData, total: total, queryJSON: queryJSON }));
     if (total === 0) {
-        redisClient.set(queryId + ":page1", JSON.stringify({data: [], total: 0, queryJSON: queryJSON}));
+        redisClient.set(queryId + ":page1", JSON.stringify({ data: [], total: 0, queryJSON: queryJSON }));
     } else {
         for (var j = 0, k = 1; j < total; k++) {
             endRow = k * pageSize;
@@ -220,16 +254,16 @@ function saveQueryResult2Redis(resultData, total, queryId, pageSize, sort, query
                 endRow = resultData.length;
             }
             var spliceData = resultData.slice(j, endRow);
-            redisClient.set(queryId + ":page" + k, JSON.stringify({data: spliceData, total: total, queryJSON: queryJSON}));
+            redisClient.set(queryId + ":page" + k, JSON.stringify({ data: spliceData, total: total, queryJSON: queryJSON }));
             j = endRow;
         }
     }
 }
 
 function getSortStatus4Query(queryJSON) {
-    var sortFields, sortDirection, sortStatus;
-    sortFields = queryJSON.sort_fields;
-    sortDirection = queryJSON.sort;
+    var sortFields = queryJSON.sort_fields,
+        sortDirection = queryJSON.sort,
+        sortStatus;
 
     if (!_.isNil(sortFields) && sortFields.length > 0 && !_.isNil(sortDirection)) {
         sortStatus = [{"field": sortFields[0], "dir": sortDirection === 2 ? "desc" : "asc"}];
@@ -241,11 +275,12 @@ function getSortStatus4Query(queryJSON) {
 function getPlotFields(selectFields) {
     var plotFields = [],
         statFields = [
-            {field: "sum(bytes)", label: "sum_bytes"},
-            {field: "avg(bytes)", label: "avg_bytes"},
-            {field: "sum(packets)", label: "sum_packets"},
-            {field: "avg(packets)", label: "avg_packets"}
+            { field: "sum(bytes)", label: "sum_bytes" },
+            { field: "avg(bytes)", label: "avg_bytes" },
+            { field: "sum(packets)", label: "sum_packets" },
+            { field: "avg(packets)", label: "avg_packets" }
         ];
+
     for (var j = 0; j < statFields.length; j++) {
         if (selectFields.indexOf(statFields[j].field) !== -1) {
             plotFields.push(statFields[j].label);
@@ -255,21 +290,21 @@ function getPlotFields(selectFields) {
 }
 
 function saveStatsData4Chart2Redis(queryId, dataJSON, queryOptions) {
-    var resultData = {}, secTime,
+    var resultData = {},
+        secTime,
         uniqueFlowClassArray = [],
         flowClassArray = [],
         statPlotFields = queryOptions.statPlotFields,
         statGroupFields = queryOptions.statGroupFields;
 
-    if (!_.isUndefined(statPlotFields) && statPlotFields.length !== 0) {
+    if (!_.isNil(statPlotFields) && statPlotFields.length !== 0) {
         for (var i = 0; i < dataJSON.length; i++) {
-            if (!_.isUndefined(dataJSON[i].T)) {
-                secTime = Math.floor(dataJSON[i].T / 1000);
-            } else if (!_.isUndefined(dataJSON[i]["T="])) {
-                secTime = Math.floor(dataJSON[i]["T="] / 1000);
+            var rawTime = dataJSON[i].T || dataJSON[i]["T="];
+            if (!_.isUndefined(rawTime)) {
+                secTime = Math.floor(rawTime / 1000);
             }
-            var resultStatGroupFields = [], resultStatGroupFieldsKey;
 
+            var resultStatGroupFields = [], resultStatGroupFieldsKey;
             for (var x = 0; x < statPlotFields.length; x++) {
                 if (statGroupFields[x] in dataJSON[i]) {
                     resultStatGroupFields.push(dataJSON[i][statGroupFields[x]]);
@@ -302,6 +337,7 @@ function saveStatsData4Chart2Redis(queryId, dataJSON, queryOptions) {
 }
 
 function getStatClassRecord(key, resultStatGroupFields, row) {
+  // TODO: clean up??? The function name doesn't describe what it does.
     row.stat_flow_class_id = key;
     return row;
 }
@@ -338,7 +374,7 @@ function saveData4Chart2Redis(queryId, dataJSON, plotFields) {
 
 function getFlowClassRecord(row) {
     var flowClassFields = global.FLOW_CLASS_FIELDS,
-        fieldValue, flowClass = {flow_class_id: row.flow_class_id};
+        fieldValue, flowClass = { flow_class_id: row.flow_class_id };
 
     for (var i = 0; i < flowClassFields.length; i++) {
         fieldValue = row[flowClassFields[i]];
@@ -354,7 +390,7 @@ function formatQueryResultJSON(tableName, jsonData) {
 
     if (tableName === "FlowSeriesTable") {
         columnLabels = global.FORMAT_TABLE_COLUMNS[tableName];
-        jsonData.forEach(function (record) {
+        jsonData.forEach(function(record) {
             for (fieldName in columnLabels) {
                 if (columnLabels.hasOwnProperty(fieldName) && !_.isNil(record[fieldName])) {
                     label = columnLabels[fieldName];
@@ -369,6 +405,7 @@ function formatQueryResultJSON(tableName, jsonData) {
 
 function parseFilterAndLimit(reqObject) {
     var filters, filterWithLimit, filter, limit;
+
     filters = reqObject.filters;
     if (_.isNil(filters) || filters === "") {
         return reqObject;
@@ -448,18 +485,23 @@ function setMicroTimeRange(query, fromTime, toTime) {
 
 function createSLWhere(msgQuery, moduleId, messageType, source, category) {
     var whereClauseArray = [];
+
     if (!_.isNil(moduleId) && moduleId !== "") {
         whereClauseArray.push(createClause("ModuleId", moduleId, 1));
     }
+
     if (!_.isNil(messageType) && messageType !== "") {
         whereClauseArray.push(createClause("Messagetype", messageType, 1));
     }
+
     if (!_.isNil(source) && source !== "") {
         whereClauseArray.push(createClause("Source", source, 1));
     }
+
     if (!_.isNil(category) && category !== "") {
         whereClauseArray.push(createClause("Category", category, 1));
     }
+
     msgQuery.where = [whereClauseArray];
 }
 
@@ -475,12 +517,14 @@ function createSLFilter(msgQuery, level) {
 
 function createClause(fieldName, fieldValue, operator) {
     var whereClause = {};
+
     if (!_.isNil(fieldValue)) {
         whereClause = {};
         whereClause.name = fieldName;
         whereClause.value = fieldValue;
         whereClause.op = operator;
     }
+
     return whereClause;
 }
 
@@ -1295,11 +1339,11 @@ function quickSort(array, left, right, sort, qsStatus) {
     if (left < right) {
         var p = quickSortPartition(array, left, right, sort);
         qsStatus.started++;
-        process.nextTick(function () {
+        process.nextTick(function() {
             quickSort(array, left, p, sort, qsStatus);
         });
         qsStatus.started++;
-        process.nextTick(function () {
+        process.nextTick(function() {
             quickSort(array, p + 1, right, sort, qsStatus);
         });
     }
@@ -1408,9 +1452,9 @@ function getTableSchema(req, res, appData) {
 }
 
 function sendCachedJSON4Url(opsUrl, res, expireTime, appData) {
-    redisClient.get(opsUrl, function (error, cachedJSONStr) {
+    redisClient.get(opsUrl, function(error, cachedJSONStr) {
         if (error || _.isNil(cachedJSONStr)) {
-            opApiServer.apiGet(opsUrl, appData, function (error, jsonData) {
+            opApiServer.apiGet(opsUrl, appData, function(error, jsonData) {
                 if (!jsonData) {
                     jsonData = [];
                 }
@@ -1431,9 +1475,9 @@ function getObjectIds(req, res, appData) {
     startTime = req.param("fromTimeUTC");
     endTime = req.param("toTimeUTC");
 
-    objectQuery = {"start_time": startTime, "end_time": endTime, "select_fields": ["ObjectId"], "table": objectTable};
+    objectQuery = { "start_time": startTime, "end_time": endTime, "select_fields": ["ObjectId"], "table": objectTable };
     setMicroTimeRange(objectQuery, startTime, endTime);
-    queryOptions = {queryId: null, async: false, status: "run", queryJSON: objectQuery, errorMessage: ""};
+    queryOptions = { queryId: null, async: false, status: "run", queryJSON: objectQuery, errorMessage: "" };
 
     executeQuery(res, queryOptions, appData);
 }
