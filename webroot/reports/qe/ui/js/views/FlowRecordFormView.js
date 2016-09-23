@@ -37,7 +37,7 @@ define([
                 cowc.KEY_RUN_QUERY_VALIDATION, null, modelMap,
                 function() {
                     self.model.showErrorAttr(flowRecordId, false);
-                    Knockback.applyBindings(self.model, document.getElementById(flowRecordId));
+                    kb.applyBindings(self.model, document.getElementById(flowRecordId));
                     kbValidation.bind(self);
 
                     $("#run_query").on("click", function() {
