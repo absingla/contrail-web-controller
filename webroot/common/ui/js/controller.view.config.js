@@ -298,9 +298,9 @@ define([
                             parseFn: ctwp.parseCPUMemChartData,
                             chartOptions: {
                                 mainChart: {
+                                    marginInner: 5,
                                     axis: {
                                         x: {
-                                            accessor: 'x',
                                             formatter: function(value) {
                                                 return d3.time.format("%H:%M")(value);
                                             }
@@ -678,6 +678,19 @@ define([
         self.getPortDistChartOptions = function() {
             return {
                 bindingHandler: {
+                    bindings: [
+                        {
+                            sourceComponent: 'mainChart',
+                            sourceModel: 'config',
+                            sourcePath: 'accessorData',
+                            targetComponent: 'controlPanel',
+                            targetModel: 'config',
+                            action: 'sync'
+                        }
+                    ]
+                },
+                /*
+                bindingHandler: {
                     sync: {
                         mainChart: {
                             config: {
@@ -715,6 +728,7 @@ define([
                         }
                     }
                 },
+                */
                 controlPanel: {
                     enable: true,
                     buttons: [
@@ -724,7 +738,8 @@ define([
                             iconClass: 'fa fa-filter',
                             events: {
                                 click: "filterVariables"
-                            }
+                            },
+                            openPanel: "accessorData"
                         },
                         {
                             name: "zoomIn",
@@ -758,7 +773,7 @@ define([
                     xAccessor: 'x',
                     accessorData: {
                         'y' : {
-                            label: 'Bandwidth (Last 10 Mins)',
+                            label: 'Bandwidth (Last 5 Mins)',
                             enable: true,
                             y: 1,
                             chartType: 'line',
@@ -790,7 +805,8 @@ define([
                         x: {
                             formatter: d3.format(".2f"),
                             scale: 'scaleLinear',
-                            domain: [0, 20000]
+                            domain: [0, 20000],
+                            nice: true
                         }
                     }
                 },
@@ -809,14 +825,19 @@ define([
                     //    var formattedValue = formatBytes(yValue, false, null, 1);
                     //    return formattedValue;
                     //},
+                    chartWidthDelta: -40,
                     marginLeft: 70,
+                    marginRight: 70,
+                    marginTop: 10,
+                    marginBottom: 40,
                     marginInner: 10,
                     rRange: [2, 10],
                     accessorData: {
-                        'sum(bytes)' : {
-                            label: 'Bandwidth (Last 10 Mins)',
-                            enable: true,
+                        'y' : {
+                            label: 'Bandwidth (Last 5 Mins)',
+                            enable: false,
                             y: 1,
+                            chartType: 'scatterBubble',
                             sizeAccessor: 'flowCnt',
                             shape: 'circle',
                             tooltip : {
@@ -848,7 +869,11 @@ define([
                     axis: {
                         x: {
                             formatter: d3.format(".0f"),
-                            scale: 'scalePow'
+                            scale: 'scalePow',
+                            nice: true
+                        },
+                        y2: {
+                            //labelMargin: 60
                         }
                     }
                 },
