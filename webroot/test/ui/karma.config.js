@@ -30,7 +30,7 @@ module.exports = function (config) {
         //port: 8143,
 
         proxies : {
-        '/api': 'http://localhost:9090/api/'
+            '/api': 'http://localhost:9090/api'
         },
         reporters: ['progress', 'html', 'coverage', 'junit'],
         // the default configuration

@@ -72,8 +72,7 @@ define([
                 '/api/admin/reports/query?port=34560-34815&timeRange=600&table=FlowSeriesTable': /\/api\/admin\/reports\/query\?port=34560-34815&timeRange=600&table=FlowSeriesTable.*$/,
                 '/api/admin/reports/query?port=9110&timeRange=600&table=FlowSeriesTable': /\/api\/admin\/reports\/query\?port=9110&timeRange=600&table=FlowSeriesTable.*$/
         };
-
-        return regexUrlMap [url];
+        return regexUrlMap[url].toString();
     };
 
     this.commonGridDataGenerator = function (viewObj) {

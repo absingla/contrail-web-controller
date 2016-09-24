@@ -14,32 +14,72 @@ define([
 
     var testType = cotc.VIEW_TEST;
 
-    var fakeServerConfig = cotr.getDefaultFakeServerConfig();
+    var testServerConfig = cotr.getDefaultTestServerConfig();
 
-    var fakeServerResponsesConfig = function() {
-        var responses = [];
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles : {
+                networkListViewMockDataFile: "monitor/networking/test/ui/views/NetworkListView.mock.data.js"
+            },
+            routes: []
+        };
 
-        responses.push(cotr.createFakeServerResponse( {
-            url: cttu.getRegExForUrl(ctwc.URL_ALL_DOMAINS),
-            body: JSON.stringify(TestMockdata.domainsMockData)
-        }));
-        responses.push(cotr.createFakeServerResponse( {
-            url: /\/api\/tenants\/projects\/default-domain.*$/,
-            body: JSON.stringify(TestMockdata.projectMockData)
-        }));
-        responses.push(cotr.createFakeServerResponse({
-            method:"POST",
-            url: cttu.getRegExForUrl(),
-            body: JSON.stringify(TestMockdata.networksMockData)
-        }));
-        responses.push(cotr.createFakeServerResponse({
+        routesConfig.routes.push({
+            hits: 1,
+            url: '/api/tenant/monitoring/alarms',
+            response: {
+                code: 200,
+                data: "{}"
+            }
+        });
+
+        routesConfig.routes.push({
+            urlMatch: "/api/tenants/config/domains.*$",
+            response: {
+                data: "networkListViewMockDataFile.domains"
+            }
+        });
+
+        routesConfig.routes.push({
+            urlRegex: '/\/api\/tenants\/config\/projects\/default-domain.*$/',
+            response: {
+                data: "networkListViewMockDataFile.projectDomain"
+            }
+        });
+
+        routesConfig.routes.push({
+            urlRegex: '/\/api\/tenants\/get-project-role.*$/',
+            response: {
+                data: "{}"
+            }
+        });
+
+        routesConfig.routes.push({
+            urlRegex: '/\/api\/tenants\/networks\/default-domain:admin.*$/',
+            response: {
+                data: "networkListViewMockDataFile.projects"
+            }
+        });
+
+        routesConfig.routes.push({
             method: "POST",
-            url: cttu.getRegExForUrl(ctwc.URL_VM_VN_STATS),
-            body: JSON.stringify(TestMockdata.networksMockStatData)
-        }));
-        return responses;
+            urlRegex: '/\/api\/tenant\/networking\/virtual-networks\/details\?.*$/',
+            response: {
+                data: "networkListViewMockDataFile.networks"
+            }
+        });
+
+        routesConfig.routes.push({
+            method: "POST",
+            urlRegex: '/\/api\/tenant\/networking\/stats.*$/',
+            response: {
+                code: 404,
+                data: ""
+            }
+        });
+
+        return routesConfig;
     };
-    fakeServerConfig.getResponsesConfig = fakeServerResponsesConfig;
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -68,8 +108,7 @@ define([
         };
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, fakeServerConfig, pageConfig, getTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
 
-    cotr.startTestRunner(pageTestConfig);
-
+    return pageTestConfig;
 });
