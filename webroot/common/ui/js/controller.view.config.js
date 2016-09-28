@@ -872,6 +872,9 @@ define([
                             scale: 'scalePow',
                             nice: true
                         },
+                        y1: {
+
+                        },
                         y2: {
                             //labelMargin: 60
                         }
