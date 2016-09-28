@@ -84,7 +84,6 @@ define([
                     enable: true,
                     y: 2,
                     chartType: "stackedBar",
-                    interpolate: chUtils.interpolateSankey,
                     tooltip : {
                         nameFormatter: function(name) {
                             return "Memory Usage";
