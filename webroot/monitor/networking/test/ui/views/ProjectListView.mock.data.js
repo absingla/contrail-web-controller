@@ -2,24 +2,18 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-    var methods = {};
-    module.exports= {
-        methods : methods
-    };
-    methods.domainsMockData = function(){
-        return {
+var mockData = {
+    domainsMockData: {
         "domains": [
             {
-                "href"   : "http://10.84.30.249:8082/domain/f8a71b82-ec17-4869-8e34-5e967e6fce50",
+                "href": "http://10.84.30.249:8082/domain/f8a71b82-ec17-4869-8e34-5e967e6fce50",
                 "fq_name": [
                     "default-domain"],
-                "uuid"   : "f8a71b82-ec17-4869-8e34-5e967e6fce50"
+                "uuid": "f8a71b82-ec17-4869-8e34-5e967e6fce50"
             }
         ]
-        }
-    };
-    methods.projectMockData = function(){
-        return{
+    },
+    projectsMockData: {
         "projects": [
             {
                 "fq_name": [
@@ -36,10 +30,8 @@
                 "uuid": "390a0374-239f-40c3-ac87-d0918d2abf8b"
             }
         ]
-        }
-    };
-    methods.networksMockData = function(){
-        return{
+    },
+    networksMockData: {
         "data": {
             "value": [
                 {
@@ -403,6 +395,26 @@
                     }
                 },
                 {
+                    "name": "default-domain:admin:st_vn11",
+                    "value": {
+                        "UveVirtualNetworkAgent": {
+                            "total_acl_rules": 0,
+                            "in_bandwidth_usage": 0,
+                            "egress_flow_count": 0,
+                            "acl": null,
+                            "virtualmachine_list": [
+                                "e2d1a978-da31-44e8-b83a-87fba37b1d3a"
+                            ],
+                            "interface_list": [
+                                "default-domain:admin:st_port11"
+                            ],
+                            "ingress_flow_count": 0,
+                            "out_bandwidth_usage": 0
+                        },
+                        "UveVirtualNetworkConfig": {}
+                    }
+                },
+                {
                     "name": "default-domain:admin:st_vn12",
                     "value": {
                         "UveVirtualNetworkAgent": {
@@ -753,10 +765,8 @@
         },
         "lastKey": "default-domain:admin:st_vn27",
         "more": false
-        }
-    };
-    methods.networksMockStatData = function(){
-        return[
+    },
+    networksMockStatData: [
         {
             "value": [
                 {
@@ -936,6 +946,7 @@
                 }
             ]
         }
-        ]
-    };
-    
+    ]
+};
+
+module.exports = mockData;

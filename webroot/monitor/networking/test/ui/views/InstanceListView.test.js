@@ -14,11 +14,16 @@ define([
     var moduleId = cttm.INSTANCES_LIST_VIEW_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
+    
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-        var routes = [];
-
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                instanceListViewMockData: 'monitor/networking/test/ui/views/InstanceListView.mock.data.js'
+            },
+            routes: []
+        };
+        
         /*
          /api/tenants/config/domains
          /api/tenants/config/projects                            need to add [done]
@@ -28,53 +33,51 @@ define([
          /api/tenant/networking/virtual-machine-interfaces/summary  need to add
          */
 
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
-            fnName: 'domainsMockData'
+        routesConfig.routes.push({
+            urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
+            response:  {data: 'instanceListViewMockData.domainsMockData'}
         });
 
-        routes.push({
+        routesConfig.routes.push({
             method: "POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
-            fnName: 'virtualMachinesMockStatData'
+            urlRegex: cttu.getRegExForUrl('/api/tenant/networking/stats'),
+            response:  {data: 'instanceListViewMockData.virtualMachinesMockStatData'}
         });
 
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/projects').toString(),
-            fnName: 'projectMockData'
+        routesConfig.routes.push({
+            urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects'),
+            response:  {data: 'instanceListViewMockData.projectsMockData'}
         });
 
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
-            fnName: 'empty'
+        routesConfig.routes.push({
+            urlRegex: cttu.getRegExForUrl('/api/tenants/get-project-role'),
+            response:  {data: '{}'}
         });
 
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/projects/default-domain:admin').toString(),
-            fnName: 'adminProjectMockData'
+        routesConfig.routes.push({
+            urlRegex: cttu.getRegExForUrl('/api/tenants/projects/default-domain:admin'),
+            response:  {data: 'instanceListViewMockData.adminProjectMockData'}
         });
 
-         routes.push({
-             url: cttu.getRegExForUrl('/api/tenants/networks/default-domain:admin').toString(),
-             fnName: 'tenantsNetworkMockData'
+         routesConfig.routes.push({
+             urlRegex: cttu.getRegExForUrl('/api/tenants/networks/default-domain:admin'),
+             response:  {data: 'instanceListViewMockData.tenantsNetworkMockData'}
         });
 
-        routes.push({
+        routesConfig.routes.push({
             method: "POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/details').toString(),
-            fnName: 'virtualMachinesMockData'
+            urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/details'),
+            response:  {data: 'instanceListViewMockData.virtualMachinesMockData'}
         });
 
-        routes.push({
+        routesConfig.routes.push({
             method: "POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary').toString(),
-            fnName: 'virtualMachinesInterfacesMockData'
+            urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary'),
+            response:  {data: 'instanceListViewMockData.virtualMachinesInterfacesMockData'}
         });
-        return routes;
+
+        return routesConfig;
     };
-
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'monitor/networking/test/ui/views/InstanceListView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -130,5 +133,4 @@ define([
 
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
     return pageTestConfig;
-
 });

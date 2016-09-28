@@ -9,7 +9,6 @@ define([
 
     this.getRegExForUrl = function (url) {
         var regexUrlMap = {
-                '/api/tenants/config/domains': /\/api\/api\/tenants\/config\/domains.*$/,
                 '/api/tenants/config/get-bgp-as-a-services/90ab868a-da21-4ed9-922f-a309967eb0a0' :/\/api\/tenants\/config\/get-bgp-as-a-services\/90ab868a-da21-4ed9-922f-a309967eb0a0.*$/,
                 '/api/tenants/config/projects': /\/api\/tenants\/config\/projects.*$/,
                 '/api/tenants/projects': /\/api\/tenants\/projects.*$/,

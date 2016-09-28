@@ -2,13 +2,8 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-var methods = {};
-module.exports= {
-    methods : methods
-};
-
-    methods.flowsMockData = function(){
-        return{
+var mockData = {
+    flowsMockData: {
         "data": [
             {
                 "destip": "10.3.1.3",
@@ -141,5 +136,6 @@ module.exports= {
             ]
         }
     }
-    };
+};
 
+module.exports = mockData;

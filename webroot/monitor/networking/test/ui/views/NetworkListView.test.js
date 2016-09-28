@@ -10,7 +10,8 @@ define([
     'co-grid-view-test-suite',
     'co-chart-view-zoom-scatter-test-suite',
     'network-list-view-custom-test-suite'
-], function (cotc,cotr, cttu, cttm, GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite,
+], function (cotc, cotr, cttu, cttm,
+             GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite,
              CustomTestSuite) {
 
     var moduleId = cttm.NETWORKS_LIST_VIEW_COMMON_TEST_MODULE;
@@ -18,7 +19,6 @@ define([
     var testType = cotc.VIEW_TEST;
 
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
     testServerConfig.getRoutesConfig = function() {
         var routesConfig = {
             mockDataFiles : {
@@ -148,10 +148,9 @@ define([
                 }
             ]
         } ;
-
     };
 
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
-    return pageTestConfig;
 
+    return pageTestConfig;
 });

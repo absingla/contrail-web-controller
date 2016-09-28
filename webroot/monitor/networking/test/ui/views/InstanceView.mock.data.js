@@ -2,12 +2,8 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-var methods = {};
-module.exports= {
-    methods : methods
-};
-    methods.domainsMockData = function(){
-        return {
+var mockData = {
+    domainsMockData: {
         "domains": [
             {
                 "href": "http://10.84.11.2:9100/domain/35468934-bfe5-4c0e-84e2-ddfc9b49af74",
@@ -17,33 +13,33 @@ module.exports= {
                 "uuid": "35468934-bfe5-4c0e-84e2-ddfc9b49af74"
             }
         ]
-    }
-    };
-
-methods.networkingStatsMockData = function(){
-    return[
-        {
-            "value": [
-                {
-                    "name": "default-domain:admin:backend",
-                    "SUM(vn_stats.in_bytes)": 55374864,
-                    "SUM(vn_stats.in_tpkts)": 165032,
-                    "SUM(vn_stats.out_bytes)": 55166624,
-                    "SUM(vn_stats.out_tpkts)": 164956
-                },
-                {
-                    "name": "default-domain:admin:frontend",
-                    "SUM(vn_stats.in_bytes)": 55166624,
-                    "SUM(vn_stats.in_tpkts)": 164956,
-                    "SUM(vn_stats.out_bytes)": 55374864,
-                    "SUM(vn_stats.out_tpkts)": 165032
-                }
-            ]
-        }
-    ]};
-
-    methods.demoProjectMockData = function(){
-        return {
+    },
+    projectsMockData: {
+        "projects": [
+            {
+                "uuid": "ba710bf3-922d-4cda-bbb4-a2e2e76533bf",
+                "fq_name": [
+                    "default-domain",
+                    "admin"
+                ]
+            },
+            {
+                "uuid": "c3fa1bb4-b04d-4f29-8bb4-7343d8fbeb21",
+                "fq_name": [
+                    "default-domain",
+                    "scalevns"
+                ]
+            },
+            {
+                "uuid": "efdfd856-b362-4b5c-ad17-09cc3acfd859",
+                "fq_name": [
+                    "default-domain",
+                    "demo"
+                ]
+            }
+        ]
+    },
+    demoProjectMockData: {
         "virtual-networks": [
             {
                 "href": "http://10.84.11.2:9100/virtual-network/5afff8c0-75bd-4063-b146-667885069bef",
@@ -64,119 +60,60 @@ methods.networkingStatsMockData = function(){
                 "uuid": "e1a07ef5-ee3b-4422-b085-fa3641090626"
             }
         ]
-    }
-    };
-methods.adminProjectMockData = function(){
-    return{
-        "virtual-networks": [
-            {
-                "href"   : "http://10.84.11.2:8082/virtual-network/ad8a9efc-9b7e-4425-9735-03bda0d2726e",
-                "fq_name": [
-                    "default-domain",
-                    "admin",
-                    "frontend"
-                ],
-                "uuid"   : "ad8a9efc-9b7e-4425-9735-03bda0d2726e"
-            },
-            {
-                "href"   : "http://10.84.11.2:8082/virtual-network/2847747f-cb2c-4499-9b12-0f1711168e72",
-                "fq_name": [
-                    "default-domain",
-                    "admin",
-                    "backend"
-                ],
-                "uuid"   : "2847747f-cb2c-4499-9b12-0f1711168e72"
-            }
-        ]
-    }
-};
-methods.projectMockData = function(){
-    return{
-        "projects": [
-            {
-                "uuid"   : "ba710bf3-922d-4cda-bbb4-a2e2e76533bf",
-                "fq_name": [
-                    "default-domain",
-                    "admin"
-                ]
-            },
-            {
-                "uuid"   : "c3fa1bb4-b04d-4f29-8bb4-7343d8fbeb21",
-                "fq_name": [
-                    "default-domain",
-                    "scalevns"
-                ]
-            },
-            {
-                "uuid"   : "efdfd856-b362-4b5c-ad17-09cc3acfd859",
-                "fq_name": [
-                    "default-domain",
-                    "demo"
-                ]
-            }
-        ]
-    }
-};
-
-    methods.empty = function(){
-        return {}
-    };
-
-    methods.virtualMachineMockData = function(){
-        return {
-        "data"   : {
+    },
+    virtualMachineMockData: {
+        "data": {
             "value": [
                 {
-                    "name" : "39b35cf1-1bdf-4238-bcc2-16653f12379a",
+                    "name": "39b35cf1-1bdf-4238-bcc2-16653f12379a",
                     "value": {
                         "UveVirtualMachineAgent": {
-                            "vm_name"       : "back01",
-                            "cpu_info"      : {
-                                "virt_memory"         : 6749812,
-                                "cpu_one_min_avg"     : 1.16667,
-                                "disk_used_bytes"     : 1167990784,
-                                "vm_memory_quota"     : 4194304,
-                                "peak_virt_memory"    : 7251764,
+                            "vm_name": "back01",
+                            "cpu_info": {
+                                "virt_memory": 6749812,
+                                "cpu_one_min_avg": 1.16667,
+                                "disk_used_bytes": 1167990784,
+                                "vm_memory_quota": 4194304,
+                                "peak_virt_memory": 7251764,
                                 "disk_allocated_bytes": 4294967295,
-                                "rss"                 : 1265084
+                                "rss": 1265084
                             },
                             "interface_list": [
                                 "default-domain:admin:4b5073eb-ee2e-4790-b106-e020a4e79e45"
                             ],
-                            "uuid"          : "39b35cf1-1bdf-4238-bcc2-16653f12379a",
-                            "vrouter"       : "a3s29"
+                            "uuid": "39b35cf1-1bdf-4238-bcc2-16653f12379a",
+                            "vrouter": "a3s29"
                         }
                     }
                 },
                 {
-                    "name" : "7c20fb79-1a0a-49e3-b31f-d53db046264e",
+                    "name": "7c20fb79-1a0a-49e3-b31f-d53db046264e",
                     "value": {
                         "UveVirtualMachineAgent": {
-                            "vm_name"       : "front01",
-                            "cpu_info"      : {
-                                "virt_memory"         : 6757960,
-                                "cpu_one_min_avg"     : 0.983607,
-                                "disk_used_bytes"     : 1173041152,
-                                "vm_memory_quota"     : 4194304,
-                                "peak_virt_memory"    : 7250968,
+                            "vm_name": "front01",
+                            "cpu_info": {
+                                "virt_memory": 6757960,
+                                "cpu_one_min_avg": 0.983607,
+                                "disk_used_bytes": 1173041152,
+                                "vm_memory_quota": 4194304,
+                                "peak_virt_memory": 7250968,
                                 "disk_allocated_bytes": 4294967295,
-                                "rss"                 : 1253528
+                                "rss": 1253528
                             },
                             "interface_list": [
                                 "default-domain:admin:3683aa58-28ff-4ffb-8667-fb778d92ad0e"
                             ],
-                            "uuid"          : "7c20fb79-1a0a-49e3-b31f-d53db046264e",
-                            "vrouter"       : "a3s29"
+                            "uuid": "7c20fb79-1a0a-49e3-b31f-d53db046264e",
+                            "vrouter": "a3s29"
                         }
                     }
                 }
             ]
         },
         "lastKey": null,
-        "more"   : false
-    }};
-    methods.virtualMachineStatsMockData = function(){
-        return {
+        "more": false
+    },
+    virtualMachineStatsMockData: {
         "VirtualMachineStats": {
             "cpu_stats": [
                 {
@@ -227,10 +164,8 @@ methods.projectMockData = function(){
                 "default-domain:demo:st101_port21"
             ]
         }
-    }
-    };
-    methods.virtualMachineInterfacesMockData = function(){
-        return {
+    },
+    virtualMachineInterfacesMockData: {
         "value": [
             {
                 "name": "default-domain:demo:st101_port21",
@@ -302,10 +237,8 @@ methods.projectMockData = function(){
                 }
             }
         ]
-    }
-    };
-    methods.virtualMachineConnectedGraphMockData = function(){
-        return {
+    },
+    virtualMachineConnectedGraphMockData: {
         "nodes": [
             {
                 "name": "st_vn101_vm21",
@@ -445,10 +378,8 @@ methods.projectMockData = function(){
                 }
             }
         ]
-    }
-    };
-    methods.reportsQueryMockData = function(){
-        return {
+    },
+    reportsQueryMockData: {
         "data": [
             {
                 "Source": "a3s29",
@@ -1315,10 +1246,8 @@ methods.projectMockData = function(){
                 ]
             ]
         }
-    }
-    };
-    methods.virtualMachineFlowSeriesMockData = function(){
-        return {
+    },
+    virtualMachineFlowSeriesMockData: {
         "summary": {
             "start_time": 1445615662000000,
             "end_time": 1445622862000000,
@@ -2406,20 +2335,18 @@ methods.projectMockData = function(){
                 "totalBytes": 3446428
             }
         ]
-    }
-    };
-    methods.networkingStatsTopMockData = function(){
-        return {
+    },
+    networkingStatsTopMockData: {
         "sport": [],
         "dport": [],
         "startTime": 1441880529000,
         "endTime": 1441881129000
+    },
+    networkingStatsMockData : [
+    {
+        "value": []
     }
-    };
-    methods.networkingStatsMockData = function(){
-        return[
-        {
-            "value": []
-        }
-    ]};
+]
+};
 
+module.exports= mockData;

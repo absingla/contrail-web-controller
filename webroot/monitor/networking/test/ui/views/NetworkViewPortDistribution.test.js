@@ -12,94 +12,84 @@ define([
     var moduleId = cttm.PROJECTS_VIEW_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
+
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-
-        var routes = [];
-
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
-            fnName: 'domainsMockData'
-        });
-
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/projects').toString(),
-            fnName: 'projectMockData'
-        });
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
-            fnName: 'empty'
-        });
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/projects/default-domain').toString(),
-            fnName: 'projectMockData'
-        });
-
-        routes.push({
-            method: "GET",
-            url: cttu.getRegExForUrl('/api/tenants/networks/default-domain:admin').toString(),
-            fnName: 'networksForAdminProjectMockData'
-        });
-
-        routes.push({
-            method: "GET",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-network/summary?fqNameRegExp=default-domain:admin:frontend').toString(),
-            fnName: 'networkSummaryForFrontEndNetworkMockData'
-        });
-
-        routes.push({
-            method: "GET",
-            url: cttu.getRegExForUrl('/api/tenant/networking/flow-series/vn?minsSince=120&fqName=default-domain:admin:frontend').toString(),
-            fnName: 'flowSeriesForFrontendVNMockData'
-        });
-
-        routes.push({
-            method: "GET",
-            url: cttu.getRegExForUrl('/api/tenant/networking/network/stats/top?minsSince=10&fqName=default-domain:admin:frontend').toString(),
-            fnName: 'networkStatsForFrontendVNMockData'
-        });
-
-        routes.push({
-            method: "GET",
-            url: cttu.getRegExForUrl('/api/tenant/monitoring/network-connected-graph?fqName=default-domain:admin:frontend').toString(),
-            fnName: 'networkConnectedGraphForFrontEndNetworkMockData'
-        });
-
-        routes.push({
-            method: "GET",
-            url: cttu.getRegExForUrl('/api/tenant/monitoring/network-config-graph?fqName=default-domain:admin:frontend').toString(),
-            fnName: 'networkConfigGraphForFrontEndNetworkMockData'
-        });
-
-        routes.push({
-            method: "POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/details?fqnUUID=ad8a9efc-9b7e-4425-9735-03bda0d2726e&count=10&nextCount=100&type=vn').toString(),
-            fnName: 'virtualMachineDetailsByUUIDMockData'
-        });
-
-        routes.push({
-            method: "POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/summary').toString(),
-            fnName: 'virtualMachinesSummaryMockData'
-        });
-
-        routes.push({
-            method: "POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary').toString(),
-            fnName: 'virtualMachinesInterfacesMockData'
-        });
-
-        routes.push({
-            method: "POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
-            fnName: 'virtualMachinesStatsMockData'
-        });
-        return routes;
+    testServerConfig.getRoutesConfig = function () {
+        var routesConfig = {
+            mockDataFiles: {
+                networkViewMockData: 'monitor/networking/test/ui/views/NetworkView.mock.data.js'
+            },
+            routes: [
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
+                    response: {data: 'networkViewMockData.domainsMockData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects'),
+                    response: {data: 'networkViewMockData.projectsMockData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/projects/default-domain'),
+                    response: {data: 'networkViewMockData.projectsMockData'}
+                },
+                {
+                    method: "GET",
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/networks/default-domain:admin'),
+                    response: {data: 'networkViewMockData.networksForAdminProjectMockData'}
+                },
+                {
+                    method: "GET",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-network/summary?fqNameRegExp=default-domain:admin:frontend'),
+                    response: {data: 'networkViewMockData.networkSummaryForFrontEndNetworkMockData'}
+                },
+                {
+                    method: "GET",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/flow-series/vn?minsSince=120&fqName=default-domain:admin:frontend'),
+                    response: {data: 'networkViewMockData.flowSeriesForFrontendVNMockData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/get-project-role'),
+                    response: {data: '{}'}
+                },
+                {
+                    method: "GET",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/network/stats/top?minsSince=10&fqName=default-domain:admin:frontend'),
+                    response: {data: 'networkViewMockData.networkStatsForFrontendVNMockData'}
+                },
+                {
+                    method: "GET",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/monitoring/network-connected-graph?fqName=default-domain:admin:frontend'),
+                    response: {data: 'networkViewMockData.networkConnectedGraphForFrontEndNetworkMockData'}
+                },
+                {
+                    method: "GET",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/monitoring/network-config-graph?fqName=default-domain:admin:frontend'),
+                    response: {data: 'networkViewMockData.networkConfigGraphForFrontEndNetworkMockData'}
+                },
+                {
+                    method: "POST",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/details?fqnUUID=ad8a9efc-9b7e-4425-9735-03bda0d2726e&count=10&nextCount=100&type=vn'),
+                    response: {data: 'networkViewMockData.virtualMachineDetailsByUUIDMockData'}
+                },
+                {
+                    method: "POST",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/summary'),
+                    response: {data: 'networkViewMockData.virtualMachinesSummaryMockData'}
+                },
+                {
+                    method: "POST",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary'),
+                    response: {data: 'networkViewMockData.virtualMachinesInterfacesMockData'}
+                },
+                {
+                    method: "POST",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/stats'),
+                    response: {data: 'networkViewMockData.virtualMachinesStatsMockData'}
+                },
+            ]
+        };
+        return routesConfig;
     };
-
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'monitor/networking/test/ui/views/NetworkView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -148,6 +138,6 @@ define([
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig, testInitFn);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig, testInitFn);
     return pageTestConfig;
 });

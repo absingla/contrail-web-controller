@@ -16,46 +16,44 @@ define([
     var testType = cotc.VIEW_TEST;
 
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-        var routes = [];
-
+    testServerConfig.getRoutesConfig = function() {
         /*
-            /api/tenants/config/domains
-            /api/tenants/projects/default-domain
-            /api/tenant/networking/virtual-networks/details?count=25
-            /api/tenant/networking/stats
-        */
-
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
-            fnName: 'domainsMockData'
-        });
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/projects').toString(),
-            fnName: 'projectMockData'
-        });
-
-        routes.push( {
-            url: cttu.getRegExForUrl('/api/tenants/projects').toString(),
-            fnName: 'projectMockData'
-        });
-
-        routes.push({
-            method:"POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-networks/details').toString(),
-            fnName: 'networksMockData'
-        });
-        routes.push({
-            method: "POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
-            fnName: 'networksMockStatData'
-        });
-        return routes;
+         /api/tenants/config/domains
+         /api/tenants/projects/default-domain
+         /api/tenant/networking/virtual-networks/details?count=25
+         /api/tenant/networking/stats
+         */
+        var routesConfig = {
+            mockDataFiles: {
+                projectListViewMockData: 'monitor/networking/test/ui/views/ProjectListView.mock.data.js'
+            },
+            routes: [
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
+                    response: {data: 'projectListViewMockData.domainsMockData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects'),
+                    response: {data: 'projectListViewMockData.projectsMockData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/projects'),
+                    response: {data: 'projectListViewMockData.projectsMockData'}
+                },
+                {
+                    method:"POST",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-networks/details'),
+                    response: {data: 'projectListViewMockData.networksMockData'}
+                },
+                {
+                    method: "POST",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/stats'),
+                    response: {data: 'projectListViewMockData.networksMockStatData'}
+                }
+            ]
+        };
+        return routesConfig;
     };
-
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'monitor/networking/test/ui/views/ProjectListView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -109,7 +107,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
     return pageTestConfig;
 
 });

@@ -2,12 +2,8 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-    var methods = {};
-    module.exports= {
-        methods : methods
-    };
-    methods.domainsMockData = function(){
-        return{
+var mockData = {
+    domainsMockData: {
         "domains": [
             {
                 "href": "http://10.84.11.2:8082/domain/35468934-bfe5-4c0e-84e2-ddfc9b49af74",
@@ -17,15 +13,8 @@
                 "uuid": "35468934-bfe5-4c0e-84e2-ddfc9b49af74"
             }
         ]
-        }
-    };
-
-    methods.empty = function(){
-     return {}
-    };
-
-    methods.projectMockData = function(){
-        return {
+    },
+    projectsMockData: {
         "projects": [
             {
                 "uuid": "ba710bf3-922d-4cda-bbb4-a2e2e76533bf",
@@ -49,10 +38,8 @@
                 ]
             }
         ]
-        }
-    };
-    methods.networksForAdminProjectMockData = function(){
-        return {
+    },
+    networksForAdminProjectMockData: {
         "virtual-networks": [
             {
                 "href": "http://10.84.11.2:8082/virtual-network/ad8a9efc-9b7e-4425-9735-03bda0d2726e",
@@ -73,10 +60,8 @@
                 "uuid": "2847747f-cb2c-4499-9b12-0f1711168e72"
             }
         ]
-        }
-    };
-    methods.networkSummaryForFrontEndNetworkMockData = function(){
-        return {
+    },
+    networkSummaryForFrontEndNetworkMockData: {
         "value": [
             {
                 "name": "default-domain:admin:frontend",
@@ -226,10 +211,8 @@
                 }
             }
         ]
-        }
-    };
-    methods.flowSeriesForFrontendVNMockData = function(){
-        return{
+    },
+    flowSeriesForFrontendVNMockData: {
         "summary": {
             "start_time": 1443553594000000,
             "end_time": 1443560794000000,
@@ -1272,10 +1255,8 @@
                 "totalBytes": 926726
             }
         ]
-        }
-    };
-    methods.networkStatsForFrontendVNMockData = function(){
-        return {
+    },
+    networkStatsForFrontendVNMockData: {
         "sport": [
             {
                 "outBytes": 195250,
@@ -1858,10 +1839,8 @@
         ],
         "startTime": 1443560194000,
         "endTime": 1443560794000
-        }
-    };
-    methods.networksMockData = function(){
-        return {
+    },
+    networksMockData: {
         "data": {
             "value": [
                 {
@@ -1916,10 +1895,8 @@
         },
         "lastKey": null,
         "more": false
-        }
-    };
-    methods.networkConnectedGraphForFrontEndNetworkMockData = function(){
-        return {
+    },
+    networkConnectedGraphForFrontEndNetworkMockData: {
         "nodes": [
             {
                 "name": "default-domain:admin:frontend",
@@ -2905,10 +2882,8 @@
             ],
             "service-instances": []
         }
-        }
-    };
-    methods.networkConfigGraphForFrontEndNetworkMockData = function(){
-        return {
+    },
+    networkConfigGraphForFrontEndNetworkMockData: {
         "configData": {
             "network-policys": [
                 {
@@ -2972,10 +2947,8 @@
                 }
             ]
         }
-        }
-    };
-    methods.virtualMachineDetailsByUUIDMockData = function(){
-        return {
+    },
+    virtualMachineDetailsByUUIDMockData: {
         "data": {
             "value": [
                 {
@@ -3004,9 +2977,8 @@
         },
         "lastKey": null,
         "more": false
-    }};
-    methods.virtualMachineSummaryByUUIDMockData = function(){
-        return {
+    },
+    virtualMachineSummaryByUUIDMockData: {
         "value": [
             {
                 "name": "7c20fb79-1a0a-49e3-b31f-d53db046264e",
@@ -3031,9 +3003,8 @@
                 }
             }
         ]
-    }};
-    methods.networksMockStatData = function(){
-        return [
+    },
+    networksMockStatData: [
         {
             "value": [
                 {
@@ -3052,9 +3023,8 @@
                 }
             ]
         }
-    ]};
-    methods.portDistributionMockData = function(){
-        return {
+    ],
+    portDistributionMockData: {
         "sport": [
             {
                 "outBytes": 912072,
@@ -4213,9 +4183,8 @@
         ],
         "startTime": 1442869071000,
         "endTime": 1442869671000
-    }};
-    methods.projectConnectedGraph = function(){
-        return {
+    },
+    projectConnectedGraph: {
         "nodes": [
             {
                 "name": "default-domain:admin:backend",
@@ -5261,10 +5230,8 @@
             ],
             "service-instances": []
         }
-        }
-    };
-    methods.projectConfigGraph = function(){
-        return {
+    },
+    projectConfigGraph: {
         "configData": {
             "network-policys": [
                 {
@@ -5358,10 +5325,8 @@
             ],
             "network-ipams": []
         }
-        }
-    };
-    methods.virtualMachinesDetailsMockData = function(){
-        return {
+    },
+    virtualMachinesDetailsMockData: {
         "data": {
             "value": [
                 {
@@ -5412,10 +5377,8 @@
         },
         "lastKey": null,
         "more": false
-        }
-    };
-    methods.virtualMachinesSummaryMockData = function(){
-        return {
+    },
+    virtualMachinesSummaryMockData: {
         "value": [
             {
                 "name": "default-domain:admin:4b5073eb-ee2e-4790-b106-e020a4e79e45",
@@ -5454,10 +5417,8 @@
                 }
             }
         ]
-        }
-    };
-    methods.virtualMachinesInterfacesMockData = function(){
-        return {
+    },
+    virtualMachinesInterfacesMockData: {
         "value": [
             {
                 "name": "default-domain:admin:3683aa58-28ff-4ffb-8667-fb778d92ad0e",
@@ -5478,11 +5439,8 @@
                 }
             }
         ]
-        }
-    };
-
-    methods.networkingStatsMockData = function(){
-        return [
+    },
+    networkingStatsMockData: [
         {
             "value": [
                 {
@@ -5501,10 +5459,8 @@
                 }
             ]
         }
-        ]
-    };
-    methods.virtualMachinesStatsMockData = function(){
-        return [
+    ],
+    virtualMachinesStatsMockData: [
         {
             "value": [
                 {
@@ -5516,6 +5472,7 @@
                 }
             ]
         }
-        ]
-    };
-    
+    ],
+};
+
+module.exports= mockData;

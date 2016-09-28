@@ -2,12 +2,8 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-    var methods = {};
-    module.exports= {
-        methods : methods
-    };
-    methods.domainsMockData = function(){
-        return {
+var mockData = {
+    domainsMockData: {
         "domains": [
             {
                 "href": "http://10.84.11.2:8082/domain/35468934-bfe5-4c0e-84e2-ddfc9b49af74",
@@ -17,14 +13,8 @@
                 "uuid": "35468934-bfe5-4c0e-84e2-ddfc9b49af74"
             }
         ]
-        }
-    };
-    methods.empty = function(){
-        return {
-    }};
-
-    methods.projectMockData = function(){
-        return {
+    },
+    projectsMockData: {
         "projects": [
             {
                 "uuid": "ba710bf3-922d-4cda-bbb4-a2e2e76533bf",
@@ -48,10 +38,8 @@
                 ]
             }
         ]
-    }
-    };
-    methods.networksMockData = function(){
-        return {
+    },
+    networksMockData: {
         "data": {
             "value": [
                 {
@@ -106,10 +94,8 @@
         },
         "lastKey": null,
         "more": false
-    }
-    };
-    methods.networksMockStatData = function(){
-        return [
+    },
+    networksMockStatData: [
         {
             "value": [
                 {
@@ -128,9 +114,8 @@
                 }
             ]
         }
-    ]};
-    methods.portDistributionMockData = function(){
-        return {
+    ],
+    portDistributionMockData: {
         "sport": [
             {
                 "outBytes": 912072,
@@ -1289,9 +1274,8 @@
         ],
         "startTime": 1442869071000,
         "endTime": 1442869671000
-    }};
-    methods.projectConnectedGraph = function(){
-        return {
+    },
+    projectConnectedGraph: {
         "nodes": [
             {
                 "name": "default-domain:admin:backend",
@@ -2337,10 +2321,8 @@
             ],
             "service-instances": []
         }
-    }
-    };
-    methods.projectConfigGraph = function(){
-        return {
+    },
+    projectConfigGraph: {
         "configData": {
             "network-policys": [
                 {
@@ -2434,10 +2416,8 @@
             ],
             "network-ipams": []
         }
-    }
-    };
-    methods.virtualMachinesDetailsMockData = function(){
-        return {
+    },
+    virtualMachinesDetailsMockData: {
         "data": {
             "value": [
                 {
@@ -2488,10 +2468,8 @@
         },
         "lastKey": null,
         "more": false
-    }
-    };
-    methods.virtualMachinesSummaryMockData = function(){
-        return {
+    },
+    virtualMachinesSummaryMockData: {
         "value": [
             {
                 "name": "default-domain:admin:4b5073eb-ee2e-4790-b106-e020a4e79e45",
@@ -2530,10 +2508,8 @@
                 }
             }
         ]
-    }
-    };
-    methods.networkingStatsMockData = function(){
-        return [
+    },
+    networkingStatsMockData: [
         {
             "value": [
                 {
@@ -2552,9 +2528,8 @@
                 }
             ]
         }
-    ]};
-    methods.virtualMachinesStatsMockData = function(){
-        return [
+    ],
+    virtualMachinesStatsMockData: [
         {
             "value": [
                 {
@@ -2573,4 +2548,7 @@
                 }
             ]
         }
-    ]};
+    ]
+};
+
+module.exports = mockData;

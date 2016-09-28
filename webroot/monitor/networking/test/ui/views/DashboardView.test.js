@@ -12,10 +12,15 @@ define([
     var moduleId = cttm.PROJECTS_LIST_VIEW_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
-    var testServerConfig = cotr.getDefaultTestServerConfig();
 
-    var testServerRoutes = function() {
-        var routes = [];
+    var testServerConfig = cotr.getDefaultTestServerConfig();
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles : {
+                dashboardViewMockDataFile: "monitor/networking/test/ui/views/DashboardView.mock.data.js"
+            },
+            routes: []
+        };
 
         /*
          /api/tenants/config/domains                      done
@@ -30,73 +35,66 @@ define([
          /api/tenant/networking/stats done
          */
 
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
-            fnName: 'domainsMockData'
+        routesConfig.routes.push({
+            urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
+            response: { data: 'dashboardViewMockDataFile.domainsMockData'}
         });
-
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/projects').toString(),
-            fnName: 'projectMockData'
+        routesConfig.routes.push({
+            urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects'),
+            response: { data: 'dashboardViewMockDataFile.projectMockData'}
         });
-
-        routes.push( {
-            url: cttu.getRegExForUrl('/api/tenants/projects').toString(),
-            fnName: 'projectMockData'
+        routesConfig.routes.push( {
+            urlRegex: cttu.getRegExForUrl('/api/tenants/projects'),
+            response: { data: 'dashboardViewMockDataFile.projectMockData'}
         });
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
-            fnName: 'empty'
+        routesConfig.routes.push({
+            urlRegex: cttu.getRegExForUrl('/api/tenants/get-project-role'),
+            response: { data: "{}"}
         });
-
-        routes.push({
+        routesConfig.routes.push({
             method: "GET",
-            url: cttu.getRegExForUrl('/api/tenant/networking/network/stats/top').toString(),
-            fnName: 'portDistributionMockData'
+            urlRegex: cttu.getRegExForUrl('/api/tenant/networking/network/stats/top'),
+            response: { data: 'dashboardViewMockDataFile.portDistributionMockData'}
         });
-
-        routes.push({
+        routesConfig.routes.push({
             method: "GET",
-            url: cttu.getRegExForUrl('/api/tenant/monitoring/project-connected-graph').toString(),
-            fnName: 'projectConnectedGraph'
+            urlRegex: cttu.getRegExForUrl('/api/tenant/monitoring/project-connected-graph'),
+            response: { data: 'dashboardViewMockDataFile.projectConnectedGraph'}
         });
-
-        routes.push({
+        routesConfig.routes.push({
             method: "GET",
-            url: cttu.getRegExForUrl('/api/tenant/monitoring/project-config-graph').toString(),
-            fnName: 'projectConfigGraph'
+            urlRegex: cttu.getRegExForUrl('/api/tenant/monitoring/project-config-graph'),
+            response: { data: 'dashboardViewMockDataFile.projectConfigGraph'}
         });
-        routes.push({
+        routesConfig.routes.push({
             method:"POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-networks/details').toString(),
-            fnName: 'networksMockData'
+            urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-networks/details'),
+            response: { data: 'dashboardViewMockDataFile.networksMockData'}
         });
-        routes.push({
+        routesConfig.routes.push({
             method:"POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/details').toString(),
-            fnName: 'virtualMachinesDetailsMockData'
+            urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-machines/details'),
+            response: { data: 'dashboardViewMockDataFile.virtualMachinesDetailsMockData'}
         });
-        routes.push({
+        routesConfig.routes.push({
             method:"POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
-            fnName: 'networksMockStatData'
+            urlRegex: cttu.getRegExForUrl('/api/tenant/networking/stats'),
+            response: { data: 'dashboardViewMockDataFile.networksMockStatData'}
         });
         // how to differentiate between this POST request and the one for networks above
-
-        //routes.push({
+        //routesConfig.routes.push({
         //    method:"POST",
-        //    url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
-        //    fnName: 'virtualMachinesStatsMockData)
+        //    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/stats'),
+        //    response: { data: 'dashboardViewMockDataFile.virtualMachinesStatsMockData) }
         //}));
-        routes.push({
+        routesConfig.routes.push({
             method:"POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary').toString(),
-            fnName: 'virtualMachinesSummaryMockData'
+            urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary'),
+            response: { data: 'dashboardViewMockDataFile.virtualMachinesSummaryMockData'}
         });
-        return routes;
+
+        return routesConfig;
     };
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'monitor/networking/test/ui/views/DashboardView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -137,11 +135,10 @@ define([
             // Add necessary timeout for the tab elements to load properly and resolve the promise
             cotc.PAGE_INIT_TIMEOUT * 10
         );
-
         return;
     };
     
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig, testInitFn);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig, testInitFn);
     return pageTestConfig;
 
 });

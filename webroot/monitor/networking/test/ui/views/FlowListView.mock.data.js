@@ -2,8 +2,8 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore'], function (_) {
-    var flowsMockData = {
+var mockData = {
+    flowsMockData: {
         "data": [
             {
                 "destip": "10.3.1.3",
@@ -152,8 +152,7 @@ define(['underscore'], function (_) {
                 ]
             ]
         }
-    };
-    return {
-        flowsMockData:flowsMockData
-    };
-});
+    }
+};
+
+module.exports= mockData;
