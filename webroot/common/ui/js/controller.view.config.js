@@ -298,6 +298,8 @@ define([
                             parseFn: ctwp.parseCPUMemChartData,
                             chartOptions: {
                                 mainChart: {
+                                    marginLeft: 70,
+                                    marginRight: 70,
                                     marginInner: 5,
                                     axis: {
                                         x: {
@@ -691,46 +693,6 @@ define([
                         }
                     ]
                 },
-                /*
-                bindingHandler: {
-                    sync: {
-                        mainChart: {
-                            config: {
-                                accessorData: {
-                                    controlPanel: {
-                                        config: function( mainChartConfig, controlPanelConfig ) {
-                                            // Iterate the mainChart accessorData and pass it in a readable way for the control panel to render.
-                                            var variableFilters = [];
-                                            _.each( mainChartConfig.get( 'accessorData' ), function( accessor, key ) {
-                                                var variableFilter = {
-                                                    name: key,
-                                                    label: accessor.label,
-                                                    enable: accessor.enable
-                                                };
-                                                variableFilters.push( variableFilter );
-                                            });
-                                            controlPanelConfig.set( { variableFilters: variableFilters } );
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    handle: {
-                        controlPanel: {
-                            events: {
-                                filterVariables: {
-                                    mainChart: {
-                                        config: function( eventProperties, mainChartConfig ) {
-                                            console.log( eventProperties );
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                */
                 controlPanel: {
                     enable: true,
                     buttons: [
