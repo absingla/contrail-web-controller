@@ -12,7 +12,8 @@ define([
     var CTConstants = function () {
 
         this.URL_ALL_DOMAINS = '/api/tenants/config/domains';
-        this.URL_ALL_PROJECTS = '/api/tenants/config/projects';
+        this.URL_ALL_PROJECTS = '/api/tenants/config/all-projects';
+        this.URL_PROJECTS = '/api/tenants/config/projects';
         this.URL_ALL_PROJECTS_VCENTER_OR_CONFIG = '/api/tenants/projects';
 
         this.URL_PROJECT_CONNECTED_GRAPH = '/api/tenant/monitoring/project-connected-graph?fqName={0}';
@@ -213,8 +214,9 @@ define([
         this.TOP_IN_LAST_MINS = 10;
         this.NUM_DATA_POINTS_FOR_FLOW_SERIES = 120;
         this.LINK_CONNECTOR_STRING = " --- ";
-
-
+        //percentile constants
+        this.PERCENTILE_TEXT_VIEW_TEMPLATE = "percentile-text-view-template";
+        this.PERCENTILE_BAR_VIEW_TEMPLATE = "percentile-bar-view-template";
         // Config DB constants
         this.TMPL_CDB_ITEM_DELETE = "cdb-delete-item-template";
         this.DELETE_KEY_TYPE = "delete-key";
