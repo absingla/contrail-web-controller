@@ -65,6 +65,7 @@ define([
                 },
                 "cpu_five_min_avg" : {
                     color: cowc.D3_COLOR_CATEGORY5[2],
+                    label: 'CPU 5 minute Avg',
                     min : 0,
                     enable: true,
                     y: 1,
@@ -83,7 +84,7 @@ define([
                     label: 'Memory Usage',
                     enable: true,
                     y: 2,
-                    chartType: "stackedBar",
+                    chartType: "bar",
                     tooltip : {
                         nameFormatter: function(name) {
                             return "Memory Usage";
@@ -95,9 +96,10 @@ define([
                 },
                 "rss_buffer": {
                     color: cowc.D3_COLOR_CATEGORY5[4],
+                    label: 'Buffer Memory Usage',
                     enable: true,
                     y: 2,
-                    chartType: "stackedBar",
+                    chartType: "bar",
                     tooltip : {
                         nameFormatter: function(name) {
                             return "Buffer Memory Usage";
@@ -298,7 +300,60 @@ define([
                             chartOptions: {
                                 mainChart: {
                                     marginLeft: 70,
-                                    marginRight: 70,
+                                    marginRight: 80,
+                                    marginInner: 5,
+                                    chartWidthDelta: -40,
+                                    axis: {
+                                        x: {
+                                            formatter: function(value) {
+                                                return d3.time.format("%H:%M")(value);
+                                            }
+                                        },
+                                        y1: {
+                                            formatter: d3.format(".01f"),
+                                            domain: [0, undefined],
+                                        },
+                                        y2: {
+                                            formatter: function (y2Value) {
+                                                return formatBytes(y2Value * 1024, true);
+                                            },
+                                            //[min, max] when a value is set to undefined, will use whatever chart calculated value
+                                            //with following config, will force min to 0 and max to chart calculated max scale.
+                                            domain: [0, undefined],
+                                        }
+                                    },
+                                    accessorData : CPUMemChartMetadata
+                                },
+                                bindingHandler: {
+                                    bindings: [
+                                        {
+                                            sourceComponent: 'mainChart',
+                                            sourceModel: 'config',
+                                            sourcePath: 'accessorData',
+                                            targetComponent: 'controlPanel',
+                                            targetModel: 'config',
+                                            action: 'sync'
+                                        }
+                                    ]
+                                },
+                                controlPanel: {
+                                    enable: true,
+                                    buttons: [
+                                        {
+                                            name: "filter",
+                                            title: "Filter",
+                                            iconClass: 'fa fa-filter',
+                                            events: {
+                                                click: "filterVariables"
+                                            },
+                                            openPanel: "accessorData"
+                                        }
+                                    ]
+                                },
+                                navigation: {
+                                    enable: true,
+                                    marginLeft: 70,
+                                    marginRight: 80,
                                     marginInner: 5,
                                     axis: {
                                         x: {
@@ -317,14 +372,41 @@ define([
                                             //[min, max] when a value is set to undefined, will use whatever chart calculated value
                                             //with following config, will force min to 0 and max to chart calculated max scale.
                                             domain: [0, undefined],
-                                            chartStyle: "grouped" //for Bar chart
                                         }
                                     },
-                                    accessorData : CPUMemChartMetadata,
-                                },
-                                controlPanel: {
-                                    enable: true,
-                                    accessorData: CPUMemChartMetadata
+                                    //accessorData : CPUMemChartMetadata
+                                    accessorData: {
+                                        "rss": {
+                                            color: cowc.D3_COLOR_CATEGORY5[3],
+                                            label: 'Memory Usage',
+                                            enable: true,
+                                            y: 2,
+                                            chartType: "stackedBar",
+                                            tooltip : {
+                                                nameFormatter: function(name) {
+                                                    return "Memory Usage";
+                                                },
+                                                valueFormatter: function(value) {
+                                                    return formatBytes(value * 1024, false, 2, 3);
+                                                }
+                                            }
+                                        },
+                                        "rss_buffer": {
+                                            color: cowc.D3_COLOR_CATEGORY5[4],
+                                            label: 'Buffer Memory Usage',
+                                            enable: true,
+                                            y: 2,
+                                            chartType: "stackedBar",
+                                            tooltip : {
+                                                nameFormatter: function(name) {
+                                                    return "Buffer Memory Usage";
+                                                },
+                                                valueFormatter: function(value) {
+                                                    return formatBytes(value * 1024, false, 2, 3);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -720,14 +802,6 @@ define([
                             iconClass: 'fa fa-times-circle-o'
                         }
                     ]
-                    /*
-                    filter: {
-                        enable: true,
-                        iconClass: 'fa fa-filter',
-                        title: 'Filter',
-                        viewConfig: getControlPanelFilterConfig()
-                    }
-                    */
                 },
                 navigation: {
                     enable: true,
@@ -775,19 +849,11 @@ define([
                 },
                 mainChart: {
                     xLabel: ctwl.X_AXIS_TITLE_PORT,
-                    yLabel: ctwl.Y_AXIS_TITLE_BW,
-                    //forceX: [0, 1000],
-                    //forceY: [0, 1000],
                     tooltip: {
                         contentCB: ctwgrc.getPortDistributionTooltipConfig(onScatterChartClick),
                         clickCB: onScatterChartClick,
                     },
                     xAccessor: 'x',
-                    //xLabelFormat: d3.format(','),
-                    //yLabelFormat: function (yValue) {
-                    //    var formattedValue = formatBytes(yValue, false, null, 1);
-                    //    return formattedValue;
-                    //},
                     chartWidthDelta: -40,
                     marginLeft: 70,
                     marginRight: 70,
@@ -797,7 +863,7 @@ define([
                     rRange: [2, 10],
                     accessorData: {
                         'y' : {
-                            label: 'Bandwidth (Last 5 Mins)',
+                            label: ctwl.Y_AXIS_TITLE_BW,
                             enable: false,
                             y: 1,
                             chartType: 'scatterBubble',
