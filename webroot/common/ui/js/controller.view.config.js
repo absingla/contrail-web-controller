@@ -54,6 +54,7 @@ define([
                     enable: true,
                     y: 1,
                     chartType: "line",
+                    possibleChartTypes: [{ name: "line", label: "Line" }, { name: "bar", label: "Grouped Bar" }, { name: "stackedBar", label: "Stacked Bar"}],
                     tooltip : {
                         nameFormatter: function(name) {
                             return "CPU average";
@@ -70,6 +71,7 @@ define([
                     enable: true,
                     y: 1,
                     chartType: "line",
+                    possibleChartTypes: [{ name: "line", label: "Line" }, { name: "bar", label: "Grouped Bar" }, { name: "stackedBar", label: "Stacked Bar"}],
                     tooltip : {
                         nameFormatter: function(name) {
                             return "CPU 5min average";
@@ -85,6 +87,7 @@ define([
                     enable: true,
                     y: 2,
                     chartType: "bar",
+                    possibleChartTypes: [{ name: "line", label: "Line" }, { name: "bar", label: "Grouped Bar" }, { name: "stackedBar", label: "Stacked Bar"}],
                     tooltip : {
                         nameFormatter: function(name) {
                             return "Memory Usage";
@@ -100,6 +103,7 @@ define([
                     enable: true,
                     y: 2,
                     chartType: "bar",
+                    possibleChartTypes: [{ name: "line", label: "Line" }, { name: "bar", label: "Grouped Bar" }, { name: "stackedBar", label: "Stacked Bar"}],
                     tooltip : {
                         nameFormatter: function(name) {
                             return "Buffer Memory Usage";
@@ -346,7 +350,10 @@ define([
                                             events: {
                                                 click: "filterVariables"
                                             },
-                                            openPanel: "accessorData"
+                                            panel: {
+                                                name: "accessorData",
+                                                width: "350px"
+                                            }
                                         }
                                     ]
                                 },
@@ -354,6 +361,7 @@ define([
                                     enable: true,
                                     marginLeft: 70,
                                     marginRight: 80,
+                                    chartWidthDelta: -40,
                                     marginInner: 5,
                                     axis: {
                                         x: {
@@ -784,7 +792,10 @@ define([
                             events: {
                                 click: "filterVariables"
                             },
-                            openPanel: "accessorData"
+                            panel: {
+                                name: "accessorData",
+                                width: "350px"
+                            }
                         },
                         {
                             name: "zoomIn",
