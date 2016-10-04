@@ -13,20 +13,22 @@ define([
     var moduleId = cttm.BGP_GRID_VIEW_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
+
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-
-        var routes = [];
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/bgp/get-bgp-routers').toString(),
-            fnName: 'bgpMockData'
-        });
-        return routes;
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                bgpGridViewMockData: 'config/infra/bgp/test/ui/views/bgpGridView.mock.data.js'
+            },
+            routes: [
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/bgp/get-bgp-routers'),
+                    response: {data:'bgpGridViewMockData.bgpMockData'}
+                }
+            ]
+        };
+        return routesConfig;
     };
-
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'config/infra/bgp/test/ui/views/bgpGridView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -52,7 +54,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
-    return pageTestConfig;
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
 
+    return pageTestConfig;
 });

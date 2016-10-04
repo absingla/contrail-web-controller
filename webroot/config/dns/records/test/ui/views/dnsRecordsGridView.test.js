@@ -14,30 +14,32 @@ define([
 
     var moduleId = cttm.DNS_RECORDS_GRID_VIEW_TEST_MODULE;
 
-    var testServerConfig = cotr.getDefaultTestServerConfig();
     var testType = cotc.VIEW_TEST;
-
-    var testServerRoutes = function() {
-        var routes = [];
-        routes.push({
-            url :  cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
-            fnName: 'dnsRecordsDomainMockData'
-        });
-        routes.push({
-            url :  cttu.getRegExForUrl('/api/tenants/config/list-virtual-DNSs/07fbaa4b-c7b8-4f3d-996e-9d8b1830b288').toString(),
-            fnName: 'dnsServerListMockData'
-        });
-
-        routes.push({
-            url : cttu.getRegExForUrl('/api/tenants/config/get-config-details').toString(),
-            method: "POST",
-            fnName: 'dnsRecordsMockData'
-        });
-        return routes;
+    
+    var testServerConfig = cotr.getDefaultTestServerConfig();
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                dnsRecordsGridViewMockData: 'config/dns/records/test/ui/views/dnsRecordsGridView.mock.data.js'
+            },
+            routes: [
+                {
+                    urlRegex:  cttu.getRegExForUrl('/api/tenants/config/domains'),
+                    response: {data: 'dnsRecordsGridViewMockData.dnsRecordsDomainMockData'}
+                },
+                {
+                    urlRegex:  cttu.getRegExForUrl('/api/tenants/config/list-virtual-DNSs/07fbaa4b-c7b8-4f3d-996e-9d8b1830b288'),
+                    response: {data: 'dnsRecordsGridViewMockData.dnsServerListMockData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/get-config-details'),
+                    method: "POST",
+                    response: {data: 'dnsRecordsGridViewMockData.dnsRecordsMockData'}
+                }
+            ]
+        };
+        return routesConfig;
     };
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'config/dns/records/test/ui/views/dnsRecordsGridView.mock.data.js';
-
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -66,7 +68,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
+    
     return pageTestConfig;
-
 });

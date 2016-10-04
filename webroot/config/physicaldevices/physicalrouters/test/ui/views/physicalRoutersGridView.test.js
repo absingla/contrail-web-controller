@@ -16,19 +16,20 @@ define([
     var testType = cotc.VIEW_TEST;
 
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-        var routes = [];
-
-        routes.push( {
-            url: cttu.getRegExForUrl('/api/tenants/config/physical-routers-with-intf-count').toString(),
-            fnName: 'physcalRoutersMockData'
-        });
-
-        return routes;
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                physicalRoutersGridViewMockData: 'config/physicaldevices/physicalrouters/test/ui/views/physicalRoutersGridView.mock.data.js'
+            },
+            routes: [
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/physical-routers-with-intf-count'),
+                    response: {data : 'physicalRoutersGridViewMockData.physcalRoutersMockData'}
+                }
+            ]
+        };
+        return routesConfig;
     };
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'config/physicaldevices/physicalrouters/test/ui/views/physicalRoutersGridView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -54,7 +55,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
-    return pageTestConfig;
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
 
+    return pageTestConfig;
 });

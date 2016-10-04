@@ -16,37 +16,39 @@ define([
     var testType = cotc.VIEW_TEST;
 
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-        var routes = [];
-
-        routes.push( {
-            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
-            fnName: 'portDomainsData'
-        });
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/projects/default-domain').toString(),
-            fnName: 'portPojectsData'
-        });
-        routes.push( {
-            url:  cttu.getRegExForUrl('/api/tenants/config/get-config-uuid-list').toString(),
-            fnName: 'portUUIDListData'
-        });
-        routes.push( {
-            url: cttu.getRegExForUrl('/api/tenants/config/get-virtual-machine-details-paged').toString(),
-            method : 'POST',
-            fnName: 'portMockData'
-        });
-
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
-            fnName: 'empty'
-        });
-        return routes;
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                portGridViewMockData: 'config/networking/port/test/ui/views/portGridView.mock.data.js'
+            },
+            routes: [
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
+                    response: {data: 'portGridViewMockData.portDomainsData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects/default-domain'),
+                    response: {data: 'portGridViewMockData.portPojectsData'}
+                },
+                {
+                    urlRegex:  cttu.getRegExForUrl('/api/tenants/config/get-config-uuid-list'),
+                    response: {data: 'portGridViewMockData.portUUIDListData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/get-virtual-machine-details-paged'),
+                    method : 'POST',
+                    response: {data: 'portGridViewMockData.portMockData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/get-project-role'),
+                    response: {data: '{}'}
+                }
+            ]
+        };
+        
+        return routesConfig;
     };
 
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'config/networking/port/test/ui/views/portGridView.mock.data.js';
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
         p: 'config_net_ports'
@@ -71,7 +73,6 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
     return pageTestConfig;
-
 });

@@ -16,25 +16,25 @@ define([
     var testType = cotc.VIEW_TEST;
 
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-        var routes = [];
-
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString() ,
-            fnName: 'dnsServerDomainsMockData'
-        });
-
-        routes.push({
-            url : cttu.getRegExForUrl('/api/tenants/config/get-config-details').toString(),
-            method: "POST",
-            fnName: 'dnsServersMockData'
-        });
-        return routes;
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                dnsServersGridViewMockData: 'config/dns/servers/test/ui/views/dnsServersGridView.mock.data.js'
+            },
+            routes: [
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
+                    response: {data: 'dnsServersGridViewMockData.dnsServerDomainsMockData'}
+                },
+                {
+                    urlRegex : cttu.getRegExForUrl('/api/tenants/config/get-config-details'),
+                    method: "POST",
+                    response: {data : 'dnsServersGridViewMockData.dnsServersMockData'}
+                }
+            ]
+        };
+        return routesConfig;
     };
-
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'config/dns/servers/test/ui/views/dnsServersGridView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -60,7 +60,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
     return pageTestConfig;
 
 });

@@ -15,32 +15,32 @@ define([
     var testType = cotc.VIEW_TEST;
 
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-    var routes = [];
-
-    routes.push({
-        url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
-        fnName: 'bgpAsAServiceDomainsData'
-    });
-    routes.push( {
-        url: cttu.getRegExForUrl('/api/tenants/config/projects/default-domain').toString(),
-        fnName: 'bgpAsAServicePojectsData'
-    });
-
-    routes.push({
-        url: cttu.getRegExForUrl('/api/tenants/config/get-bgp-as-a-services/90ab868a-da21-4ed9-922f-a309967eb0a0').toString(),
-        fnName: 'bgpAsAServiceMockData'
-    });
-    routes.push({
-        url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
-        fnName: 'empty'
-    });
-        return routes;
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                bgpAsAServiceGridViewMockData: 'config/services/bgpasaservice/test/ui/views/bgpAsAServiceGridView.mock.data.js'
+            },
+            routes: [
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
+                    response: {data: 'bgpAsAServiceGridViewMockData.bgpAsAServiceDomainsData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects/default-domain'),
+                    response: {data: 'bgpAsAServiceGridViewMockData.bgpAsAServicePojectsData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/get-bgp-as-a-services/90ab868a-da21-4ed9-922f-a309967eb0a0'),
+                    response: {data: 'bgpAsAServiceGridViewMockData.bgpAsAServiceMockData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/get-project-role'),
+                    response: {data: '{}'}
+                }
+            ]
+        };
+        return routesConfig;
     };
-
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'config/services/bgpasaservice/test/ui/views/bgpAsAServiceGridView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -66,7 +66,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
-    return pageTestConfig;
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
 
+    return pageTestConfig;
 });

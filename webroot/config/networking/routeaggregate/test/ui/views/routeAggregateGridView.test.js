@@ -15,22 +15,29 @@ define([
 
     var testType = cotc.VIEW_TEST;
 
-    var testServerRoutes = function() {
-        var responses = [];
-        responses.push({
-            url: '/tenants/config/domains',
-            fnName: 'routeAggregateDomainsData'
-        });
-        responses.push({
-            url:'/tenants/config/projects/default-domain',
-            fnName: 'routeAggregatePojectsData'
-        });
-        responses.push({
-            url: '/tenants/config/route-aggregates/ee14bbf4-a3fc-4f98-a7b3-f1fe1d8b29bb',
-            fnName: 'routeAggregateMockData'
-        });
+    var testServerConfig = cotr.getDefaultTestServerConfig();
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                routeAggGridViewMockData: 'config/networking/routeaggregate/test/ui/views/routeAggregateGridView.mock.data.js'
+            },
+            routes: [
+                {
+                    url: '/tenants/config/domains',
+                    response: {data: 'routeAggGridViewMockData.routeAggregateDomainsData'}
+                },
+                {
+                    url: '/tenants/config/projects/default-domain',
+                    response: {data: 'routeAggGridViewMockData.routeAggregatePojectsData'}
+                },
+                {
+                    url: '/tenants/config/route-aggregates/ee14bbf4-a3fc-4f98-a7b3-f1fe1d8b29bb',
+                    response: {data: 'routeAggGridViewMockData.routeAggregateMockData'}
+                }
+            ]
+        };
 
-        return responses;
+        return routesConfig;
     };
 
     var pageConfig = cotr.getDefaultPageConfig();
@@ -57,10 +64,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, pageConfig, getTestConfig);
-    pageTestConfig.mockDataFile = 'config/networking/routeaggregate/test/ui/views/routeAggregateGridView.mock.data.js';
-
-    pageTestConfig.getTestServerRoutes = testServerRoutes;
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
+    
     return pageTestConfig;
-
 });

@@ -12,28 +12,28 @@ define([
 
     var moduleId = cttm.PHYSICAL_INTERFACES_GRID_VIEW_COMMON_TEST_MODULE;
 
-    var testServerConfig = cotr.getDefaultTestServerConfig();
-
     var testType = cotc.VIEW_TEST;
 
-    var testServerRoutes = function() {
-        var routes = [];
-
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/physical-routers-list').toString(),
-            fnName: 'physicalRouterListMockData'
-        });
-
-        routes.push({
-            method : "POST",
-            url: cttu.getRegExForUrl('/api/tenants/config/get-interfaces').toString(),
-            fnName: 'physicalInterfacesMockData'
-        });
-        return routes;
+    var testServerConfig = cotr.getDefaultTestServerConfig();
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                interfacesGridViewMockData: 'config/physicaldevices/interfaces/test/ui/views/interfacesGridView.mock.data.js'
+            },
+            routes: [
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/physical-routers-list'),
+                    response: {data: 'interfacesGridViewMockData.physicalRouterListMockData'}
+                },
+                {
+                    method : "POST",
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/get-interfaces'),
+                    response: {data: 'interfacesGridViewMockData.physicalInterfacesMockData'}
+                }
+            ]
+        };
+        return routesConfig;
     };
-    
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'config/physicaldevices/interfaces/test/ui/views/interfacesGridView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -62,7 +62,7 @@ define([
 
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
-    return pageTestConfig;
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
 
+    return pageTestConfig;
 });
