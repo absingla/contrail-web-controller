@@ -380,15 +380,17 @@ define([
         this.ANALYTICS_CHART_DATABASE_WRITE_STACKEDBARCHART_ID = "analytics-chart-database-write-stackedbarchart-id";
         this.ANALYTICS_CHART_DATABASE_WRITE_LABEL = "DB Writes";
         this.ANALYTICS_CHART_FAILED_DATABASE_WRITES = "Failed DB Writes";
-        this.ANALYTICS_CHART_DATABASE_READ = "table_info.reads";
-        this.ANALYTICS_CHART_DATABASE_READ_FAILS = "table_info.read_fails";
-        this.ANALYTICS_CHART_DATABASE_WRITE = "table_info.writes";
-        this.ANALYTICS_CHART_DATABASE_WRITE_FAILS = "table_info.write_fails";
+        this.ANALYTICS_CHART_DATABASE_READ = "SUM(table_info.reads)";
+        this.ANALYTICS_CHART_DATABASE_READ_FAILS = "SUM(table_info.read_fails)";
+        this.ANALYTICS_CHART_DATABASE_WRITE = "SUM(table_info.writes)";
+        this.ANALYTICS_CHART_DATABASE_WRITE_FAILS = "SUM(table_info.write_fails)";
         this.ANALYTICS_NODES = 'Analytics Nodes';
         this.CACHE_ANALYTICSNODE_SANDESH_CHARTS = 'cache-analyticsnode-sandesh-charts';
         this.CACHE_ANALYTICSNODE_QUERIES_CHARTS = 'cache-analyticsnode-queries-charts';
         this.CACHE_ANALYTICSNODE_DATABASEREADWRITE_CHARTS = 'cache-analyticsnode-databsereadwrite-charts';
         this.CACHE_DATABASE_USAGE_CHARTS = 'cache-databse-usage-charts';
+        this.ANALYTICS_CHART_PERCENTILE_SECTION_ID = "analytics-chart-percentile-section-id";
+        this.ANALYTICS_CHART_PERCENTILE_TEXT_VIEW = "analytics-chart-percentile-text-view";
         //Config node labels
         this.CONFIGNODE_VIEWPATH_PREFIX = 'monitor/infrastructure/confignode/ui/js/views/';
         this.CONFIGNODE_SUMMARY_PAGE_ID = 'monitor-config-nodes';
@@ -629,8 +631,12 @@ define([
         this.DATABASENODE_CPU_SHARE_LINE_CHART_ID = 'database-nodes-cpu-line-chart';
         this.DATABASENODE_MEM_SHARE_LINE_CHART_SEC_ID = 'database-nodes-mem-line-chart-section';
         this.DATABASENODE_MEM_SHARE_LINE_CHART_ID = 'database-nodes-mem-line-chart';
-        this.DATABASENODE_DISK_SPACE_USAGE_SCATTER_CHART_SEC_ID = 'database-nodes-disk-sapce-scatter-chart-section';
-        this.DATABASENODE_DISK_SPACE_USAGE_SCATTER_CHART_ID = 'database-nodes-disk-sapce-scatter-chart';
+        this.DATABASENODE_DISK_SPACE_USAGE_CHART_SEC_ID = 'database-nodes-disk-sapce-chart-section';
+        this.DATABASENODE_DISK_SPACE_USAGE_CHART_ID = 'database-nodes-disk-sapce-chart';
+        this.DATABASENODE_COMPACTIONS_CHART_SEC_ID = 'database-nodes-compactions-chart-section';
+        this.DATABASENODE_COMPACTIONS_CHART_ID = 'database-nodes-compactions-chart';
+        this.DATABASENODE_PERCENTILE_SECTION_ID = "database-nodes-percentile-section-id";
+        this.DATABASENODE_PERCENTILE_BAR_VIEW = "database-nodes-percentile-bar-view";
 
         //Analytics node labels
         this.ANALYTICSNODE_VIEWPATH_PREFIX =
@@ -701,6 +707,21 @@ define([
         this.TITLE_DEL_LLS = 'Delete Link Local Service';
         this.TITLE_EDIT_LLS = 'Edit Link Local Service';
         this.LINK_LOCAL_SERVICE_DETAILS = 'Link Local Service Details';
+
+        this.EDIT = "Edit";
+        this.CREATE = "Create";
+
+        /* RBAC labels */
+        this.TITLE_RBAC = 'API Access';
+        this.TITLE_GLOBAL_RBAC = 'Global API Access';
+        this.TITLE_DOMAIN_RBAC = 'Domain API Access';
+        this.TITLE_PROJECT_RBAC = 'Project API Access';
+        this.TITLE_CREATE_RBAC = 'Create API Access';
+        this.TITLE_DEL_RBAC = 'Delete API Access';
+        this.TITLE_RBAC_MULTI_DELETE =
+            "Delete API Access";
+        this.TITLE_EDIT_RBAC = 'Edit API Access';
+        this.TITLE_INSERT_RBAC = 'Insert API Access';
 
         //Physical Routers labels
         this.CONFIG_PHYSICAL_ROUTERS_PAGE_ID = "config-physical-routers-page";

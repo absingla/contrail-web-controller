@@ -27,7 +27,7 @@ define([
                     response: {data: 'portGridViewMockData.portDomainsData'}
                 },
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects/default-domain'),
+                    urlRegex: cttu.getRegExForUrl(ctwc.URL_ALL_PROJECTS),
                     response: {data: 'portGridViewMockData.portPojectsData'}
                 },
                 {
@@ -74,5 +74,6 @@ define([
     };
 
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
+
     return pageTestConfig;
 });

@@ -15,7 +15,7 @@ define([
     var moduleId = cttm.DNS_RECORDS_GRID_VIEW_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
-    
+
     var testServerConfig = cotr.getDefaultTestServerConfig();
     testServerConfig.getRoutesConfig = function() {
         var routesConfig = {
@@ -28,7 +28,7 @@ define([
                     response: {data: 'dnsRecordsGridViewMockData.dnsRecordsDomainMockData'}
                 },
                 {
-                    urlRegex:  cttu.getRegExForUrl('/api/tenants/config/list-virtual-DNSs/07fbaa4b-c7b8-4f3d-996e-9d8b1830b288'),
+                    urlRegex:  /\/api\/tenants\/config\/list-virtual-DNSs.*$/.toString(),
                     response: {data: 'dnsRecordsGridViewMockData.dnsServerListMockData'}
                 },
                 {

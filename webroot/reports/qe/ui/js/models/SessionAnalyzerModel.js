@@ -9,16 +9,14 @@ define([
     "controller-basedir/reports/qe/ui/js/models/FlowSeriesFormModel",
     "core-basedir/reports/qe/ui/js/models/ContrailListModelGroup"
 ], function (_, ContrailListModel, qeUtils, FlowSeriesFormModel, ContrailListModelGroup) {
-
     var SessionAnalyzerModel = ContrailListModelGroup.extend({
-
         constructor: function(modelConfig) {
             var self = this;
             self.queryFormAttributes = modelConfig.queryFormAttributes;
             self.selectedFlowRecord = modelConfig.selectedFlowRecord;
             self.queryRequestPostDataMap = {};
             self.modelConfig = modelConfig;
-            self.initComplete = new window.Slick.Event();
+            self.initComplete = new Slick.Event(); // eslint-disable-line
 
             ContrailListModelGroup.apply(self, arguments);
 
@@ -41,7 +39,7 @@ define([
 
             var saDataKeyMap = cowc.MAP_SESSION_ANALYZER_DATA_KEY;
 
-            _.forEach(saDataKeyMap, function(value, key) {
+            _.each(saDataKeyMap, function(value, key) {
                 if (contrail.checkIfExist(value.query)) {
                     self.queryRequestPostDataMap[key] = getQueryRequestPostData(serverCurrentTime, flowSeriesFormModel,
                         self.selectedFlowRecord, value.query.type, value.query.reverse);
@@ -170,7 +168,7 @@ define([
                 return data.data;
             };
 
-        _.forEach(queryRequestPostDataMap, function(queryPostData, id) {
+        _.each(queryRequestPostDataMap, function(queryPostData, id) {
             listModelConfigArray.push(getListModelConfig(id, queryPostData, dataParserFn));
         });
         return listModelConfigArray;

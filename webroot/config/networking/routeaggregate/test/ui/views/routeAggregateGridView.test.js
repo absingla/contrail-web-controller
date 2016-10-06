@@ -23,20 +23,19 @@ define([
             },
             routes: [
                 {
-                    url: '/tenants/config/domains',
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
                     response: {data: 'routeAggGridViewMockData.routeAggregateDomainsData'}
                 },
                 {
-                    url: '/tenants/config/projects/default-domain',
+                    urlRegex: cttu.getRegExForUrl(ctwc.URL_ALL_PROJECTS),
                     response: {data: 'routeAggGridViewMockData.routeAggregatePojectsData'}
                 },
                 {
-                    url: '/tenants/config/route-aggregates/ee14bbf4-a3fc-4f98-a7b3-f1fe1d8b29bb',
+                    urlRegex: /\/api\/tenants\/config\/route-aggregates\/ee14bbf4-a3fc-4f98-a7b3-f1fe1d8b29bb.*$/.toString(),
                     response: {data: 'routeAggGridViewMockData.routeAggregateMockData'}
                 }
             ]
         };
-
         return routesConfig;
     };
 

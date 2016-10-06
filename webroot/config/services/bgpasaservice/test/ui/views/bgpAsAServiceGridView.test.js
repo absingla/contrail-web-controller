@@ -26,11 +26,11 @@ define([
                     response: {data: 'bgpAsAServiceGridViewMockData.bgpAsAServiceDomainsData'}
                 },
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects/default-domain'),
+                    urlRegex: cttu.getRegExForUrl(ctwc.URL_ALL_PROJECTS),
                     response: {data: 'bgpAsAServiceGridViewMockData.bgpAsAServicePojectsData'}
                 },
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/get-bgp-as-a-services/90ab868a-da21-4ed9-922f-a309967eb0a0'),
+                    urlRegex: '/\/api\/tenants\/config\/get-bgp-as-a-services\/90ab868a-da21-4ed9-922f-a309967eb0a0.*$/',
                     response: {data: 'bgpAsAServiceGridViewMockData.bgpAsAServiceMockData'}
                 },
                 {

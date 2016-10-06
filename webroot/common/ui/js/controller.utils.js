@@ -324,8 +324,7 @@ define([
             var modelConfig = {
                 remote: {
                     ajaxConfig: {
-                        url: ctwc.getProjectsURL(domainObj,
-                                                 dropdownOptions)
+                        url: ctwc.URL_ALL_PROJECTS
                     },
                     dataParser: function(response) {
                         return  $.map(response.projects, function (n, i) {
@@ -361,13 +360,13 @@ define([
             return {
                 remote: {
                     ajaxConfig: {
-                        url: '/api/tenants/config/list-virtual-DNSs/' + dns
+                        url: '/api/tenants/config/list-virtual-DNSs'
                     },
                     dataParser: function(response) {
                         return  $.map(response, function (n, i) {
                             return {
-                                fq_name: n.to.join(':'),
-                                name: n.to[1],
+                                fq_name: n.fq_name.join(':'),
+                                name: n.fq_name[1],
                                 value: n.uuid
                             };
                         });

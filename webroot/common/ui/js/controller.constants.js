@@ -12,7 +12,8 @@ define([
     var CTConstants = function () {
 
         this.URL_ALL_DOMAINS = '/api/tenants/config/domains';
-        this.URL_ALL_PROJECTS = '/api/tenants/config/projects';
+        this.URL_ALL_PROJECTS = '/api/tenants/config/all-projects';
+        this.URL_PROJECTS = '/api/tenants/config/projects';
         this.URL_ALL_PROJECTS_VCENTER_OR_CONFIG = '/api/tenants/projects';
 
         this.URL_PROJECT_CONNECTED_GRAPH = '/api/tenant/monitoring/project-connected-graph?fqName={0}';
@@ -212,8 +213,9 @@ define([
         this.TOP_IN_LAST_MINS = 10;
         this.NUM_DATA_POINTS_FOR_FLOW_SERIES = 120;
         this.LINK_CONNECTOR_STRING = " --- ";
-
-
+        //percentile constants
+        this.PERCENTILE_TEXT_VIEW_TEMPLATE = "percentile-text-view-template";
+        this.PERCENTILE_BAR_VIEW_TEMPLATE = "percentile-bar-view-template";
         // Config DB constants
         this.TMPL_CDB_ITEM_DELETE = "cdb-delete-item-template";
         this.DELETE_KEY_TYPE = "delete-key";
@@ -551,8 +553,8 @@ define([
         this.GLOBAL_BGP_OPTIONS_MAP = [
             {"key": "autonomous_system", "name": "Global ASN"},
             {"key": "ibgp_auto_mesh", "name": "iBGP Auto Mesh"},
-            {"key": "ip_fabric_subnets", "name": "IP Fabric Subnets"}/*,
-            {"key": "graceful_restart_params", "name": "Graceful Restart"}*/
+            {"key": "ip_fabric_subnets", "name": "IP Fabric Subnets"},
+            {"key": "graceful_restart_parameters", "name": "Graceful Restart"}
         ];
         this.GLOBAL_BGP_OPTIONS_SECTION_ID = "global-bgp-options-section";
         this.GLOBAL_BGP_OPTIONS_ID = "global-bgp-options";
@@ -927,6 +929,7 @@ define([
         this.URL_GET_SERVICE_TEMPLATE_IMAGES = "/api/tenants/config/service-template-images";
 
         /* common config url constants */
+        this.URL_GET_CONFIG_OBJECTS = "/api/tenants/config/get-config-objects";
         this.URL_GET_CONFIG_DETAILS = "/api/tenants/config/get-config-details";
         this.URL_CREATE_CONFIG_OBJECT = "/api/tenants/config/create-config-object";
         this.URL_UPDATE_CONFIG_OBJECT = "/api/tenants/config/update-config-object";
@@ -941,6 +944,7 @@ define([
         this.CONFIG_EDITOR_TEMPLATE = 'config-editor-template';
         this.CONFIG_HASH_PATH = '/#p=config_editor&q[objName]=';
         this.TEXT_AREA_PLACEHOLDER = 'Copy / Paste JSON data for ';
+        this.MODAL_CONFIG_EDITOR_CONTAINER = 'json-editor-form-view';
 
         this.MULTISELECT_VALUE_SEPARATOR = ";;";
     };

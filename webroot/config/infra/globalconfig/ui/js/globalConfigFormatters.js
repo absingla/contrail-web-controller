@@ -109,20 +109,32 @@
                     return dispStr;
                 }
 
-                if("graceful_restart_params" == rowData["key"]) {
+                if("graceful_restart_parameters" == rowData["key"]) {
                     var grTime = getValueByJsonPath(val,
-                            "graceful_restart_time", "-"),
+                            "restart_time", "-"),
                         llgTime = getValueByJsonPath(val,
-                            "long_lived_graceful_restart_time", "-"),
+                            "long_lived_restart_time", "-"),
                         eorRecTime = getValueByJsonPath(val,
-                            "end_of_rib_receive_time", "-"),
-                            dispStr = "";
-
-                    dispStr += "Restart Time : " +
+                            "end_of_rib_timeout", "-"),
+                        enable = getValueByJsonPath(val, "enable", "-"),
+                        bgpHelperEnable = getValueByJsonPath(val,
+                                "bgp_helper_enable", "-"),
+                        xmppHelperEnable = getValueByJsonPath(val,
+                                "xmpp_helper_enable", "-");
+                    enable = enable === true ? "True" : "False";
+                    bgpHelperEnable = bgpHelperEnable === true ?
+                            "True" : "False";
+                    xmppHelperEnable = xmppHelperEnable === true ?
+                            "True" : "False";
+                    dispStr = "";
+                    dispStr += "Enabled : " + enable;
+                    dispStr += "<br>BGP Helper Enabled : " + bgpHelperEnable;
+                    dispStr += "<br>XMPP Helper Enabled : " + xmppHelperEnable;
+                    dispStr += "<br>Restart Time : " +
                         (grTime === "-" ? grTime : grTime + " (seconds)");
-                    dispStr += "<br>Long Lived Restart Time : " +
+                    dispStr += "<br>LLGR Time : " +
                         (llgTime === "-" ? llgTime : llgTime + " (seconds)");
-                    dispStr += "<br>End of RIB Receive Time : " +
+                    dispStr += "<br>End of RIB Timeout : " +
                         (eorRecTime === "-" ? eorRecTime :
                             eorRecTime + " (seconds)");
 
@@ -156,6 +168,22 @@
                       "forwarding_class_mpls_exp", "-");
               return gcUtils.getTextByValue(ctwc.QOS_MPLS_EXP_VALUES,
                       mpls);
+          };
+
+          this.formatQoSQueueExp = function(r, c, v, cd, dc) {
+              return qosQueue = getValueByJsonPath(dc,
+                      "qos_queue_refs;0;to;2", "-");
+          };
+
+          this.formatQoSQueueData = function(result) {
+              var qosQueueDS = [], queueId,
+                  queues = getValueByJsonPath(result, "0;qos-queues", [], false);
+              _.each(queues, function(queue) {
+                  queueId = getValueByJsonPath(queue,
+                          "qos-queue;qos_queue_identifier", 0, false);
+                  qosQueueDS.push({text: queueId, value: queueId});
+              });
+              return qosQueueDS;
           };
      };
      return globalConfigFormatters;

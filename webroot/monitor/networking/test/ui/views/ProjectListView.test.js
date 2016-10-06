@@ -108,6 +108,6 @@ define([
     };
 
     var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
-    return pageTestConfig;
 
+    return pageTestConfig;
 });
