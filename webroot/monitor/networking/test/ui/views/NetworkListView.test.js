@@ -2,6 +2,7 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 define([
+    'controller-constants',
     'co-test-constants',
     'co-test-runner',
     'ct-test-utils',
@@ -10,7 +11,7 @@ define([
     'co-grid-view-test-suite',
     'co-chart-view-zoom-scatter-test-suite',
     'network-list-view-custom-test-suite'
-], function (cotc, cotr, cttu, cttm,
+], function (ctConstants, cotc, cotr, cttu, cttm,
              GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite,
              CustomTestSuite) {
 
@@ -53,14 +54,14 @@ define([
         });
 
         routesConfig.routes.push({
-            urlMatch: "/api/tenants/config/domains.*$",
+            urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_DOMAINS),
             response: {
                 data: "networkListViewMockDataFile.domains"
             }
         });
 
         routesConfig.routes.push({
-            urlRegex: '/\/api\/tenants\/config\/projects\/default-domain.*$/',
+            urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_PROJECTS),
             response: {
                 data: "networkListViewMockDataFile.projectDomain"
             }

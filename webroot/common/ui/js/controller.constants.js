@@ -965,5 +965,5 @@ define([
         return [startDt.getTime(), endDt.getTime()];
     };
 
-    return CTConstants;
+    return new CTConstants();
 });

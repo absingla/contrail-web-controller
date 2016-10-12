@@ -1,11 +1,34 @@
-var methods = {};
-module.exports= {
-    methods : methods
-};
-var rowsCount = 5, timeStamp = 1468458000000000;
+/*
+ * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
+ */
 
-methods.postValues = function(){
-    return {
+function generateTS(rowsCount) {
+    var timeStamp = 1468458000000000;
+    var tmpArray = [];
+    for (var i = 0; i < rowsCount; i++) {
+        timeStamp = timeStamp + Math.floor((Math.random() * 999));
+        var skeletonData = {
+            "T": timeStamp,
+            "destip": "10.1.1.3",
+            "destvn": "default-domain:admin:frontend",
+            "direction_ing": 1,
+            "dport": 34911,
+            "flow_class_id": 2030614318697347000,
+            "protocol": 6,
+            "sourceip": "10.2.1.3",
+            "sourcevn": "default-domain:admin:backend",
+            "sport": 9100,
+            "sum(bytes)": 16618,
+            "sum(packets)": 49,
+            "vrouter": "a3s27"
+        };
+        tmpArray.push(skeletonData);
+    }
+    return tmpArray;
+};
+
+var mockData = {
+    postValues: {
         "data": [
             {
                 "fields.value": "a3s27",
@@ -54,11 +77,9 @@ methods.postValues = function(){
         "chunk": 1,
         "chunkSize": 6,
         "serverSideChunking": true
-    }
-};
+    },
 
-methods.flowSchemaTable = function(){
-    return {
+    flowSchemaTable: {
         "type": "FLOW",
         "columns": [
             {
@@ -181,11 +202,9 @@ methods.flowSchemaTable = function(){
                 "suffixes": null
             }
         ]
-    }
-};
+    },
 
-methods.serverInfo = function(){
-    return {
+    serverInfo: {
         "orchestrationModel": [
             "openstack"
         ],
@@ -241,38 +260,11 @@ methods.serverInfo = function(){
         "currentRegionName": null,
         "loggedInOrchestrationMode": "openstack",
         "insecureAccess": false
-    }
-};
+    },
 
-methods.getMockData = function(){
-
-    var tmpArray = [];
-    for(var i=0; i< rowsCount ;i++){
-        timeStamp = timeStamp + Math.floor((Math.random() * 999));
-        var skeletonData =  {
-            "T":timeStamp ,
-            "destip": "10.1.1.3",
-            "destvn": "default-domain:admin:frontend",
-            "direction_ing": 1,
-            "dport": 34911,
-            "flow_class_id": 2030614318697347000,
-            "protocol": 6,
-            "sourceip": "10.2.1.3",
-            "sourcevn": "default-domain:admin:backend",
-            "sport": 9100,
-            "sum(bytes)": 16618,
-            "sum(packets)": 49,
-            "vrouter": "a3s27"
-        };
-        tmpArray.push(skeletonData);
-    }
-
-    return tmpArray;
-};
-methods.getFlowViewQueryMockData = function(){
-    return{
-        "data": methods['getMockData'](),
-        "total": rowsCount,
+    getFlowViewQueryMockData: {
+        "data": generateTS(5),
+        "total": 5,
         "queryJSON": {
             "table": "FlowSeriesTable",
             "start_time": 1468458000000000,
@@ -306,11 +298,9 @@ methods.getFlowViewQueryMockData = function(){
         "chunk": 1,
         "chunkSize": 1980,
         "serverSideChunking": true
-    }
-};
+    },
 
-methods.viewQueryQueueMockData = function(){
-    return [
+    viewQueryQueueMockData: [
         {
             "startTime": 1467997933519,
             "queryJSON": {
@@ -382,3 +372,5 @@ methods.viewQueryQueueMockData = function(){
     ]
 };
 
+
+module.exports = mockData;

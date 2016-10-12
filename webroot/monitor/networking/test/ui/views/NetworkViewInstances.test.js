@@ -26,7 +26,7 @@ define([
                     response: {data: 'networkViewMockData.domainsMockData'}
                 },
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects'),
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/all-projects'),
                     response: {data: 'networkViewMockData.projectsMockData'}
                 },
                 {

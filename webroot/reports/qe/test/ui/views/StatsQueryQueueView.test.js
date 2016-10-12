@@ -12,20 +12,23 @@ define([
     var moduleId = cttm.STAT_QUERY_QUEUE_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
+
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-        var routes = [];
-
-        routes.push({
-            method: "GET",
-            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=sqq').toString(),
-            fnName: "statQueryQueueMockData"
-        });
-        return routes;
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                statsQueryQueueMockData: 'reports/qe/test/ui/views/StatsQueryQueueView.mock.data.js'
+            },
+            routes: [
+                {
+                    method: "GET",
+                    urlRegex: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=sqq'),
+                    response: {data: "statsQueryQueueMockData.statQueryQueueMockData"}
+                }
+            ]
+        };
+        return routesConfig;
     };
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile ='reports/qe/test/ui/views/StatQueryQueueView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -62,11 +65,10 @@ define([
             // Add necessary timeout for the tab elements to load properly and resolve the promise
             cotc.PAGE_INIT_TIMEOUT * 10
         );
-
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
-    return pageTestConfig;
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig, testInitFn);
 
+    return pageTestConfig;
 });

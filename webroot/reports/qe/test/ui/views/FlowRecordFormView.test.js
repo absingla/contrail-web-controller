@@ -13,47 +13,44 @@ define([
 
     var moduleId = cttm.FLOW_QUERY_QUEUE_COMMON_TEST_MODULE;
 
-    var testServerConfig = cotr.getDefaultTestServerConfig();
-
     var testType = cotc.VIEW_TEST;
-    var testServerRoutes = function() {
-        var routes = [];
 
-        routes.push({
-            method:"GET",
-            url: '/api/qe/query/queue?queryQueue=fqq',
-            fnName: 'viewQueryQueueMockData'
-        });
-
-        routes.push({
-            method: "GET",
-            url: '/api/qe/table/schema/FlowSeriesTable',
-            fnName: 'flowSchemaTable'
-        });
-
-        routes.push({
-            method: "GET",
-            url: '/api/service/networking/web-server-info',
-            fnName: 'serverInfo'
-        });
-
-        routes.push({
-            method: "POST",
-            url: cotc.URL_QE_QUERY,
-            fnName:'getFlowViewQueryMockData'
-        });
-
-
-        routes.push({
-            method: "POST",
-            url: cotc.URL_COLUMN_VALUES,
-            fnName: 'postValues'
-        });
-        return routes;
+    var testServerConfig = cotr.getDefaultTestServerConfig();
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles : {
+                flowQueryQueueMockData: 'reports/qe/test/ui/views/FlowQueryQueueView.mock.data.js'
+            },
+            routes: [
+                {
+                    method:"GET",
+                    url: '/api/qe/query/queue?queryQueue=fqq',
+                    response: {data: 'flowQueryQueueMockData.viewQueryQueueMockData'}
+                },
+                {
+                    method: "GET",
+                    url: '/api/qe/table/schema/FlowSeriesTable',
+                    response: {data: 'flowQueryQueueMockData.flowSchemaTable'}
+                },
+                {
+                    method: "GET",
+                    url: '/api/service/networking/web-server-info',
+                    response: {data: 'flowQueryQueueMockData.serverInfo'}
+                },
+                {
+                    method: "POST",
+                    url: cotc.URL_QE_QUERY,
+                    response: {data:'flowQueryQueueMockData.getFlowViewQueryMockData'}
+                },
+                {
+                    method: "POST",
+                    url: cotc.URL_COLUMN_VALUES,
+                    response: {data: 'flowQueryQueueMockData.postValues'}
+                }
+            ]
+        };
+        return routesConfig;
     };
-
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'reports/qe/test/ui/views/FlowQueryQueueView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -66,7 +63,7 @@ define([
 
     var getTestConfig = function() {
         return {
-            rootView: qePageLoader.qeView,
+            rootView: controllerQEPageLoader.controllerQEView,
             tests: [
                 {
                     viewId: cowl.QE_QUERY_RESULT_GRID_ID,
@@ -99,7 +96,7 @@ define([
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig, testInitFn);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig, testInitFn);
     return pageTestConfig;
 
 });

@@ -55,12 +55,13 @@ module.exports = function (grunt) {
         {pattern: 'contrail-web-controller/webroot/*.xml', included: false},
         {pattern: 'contrail-web-controller/webroot/dist/**/ui/js/**/*.js', included: false},
 
-
+        //Reports QE
         {pattern: 'contrail-web-controller/webroot/reports/**/ui/js/**/*.js', included: false},
-        {pattern: 'contrail-web-controller/webroot/reports/qe/ui/**/*.tmpl', included: false},
+        {pattern: 'contrail-web-controller/webroot/reports/qe/ui/**/controller.*.tmpl', included: false},
         {pattern: 'contrail-web-controller/webroot/reports/qe/ui/**/*.css', included: false},
-
-
+        {pattern: 'contrail-web-core/webroot/reports/**/*.js', included: false},
+        {pattern: 'contrail-web-core/webroot/reports/qe/ui/**/*.tmpl', included: false},
+        {pattern: 'contrail-web-core/webroot/reports/qe/ui/**/*.css', included: false},
 
         {pattern: 'contrail-web-core/webroot/js/**/*.js', included: false},
         {pattern: 'contrail-web-core/webroot/dist/js/**/*.js', included: false},
@@ -187,19 +188,19 @@ module.exports = function (grunt) {
                 feature: 'reports'
             }
         },
-        statQueryQueueView: {
+        statsQueryQueueView: {
             options: {
                 files: [
                     {
-                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatQueryQueueView.test.js',
+                        pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatsQueryQueueView.test.js',
                         included: false
                     },
                     // {
-                    //     pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatFormView.test.js',
+                    //     pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatsFormView.test.js',
                     //     included: false
                     // },
                     // {
-                    //     pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatFormView.custom.test.suite.js',
+                    //     pattern: 'contrail-web-controller/webroot/reports/qe/test/ui/views/StatsFormView.custom.test.suite.js',
                     //     included: false
                     // }
                 ],
@@ -213,11 +214,11 @@ module.exports = function (grunt) {
                     useBrowserName: false
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/reports/views/stat-query-queue-view-test-results.html'
+                    outputFile: __dirname + '/reports/tests/reports/views/stats-query-queue-view-test-results.html'
                 },
                 coverageReporter: {
                     type: 'html',
-                    dir: __dirname + '/reports/coverage/reports/views/statQueryQueueView/',
+                    dir: __dirname + '/reports/coverage/reports/views/statsQueryQueueView/',
                     subdir: browserSubdirFn
                 },
                 feature: 'reports'
@@ -279,7 +280,7 @@ module.exports = function (grunt) {
                 feature: 'reports'
             }
         },
-        statViewQueryResults: {
+        statsViewQueryResults: {
             options: {
                 files: [
                     {
@@ -292,16 +293,16 @@ module.exports = function (grunt) {
                 // },
                 junitReporter: {
                     outputDir: __dirname + '/reports/tests/qe/views/',
-                    outputFile: 'stat-view-query-results.xml',
+                    outputFile: 'stats-view-query-results.xml',
                     suite: 'logsViewQueryResults',
                     useBrowserName: false
                 },
                 htmlReporter: {
-                    outputFile: __dirname + '/reports/tests/reports/views/stat-view-query-results.html'
+                    outputFile: __dirname + '/reports/tests/reports/views/stats-view-query-results.html'
                 },
                 coverageReporter: {
                     type: 'html',
-                    dir: __dirname + '/reports/coverage/reports/views/statViewQueryResults/',
+                    dir: __dirname + '/reports/coverage/reports/views/statsViewQueryResults/',
                     subdir: browserSubdirFn
                 },
                 feature: 'reports'
@@ -1342,10 +1343,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('reports', 'Reports Test Cases', function(target){
       grunt.task.run('express:dev');
-       //  grunt.util.spawn({
-       //      cmd: 'node',
-       //      args: ['testServer.js']
-       //  });
         var testDir = 'runAllReportsTests';
         switch(target) {
             case 'flowQueryQueueView' :
@@ -1357,9 +1354,9 @@ module.exports = function (grunt) {
                 testDir = 'logsQueryQueueView'
                 break;
 
-            case 'statQueryQueueView' :
-                grunt.task.run('karma:statQueryQueueView');
-                testDir = 'statQueryQueueView'
+            case 'statsQueryQueueView' :
+                grunt.task.run('karma:statsQueryQueueView');
+                testDir = 'statsQueryQueueView'
                 break;
 
             case 'flowViewQueryResults':
@@ -1370,9 +1367,9 @@ module.exports = function (grunt) {
                 grunt.task.run('karma:logsViewQueryResults');
                 testDir = 'logsViewQueryResults'
                 break;
-            case 'statViewQueryResults':
-                grunt.task.run('karma:statViewQueryResults');
-                testDir = 'statViewQueryResults'
+            case 'statsViewQueryResults':
+                grunt.task.run('karma:statsViewQueryResults');
+                testDir = 'statsViewQueryResults'
                 break;
 
             default :

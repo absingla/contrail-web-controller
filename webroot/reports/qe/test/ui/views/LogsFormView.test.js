@@ -13,46 +13,44 @@ define([
 
     var moduleId = cttm.LOGS_QUERY_QUEUE_COMMON_TEST_MODULE;
 
-    var testServerConfig = cotr.getDefaultTestServerConfig();
-
     var testType = cotc.VIEW_TEST;
-    var testServerRoutes = function() {
-        var responses = [];
 
-        responses.push({
-            method:"GET",
-            url: '/api/qe/query/queue?queryQueue=lqq',
-            fnName: 'logsQueryQueueMockData'
-        });
-
-        responses.push({
-            method: "GET",
-            url: '/api/qe/table/schema/MessageTable',
-            fnName: 'logsSchemaTable'
-        });
-
-        responses.push({
-            method: "GET",
-            url: '/api/service/networking/web-server-info',
-            fnName: 'serverInfo'
-        });
-
-        responses.push({
-            method: "POST",
-            url: cotc.URL_QE_QUERY,
-            fnName: 'logsViewQueryMockData'
-        });
-
-        responses.push({
-            method: "POST",
-            url: cotc.URL_COLUMN_VALUES,
-            fnName: 'values'
-        });
-        return responses;
+    var testServerConfig = cotr.getDefaultTestServerConfig();
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles : {
+                logsQueryQueueMockData: 'reports/qe/test/ui/views/LogsQueryQueueView.mock.data.js'
+            },
+            routes: [
+                {
+                    method:"GET",
+                    url: '/api/qe/query/queue?queryQueue=lqq',
+                    response: {data: 'logsQueryQueueMockData.logsQueryQueueMockData'}
+                },
+                {
+                    method: "GET",
+                    url: '/api/qe/table/schema/MessageTable',
+                    response: {data: 'logsQueryQueueMockData.logsSchemaTable'}
+                },
+                {
+                    method: "GET",
+                    url: '/api/service/networking/web-server-info',
+                    response: {data: 'logsQueryQueueMockData.serverInfo'}
+                },
+                {
+                    method: "POST",
+                    url: cotc.URL_QE_QUERY,
+                    response: {data: 'logsQueryQueueMockData.logsViewQueryMockData'}
+                },
+                {
+                    method: "POST",
+                    url: cotc.URL_COLUMN_VALUES,
+                    response: {data: 'logsQueryQueueMockData.values'}
+                }
+            ]
+        };
+        return routesConfig;
     };
-
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile ='reports/qe/test/ui/views/LogsQueryQueueView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -97,6 +95,7 @@ define([
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig, testInitFn);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig, testInitFn);
+
     return pageTestConfig;
 });

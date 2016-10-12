@@ -2,6 +2,7 @@
  * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
  */
 define([
+    'controller-constants',
     'co-test-constants',
     'co-test-runner',
     'ct-test-utils',
@@ -9,7 +10,7 @@ define([
     'monitor/networking/test/ui/views/ProjectView.mock.data',
     'co-grid-contrail-list-model-test-suite',
     'co-grid-view-test-suite'
-], function (cotc, cotr, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite) {
+], function (ctConstants, cotc, cotr, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite) {
 
     var moduleId = cttm.PROJECTS_VIEW_COMMON_TEST_MODULE;
 
@@ -23,11 +24,11 @@ define([
             },
             routes: [
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_DOMAINS),
                     response: {data: 'projectViewMockData.domainsMockData'}
                 },
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects'),
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_PROJECTS),
                     response: {data: 'projectViewMockData.projectsMockData'}
                 },
                 {

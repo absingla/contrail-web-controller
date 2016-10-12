@@ -12,26 +12,28 @@ define([
     var moduleId = cttm.LOGS_VIEW_QUERY_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
+
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-
-        var responses = [];
-        
-        responses.push({
-            method:"GET",
-            url: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=lqq').toString(),
-            fnName: 'logsQueryQueueMockData'
-        });
-        responses.push({
-            method: "POST",
-            url: cttu.getRegExForUrl(cotc.URL_QE_QUERY).toString(),
-            fnName: 'logsViewQueryMockData'
-        });
-        return responses;
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                logsQueryQueueMockData: 'reports/qe/test/ui/views/LogsQueryQueueView.mock.data.js'
+            },
+            routes: [
+                {
+                    method:"GET",
+                    urlRegex: cttu.getRegExForUrl('/api/qe/query/queue?queryQueue=lqq'),
+                    response: {data: 'logsQueryQueueMockData.logsQueryQueueMockData'}
+                },
+                {
+                    method: "POST",
+                    urlRegex: cttu.getRegExForUrl(cotc.URL_QE_QUERY),
+                    response: {data: 'logsQueryQueueMockData.logsViewQueryMockData'}
+                }
+            ]
+        };
+        return routesConfig;
     };
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile ='reports/qe/test/ui/views/LogsQueryQueueView.mock.data.js';
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
@@ -60,9 +62,7 @@ define([
         };
     };
 
-
     var testInitFn = function (defObj, onAllViewsRenderComplete) {
-
         setTimeout(function () {
                 onAllViewsRenderComplete.notify();
                 defObj.resolve();
@@ -75,6 +75,7 @@ define([
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig, testInitFn);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig, testInitFn);
+
     return pageTestConfig;
 });

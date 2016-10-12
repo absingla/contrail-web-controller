@@ -72,7 +72,7 @@ require([
             controllerTestAppPathObj["network-list-view-custom-test-suite"] = ctBaseDir + "/monitor/networking/test/ui/views/NetworkListView.custom.test.suite";
             controllerTestAppPathObj["flow-record-form-view-custom-test-suite"] = ctBaseDir + "/reports/qe/test/ui/views/FlowRecordFormView.custom.test.suite";
             controllerTestAppPathObj["logs-form-view-custom-test-suite"] = ctBaseDir + "/reports/qe/test/ui/views/LogsFormView.custom.test.suite";
-            controllerTestAppPathObj["stat-form-view-custom-test-suite"] = ctBaseDir + "/reports/qe/test/ui/views/StatFormView.custom.test.suite";
+            controllerTestAppPathObj["stats-form-view-custom-test-suite"] = ctBaseDir + "/reports/qe/test/ui/views/StatsFormView.custom.test.suite";
 
             return controllerTestAppPathObj;
         };

@@ -2,6 +2,7 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 define([
+    'controller-constants',
     'co-test-constants',
     'co-test-runner',
     'ct-test-utils',
@@ -9,7 +10,7 @@ define([
     'co-grid-contrail-list-model-test-suite',
     'co-grid-view-test-suite',
     'co-chart-view-zoom-scatter-test-suite',
-], function (cotc, cotr, cttu, cttm, GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite) {
+], function (ctConstants, cotc, cotr, cttu, cttm, GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite) {
 
     var moduleId = cttm.PROJECTS_LIST_VIEW_COMMON_TEST_MODULE;
 
@@ -29,25 +30,25 @@ define([
             },
             routes: [
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_DOMAINS),
                     response: {data: 'projectListViewMockData.domainsMockData'}
                 },
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects'),
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_PROJECTS),
                     response: {data: 'projectListViewMockData.projectsMockData'}
                 },
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/projects'),
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_PROJECTS_VCENTER_OR_CONFIG),
                     response: {data: 'projectListViewMockData.projectsMockData'}
                 },
                 {
                     method:"POST",
-                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-networks/details'),
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_NETWORKS_DETAILS),
                     response: {data: 'projectListViewMockData.networksMockData'}
                 },
                 {
                     method: "POST",
-                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/stats'),
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_VM_VN_STATS),
                     response: {data: 'projectListViewMockData.networksMockStatData'}
                 }
             ]

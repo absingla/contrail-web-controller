@@ -29,27 +29,30 @@ if (typeof ctBaseDir !== 'undefined') {
             'monitor-infra-utils','monitor-infra-constants','monitor-infra-parsers'
         ],
     }
-    if(globalObj['env'] == "prod")
-        bundles = controllerBundles;
+
+    if(globalObj['env'] == "prod") bundles = controllerBundles;
+
     require.config({
         baseUrl: ctBaseDir,
         bundles: bundles,
         paths: getControllerAppPaths(ctBaseDir, ctBuildDir),
         waitSeconds: 0
     });
+
     require(['controller-init'], function () {});
+
     loadFeatureBundles();
 }
 
 function loadFeatureBundles() {
-    require(['monitor-infra-module'],function() {
-    });
+    require(['monitor-infra-module'],function() {});
 }
 
 function getControllerAppPaths (ctBaseDir, ctBuildDir,env) {
     ctWebDir = ctBaseDir + ctBuildDir;
-    if(env == null)
-        env = globalObj['env'];
+
+    if(env == null) env = globalObj['env'];
+
     if(env == "dev") {
         return {
             'controller-srcdir': ctBaseDir,

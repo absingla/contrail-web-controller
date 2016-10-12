@@ -2,6 +2,7 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 define([
+    'controller-constants',
     'co-test-constants',
     'co-test-runner',
     'ct-test-utils',
@@ -10,54 +11,57 @@ define([
     'co-grid-contrail-list-model-test-suite',
     'co-grid-view-test-suite',
     'co-chart-view-zoom-scatter-test-suite'
-], function (cotc, cotr, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite) {
+], function (ctConstants, cotc, cotr, cttu, cttm, TestMockdata, GridListModelTestSuite, GridViewTestSuite, ZoomScatterChartTestSuite) {
 
     var moduleId = cttm.INTERFACES_LIST_VIEW_COMMON_TEST_MODULE;
 
     var testType = cotc.VIEW_TEST;
 
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-        var routes = [];
+    testServerConfig.getRoutesConfig = function() {
         /*
-            /api/tenants/config/domains
-            /api/tenants/config/projects
-            /api/tenants/networks/default-domain:admin
-            /api/tenant/networking/stats
-            /api/tenant/networking/virtual-machine-interfaces/summary
-        */
+         /api/tenants/config/domains
+         /api/tenants/config/projects
+         /api/tenants/networks/default-domain:admin
+         /api/tenant/networking/stats
+         /api/tenant/networking/virtual-machine-interfaces/summary
+         */
 
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/domains').toString(),
-            fnName: 'domainsMockData'
-        });
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/config/projects').toString(),
-            fnName: 'projectMockData'
-        });
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/get-project-role').toString(),
-            fnName: 'empty'
-        });
-        routes.push({
-            url: cttu.getRegExForUrl('/api/tenants/networks/default-domain:admin').toString(),
-            fnName: 'adminProjectMockData'
-        });
-        routes.push({
-            method: "POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/stats').toString(),
-            fnName: 'interfacesMockStatData'
-        });
-        routes.push({
-            method: "POST",
-            url: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary').toString(),
-            fnName: 'virtualMachinesInterfacesMockData'
-        });
-        return routes;
+        var routesConfig = {
+            mockDataFiles: {
+                interfaceListViewMockData: 'monitor/networking/test/ui/views/InterfaceListView.mock.data.js'
+            },
+            routes: [
+                {
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_DOMAINS),
+                    response: {data: 'interfaceListViewMockData.domainsMockData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_PROJECTS),
+                    response: {data: 'interfaceListViewMockData.projectMockData'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/get-project-role'),
+                    response: {data: '{}'}
+                },
+                {
+                    urlRegex: cttu.getRegExForUrl('/api/tenants/networks/default-domain:admin'),
+                    response: {data: 'interfaceListViewMockData.adminProjectMockData'}
+                },
+                {
+                    method: "POST",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/stats'),
+                    response: {data: 'interfaceListViewMockData.interfacesMockStatData'}
+                },
+                {
+                    method: "POST",
+                    urlRegex: cttu.getRegExForUrl('/api/tenant/networking/virtual-machine-interfaces/summary'),
+                    response: {data: 'interfaceListViewMockData.virtualMachinesInterfacesMockData'}
+                }
+            ]    
+        };
+        return routesConfig;
     };
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile = 'monitor/networking/test/ui/views/InterfaceListView.mock.data.js';;
 
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {

@@ -7,59 +7,56 @@ define([
     'ct-test-utils',
     'ct-test-messages',
     'co-grid-view-test-suite',
-    'stat-form-view-custom-test-suite',
+    'stats-form-view-custom-test-suite',
     'co-test-utils',
 ], function (cotc,cotr, cttu, cttm, GridViewTestSuite, CustomTestSuite, cotu) {
 
     var moduleId = cttm.STAT_FORM_CUSTOM_TEST;
 
     var testType = cotc.VIEW_TEST;
+
     var testServerConfig = cotr.getDefaultTestServerConfig();
-
-    var testServerRoutes = function() {
-    var routes = [];
-
-        routes.push({
-            method:"GET",
-            url: '/api/qe/query/queue?queryQueue=sqq',
-            fnName: 'statQueryQueueMockData'
-        });
-
-        routes.push({
-            method: "GET",
-            url: '/api/service/networking/web-server-info',
-            fnName: 'webServerInfo'
-        });
-
-        routes.push({
-            method: "GET",
-            url: '/api/qe/table/schema/vrouter',
-            fnName: 'vrouterSchema'
-        });
-
-        routes.push({
-            method: "GET",
-            url: '/api/qe/table/schema/StatTable.CollectorDbStats.cql_stats.errors',
-            fnName: 'cql_stats_errors'
-        });
-
-        routes.push({
-            method: "POST",
-            url: '/api/qe/query',
-            fnName: 'statViewQueryQueueMockData'
-        });
-
-
-        routes.push({
-            method: "POST",
-            url: "/api/qe/table/column/values",
-            fnName: "values"
-        });
-        return routes;
+    testServerConfig.getRoutesConfig = function() {
+        var routesConfig = {
+            mockDataFiles: {
+                statsQueryQueueMockData: 'reports/qe/test/ui/views/StatsQueryQueueView.mock.data.js'
+            },
+            routes: [
+                {
+                    method:"GET",
+                    url: '/api/qe/query/queue?queryQueue=sqq',
+                    response: {data: 'statsQueryQueueMockData.statQueryQueueMockData'}
+                },
+                {
+                    method: "GET",
+                    url: '/api/service/networking/web-server-info',
+                    response: {data: 'statsQueryQueueMockData.webServerInfo'}
+                },
+                {
+                    method: "GET",
+                    url: '/api/qe/table/schema/vrouter',
+                    response: {data: 'statsQueryQueueMockData.vrouterSchema'}
+                },
+                {
+                    method: "GET",
+                    url: '/api/qe/table/schema/StatTable.CollectorDbStats.cql_stats.errors',
+                    response: {data: 'statsQueryQueueMockData.cql_stats_errors'}
+                },
+                {
+                    method: "POST",
+                    url: '/api/qe/query',
+                    response: {data: 'statsQueryQueueMockData.statViewQueryQueueMockData'}
+                },
+                {
+                    method: "POST",
+                    url: "/api/qe/table/column/values",
+                    response: {data: "statsQueryQueueMockData.values"}
+                }
+            ]
+        };
+        return routesConfig;
     };
 
-    testServerConfig.getRoutesConfig = testServerRoutes;
-    testServerConfig.responseDataFile ='reports/qe/test/ui/views/StatQueryQueueView.mock.data.js';
     var pageConfig = cotr.getDefaultPageConfig();
     pageConfig.hashParams = {
         p: 'query_stat_query',
@@ -109,6 +106,7 @@ define([
         return;
     };
 
-    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType,testServerConfig, pageConfig, getTestConfig);
+    var pageTestConfig = cotr.createPageTestConfig(moduleId, testType, testServerConfig, pageConfig, getTestConfig);
+
     return pageTestConfig;
 });

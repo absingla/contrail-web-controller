@@ -2,12 +2,13 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 define([
+    'controller-constants',
     'co-test-constants',
     'co-test-runner',
     'ct-test-utils',
     'ct-test-messages',
     'co-tabs-view-test-suite'
-], function (cotc, cotr, cttu, cttm, TabsViewTestSuite) {
+], function (ctConstants, cotc, cotr, cttu, cttm, TabsViewTestSuite) {
 
     var moduleId = cttm.PROJECTS_VIEW_COMMON_TEST_MODULE;
 
@@ -35,11 +36,11 @@ define([
             },
             routes: [
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/domains'),
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_DOMAINS),
                     response: {data: 'projectViewMockData.domainsMockData'}
                 },
                 {
-                    urlRegex: cttu.getRegExForUrl('/api/tenants/config/projects'),
+                    urlRegex: cttu.getRegExForUrl(ctConstants.URL_ALL_PROJECTS),
                     response: {data: 'projectViewMockData.projectsMockData'}
                 },
                 {
