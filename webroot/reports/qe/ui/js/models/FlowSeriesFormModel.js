@@ -13,18 +13,13 @@ define([
         defaultSelectFields: ["flow_class_id", "direction_ing"],
 
         constructor: function (modelConfig, queryReqConfig) {
-            var defaultConfig = qeModelConfig.getQueryModelConfig({
-                table_name: coreConstants.FLOW_SERIES_TABLE,
-                table_type: coreConstants.QE_FLOW_TABLE_TYPE,
-                query_prefix: coreConstants.FS_QUERY_PREFIX,
-                select: coreConstants.DEFAULT_FS_SELECT_FIELDS,
-            });
+            var defaultConfig = qeModelConfig.getQueryModelConfig(coreConstants.QE_FS_DEFAULT_MODEL_CONFIG);
 
             var modelData = _.merge(defaultConfig, modelConfig);
             QueryFormModel.prototype.constructor.call(this, modelData, queryReqConfig);
 
             return this;
-        }
+        },
     });
 
     return FlowSeriesFormModel;

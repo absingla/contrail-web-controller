@@ -261,7 +261,7 @@ define([
             runIntrospectValidation: {
                 "ip_address": {
                     required: true,
-                    msg: ctwm.getRequiredMessage("ip address")
+                    msg: window.cowm.getRequiredMessage("ip address")
                 }
             }
         }

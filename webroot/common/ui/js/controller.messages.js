@@ -9,9 +9,6 @@ define([
         this.getInvalidErrorMessage = function(fieldKey) {
             return "Please enter a valid " + ctwl.getInLowerCase(fieldKey) + '.';
         };
-        this.getRequiredMessage = function(fieldKey) {
-            return ctwl.getFirstCharUpperCase(fieldKey) + ' is required.';
-        };
         this.getResolveErrorsMessage = function(fieldKey) {
             return "Please resolve all " + fieldKey + " errors.";
         };
