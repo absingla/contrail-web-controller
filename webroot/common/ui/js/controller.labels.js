@@ -391,6 +391,9 @@ define([
         this.CACHE_DATABASE_USAGE_CHARTS = 'cache-databse-usage-charts';
         this.ANALYTICS_CHART_PERCENTILE_SECTION_ID = "analytics-chart-percentile-section-id";
         this.ANALYTICS_CHART_PERCENTILE_TEXT_VIEW = "analytics-chart-percentile-text-view";
+        this.ANALYTICSNODE_CHART_PERCENTILE_TITLE = "95th Percentile - Messages (per min)";
+        this.ANALYTICSNODE_CHART_PERCENTILE_COUNT = "Count";
+        this.ANALYTICSNODE_CHART_PERCENTILE_SIZE = "Size";
         //Config node labels
         this.CONFIGNODE_VIEWPATH_PREFIX = 'monitor/infrastructure/confignode/ui/js/views/';
         this.CONFIGNODE_SUMMARY_PAGE_ID = 'monitor-config-nodes';
@@ -406,6 +409,11 @@ define([
         this.CONFIGNODE_SUMMARY_CHART_ID = 'config-nodes-chart';
         this.CONFIGNODE_SUMMARY_LIST_SECTION_ID = 'config-nodes-list-section';
         this.CONFIGNODE_SUMMARY_CHART_SECTION_ID = 'config-nodes-chart-section';
+        this.CONFIGNODE_CHART_PERCENTILE_SECTION_ID = "confignode-chart-percentile-section-id";
+        this.CONFIGNODE_CHART_PERCENTILE_TEXT_VIEW = "confignode-chart-percentile-text-view";
+        this.CONFIGNODE_CHART_PERCENTILE_TITLE = "95th Percentile - Response";
+        this.CONFIGNODE_CHART_PERCENTILE_TIME = "Time";
+        this.CONFIGNODE_CHART_PERCENTILE_SIZE = "Size";
         //Config node scatter chart
         this.CONFIGNODE_SUMMARY_SCATTERCHART_ID = 'config-nodes-scatterchart';
         this.CONFIGNODE_SUMMARY_SCATTERCHART_SECTION_ID = 'config-nodes-scatterchart-section';
@@ -485,8 +493,20 @@ define([
         this.CONTROL_NODE_ALARMS_GRID_SECTION_ID =
             "control_node_alarms_grid_section_id";
         this.CONTROLNODE_ROUTER_TITLE =
-            "Search Routes"
+            "Search Routes";
 
+        this.CONTROLNODE_CPU_SHARE_LINE_CHART_SEC_ID = 'control-nodes-cpu-line-chart-section';
+        this.CONTROLNODE_CPU_SHARE_LINE_CHART_ID = 'control-nodes-cpu-line-chart';
+        this.CONTROLNODE_MEM_SHARE_LINE_CHART_SEC_ID = 'control-nodes-mem-line-chart-section';
+        this.CONTROLNODE_MEM_SHARE_LINE_CHART_ID = 'control-nodes-mem-line-chart';
+        this.CONTROLNODE_SENT_UPDATES_SCATTER_CHART_SEC_ID = 'control-nodes-sent-updates-scatter-chart-section';
+        this.CONTROLNODE_SENT_UPDATES_SCATTER_CHART_ID = 'control-nodes-sent-updates-scatter-chart';
+        this.CONTROLNODE_RECEIVED_UPDATES_SCATTER_CHART_SEC_ID = 'control-nodes-received-updates-scatter-chart-section';
+        this.CONTROLNODE_RECEIVED_UPDATES_SCATTER_CHART_ID = 'control-nodes-received-updates-scatter-chart';
+        this.CONTROL_NODE_SENT_UPDATES = 'Sent Updates';
+        this.CONTROL_NODE_RECEIVED_UPDATES = 'Received Updates';
+        this.CONTROL_NODE_CPU_SHARE = 'CPU Share (%)';
+        this.CONTROL_NODE_MEMORY = 'Memory';
         //vRouter summary page labels
         this.VROUTER_VIEWPATH_PREFIX =
             'monitor/infrastructure/vrouter/ui/js/views/';
@@ -637,6 +657,39 @@ define([
         this.DATABASENODE_COMPACTIONS_CHART_ID = 'database-nodes-compactions-chart';
         this.DATABASENODE_PERCENTILE_SECTION_ID = "database-nodes-percentile-section-id";
         this.DATABASENODE_PERCENTILE_BAR_VIEW = "database-nodes-percentile-bar-view";
+        this.DATABSE_NODE_MEMORY = "Memory";
+        this.DATABSE_NODE_CPU_SHARE = "CPU Share(%)";
+        this.DATABSE_NODE_DISK_SPACE_USAGE = "Disk Space Usage";
+        this.DATABSE_NODE_PENDING_COMPACTIONS = "Pending Compactions";
+
+        //Monitor infra widget titles
+        this.CONFIG_NODE_TOP_5_USER_AGENTS = 'Process Wise Requests';
+        this.CONFIG_NODE_TOP_5_PROJECTS = 'Project Wise Requests';
+        this.CONFIG_NODE_TOP_5_OBJECT = 'Object Wise Requests';
+        this.CONFIG_NODE_TOP_REMOTE_IP = "Client Wise Requests";
+        this.CONFIG_NODE_NODE_MANAGER_CPU_SHARE = 'Node Manager CPU Share (%)';
+        this.CONFIG_NODE_SCHEMA_CPU_SHARE = 'Schema CPU Share (%)';
+        this.CONFIG_NODE_DISCOVERY_CPU_SHARE = 'Discovery CPU Share (%)';
+        this.CONFIG_NODE_API_CPU_SHARE = 'Api CPU Share (%)';
+        this.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE = 'Response Parameters Percentile';
+        this.CONFIG_NODE_REQUESTS_SERVED = 'Requests Served';
+        this.CONFIG_NODE_RESPONSE_TIME_VS_SIZE = 'Response Time vs Response Size';
+        this.CONFIG_NODE_REQUESTS_READ_VS_WRITE = 'Reads vs Writes';
+
+        this.ANALYTICS_NODE_NODE_MANAGER_CPU_SHARE = 'Node Manager CPU Share (%)';
+        this.ANALYTICS_NODE_SNMP_COLLECTOR_CPU_SHARE = 'SNMP Collector CPU Share (%)';
+        this.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE = 'Alarm Generator CPU Share (%)';
+        this.ANALYTICS_NODE_COLLECTOR_CPU_SHARE = 'Collector CPU Share (%)';
+        this.ANALYTICS_NODE_QE_CPU_SHARE = 'QE CPU Share (%)';
+        this.ANALYTICS_NODE_API_CPU_SHARE = 'Api CPU Share (%)';
+        this.ANALYTICS_NODE_TOP_GENERATORS = 'Generators';
+        this.ANALYTICS_NODE_TOP_MESSAGE_TYPES = 'Message Types';
+        this.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE = 'Sandesh Messages Size & Count Percentile';
+        this.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION='Sandesh Messages Distribution';
+        this.ANALYTICS_NODE_QUERY_DISTRIBUTION='Queries Distribution';
+        this.ANALYTICS_NODE_DB_USAGE = 'DB Usage';
+        this.ANALYTICS_NODE_DB_READ_WRITE = 'DB Read Writes';
+
 
         //Analytics node labels
         this.ANALYTICSNODE_VIEWPATH_PREFIX =

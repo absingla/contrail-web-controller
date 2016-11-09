@@ -3,16 +3,15 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view', 'monitor-infra-databasenode-model',
-          'node-color-mapping'],
+        [ 'underscore', 'contrail-view', 'node-color-mapping','databasenode-viewconfig'],
         function(
-                _, ContrailView, DatabaseNodeListModel, NodeColorMapping) {
+                _, ContrailView, NodeColorMapping, DatabaseNodeViewConfig) {
+            var databaseNodeViewConfig = new DatabaseNodeViewConfig();
             var DatabaseNodeListView = ContrailView.extend({
                 render : function() {
-                    var databaseNodeListModel = new DatabaseNodeListModel(),
-                        nodeColorMapping = new NodeColorMapping(),
+                    var nodeColorMapping = new NodeColorMapping(),
                         colorFn = nodeColorMapping.getNodeColorMap;
-                    this.renderView4Config(this.$el, databaseNodeListModel,
+                    this.renderView4Config(this.$el, null,
                             getDatabaseNodeListViewConfig(colorFn));
                 }
             });
@@ -22,31 +21,34 @@ define(
                     rows : [
                         {
                             columns : [{
-                                elementId :
-                                    ctwl.DATABASENODE_SUMMARY_CHART_ID,
-                                title : ctwl.DATABASENODE_SUMMARY_TITLE,
-                                app : cowc.APP_CONTRAIL_CONTROLLER,
-                                view : "DatabaseNodeSummaryChartsView",
-                                viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
+                                elementId: 'database-node-carousel-view',
+                                view: "CarouselView",
                                 viewConfig: {
-                                    colorFn: colorFn
+                                pages : [
+                                         {
+                                             page: {
+                                                 elementId : 'database-node-grid-stackview-0',
+                                                 view : "GridStackView",
+                                                 viewConfig: {
+                                                     gridAttr : {
+                                                         defaultWidth : 6,
+                                                         defaultHeight : 8
+                                                     },
+                                                     widgetCfgList: [
+                                                         databaseNodeViewConfig.getViewConfig('databsenode-percentile-bar-view')(),
+                                                         databaseNodeViewConfig.getViewConfig('databasenode-cpu-share')(),
+                                                         databaseNodeViewConfig.getViewConfig('databasenode-memory')(),
+                                                         databaseNodeViewConfig.getViewConfig('databasenode-disk-space-usage')(),
+                                                         databaseNodeViewConfig.getViewConfig('databasenode-pending-compactions')(),
+                                                         databaseNodeViewConfig.getViewConfig('database-grid-view')(),
+                                                     ]
+                                                }
+                                             },
+                                         }
+                                   ]
                                 }
                             }]
-                        },
-                        {
-                            columns : [{
-                                elementId :
-                                    ctwl.DATABASENODE_SUMMARY_GRID_ID,
-                                title : ctwl.DATABASENODE_SUMMARY_TITLE,
-                                view : "DatabaseNodeSummaryGridView",
-                                viewPathPrefix:
-                                    ctwl.DATABASENODE_VIEWPATH_PREFIX,
-                                app : cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig : {
-                                    colorFn: colorFn
-                                }
-                            }]
-                        } ]
+                        }]
                 };
                 return {
                     elementId : cowu.formatElementId([
@@ -54,6 +56,6 @@ define(
                     view : "SectionView",
                     viewConfig : viewConfig
                 };
-            };
+            }
             return DatabaseNodeListView;
         });

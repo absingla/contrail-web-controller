@@ -6,10 +6,10 @@ define(['underscore', 'contrail-view',
        'monitor-infra-analytics-sandesh-chart-model',
        'monitor-infra-analytics-queries-chart-model',
        'monitor-infra-analytics-database-read-write-chart-model',
-       'monitor-infra-analytics-database-usage-model'],
+       'monitor-infra-analytics-database-usage-model','gridstack','gs-view'],
        function(_, ContrailView,AnalyticsNodeSandeshChartModel,
             AnalyticsNodeQueriesChartModel, AnalyticsNodeDataBaseReadWriteChartModel,
-            AanlyticsNodeDatabaseUsageModel){
+            AanlyticsNodeDatabaseUsageModel,gridstack,GridStackView){
         var AnalyticsNodesSummaryChartsView = ContrailView.extend({
         render : function (){
             var anlyticsTemplate = contrail.getTemplate4Id(
@@ -19,30 +19,58 @@ define(['underscore', 'contrail-view',
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 colorFn = viewConfig['colorFn'];
-            self.$el.append(anlyticsTemplate);
-            self.$el.append(percentileWrapperTemplate({cssClass: 'percentileWrapper col-xs-6 col-xs-offset-6'}));
+            // self.$el.append(anlyticsTemplate);
+            // self.$el.append(percentileWrapperTemplate({cssClass: 'percentileWrapper col-xs-6 col-xs-offset-6'}));
             var topleftColumn = self.$el.find(".top-container .left-column"),
                 toprightCoulmn = self.$el.find(".top-container .right-column"),
                 bottomleftColumn = self.$el.find(".bottom-container .left-column"),
                 bottomrightCoulmn = self.$el.find(".bottom-container .right-column"),
                 bottomRow = self.$el.find(".percentileWrapper"),
+
                 sandeshModel = new AnalyticsNodeSandeshChartModel(),
                 queriesModel = new AnalyticsNodeQueriesChartModel(),
                 dbUsageModel = new AanlyticsNodeDatabaseUsageModel();
                 databseReadWritemodel = new AnalyticsNodeDataBaseReadWriteChartModel();
-            self.renderView4Config(topleftColumn,  sandeshModel,
-                   getAnalyticsNodeSandeshChartViewConfig(colorFn));
 
-            self.renderView4Config(toprightCoulmn,  queriesModel,
-                    getAnalyticsNodeQueriesChartViewConfig(colorFn));
+            self.$el.append($("<div class='gs-container'></div>"));
+            var gridStackView = new GridStackView({
+                el: self.$el.find('.gs-container')
+            });
 
-            self.renderView4Config(bottomrightCoulmn,  dbUsageModel,
-                    getAnalyticsNodeDatabaseUsageChartViewConfig(colorFn));
+            gridStackView.add({
+                modelCfg: sandeshModel,
+                viewCfg: getAnalyticsNodeSandeshChartViewConfig(colorFn)
+            })
 
-            self.renderView4Config(bottomleftColumn,  databseReadWritemodel,
-                    getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn));
+            gridStackView.add({
+                modelCfg: queriesModel,
+                viewCfg: getAnalyticsNodeQueriesChartViewConfig(colorFn)
+            });
 
-            self.renderView4Config(bottomRow, null,getPercentileTextViewConfig());
+            gridStackView.add({
+                modelCfg: dbUsageModel,
+                viewCfg: getAnalyticsNodeDatabaseUsageChartViewConfig(colorFn)
+            });
+
+            gridStackView.add({
+                modelCfg: databseReadWritemodel,
+                viewCfg: getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn)
+            });
+
+            // self.renderView4Config(topleftColumn.find('.gridstack-item-content'),  sandeshModel,
+            //        getAnalyticsNodeSandeshChartViewConfig(colorFn));
+            // self.renderView4Config(toprightCoulmn,  queriesModel,
+            //         getAnalyticsNodeQueriesChartViewConfig(colorFn));
+            // self.renderView4Config(bottomrightCoulmn,  dbUsageModel,
+            //         getAnalyticsNodeDatabaseUsageChartViewConfig(colorFn));
+            // self.renderView4Config(bottomleftColumn,  databseReadWritemodel,
+            //         getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn));
+
+
+            // self.renderView4Config(bottomRow, null,getPercentileTextViewConfig());
+
+
+
         }
     });
    function getAnalyticsNodeSandeshChartViewConfig(colorFn) {

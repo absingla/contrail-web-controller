@@ -3,8 +3,11 @@
  */
 
 define([
-    'underscore'
-], function (_) {
+    'underscore',
+    'legend-view',
+    'core-utils'
+], function (_, LegendView, CoreUtils) {
+    cowu = new CoreUtils();
     var MonitorInfraConstants = function () {
         this.infraNodesTree;
         this.noDataStr = '-';
@@ -55,6 +58,11 @@ define([
         this.CONFIGNODE_FAILEDREQUESTS_TITLE = 'Failed Requests';
         this.CONFIGNODE_FAILEDREQUESTS_COLOR = '#d95436';
         this.CONFIGNODE_RESPONSESIZE_COLOR = '#7f9d92';
+
+        this.CONFIGNODE_CPU_SHARE_NODE_MNGR_LINE_CHART_ID = 'confignode-cpu-share-node-mgnr-line-chart-id';
+        this.CONFIGNODE_CPU_SHARE_SCHEMA_LINE_CHART_ID = 'confignode-cpu-share-schema-line-chart-id';
+        this.CONFIGNODE_CPU_SHARE_DISCOVERY_LINE_CHART_ID = 'confignode-cpu-share-discovery-line-chart-id';
+        this.CONFIGNODE_CPU_SHARE_API_LINE_CHART_ID = 'confignode-cpu-share-api-line-chart-id';
 
         this.monitorInfraUrls = {
                 TENANT_API_URL              : "/api/tenant/get-data",
@@ -137,6 +145,71 @@ define([
                                      { id:"Local", text:"Local" }];
 
         this.VROUTER_DEFAULT_MAX_THROUGHPUT = 10737418240; // 10 GB
+
+        this.stackChartDefaultViewConfig = {
+            view: 'StackedBarChartWithFocusView',
+            viewConfig: {
+                class: 'mon-infra-chart chartMargin',
+                chartOptions: {
+                    bucketSize: this.STATS_BUCKET_DURATION,
+                    showControls: true,
+                    tickPadding: 8,
+                    margin: {
+                        left: 45,
+                        top: 20,
+                        right: 0,
+                        bottom: 40
+                    },
+                    yAxisOffset: 25,
+                    defaultZeroLineDisplay: true
+                }
+            }
+        };
+        this.defaultLineChartViewCfg = {
+                view : "LineWithFocusChartView",
+                viewConfig: {
+                    class: 'mon-infra-chart chartMargin',
+                    parseFn: cowu.chartDataFormatter,
+                    chartOptions : {
+                        brush: false,
+                        xAxisLabel: '',
+                        yAxisLabel: '',
+                        groupBy: 'Source',
+                        yField: '',
+                        yFieldOperation: 'average',
+                        bucketSize: this.STATS_BUCKET_DURATION,
+                        colors: {},
+                        title: '',
+                        axisLabelDistance : 0,
+                        margin: {
+                            left: 70,
+                            top: 20,
+                            right: 15,
+                            bottom: 20
+                        },
+                        tickPadding: 8,
+                        hideFocusChart: true,
+                        forceY: false,
+                        yFormatter : function(d){
+                            return d;
+                        },
+                        xFormatter: function(xValue, tickCnt) {
+                            var date = xValue > 1 ? new Date(xValue) : new Date();
+                            if (tickCnt != null) {
+                               var mins = date.getMinutes();
+                               date.setMinutes(Math.ceil(mins/15) * 15);
+                            }
+                            return d3.time.format('%H:%M')(date);
+                        },
+                        yTickFormat: function(value){
+                            return d3.format('.2f')(value);
+                        },
+                        showLegend: true,
+                        defaultZeroLineDisplay: true,
+                        legendView: LegendView
+                    },
+                }
+            };
 
     };
 

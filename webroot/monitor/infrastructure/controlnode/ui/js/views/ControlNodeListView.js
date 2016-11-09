@@ -3,56 +3,46 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view', 'monitor-infra-controlnode-model'],
+        [ 'underscore', 'contrail-view','node-color-mapping','controlnode-viewconfig'],
         function(
-                _, ContrailView, ControlNodeListModel) {
+                _, ContrailView,NodeColorMapping,ControlNodeViewConfig) {
+            var controlNodeViewConfig = new ControlNodeViewConfig();
             var ControlNodeListView = ContrailView.extend({
                 render : function() {
-                    var controlNodeListModel = new ControlNodeListModel();
-                    this.renderView4Config(this.$el, controlNodeListModel,
-                            getControlNodeListViewConfig());
+                    var nodeColorMapping = new NodeColorMapping(),
+                        colorFn = nodeColorMapping.getNodeColorMap;
+                    this.renderView4Config(this.$el, null,
+                            getControlNodeListViewConfig(colorFn));
                 }
             });
-
-            function getControlNodeListViewConfig() {
+            function getControlNodeListViewConfig(colorFn) {
                 var viewConfig = {
                     rows : [{
                         columns : [{
-                            elementId :
-                                ctwl.CONTROLNODE_SUMMARY_CHART_ID,
-                            title : ctwl.CONTROLNODE_SUMMARY_TITLE,
-                            view : "ControlNodeScatterChartView",
-                            viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
-                            app : cowc.APP_CONTRAIL_CONTROLLER,
+                            elementId: 'control-node-carousel-view',
+                            view: "CarouselView",
                             viewConfig: {
-                                widgetConfig: {
-                                    elementId: ctwc.CONTROLNODE_SUMMARY_CHART_ID + '-widget',
-                                    view: "WidgetView",
-                                    viewConfig: {
-                                        header: {
-                                            title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                            // iconClass: "icon-search"
-                                        },
-                                        controls: {
-                                            top: {
-                                                default: {
-                                                    collapseable: true
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }]
-                    },{
-                        columns : [{
-                            elementId :
-                                ctwl.CONTROLNODE_SUMMARY_GRID_ID,
-                            title : ctwl.CONTROLNODE_SUMMARY_TITLE,
-                            view : "ControlNodeSummaryGridView",
-                            viewPathPrefix: ctwl.CONTROLNODE_VIEWPATH_PREFIX,
-                            app : cowc.APP_CONTRAIL_CONTROLLER,
-                            viewConfig : {
+                            pages : [
+                                     {
+                                         page: {
+                                             elementId : 'control-node-grid-stackview-0',
+                                             view : "GridStackView",
+                                             viewConfig: {
+                                                     gridAttr : {
+                                                         defaultWidth : 6,
+                                                         defaultHeight : 8
+                                                     },
+                                                     widgetCfgList: [
+                                                        controlNodeViewConfig.getViewConfig('controlnode-sent-updates')(),
+                                                        controlNodeViewConfig.getViewConfig('controlnode-received-updates')(),
+                                                        controlNodeViewConfig.getViewConfig('controlnode-cpu-share')(),
+                                                        controlNodeViewConfig.getViewConfig('controlnode-memory')(),
+                                                        controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
+                                                     ]
+                                             }
+                                         },
+                                     }
+                               ]
                             }
                         }]
                     }]
@@ -63,6 +53,6 @@ define(
                     view : "SectionView",
                     viewConfig :viewConfig
                 };
-            };
+            }
         return ControlNodeListView;
     });

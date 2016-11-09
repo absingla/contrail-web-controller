@@ -1118,6 +1118,10 @@ and need to add the iconClass tag wherever we need to show some icons
                     <iconClass>menu-icon fa fa-wpforms</iconClass>
                     <resources>
                         <resource>
+                            <rootDir>/assets/jquery-linedtextarea</rootDir>
+                            <css>jquery-linedtextarea.css</css>
+                        </resource>
+                        <resource>
                             <rootDir>/config/configEditor/ui</rootDir>
                             <js>configEditor.main.js</js>
                             <template>config.editor.tmpl</template>
@@ -1143,6 +1147,10 @@ and need to add the iconClass tag wherever we need to show some icons
                 <resource>
                     <rootDir>/reports/qe/ui</rootDir>
                     <css>qe.main.css</css>
+                </resource>
+                <resource>
+                    <rootDir>/reports/udd/ui</rootDir>
+                    <css>udd.css</css>
                 </resource>
             </resources>
             <access>
@@ -1246,6 +1254,21 @@ and need to add the iconClass tag wherever we need to show some icons
                                 <function>renderStatQueue</function>
                             </loader>
                             <searchStrings>Stat Query Queue</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                <item>
+                    <label>User Dashboards</label>
+                    <iconClass>menu-icon fa fa-dashboard</iconClass>
+                    <init>/reports/udd/ui/js/controller.udd.init.js</init>
+                    <items>
+                        <item>
+                            <hash>query_udd_webController</hash>
+                            <label>Controller</label>
+                            <loader>
+                                <class>UDDLoader</class>
+                            </loader>
+                            <searchStrings>User Dashboard</searchStrings>
                         </item>
                     </items>
                 </item>

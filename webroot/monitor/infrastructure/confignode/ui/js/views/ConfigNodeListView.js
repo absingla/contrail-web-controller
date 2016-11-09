@@ -3,51 +3,88 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view','monitor-infra-confignode-model', 'node-color-mapping'],
+        [ 'underscore', 'contrail-view','node-color-mapping', 'confignode-viewconfig'],
         function(
-                _, ContrailView, ConfigNodeListModel, NodeColorMapping) {
+                _, ContrailView,NodeColorMapping, ConfigNodeViewConfig) {
+            var configNodeViewConfig = new ConfigNodeViewConfig();
             var ConfigNodeListView = ContrailView.extend({
                 render : function() {
-                    var configNodeListModel = new ConfigNodeListModel(),
-                        nodeColorMapping = new NodeColorMapping(),
+                    var nodeColorMapping = new NodeColorMapping(),
                         colorFn = nodeColorMapping.getNodeColorMap;
 
-                    this.renderView4Config(this.$el, configNodeListModel,
+                    this.renderView4Config(this.$el, null,
                             getConfigNodeListViewConfig(colorFn));
                 }
             });
-
-
             function getConfigNodeListViewConfig(colorFn) {
                 var viewConfig = {
                     rows : [
                          {
-                            columns : [ {
-                                elementId :
-                                    ctwl.CONFIGNODE_SUMMARY_CHART_ID,
-                                title : ctwl.CONFIGNODE_SUMMARY_TITLE,
-                                view : "ConfigNodeChartsView",
-                                viewPathPrefix:
-                                    ctwl.MONITOR_INFRA_VIEW_PATH,
-                                app : cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig: {
-                                    colorFn: colorFn
-                                }
-                                    } ]
-                        },{
-                            columns : [ {
-                                elementId :
-                                    ctwl.CONFIGNODE_SUMMARY_GRID_ID,
-                                title : ctwl.CONFIGNODE_SUMMARY_TITLE,
-                                view : "ConfigNodeSummaryGridView",
-                                viewPathPrefix:
-                                    ctwl.CONFIGNODE_VIEWPATH_PREFIX,
-                                app : cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig : {
-                                    colorFn: colorFn
-                                }
-                            } ]
-                        } ]
+                             columns : [
+                                        {
+                                 elementId: 'config-node-carousel-view',
+                                 view: "CarouselView",
+                                 viewConfig: {
+                                     pages : [
+                                          {
+                                              page: {
+                                                  elementId : 'config-node-grid-stackview-0',
+                                                  view : "GridStackView",
+                                                  viewConfig : {
+                                                      gridAttr: {
+                                                          defaultWidth: 6,
+                                                          defaultHeight: 10
+                                                      },
+                                                      widgetCfgList: [
+                                                            configNodeViewConfig.getViewConfig('confignode-percentile-time-size')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-requests-served')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-response-time-size')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-reads-writes-donut-chart')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-grid-view')()
+                                                      ]
+                                                  }
+                                              },
+                                          },{
+                                              page: {
+                                                  elementId : 'config-node-grid-stackview-1',
+                                                  view: 'GridStackView',
+                                                  viewConfig: {
+                                                      gridAttr: {
+                                                          defaultWidth: 6,
+                                                          defaultHeight: 8
+                                                      },
+                                                      widgetCfgList: [
+                                                            configNodeViewConfig.getViewConfig('confignode-top-useragent')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-top-objecttypes')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-top-remote-ip')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-top-projects')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-grid-view')()
+                                                      ]
+                                                  }
+                                              }
+                                          },{
+                                              page: {
+                                                  elementId : 'config-node-grid-stackview-2',
+                                                  view: 'GridStackView',
+                                                  viewConfig: {
+                                                      gridAttr: {
+                                                          defaultWidth: 6,
+                                                          defaultHeight: 8
+                                                      },
+                                                      widgetCfgList: [
+                                                            configNodeViewConfig.getViewConfig('confignode-process-cpu-node-mngr')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-process-contrail-schema')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-process-contrail-discovery')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-process-contrail-api')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-grid-view')()
+                                                      ]
+                                                  }
+                                              }
+                                          }
+                                     ]
+                                 }
+                             }]
+                         }]
                 };
                 return {
                     elementId : cowu.formatElementId(

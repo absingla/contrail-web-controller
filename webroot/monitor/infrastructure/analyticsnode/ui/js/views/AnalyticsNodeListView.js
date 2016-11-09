@@ -3,51 +3,89 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view','monitor-infra-analyticsnode-model',
-          'node-color-mapping'],
+        [ 'underscore', 'contrail-view', 'node-color-mapping','analyticsnode-viewconfig'],
         function(
-                _, ContrailView, AnalyticsNodeListModel, NodeColorMapping) {
+                _, ContrailView, NodeColorMapping, AnalyticsNodeViewConfig) {
+            var analyticsNodeViewConfig = new AnalyticsNodeViewConfig();
             var AnalyticsNodeListView = ContrailView.extend({
                 render : function() {
-                    var analyticsNodeListModel = new AnalyticsNodeListModel();
                     nodeColorMapping = new NodeColorMapping(),
                     colorFn = nodeColorMapping.getNodeColorMap;
-                    this.renderView4Config(this.$el, analyticsNodeListModel,
+                    this.renderView4Config(this.$el, null,
                             getAnalyticsNodeListViewConfig(colorFn));
                 }
             });
-
             function getAnalyticsNodeListViewConfig(colorFn) {
                 var viewConfig = {
                         rows : [
-                            {
-                                columns : [{
-                                    elementId :
-                                        ctwl.ANALYTICSNODE_SUMMARY_CHART_ID,
-                                    title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
-                                    view : "AnalyticsNodesSummaryChartsView",
-                                    viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
-                                    app : cowc.APP_CONTRAIL_CONTROLLER,
-                                    viewConfig: {
-                                        colorFn: colorFn
-                                    }
+                                {
+                                    columns : [
+                                               {
+                                        elementId: 'analytics-node-carousel-view',
+                                        view: "CarouselView",
+                                        viewConfig: {
+                                            pages : [
+                                                 {
+                                                     page: {
+                                                         elementId : 'analytics-node-grid-stackview-0',
+                                                         view : "GridStackView",
+                                                         viewConfig : {
+                                                              gridAttr : {
+                                                                  defaultWidth : 6,
+                                                                  defaultHeight : 8
+                                                              },
+                                                              widgetCfgList: [
+                                                                 analyticsNodeViewConfig.getViewConfig('analyticsnode-percentile-count-size')(),
+                                                                 analyticsNodeViewConfig.getViewConfig('analyticsnode-sandesh-message-info')(),
+                                                                 analyticsNodeViewConfig.getViewConfig('analyticsnode-query-stats')(),
+                                                                 analyticsNodeViewConfig.getViewConfig('analyticsnode-database-usage')(),
+                                                                 analyticsNodeViewConfig.getViewConfig('analyticsnode-database-read-write')(),
+                                                                 analyticsNodeViewConfig.getViewConfig('analyticsnode-grid-view')()
+                                                              ]
+                                                         }
+                                                     },
+                                                 },{
+                                                     page: {
+                                                         elementId: 'analytics-node-grid-stackview-1',
+                                                         view: 'GridStackView',
+                                                         viewConfig: {
+                                                             gridAttr: {
+                                                                 defaultWidth: 6,
+                                                                 defaultHeight: 8
+                                                             },
+                                                             widgetCfgList: [
+                                                                analyticsNodeViewConfig.getViewConfig('analyticsnode-top-messagetype')(),
+                                                                analyticsNodeViewConfig.getViewConfig('analyticsnode-top-generators')(),
+                                                                analyticsNodeViewConfig.getViewConfig('analyticsnode-qe-cpu-share')(),
+                                                                analyticsNodeViewConfig.getViewConfig('analyticsnode-collector-cpu-share')(),
+                                                                analyticsNodeViewConfig.getViewConfig('analyticsnode-grid-view')()
+                                                             ]
+                                                         }
+                                                     }
+                                                 },{
+                                                     page: {
+                                                         elementId: 'analytics-node-grid-stackview-2',
+                                                         view: 'GridStackView',
+                                                         viewConfig: {
+                                                             gridAttr: {
+                                                                 defaultWidth: 6,
+                                                                 defaultHeight: 8
+                                                             },
+                                                             widgetCfgList: [
+                                                               analyticsNodeViewConfig.getViewConfig('analyticsnode-alarm-gen-cpu-share')(),
+                                                               analyticsNodeViewConfig.getViewConfig('analyticsnode-snmp-collector-cpu-share')(),
+                                                               analyticsNodeViewConfig.getViewConfig('analyticsnode-manager-cpu-share')(),
+                                                               analyticsNodeViewConfig.getViewConfig('analyticsnode-api-cpu-share')(),
+                                                               analyticsNodeViewConfig.getViewConfig('analyticsnode-grid-view')()
+                                                             ]
+                                                         }
+                                                     }
+                                                 }
+                                            ]
+                                        }
+                                    }]
                                 }]
-                            },{
-                                columns : [{
-                                    elementId :
-                                        ctwl.ANALYTICSNODE_SUMMARY_GRID_ID,
-                                    title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
-                                    view : "AnalyticsNodeSummaryGridView",
-                                    viewPathPrefix:
-                                        ctwl.ANALYTICSNODE_VIEWPATH_PREFIX,
-                                    app : cowc.APP_CONTRAIL_CONTROLLER,
-                                    viewConfig : {
-                                        colorFn: colorFn
-                                    }
-                                }]
-                            }
-                            ]
-                        };
+                       };
                 return {
                     elementId : cowu.formatElementId([
                          ctwl.ANALYTICSNODE_SUMMARY_LIST_SECTION_ID ]),
