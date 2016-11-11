@@ -99,9 +99,9 @@ define([
                 DATABASE_DETAILS            : '/api/admin/monitor/infrastructure/dbnode/details?hostname={0}',
 
                 FLOWSERIES_CPU              : '/api/tenant/networking/flow-series/cpu?moduleId={0}&minsSince={1}&sampleCnt={2}&source={3}&endTime={4}',
-                QUERY                       : '/api/admin/reports/query',
-                MSGTABLE_CATEGORY           : '/api/admin/table/values/MessageTable/Category',
-                MSGTABLE_LEVEL              : '/api/admin/table/values/MessageTable/Level'
+                QUERY                       : '/api/qe/query',
+                MSGTABLE_CATEGORY           : '/api/qe/table/values/MessageTable/Category',
+                MSGTABLE_LEVEL              : '/api/qe/table/values/MessageTable/Level'
         }
 
         this.UVEModuleIds = {
@@ -153,12 +153,13 @@ define([
                 chartOptions: {
                     bucketSize: this.STATS_BUCKET_DURATION,
                     showControls: true,
+                    showLegend: true,
                     tickPadding: 8,
                     margin: {
                         left: 45,
                         top: 20,
                         right: 0,
-                        bottom: 40
+                        bottom: 15
                     },
                     yAxisOffset: 25,
                     defaultZeroLineDisplay: true
@@ -182,9 +183,9 @@ define([
                         title: '',
                         axisLabelDistance : 0,
                         margin: {
-                            left: 70,
+                            left: 58,
                             top: 20,
-                            right: 15,
+                            right: 0,
                             bottom: 20
                         },
                         tickPadding: 8,
