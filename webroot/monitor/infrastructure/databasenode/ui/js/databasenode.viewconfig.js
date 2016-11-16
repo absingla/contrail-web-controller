@@ -30,13 +30,17 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
             },
             'databasenode-cpu-share': function (){
                 return {
-                    modelCfg: monitorInfraUtils.getStatsModelConfig({
-                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                         select: 'name, T=, MAX(process_mem_cpu_usage.mem_res), MAX(process_mem_cpu_usage.cpu_share)',
-                         where:'process_mem_cpu_usage.__key = cassandra'
-                     }),
-                     viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                    modelCfg: {
+                        source:'STATTABLE',
+                        config: {
+                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                            select: 'name, T=, MAX(process_mem_cpu_usage.mem_res), MAX(process_mem_cpu_usage.cpu_share)',
+                            where:'process_mem_cpu_usage.__key = cassandra'
+                        }
+                     },
+                     viewCfg: {
                          elementId : ctwl.DATABASENODE_CPU_SHARE_LINE_CHART_ID,
+                         view:'LineWithFocusChartView',
                          viewConfig: {
                              chartOptions: {
                                   yAxisLabel: 'CPU Share (%)',
@@ -51,7 +55,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                                      xFormatter: xCPUChartFormatter,
                              }
                          }
-                     }),
+                     },
                      itemAttr: {
                          title: ctwl.DATABSE_NODE_CPU_SHARE,
                          height: 1.3
@@ -59,13 +63,18 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                 }
             },
             'databasenode-memory': function (){
-                return {modelCfg: monitorInfraUtils.getStatsModelConfig({
-                    table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                    select: 'name, T=, MAX(process_mem_cpu_usage.mem_res), MAX(process_mem_cpu_usage.cpu_share)',
-                    where:'process_mem_cpu_usage.__key = cassandra'
-                 }),
-                 viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                return {
+                modelCfg: {
+                    source:'STATTABLE',
+                    config: {
+                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                        select: 'name, T=, MAX(process_mem_cpu_usage.mem_res), MAX(process_mem_cpu_usage.cpu_share)',
+                        where:'process_mem_cpu_usage.__key = cassandra'
+                    }
+                 },
+                 viewCfg: {
                      elementId : ctwl.DATABASENODE_MEM_SHARE_LINE_CHART_ID,
+                     view:'LineWithFocusChartView',
                      viewConfig: {
                          chartOptions: {
                                  yAxisLabel: 'Memory',
@@ -75,47 +84,57 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                                  title: ctwl.DATABASENODE_SUMMARY_TITLE,
                                  yFormatter : function(d){
                                      return formatBytes(d, true);
-                                },
+                                 },
                                  xFormatter: xCPUChartFormatter,
                          }
                      }
-                 }),
+                 },
                  itemAttr: {
                       title: ctwl.DATABSE_NODE_MEMORY
                  }}
             },
             'databasenode-disk-space-usage': function (){
                 return {
-                   modelCfg: monitorInfraUtils.getStatsModelConfig({
-                        table_name: 'StatTable.DatabaseUsageInfo.database_usage',
-                        select: 'Source, T=, MAX(database_usage.analytics_db_size_1k), MAX(database_usage.disk_space_used_1k)',
-                        parser: function(response){
-                            var stats = response;
-                            $.each(stats, function(idx, obj) {
-                                obj['MAX(database_usage.analytics_db_size_1k)'] =
-                                    ifNull(obj['MAX(database_usage.analytics_db_size_1k)'],0) * 1024; //Converting KB to Bytes
-                                obj['MAX(database_usage.disk_space_used_1k)'] =
-                                    ifNull(obj['MAX(database_usage.disk_space_used_1k)'],0) * 1024;
-                            });
-                            return stats;
+                   modelCfg: {
+                        source:'STATTABLE',
+                        config: {
+                            table_name: 'StatTable.DatabaseUsageInfo.database_usage',
+                            select: 'Source, T=, MAX(database_usage.analytics_db_size_1k), MAX(database_usage.disk_space_used_1k)',
+                            parser: function(response){
+                                var stats = response;
+                                $.each(stats, function(idx, obj) {
+                                    obj['MAX(database_usage.analytics_db_size_1k)'] =
+                                        ifNull(obj['MAX(database_usage.analytics_db_size_1k)'],0) * 1024; //Converting KB to Bytes
+                                    obj['MAX(database_usage.disk_space_used_1k)'] =
+                                        ifNull(obj['MAX(database_usage.disk_space_used_1k)'],0) * 1024;
+                                });
+                                return stats;
+                            }
                         }
-                    }),
-                     viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                    },
+                     viewCfg: {
                          elementId : ctwl.DATABASENODE_DISK_SPACE_USAGE_CHART_ID,
+                         view:'LineWithFocusChartView',
                          viewConfig: {
                              chartOptions: {
-                                     yAxisLabel: 'Disk Space Usage',
-                                     groupBy: 'Source',
-                                     yField: 'MAX(database_usage.disk_space_used_1k)',
-                                     colors: colorFn,
-                                     title: ctwl.DATABASENODE_SUMMARY_TITLE,
-                                     yFormatter : function(d){
-                                          return formatBytes(d, true);
-                                     },
-                                     xFormatter: xCPUChartFormatter,
+                                yAxisLabel: 'Disk Space Usage',
+                                groupBy: 'Source',
+                                yField: 'MAX(database_usage.disk_space_used_1k)',
+                                colors: colorFn,
+                                title: ctwl.DATABASENODE_SUMMARY_TITLE,
+                                margin: {
+                                    left: 60,
+                                    top: 20,
+                                    right: 15,
+                                    bottom: 50
+                                },
+                                yFormatter : function(d){
+                                    return formatBytes(d, true);
+                                },
+                                xFormatter: xCPUChartFormatter,
                              }
                          }
-                     }),
+                     },
                      itemAttr: {
                           title: ctwl.DATABSE_NODE_DISK_SPACE_USAGE
                      }
@@ -123,12 +142,16 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
             },
             'databasenode-pending-compactions': function (){
                 return {
-                    modelCfg: monitorInfraUtils.getStatsModelConfig({
-                         table_name: 'StatTable.CassandraStatusData.cassandra_compaction_task',
-                         select: 'T=, name, MAX(cassandra_compaction_task.pending_compaction_tasks)'
-                    }),
-                    viewCfg: $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
+                    modelCfg: {
+                        source:'STATTABLE',
+                        config: {
+                            table_name: 'StatTable.CassandraStatusData.cassandra_compaction_task',
+                            select: 'T=, name, MAX(cassandra_compaction_task.pending_compaction_tasks)'
+                        }
+                    },
+                    viewCfg: {
                          elementId : ctwl.DATABASENODE_COMPACTIONS_CHART_ID,
+                         view:'StackedBarChartWithFocusView',
                         viewConfig: {
                             chartOptions: {
                                 colors: colorFn,
@@ -139,7 +162,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                                 yField: 'MAX(cassandra_compaction_task.pending_compaction_tasks)',
                             }
                         }
-                    }),
+                    },
                     itemAttr: {
                         title: ctwl.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION
                     }
@@ -147,14 +170,16 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
             },
             'database-grid-view': function () {
                 return {
-                    modelCfg: databaseNodeListModel,
+                    modelCfg: {
+                        listModel:databaseNodeListModel
+                    },
                     viewCfg: {
                         elementId : ctwl.DATABASENODE_SUMMARY_GRID_ID,
                         title : ctwl.DATABASENODE_SUMMARY_TITLE,
                         view : "GridView",
                         viewConfig : {
                             elementConfig :
-                                getDatabaseNodeSummaryGridConfig()
+                                getDatabaseNodeSummaryGridConfig(databaseNodeListModel, colorFn)
                         }
                     },
                     itemAttr: {
@@ -163,7 +188,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                 }
               },
         };
-        function getDatabaseNodeSummaryGridConfig() {
+        function getDatabaseNodeSummaryGridConfig(model, colorFn) {
             var columns = [
                            {
                                field:"name",
@@ -172,7 +197,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                                   return cellTemplateLinks({cellText:'name',
                                       name:'name',
                                       statusBubble:true,
-                                      rowData:dc});
+                                      rowData:dc,
+                                      tagColorMap:colorFn(_.pluck(model.getItems(), 'name'))});
                                },
                                events: {
                                   onClick: onClickHostName
@@ -325,6 +351,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
         self.getViewConfig = function(id) {
             return self.viewConfig[id];
         };
-};
-return DatabseNodeViewConfig;
+    };
+    return (new DatabseNodeViewConfig()).viewConfig;
 });
