@@ -73,7 +73,7 @@ define([
                         dataParser: nmwp.networkDataParser
                     },
                     vlRemoteConfig: {
-                        vlRemoteList: nmwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
+                        vlRemoteList: nmwgc.getVNStatsVLOfPrimaryRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
                     },
                     cacheConfig: {
                         ucid: ucid

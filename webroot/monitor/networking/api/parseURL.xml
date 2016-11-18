@@ -165,7 +165,7 @@
         <url>/api/tenant/networking/virtual-networks/list</url>
         <method>post</method>
         <feature>monitoring</feature>
-        <callback>nwMonApi.getVirtualNetworksList</callback>
+        <callback>nwMonApi.getUVEVirtualNetworksList</callback>
     </item>
     <item>
         <url>/api/tenant/networking/virtual-machines/details</url>
@@ -186,16 +186,43 @@
         <callback>nwMonApi.getInstanceDetailsForVRouter</callback>
     </item>
     <item>
+        <url>/api/tenant/networking/get-virtual-networks-list</url>
+        <timeout>3000</timeout>
+        <method>post</method>
+        <feature>monitoring</feature>
+        <callback>nwMonApi.getVirtualNetworksList</callback>
+    </item>
+    <item>
         <url>/api/tenant/networking/get-instances-list</url>
+        <timeout>3000</timeout>
         <method>post</method>
         <feature>monitoring</feature>
         <callback>nwMonApi.getInstancesList</callback>
+    </item>
+    <item>
+        <url>/api/tenant/networking/get-interfaces-list</url>
+        <timeout>3000</timeout>
+        <method>post</method>
+        <feature>monitoring</feature>
+        <callback>nwMonApi.getInterfacesList</callback>
+    </item>
+    <item>
+        <url>/api/tenant/networking/get-virtual-networks</url>
+        <method>post</method>
+        <feature>monitoring</feature>
+        <callback>nwMonApi.getVirtualNetworks</callback>
     </item>
     <item>
         <url>/api/tenant/networking/get-instances</url>
         <method>post</method>
         <feature>monitoring</feature>
         <callback>nwMonApi.getInstances</callback>
+    </item>
+    <item>
+        <url>/api/tenant/networking/get-interfaces</url>
+        <method>post</method>
+        <feature>monitoring</feature>
+        <callback>nwMonApi.getInterfaces</callback>
     </item>
     <!-- End Monitor Networking APIs -->
 </urlLists>

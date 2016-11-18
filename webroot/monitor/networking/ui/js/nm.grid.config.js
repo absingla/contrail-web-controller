@@ -3,9 +3,11 @@
  */
 
 define([
-    'underscore'
-], function (_) {
+    "underscore",
+    "core-basedir/reports/qe/ui/js/common/qe.utils"
+], function (_, qeUtils) {
     var NMGridConfig = function () {
+        var self = this;
         this.projectNetworksColumns = [
             {
                 field: 'name',
@@ -175,81 +177,96 @@ define([
             ];
         };
 
-        this.getVNDetailsLazyRemoteConfig = function (type) {
-            return [
-                {
-                    getAjaxConfig: function (responseJSON) {
-                        var uuids, lazyAjaxConfig;
+        this.getVNStatsLazyRemoteAjaxConfig = function(responseJSON) {
+            var fqns, lazyAjaxConfig;
 
-                        uuids = $.map(responseJSON, function (item) {
-                            return item['name'];
-                        });
+            fqns = $.map(responseJSON, function (item) {
+                return item['name'];
+            });
+            var whereClause = qeUtils.formatUIWhereClauseConfigByUserRole("name", fqns);
+            var qObj = {table: "StatTable.UveVirtualNetworkAgent.vn_stats",
+                where: whereClause};
+            var postData = qeUtils.formatQEUIQuery(qObj);
+            lazyAjaxConfig = {
+                url: cowc.URL_QE_QUERY,
+                type: "POST",
+                data: JSON.stringify(postData)
+            };
+            return lazyAjaxConfig;
+        };
+        this.getVNStatsLazyRemoteSuccessHandler = function(type, response, contrailListModel, parentModelList) {
+            if (null == response) {
+                return;
+            }
+            var statDataList = nmwp.statsOracleParseFn(response.data, type),
+                dataItems = contrailListModel.getItems(), statData;
 
-                        lazyAjaxConfig = {
-                            url: ctwc.URL_VM_VN_STATS,
-                            type: 'POST',
-                            data: JSON.stringify({
-                                data: {
-                                    type: type,
-                                    uuids: uuids.join(','),
-                                    minsSince: 60,
-                                    useServerTime: true
-                                }
-                            })
-                        }
-                        return lazyAjaxConfig;
-                    },
-                    successCallback: function (response, contrailListModel, parentModelList) {
-                        var statDataList = nmwp.statsOracleParseFn(response[0], type),
-                            dataItems = contrailListModel.getItems(),
-                            statData;
-
-                        for (var j = 0; j < statDataList.length; j++) {
-                            statData = statDataList[j];
-                            for (var i = 0; i < dataItems.length; i++) {
-                                var dataItem = dataItems[i];
-                                if (statData['name'] == dataItem['name']) {
-                                    dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
-                                    dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
-                                    break;
-                                }
-                            }
-                        }
-                        contrailListModel.updateData(dataItems);
-                        if (contrail.checkIfExist(parentModelList)) {
-                            nmwp.projectNetworksDataParser(parentModelList, contrailListModel);
-                        }
+            for (var j = 0; j < statDataList.length; j++) {
+                statData = statDataList[j];
+                for (var i = 0; i < dataItems.length; i++) {
+                    var dataItem = dataItems[i];
+                    if (statData['name'] == dataItem['name']) {
+                        dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
+                        dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
+                        break;
                     }
                 }
-            ];
+            }
+            contrailListModel.updateData(dataItems);
+            if (contrail.checkIfExist(parentModelList)) {
+                nmwp.projectNetworksDataParser(parentModelList, contrailListModel);
+            }
+        };
+
+        this.getVNStatsVLOfPrimaryRemoteConfig = function (type) {
+            return [{
+                getAjaxConfig: function (responseJSON) {
+                    return self.getVNStatsLazyRemoteAjaxConfig(responseJSON);
+                },
+                successCallback: function (response, contrailListModel, parentModelList) {
+                    self.getVNStatsLazyRemoteSuccessHandler(type, response, contrailListModel, parentModelList);
+                }
+            }];
+        };
+
+        this.getVNStatsVLOfHLRemoteConfig = function (type) {
+            return [{
+                getAjaxConfig: function (responseJSON) {
+                    return self.getVNStatsLazyRemoteAjaxConfig(responseJSON);
+                },
+                successCallback: function (response, contrailListModel, parentModelList) {
+                    self.getVNStatsLazyRemoteSuccessHandler(type, response, parentModelList[0],
+                                                            null);
+                }
+            }];
         };
 
         this.getInterfaceStatsLazyRemoteConfig = function () {
             return [
                 {
                     getAjaxConfig: function (responseJSON) {
-                        var names, lazyAjaxConfig;
+                        var fqns, lazyAjaxConfig;
 
-                        names = $.map(responseJSON, function (item) {
+                        fqns = $.map(responseJSON, function (item) {
                             return item['name'];
                         });
 
+                        var whereClause = qeUtils.formatUIWhereClauseConfigByUserRole("name", fqns);
+                        var qObj = {table: "StatTable.UveVirtualNetworkAgent.vn_stats",
+                            where: whereClause};
+                        var postData = qeUtils.formatQEUIQuery(qObj);
                         lazyAjaxConfig = {
-                            url: ctwc.URL_VM_VN_STATS,
-                            type: 'POST',
-                            data: JSON.stringify({
-                                data: {
-                                    type: 'virtual-machine-interface',
-                                    uuids: names.join(','),
-                                    minsSince: 60,
-                                    useServerTime: true
-                                }
-                            })
-                        }
+                            url: cowc.URL_QE_QUERY,
+                            type: "POST",
+                            data: JSON.stringify(postData)
+                        };
                         return lazyAjaxConfig;
                     },
                     successCallback: function (response, contrailListModel) {
-                        var statDataList = nmwp.parseInstanceInterfaceStats(response[0]),
+                        if (null == response) {
+                            return;
+                        }
+                        var statDataList = ctwp.parseInstanceInterfaceStats(response.data),
                             dataItems = contrailListModel.getItems(),
                             statData;
 
@@ -274,13 +291,11 @@ define([
             return {
                 remote: {
                     ajaxConfig: {
-                        url: ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 25, 100, $.now()),
+                        url: ctwc.get(ctwc.URL_GET_VIRTUAL_NETWORKS, 100, 1000, $.now()),
                         type: 'POST',
                         data: JSON.stringify({
-                            data: [{
-                                "type": ctwc.TYPE_VIRTUAL_NETWORK,
-                                "cfilt": ctwc.FILTERS_COLUMN_VN.join(',')
-                            }]
+                            id: qeUtils.generateQueryUUID(),
+                            cfilt: ctwc.FILTERS_COLUMN_VN.join(',')
                         })
                     },
                     dataParser: nmwp.networkDataParser
@@ -289,7 +304,7 @@ define([
                     completeCallback: function (contrailListModel, parentModelList) {
                         //ctwp.projectNetworksDataParser(parentModelList, contrailListModel);
                     },
-                    vlRemoteList: nmwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
+                    vlRemoteList: nmwgc.getVNStatsVLOfPrimaryRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
                 },
                 cacheConfig: {
                     ucid: ctwc.UCID_ALL_VN_LIST

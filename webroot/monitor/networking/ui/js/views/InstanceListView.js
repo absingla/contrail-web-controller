@@ -6,9 +6,8 @@ define([
     'underscore',
     'contrail-view',
     'contrail-list-model',
-    'core-basedir/js/common/qe.utils',
-    'controller-basedir/common/ui/js/controller.qe.utils'
-], function (_, ContrailView, ContrailListModel, qewu, ctqeu) {
+    'core-basedir/reports/qe/ui/js/common/qe.utils'
+], function (_, ContrailView, ContrailListModel, qeUtils) {
     var InstanceListView = ContrailView.extend({
         el: $(contentContainer),
 
@@ -21,153 +20,140 @@ define([
                 projectFQN = (projectSelectedValueData.value === 'all') ? null : domainFQN + ':' + projectSelectedValueData.name,
                 contrailListModel;
 
-            qewu.fetchServerCurrentTime(function(serverCurrentTime) {
-                if(projectUUID != null) {
-                    var networkUUID = (networkSelectedValueData.value === 'all') ? null : networkSelectedValueData.value,
-                        networkFQN = (networkSelectedValueData.value === 'all') ? null : projectFQN + ':' + networkSelectedValueData.name,
-                        parentUUID = (networkUUID == null) ? projectUUID : networkUUID,
-                        parentFQN = (networkUUID == null) ? projectFQN : networkFQN,
-                        parentType = (networkUUID == null) ? ctwc.TYPE_PROJECT : ctwc.TYPE_VN,
-                        parentHashtype = (networkUUID == null) ? ctwc.TYPE_PROJECT : ctwc.TYPE_NETWORK,
-                        extendedHashOb = {};
+            if (projectUUID != null) {
+                var networkUUID = (networkSelectedValueData.value === 'all') ? null : networkSelectedValueData.value,
+                    networkFQN = (networkSelectedValueData.value === 'all') ? null : projectFQN + ':' + networkSelectedValueData.name,
+                    parentUUID = (networkUUID == null) ? projectUUID : networkUUID,
+                    parentFQN = (networkUUID == null) ? projectFQN : networkFQN,
+                    parentType = (networkUUID == null) ? ctwc.TYPE_PROJECT : ctwc.TYPE_VN,
+                    parentHashtype = (networkUUID == null) ? ctwc.TYPE_PROJECT : ctwc.TYPE_NETWORK,
+                    extendedHashOb = {};
 
-                    contrailListModel = new ContrailListModel(getInstanceListModelConfig(parentUUID, parentType, parentFQN, serverCurrentTime));
+                contrailListModel = new ContrailListModel(getInstanceListModelConfig(parentUUID, parentFQN));
 
-                    self.renderView4Config(self.$el, contrailListModel, getInstanceListViewConfig(parentUUID, parentType, parentFQN));
-                    extendedHashOb[parentHashtype] = parentFQN;
-                    ctwu.setNetwork4InstanceListURLHashParams(extendedHashOb);
-
-                } else {
-                    contrailListModel = new ContrailListModel(getInstanceListModelConfig(null, null, null, serverCurrentTime));
-
-                    self.renderView4Config(self.$el, contrailListModel, getInstanceListViewConfig(null, null, null));
-                    ctwu.setNetwork4InstanceListURLHashParams({});
-                }
-            });
+                self.renderView4Config(self.$el, contrailListModel, getInstanceListViewConfig(parentUUID, parentType, parentFQN));
+                extendedHashOb[parentHashtype] = parentFQN;
+                ctwu.setNetwork4InstanceListURLHashParams(extendedHashOb);
+            } else {
+                contrailListModel = new ContrailListModel(getInstanceListModelConfig(null, null));
+                self.renderView4Config(self.$el, contrailListModel, getInstanceListViewConfig(null, null, null));
+                ctwu.setNetwork4InstanceListURLHashParams({});
+            }
         }
     });
 
-    function getInstanceListModelConfig(parentUUID, parentType, parentFQN, serverCurrentTime) {
+    function getInstanceListModelConfig(parentUUID, parentFQN) {
         var ajaxConfig = {
-            url: ctwc.get(ctwc.URL_GET_INSTANCES, 'analytics', parentType, 100, 500, $.now()),
+            url: ctwc.get(ctwc.URL_GET_NETWORK_INSTANCES, 100, 1000, $.now()),
             type: 'POST',
             data: JSON.stringify({
-                id: qewu.generateQueryUUID(),
-                FQN: parentFQN,
-                originResponseChunk: parentUUID ? null : true,
-                originConcurrentLimit: parentUUID ? null : 10,
-                data: [{"type": ctwc.TYPE_VIRTUAL_MACHINE, "cfilt": ctwc.FILTERS_COLUMN_VM.join(',')}]
+                id: qeUtils.generateQueryUUID(),
+                FQN: parentFQN
             })
         };
 
         return {
             remote: {
-                //Get the list of instances via Analytics API
                 ajaxConfig: ajaxConfig,
                 dataParser: ctwp.instanceDataParser,
-                //Get the list of instances via Config API
+                hpCompleteCallback: function(response, contrailListModel) {
+                    var configUUIDCnt = 0;
+                    var dataItems = contrailListModel.getItems();
+                    try {
+                        var configUUIDList = contrailListModel.getHLData().response[0].configVMList;
+                        configUUIDCnt = configUUIDList.length;
+                    } catch(e) {
+                        configUUIDCnt = 0;
+                    }
+                    var tmpUUIDObjs = {};
+                    var opDataCnt = dataItems.length;
+                    var missingUUIDList = [];
+                    for (i = 0; i < opDataCnt; i++) {
+                        var uuid = dataItems[i].uuid;
+                        tmpUUIDObjs[uuid] = dataItems[i];
+                    }
+                    for (var i = 0; i < configUUIDCnt; i++) {
+                        uuid = configUUIDList[i];
+                        if (null == tmpUUIDObjs[uuid]) {
+                            missingUUIDList.push({name: uuid, uuid: uuid});
+                        }
+                    }
+                    contrailListModel.addData(missingUUIDList);
+                },
                 hlRemoteConfig: {
                     remote: {
                         ajaxConfig: {
-                            url: ctwc.get(ctwc.URL_GET_INSTANCES_LIST, 'config', parentType, 100, 500, $.now()),
+                            url: ctwc.get(ctwc.URL_GET_INSTANCES_LIST, $.now()),
                             type: 'POST',
                             data: JSON.stringify({
-                                reqId: qewu.generateQueryUUID(),
+                                reqId: qeUtils.generateQueryUUID(),
                                 FQN: parentFQN,
-                                fqnUUID: parentUUID,
-                                data: [{"type": ctwc.TYPE_VIRTUAL_MACHINE, "cfilt": ctwc.FILTERS_COLUMN_VM.join(',')}]
+                                fqnUUID: parentUUID
                             })
                         },
                         dataParser: function(vmList) {
                             var retArr = [];
-                            if (vmList.length > 0) {
-                                _.each(vmList, function(vmUUID) {
-                                    retArr.push({
-                                        name: vmUUID,
-                                        vmName: "",
-                                        value: {
-                                            UveVirtualMachineAgent: {}
-                                        }
-                                    });
-                                });
+                            var opVMList = vmList.opVMList;
+                            if ((null == opVMList) || (!opVMList.length)) {
+                                return retArr;
                             }
+                            _.each(opVMList, function(vmUUID) {
+                                retArr.push({
+                                    name: vmUUID,
+                                    vmName: "",
+                                    value: {
+                                        UveVirtualMachineAgent: {}
+                                    }
+                                });
+                            });
                             return retArr;
-                        },
-                        completeCallback: function(response, contrailListModel, parentListModelArray) {
-                            // var response = contrailListModel.getItems(),
-                            //     parentListModel = parentListModelArray[0];
-                            //
-                            // if (response.length > 0) {
-                            //     //parentListModel.error = true;
-                            //     _.each(response, function(item) {
-                            //         //parentListModel.errorList.push({});
-                            //         delete item.cgrid;
-                            //     });
-                            //     parentListModel.addData(response);
-                            // }
                         }
                     },
                     vlRemoteConfig: {
-                        vlRemoteList: [
-                            {
-                                getAjaxConfig: function (responseJSON) {
-                                    var uuids, lazyAjaxConfig;
+                        vlRemoteList: [{
+                            getAjaxConfig: function (responseJSON) {
+                                var uuids, lazyAjaxConfig;
 
-                                    uuids = $.map(responseJSON, function (item) {
-                                        return item['name'];
-                                    });
-                                    
-                                    var queryAttrs = ctqeu.getQueryPostData(cowc.QE_STAT_TABLE_TYPE, ctwc.TYPE_VIRTUAL_MACHINE, 60, serverCurrentTime);
+                                uuids = $.map(responseJSON, function (item) {
+                                    return item['name'];
+                                });
+                                var whereClause =
+                                    qeUtils.formatUIWhereClauseConfigByUserRole("vm_uuid", uuids);
+                                var qObj = {table: "StatTable.UveVMInterfaceAgent.if_stats",
+                                    where: whereClause};
+                                var postData = qeUtils.formatQEUIQuery(qObj);
 
-                                    if (uuids.length > 100) {
-                                        queryAttrs['where_json'] = [[{"name": "vm_uuid", "value": "", "op": 7}]];
-                                    } else if(uuids.length > 0) {
-                                        var whereClauseArr = [];
-                                        _.each(uuids, function(uuid) {
-                                            whereClauseArr.push([{
-                                                name : "vm_uuid",
-                                                value: uuid,
-                                                op: "1"
-                                            }]);
-                                        });
-                                        queryAttrs['where_json'] = whereClauseArr;
-                                    } else {
-                                        return;
-                                    }
-                                    
-                                    lazyAjaxConfig = {
-                                        url: cowc.URL_QE_QUERY,
-                                        type: 'POST',
-                                        data: JSON.stringify({
-                                            queryAttrs: queryAttrs,
-                                            async: false,
-                                            queryId: qewu.generateQueryUUID()
-                                        })
-                                    }
-                                    return lazyAjaxConfig;
-                                },
-                                successCallback: function (response, contrailListModel) {
-                                    var statDataList = ctwp.parseInstanceStats({value: response.data}, ctwc.TYPE_VIRTUAL_MACHINE),
-                                        dataItems = contrailListModel.getItems(),
-                                        updatedDataItems = [],
-                                        statData;
+                                lazyAjaxConfig = {
+                                    url: cowc.URL_QE_QUERY,
+                                    type: 'POST',
+                                    data: JSON.stringify(postData)
+                                }
+                                return lazyAjaxConfig;
+                            },
+                            successCallback: function (response, contrailListModel,
+                                                       parentListModelArray) {
+                                var statDataList = ctwp.parseInstanceStats({value: response.data},
+                                                                           ctwc.TYPE_VIRTUAL_MACHINE),
+                                    dataItems = parentListModelArray[0].getItems(),
+                                    updatedDataItems = [],
+                                    statData;
 
-                                    for (var j = 0; j < statDataList.length; j++) {
-                                        statData = statDataList[j];
-                                        for (var i = 0; i < dataItems.length; i++) {
-                                            var dataItem = dataItems[i];
-                                            if (statData['name'] == dataItem['name']) {
-                                                dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
-                                                dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
-                                                updatedDataItems.push(dataItem);
-                                                break;
-                                            }
+                                for (var j = 0; j < statDataList.length; j++) {
+                                    statData = statDataList[j];
+                                    for (var i = 0; i < dataItems.length; i++) {
+                                        var dataItem = dataItems[i];
+                                        if (statData['name'] == dataItem['name']) {
+                                            dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
+                                            dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
+                                            updatedDataItems.push(dataItem);
+                                            break;
                                         }
                                     }
-                                    contrailListModel.updateData(updatedDataItems);
                                 }
-                            },
-                        ],
+                                parentListModelArray[0].updateData(updatedDataItems);
+                            }
+                        }],
+                        /*
                         completeCallback: function (contrailListModel, parentModelList) {
                             var configItems = contrailListModel.getItems(),
                                 opApiItems = parentModelList[0].getItems(),
@@ -194,15 +180,18 @@ define([
                             if (addDataItems.length > 0) {
                                 parentModelList[0].addData(addDataItems);
                             }
-                        }
+                        }*/
                     }
                 }
             },
+            /*
             vlRemoteConfig: {
                 vlRemoteList: ctwgc.getVMDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_MACHINE)
             },
+            */
             cacheConfig : {
-                ucid: (parentUUID != null) ? (ctwc.UCID_PREFIX_MN_LISTS + parentUUID + ":" + 'virtual-machines') : ctwc.UCID_ALL_VM_LIST
+                ucid: (parentUUID != null) ? (ctwc.UCID_PREFIX_MN_LISTS + parentUUID + ":" +
+                                              'virtual-machines') : ctwc.UCID_ALL_VM_LIST
             }
         };
     }

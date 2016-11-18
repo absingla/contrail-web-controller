@@ -769,6 +769,10 @@ define([
                                                     key: 'uuid',
                                                     templateGenerator: 'TextGenerator'
                                                 },{
+                                                    key: "name",
+                                                    label: "FQN",
+                                                    templateGenerator: "TextGenerator"
+                                                },{
                                                     key: 'vRouter',
                                                     templateGenerator: 'LinkGenerator',
                                                     templateGeneratorConfig: {

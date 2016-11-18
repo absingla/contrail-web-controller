@@ -169,6 +169,12 @@ define([
 
         this.instanceInterfaceColumns = [
             {
+                field: 'uuid',
+                name: 'UUID',
+                minWidth: 100,
+                searchable: true
+            },
+            {
                 field: 'ip',
                 name: 'IP Address',
                 minWidth: 100,
@@ -234,52 +240,6 @@ define([
                 }
             }
         ];
-
-        this.getInterfaceStatsLazyRemoteConfig = function () {
-            return [
-                {
-                    getAjaxConfig: function (responseJSON) {
-                        var names, lazyAjaxConfig;
-
-                        names = $.map(responseJSON, function (item) {
-                            return item['name'];
-                        });
-
-                        lazyAjaxConfig = {
-                            url: ctwc.URL_VM_VN_STATS,
-                            type: 'POST',
-                            data: JSON.stringify({
-                                data: {
-                                    type: 'virtual-machine-interface',
-                                    uuids: names.join(','),
-                                    minsSince: 60,
-                                    useServerTime: true
-                                }
-                            })
-                        };
-                        return lazyAjaxConfig;
-                    },
-                    successCallback: function (response, contrailListModel) {
-                        var statDataList = ctwp.parseInstanceInterfaceStats(response[0]),
-                            dataItems = contrailListModel.getItems(),
-                            statData;
-
-                        for (var j = 0; j < statDataList.length; j++) {
-                            statData = statDataList[j];
-                            for (var i = 0; i < dataItems.length; i++) {
-                                var dataItem = dataItems[i];
-                                if (statData['name'] == dataItem['name']) {
-                                    dataItem['inBytes60'] = ifNull(statData['inBytes'], 0);
-                                    dataItem['outBytes60'] = ifNull(statData['outBytes'], 0);
-                                    break;
-                                }
-                            }
-                        }
-                        contrailListModel.updateData(dataItems);
-                    }
-                }
-            ];
-        };
 
         this.getAcknowledgeAction = function (onClickFunction, divider) {
             return {
@@ -460,7 +420,9 @@ define([
                                     if (dataItem['vn'].length != 0) {
                                         dataItem['vnFQN'] = dataItem['vn'][0];
                                     }
-                                    dataItem['vn'] = ctwu.formatVNName(dataItem['vn']);
+                                    dataItem['vn'] = ctwu.formatVNName(dataItem['vn'],
+                                                                       cowc.COOKIE_DOMAIN + ":" +
+                                                                       cowc.COOKIE_PROJECT);
                                 } else {
                                     dataItem['vn'] = '-';
                                 }

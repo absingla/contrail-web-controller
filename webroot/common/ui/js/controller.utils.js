@@ -165,12 +165,19 @@ define([
         // input: either array of networks or single network like [default-domain:demo:ipv6test2], default-domain:demo:ipv6test2
         // output:[ipv6test2 (demo)],ipv6test2 (demo).
 
-        self.formatVNName = function (vnName) {
+        self.formatVNName = function (vnName, projectFQN) {
             var formattedValue;
             if (!$.isArray(vnName))
                 vnName = [vnName];
             formattedValue = $.map(vnName, function (value, idx) {
                 var fqNameArr = value.split(':');
+                if (null != projectFQN) {
+                    var projectFQNArr = projectFQN.split(":");
+                    if ((projectFQNArr[0] === fqNameArr[0]) &&
+                        (projectFQNArr[1] === fqNameArr[1])) {
+                        return projectFQNArr[2];
+                    }
+                }
                 if (fqNameArr.length == 3)
                     return fqNameArr[2] + ' (' + fqNameArr[1] + ')';
                 else

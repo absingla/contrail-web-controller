@@ -5,8 +5,9 @@
 define([
     'underscore',
     'contrail-view',
-    'contrail-list-model'
-], function (_, ContrailView, ContrailListModel) {
+    'contrail-list-model',
+    'core-basedir/reports/qe/ui/js/common/qe.utils'
+], function (_, ContrailView, ContrailListModel, qeUtils) {
     var NetworkListView = ContrailView.extend({
         el: $(contentContainer),
 
@@ -16,33 +17,96 @@ define([
                 domainFQN = contrail.getCookie(cowc.COOKIE_DOMAIN),
                 projectSelectedValueData = viewConfig.projectSelectedValueData,
                 projectFQN = (projectSelectedValueData.value === 'all') ? null : domainFQN + ':' + projectSelectedValueData.name,
-                contrailListModel = new ContrailListModel(getNetworkListModelConfig(projectFQN));
+                projectUUID = (projectSelectedValueData.value === 'all') ? null : projectSelectedValueData.value,
+                contrailListModel = new ContrailListModel(getNetworkListModelConfig(projectFQN,
+                                                                                    projectUUID));
 
-            self.renderView4Config(self.$el, contrailListModel, getNetworkListViewConfig());
+            self.renderView4Config(self.$el, contrailListModel,
+                                   getNetworkListViewConfig(projectFQN));
             ctwu.setProject4NetworkListURLHashParams(projectFQN);
         }
     });
 
-    function getNetworkListModelConfig(projectFQN) {
+    function getNetworkListModelConfig(parentFQN, parentUUID) {
+        var ajaxConfig = {
+            url : ctwc.get(ctwc.URL_GET_VIRTUAL_NETWORKS, 100, 1000, $.now()),
+            type: 'POST',
+            data: JSON.stringify({
+                id: qeUtils.generateQueryUUID(),
+                FQN: parentFQN,
+                fqnUUID: parentUUID
+            })
+        };
+
         return {
             remote: {
-                ajaxConfig: {
-                    url: projectFQN != null ? ctwc.get(ctwc.URL_PROJECT_NETWORKS_IN_CHUNKS, 10, 100, projectFQN, $.now()) : ctwc.get(ctwc.URL_NETWORKS_DETAILS_IN_CHUNKS, 10, 100, $.now()),
-                    type: "POST",
-                    data: JSON.stringify({
-                        data: [{
-                            "type": ctwc.TYPE_VIRTUAL_NETWORK,
-                            "cfilt": ctwc.FILTERS_COLUMN_VN.join(',')
-                        }]
-                    })
+                ajaxConfig: ajaxConfig,
+                dataParser: nmwp.networkDataParser,
+                hpCompleteCallback: function(response, contrailListModel) {
+                    var configVnCnt = 0;
+                    var dataItems = contrailListModel.getItems();
+                    try {
+                        var configVns = contrailListModel.getHLData().response[0].configVNList.vnFqnList;
+                        configVnCnt = configVns.length;
+                    } catch(e) {
+                        configVnCnt = 0;
+                    }
+                    var tmpFqnObjs = {};
+                    var opDataCnt = dataItems.length;
+                    var missingFqnList = [];
+                    for (i = 0; i < opDataCnt; i++) {
+                        var fqn = getValueByJsonPath(dataItems[i], "name", null);
+                        tmpFqnObjs[fqn] = dataItems[i];
+                    }
+                    for (var i = 0; i < configVnCnt; i++) {
+                        var fqn = configVns[i];
+                        if (null == tmpFqnObjs[fqn]) {
+                            missingFqnList.push({name: fqn});
+                        }
+                    }
+                    if (missingFqnList.length > 0) {
+                        contrailListModel.addData(missingFqnList);
+                    }
                 },
-                dataParser: nmwp.networkDataParser
+                hlRemoteConfig: {
+                    remote: {
+                        ajaxConfig: {
+                            url: ctwc.get(ctwc.URL_GET_VIRTUAL_NETWORKS_LIST, $.now()),
+                            type: 'POST',
+                            data: JSON.stringify({
+                                reqId: qeUtils.generateQueryUUID(),
+                                FQN: parentFQN,
+                                fqnUUID: parentUUID
+                            })
+                        },
+                        dataParser: function(vnList) {
+                            var retArr = [];
+                            var opVNList = vnList.opVNList;
+                            if ((null == opVNList) || (!opVNList.length)) {
+                                return retArr;
+                            }
+                            _.each(opVNList, function(vn) {
+                                retArr.push({
+                                    name: vn,
+                                    value: {
+                                    }
+                                });
+                            });
+                            return retArr;
+                        },
+                    },
+                    vlRemoteConfig: {
+                        vlRemoteList: nmwgc.getVNStatsVLOfHLRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
+                    }
+                },
             },
-            vlRemoteConfig: {
-                vlRemoteList: nmwgc.getVNDetailsLazyRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
-            },
+                        /*
+                    vlRemoteConfig: {
+                        vlRemoteList: nmwgc.getVNStatsVLOfHLRemoteConfig(ctwc.TYPE_VIRTUAL_NETWORK)
+                    },
+                    */
             cacheConfig: {
-                ucid: projectFQN != null ? (ctwc.UCID_PREFIX_MN_LISTS + projectFQN + ":virtual-networks") : ctwc.UCID_ALL_VN_LIST
+                ucid: parentFQN != null ? (ctwc.UCID_PREFIX_MN_LISTS + parentFQN + ":virtual-networks") : ctwc.UCID_ALL_VN_LIST
             }
         };
     }
