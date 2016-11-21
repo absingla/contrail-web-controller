@@ -126,29 +126,7 @@ define([
                                            {text: "Disabled", value: "false"}]
                                 }
                             }
-                        },
-                        {
-                            elementId: 'xmpp_helper_enable',
-                            view: "FormDropdownView",
-                            viewConfig : {
-                                visible: "graceful_restart_enable",
-                                path : 'graceful_restart_parameters.xmpp_helper_enable',
-                                class : "col-xs-6",
-                                label:'XMPP Helper',
-                                templateId: cowc.TMPL_DROPDOWN_LABEL_RIGHT_VIEW,
-                                dataBindValue :
-                                    'graceful_restart_parameters().xmpp_helper_enable',
-                                elementConfig : {
-                                    dataTextField: "text",
-                                    dataValueField: "value",
-                                    data: [{text: "Enabled", value: "true"},
-                                           {text: "Disabled", value: "false"}]
-                                }
-                            }
-                        }]
-                    },
-                    {
-                        columns:[{
+                        }, {
                             elementId:
                                 "restart_time",
                             view: "FormInputView",
@@ -163,8 +141,10 @@ define([
                                     "restart_time",
                                 class: "col-xs-6"
                             }
-                        },
-                        {
+                        }]
+                    },
+                    {
+                        columns:[{
                             elementId: "long_lived_restart_time",
                             view: "FormInputView",
                             viewConfig: {
@@ -178,10 +158,7 @@ define([
                                     "long_lived_restart_time",
                                 class: "col-xs-6"
                             }
-                        }]
-                    },
-                    {
-                        columns:[{
+                        }, {
                             elementId: "end_of_rib_timeout",
                             view: "FormInputView",
                             viewConfig: {
