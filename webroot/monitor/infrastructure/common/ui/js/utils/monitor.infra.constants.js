@@ -63,6 +63,11 @@ define([
         this.CONFIGNODE_CPU_SHARE_SCHEMA_LINE_CHART_ID = 'confignode-cpu-share-schema-line-chart-id';
         this.CONFIGNODE_CPU_SHARE_DISCOVERY_LINE_CHART_ID = 'confignode-cpu-share-discovery-line-chart-id';
         this.CONFIGNODE_CPU_SHARE_API_LINE_CHART_ID = 'confignode-cpu-share-api-line-chart-id';
+        this.CONFIGNODE_CPU_SHARE_SERVICE_MONITOR_LINE_CHART_ID = 'confignode-cpu-share-service-monitor-line-chart-id';
+        this.CONFIGNODE_CPU_SHARE_DEVICE_MANAGER_LINE_CHART_ID = 'confignode-cpu-share-device-manager-line-chart-id';
+        this.CONFIGNODE_CPU_SHARE_IFMAP_LINE_CHART_ID = 'confignode-cpu-share-ifmap-line-chart-id';
+        this.SYSTEM_CPU_SHARE_LINE_CHART_ID = 'system-cpu-share-line-chart-id';
+        this.SYSTEM_MEMORY_USAGE_LINE_CHART_ID = 'system-memory-usage-line-chart-id';
 
         this.monitorInfraUrls = {
                 TENANT_API_URL              : "/api/tenant/get-data",
@@ -99,9 +104,9 @@ define([
                 DATABASE_DETAILS            : '/api/admin/monitor/infrastructure/dbnode/details?hostname={0}',
 
                 FLOWSERIES_CPU              : '/api/tenant/networking/flow-series/cpu?moduleId={0}&minsSince={1}&sampleCnt={2}&source={3}&endTime={4}',
-                QUERY                       : '/api/admin/reports/query',
-                MSGTABLE_CATEGORY           : '/api/admin/table/values/MessageTable/Category',
-                MSGTABLE_LEVEL              : '/api/admin/table/values/MessageTable/Level'
+                QUERY                       : '/api/qe/query',
+                MSGTABLE_CATEGORY           : '/api/qe/table/values/MessageTable/Category',
+                MSGTABLE_LEVEL              : '/api/qe/table/values/MessageTable/Level'
         }
 
         this.UVEModuleIds = {
@@ -146,70 +151,7 @@ define([
 
         this.VROUTER_DEFAULT_MAX_THROUGHPUT = 10737418240; // 10 GB
 
-        this.stackChartDefaultViewConfig = {
-            view: 'StackedBarChartWithFocusView',
-            viewConfig: {
-                class: 'mon-infra-chart chartMargin',
-                chartOptions: {
-                    bucketSize: this.STATS_BUCKET_DURATION,
-                    showControls: true,
-                    tickPadding: 8,
-                    margin: {
-                        left: 45,
-                        top: 20,
-                        right: 0,
-                        bottom: 40
-                    },
-                    yAxisOffset: 25,
-                    defaultZeroLineDisplay: true
-                }
-            }
-        };
-        this.defaultLineChartViewCfg = {
-                view : "LineWithFocusChartView",
-                viewConfig: {
-                    class: 'mon-infra-chart chartMargin',
-                    parseFn: cowu.chartDataFormatter,
-                    chartOptions : {
-                        brush: false,
-                        xAxisLabel: '',
-                        yAxisLabel: '',
-                        groupBy: 'Source',
-                        yField: '',
-                        yFieldOperation: 'average',
-                        bucketSize: this.STATS_BUCKET_DURATION,
-                        colors: {},
-                        title: '',
-                        axisLabelDistance : 0,
-                        margin: {
-                            left: 70,
-                            top: 20,
-                            right: 15,
-                            bottom: 20
-                        },
-                        tickPadding: 8,
-                        hideFocusChart: true,
-                        forceY: false,
-                        yFormatter : function(d){
-                            return d;
-                        },
-                        xFormatter: function(xValue, tickCnt) {
-                            var date = xValue > 1 ? new Date(xValue) : new Date();
-                            if (tickCnt != null) {
-                               var mins = date.getMinutes();
-                               date.setMinutes(Math.ceil(mins/15) * 15);
-                            }
-                            return d3.time.format('%H:%M')(date);
-                        },
-                        yTickFormat: function(value){
-                            return d3.format('.2f')(value);
-                        },
-                        showLegend: true,
-                        defaultZeroLineDisplay: true,
-                        legendView: LegendView
-                    },
-                }
-            };
+        this.VROUTER_FLOWS_CHART_COLORS = ['#6f97ae','#d95436'];
 
     };
 
