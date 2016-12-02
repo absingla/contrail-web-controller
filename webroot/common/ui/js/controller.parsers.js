@@ -157,11 +157,15 @@ define([
                 var ts = Math.floor(responseArray[i]['T'] / 1000);
                 cpuUtilization.values.push({
                     x: ts,
-                    y: responseArray[i]['cpu_stats.cpu_one_min_avg']
+                    y: responseArray[i]['cpu_stats.cpu_one_min_avg'],
+                    cpu_one_min_avg: responseArray[i]['cpu_stats.cpu_one_min_avg'],
+                    cpu_five_min_avg: responseArray[i]['cpu_stats.cpu_one_min_avg'] * Math.random(), //Additional attr 4 testing
                 });
                 memoryUsage.values.push({
                     x: ts,
-                    y: responseArray[i]['cpu_stats.rss']
+                    y: responseArray[i]['cpu_stats.rss'],
+                    rss: responseArray[i]['cpu_stats.rss'],
+                    rss_buffer: responseArray[i]['cpu_stats.rss'] * Math.random(), //Additional attr for testing
                 });
             }
             return chartData;
@@ -172,12 +176,12 @@ define([
             for (var i = 0; i < responseArray.length; i++) {
                 var ts = Math.floor(responseArray[i]['T'] / 1000);
                 chartData.push({
-                    x: ts,
+                    ts: ts,
                     cpu_one_min_avg: responseArray[i]['cpu_stats.cpu_one_min_avg'],
-                    cpu_five_min_avg: responseArray[i]['cpu_stats.cpu_one_min_avg'] * Math.random(), //Additional attr 4 testing
-                    rss: responseArray[i]['cpu_stats.rss'],
-                    rss_buffer: responseArray[i]['cpu_stats.rss'] * Math.random(), //Additional attr for testing
+                    rss: responseArray[i]['cpu_stats.rss']
                 });
+
+                console.log(i, ": ", ts, responseArray[i]['cpu_stats.cpu_one_min_avg'], responseArray[i]['cpu_stats.rss']);
             }
             return chartData;
         };

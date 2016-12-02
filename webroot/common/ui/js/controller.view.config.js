@@ -165,6 +165,7 @@ define([
                         view: "InstanceTrafficStatsView",
                         viewPathPrefix: "monitor/networking/ui/js/views/",
                         tabConfig: {
+                            renderOnActivate: true,
                             activate: function(event, ui) {
                                 $('#' + ctwl.INSTANCE_TRAFFIC_STATS_ID).find('svg').trigger('refresh');
                             }
@@ -209,6 +210,7 @@ define([
                         title: ctwl.TITLE_CPU_MEMORY,
                         view: "LineBarWithFocusChartView",
                         tabConfig: {
+                            renderOnActivate: true,
                             activate: function(event, ui) {
                                 $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID).find('svg').trigger('refresh');
                             }
@@ -275,148 +277,213 @@ define([
                         view: "ChartView",
                         viewPathPrefix: 'js/charts/',
                         tabConfig: {
-                            renderOnActivate: true,
-                            // activate: function(event, ui) {
-                            //     $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find('.coCharts-container').data('chart').refreshView();
-                            // }
+                            renderOnActivate: true
                         },
                         viewConfig: {
-                            widgetConfig: {
-                                elementId: 'aa' + '-widget',
-                                view: "WidgetView",
-                                viewConfig: {
-                                    header: false,
-                                    controls: {
-                                        top: false,
-                                        right: {
-                                            custom: {
-                                                filterY: {
-                                                    enable: true
-                                                }
-                                            },
-                                            expandedContainerWidth: 350,
-                                            expandedContainerHeight: 280
-                                        }
-                                    }
-                                }
-                            },
                             modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
-                            parseFn: ctwp.parseCPUMemChartData,
                             chartOptions: {
-                                mainChart: {
-                                    marginLeft: 70,
-                                    marginRight: 80,
-                                    marginInner: 5,
-                                    chartWidthDelta: -40,
-                                    axis: {
-                                        x: {
-                                            formatter: function(value) {
-                                                return d3.time.format("%H:%M")(value);
-                                            }
-                                        },
-                                        y1: {
-                                            formatter: d3.format(".01f"),
-                                            domain: [0, undefined],
-                                        },
-                                        y2: {
-                                            formatter: function (y2Value) {
-                                                return formatBytes(y2Value * 1024, true);
-                                            },
-                                            //[min, max] when a value is set to undefined, will use whatever chart calculated value
-                                            //with following config, will force min to 0 and max to chart calculated max scale.
-                                            domain: [0, undefined],
+                                chartId: "cpumem",
+                                type: "XYChartView",
+                                height: 600,
+                                handlers: [
+                                    {
+                                        type: 'dataProvider',
+                                        config: {
+                                            formatData: ctwp.parseCPUMemChartData
                                         }
                                     },
-                                    accessorData : CPUMemChartMetadata
-                                },
-                                bindingHandler: {
-                                    bindings: [
-                                        {
-                                            sourceComponent: 'mainChart',
-                                            sourceModel: 'config',
-                                            sourcePath: 'accessorData',
-                                            targetComponent: 'controlPanel',
-                                            targetModel: 'config',
-                                            action: 'sync'
-                                        }
-                                    ]
-                                },
-                                controlPanel: {
-                                    enable: true,
-                                    buttons: [
-                                        {
-                                            name: "filter",
-                                            title: "Filter",
-                                            iconClass: 'fa fa-filter',
-                                            events: {
-                                                click: "filterVariables"
-                                            },
-                                            panel: {
-                                                name: "accessorData",
-                                                width: "350px"
-                                            }
-                                        }
-                                    ]
-                                },
-                                navigation: {
-                                    enable: true,
-                                    marginLeft: 70,
-                                    marginRight: 80,
-                                    chartWidthDelta: -40,
-                                    marginInner: 5,
-                                    axis: {
-                                        x: {
-                                            formatter: function(value) {
-                                                return d3.time.format("%H:%M")(value);
-                                            }
+                                    {
+                                        type: 'bindingHandler',
+                                        config: {
+                                            bindings: [
+                                                {
+                                                    sourceComponent: 'compositeY',
+                                                    sourceModel: 'config',
+                                                    sourcePath: 'plot',
+                                                    targetComponent: 'controlPanel',
+                                                    targetModel: 'config',
+                                                    action: 'sync'
+                                                }
+                                            ]
                                         },
-                                        y1: {
-                                            formatter: d3.format(".01f"),
-                                            domain: [0, undefined],
-                                        },
-                                        y2: {
-                                            formatter: function (y2Value) {
-                                                return formatBytes(y2Value * 1024, true);
+                                    }
+                                ],
+                                components: [
+                                    {
+                                        type: 'compositeY',
+                                        config: {
+                                            el: "#cpumem-xyChart",
+                                            marginLeft: 70,
+                                            marginRight: 80,
+                                            marginInner: 5,
+                                            chartHeight: 400,
+                                            //chartWidthDelta: -40,
+                                            axis: {
+                                                x: {
+                                                    formatter: function(value) {
+                                                        return d3.time.format("%H:%M")(value);
+                                                    }
+                                                },
+                                                y1: {
+                                                    position: "left",
+                                                    formatter: d3.format(".01f"),
+                                                    //domain: [0, undefined],
+                                                },
+                                                y2: {
+                                                    position: "right",
+                                                    formatter: function (y2Value) {
+                                                        console.log(y2Value);
+                                                        return formatBytes(y2Value * 1024, true);
+                                                    },
+                                                    //[min, max] when a value is set to undefined, will use whatever chart calculated value
+                                                    //with following config, will force min to 0 and max to chart calculated max scale.
+                                                    //domain: [0, undefined],
+                                                }
                                             },
-                                            //[min, max] when a value is set to undefined, will use whatever chart calculated value
-                                            //with following config, will force min to 0 and max to chart calculated max scale.
-                                            domain: [0, undefined],
+                                            plot: {
+                                                "x": {
+                                                    accessor: "ts",
+                                                    label: "Time",
+                                                    axis: "x"
+                                                },
+                                                "y": [
+                                                    {
+                                                        accessor: "cpu_one_min_avg",
+                                                        label: 'CPU 1min Avg',
+                                                        color: cowc.D3_COLOR_CATEGORY5[1],
+                                                        enabled: true,
+                                                        chart: "stackedBar",
+                                                        axis: "y1",
+                                                        tooltip: "cpuMemTooltip"
+                                                    },
+                                                    {
+                                                        accessor: "rss",
+                                                        label: "Memory Usage" ,
+                                                        color: cowc.D3_COLOR_CATEGORY5[3],
+                                                        enabled: true,
+                                                        chart: "line",
+                                                        axis: "y2",
+                                                        tooltip: "cpuMemTooltip"
+                                                    }
+                                                ]
+                                            }
                                         }
                                     },
-                                    //accessorData : CPUMemChartMetadata
-                                    accessorData: {
-                                        "rss": {
-                                            color: cowc.D3_COLOR_CATEGORY5[3],
-                                            label: 'Memory Usage',
-                                            enable: true,
-                                            y: 2,
-                                            chartType: "stackedBar",
-                                            tooltip : {
-                                                nameFormatter: function(name) {
-                                                    return "Memory Usage";
+                                    {
+                                        id: 'cpuMemTooltip',
+                                        type: 'tooltip',
+                                        config: {
+                                            dataConfig: [
+                                                {
+                                                    accessor: "x",
+                                                    labelFormatter: function (key) {
+                                                        return 'Time'
+                                                    },
+                                                    valueFormatter: function(value) {
+                                                        //return d3.time.format("%H:%M")(value);
+                                                    }
                                                 },
-                                                valueFormatter: function(value) {
-                                                    return formatBytes(value * 1024, false, 2, 3);
-                                                }
-                                            }
-                                        },
-                                        "rss_buffer": {
-                                            color: cowc.D3_COLOR_CATEGORY5[4],
-                                            label: 'Buffer Memory Usage',
-                                            enable: true,
-                                            y: 2,
-                                            chartType: "stackedBar",
-                                            tooltip : {
-                                                nameFormatter: function(name) {
-                                                    return "Buffer Memory Usage";
+                                                {
+                                                    accessor: "cpu_one_min_avg",
+                                                    labelFormatter: function (key) {
+                                                        return 'CPU 1min Average'
+                                                    },
+                                                    valueFormatter: function(value) {
+                                                        return d3.round(value, 1) + " %";
+                                                    }
                                                 },
-                                                valueFormatter: function(value) {
-                                                    return formatBytes(value * 1024, false, 2, 3);
+                                                {
+                                                    accessor: "rss",
+                                                    labelFormatter: function(name) {
+                                                        return "Memory Usage";
+                                                    },
+                                                    valueFormatter: function(value) {
+                                                        return formatBytes(value * 1024, false, 2, 3);
+                                                    }
                                                 }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        type: 'controlPanel',
+                                        config: {
+                                            el: "#cpumem-controlPanel",
+                                            enable: true,
+                                            buttons: [
+                                                {
+                                                    name: "filter",
+                                                    title: "Filter",
+                                                    iconClass: 'fa fa-filter',
+                                                    events: {
+                                                        click: "filterVariables"
+                                                    },
+                                                    panel: {
+                                                        name: "accessorData",
+                                                        width: "350px"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        type: 'navigation',
+                                        config: {
+                                            el: "#cpumem-navigation",
+                                            enable: true,
+                                            marginLeft: 70,
+                                            marginRight: 80,
+                                            chartWidthDelta: -40,
+                                            marginInner: 5,
+                                            chartHeight: 200,
+                                            // selection: [],
+                                            axis: {
+                                                x: {
+                                                    formatter: function(value) {
+                                                        return d3.time.format("%H:%M")(value);
+                                                    }
+                                                },
+                                                y1: {
+                                                    position: "left",
+                                                    formatter: d3.format(".01f")
+                                                },
+                                                y2: {
+                                                    position: "right",
+                                                    formatter: function (y2Value) {
+                                                        return formatBytes(y2Value * 1024, true);
+                                                    },
+                                                    //[min, max] when a value is set to undefined, will use whatever chart calculated value
+                                                    //with following config, will force min to 0 and max to chart calculated max scale.
+                                                    //domain: [0, undefined],
+                                                }
+                                            },
+                                            plot: {
+                                                x: {
+                                                    accessor: "ts",
+                                                    label: "Time"
+                                                },
+                                                y: [
+                                                    {
+                                                        accessor: "cpu_one_min_avg",
+                                                        color: cowc.D3_COLOR_CATEGORY5[1],
+                                                        label: 'CPU 1min Avg',
+                                                        enable: true,
+                                                        chart: "stackedBar",
+                                                        axis: "y1"
+                                                    },
+                                                    {
+                                                        accessor: "rss",
+                                                        color: cowc.D3_COLOR_CATEGORY5[3],
+                                                        label: 'Memory Usage',
+                                                        enable: true,
+                                                        chart: "line",
+                                                        axis: "y2"
+                                                    }
+
+                                                ]
                                             }
                                         }
                                     }
-                                }
+                                ]
                             }
                         }
                     }
@@ -859,7 +926,7 @@ define([
                         }
                     }
                 },
-                mainChart: {
+                xyChart: {
                     xLabel: ctwl.X_AXIS_TITLE_PORT,
                     tooltip: {
                         contentCB: ctwgrc.getPortDistributionTooltipConfig(onScatterChartClick),
