@@ -195,10 +195,10 @@ define([
         this.MONITOR_NETWORK_LIST_ID = "monitor-network-list";
         this.MONITOR_NETWORK_VIEW_ID = "monitor-network-view";
         this.MONITOR_INSTANCE_LIST_ID = "monitor-instance-list";
+        this.MONITOR_INTERFACE_LIST_ID = "monitor-interface-list";
         this.MONITOR_INSTANCE_PAGE_ID = "monitor-instance-page";
         this.MONITOR_INSTANCE_LIST_PAGE_ID = "monitor-instances-list-page";
         this.MONITOR_INSTANCE_LIST_VIEW_ID = "monitor-instance-list-view";
-        this.MONITOR_INSTANCE_ID = "monitor-instance";
         this.MONITOR_INSTANCE_VIEW_ID = "monitor-instance-view";
         this.MONITOR_FLOW_LIST_ID = "monitor-flow-list";
         this.MONITOR_FLOWS_PAGE_ID = "monitor-flows-page";
@@ -250,6 +250,9 @@ define([
         this.INSTANCE_INTERFACE_GRID_ID = "instance-interface-grid";
         this.INSTANCE_INTERFACE_ID = "instance-interface";
         this.INSTANCE_BREADCRUMB_TEXT = "instance-breadcrumb-text";
+
+        this.INTERFACE_GRID_ID = "interface-grid";
+        this.INTERFACES_TRAFFIC_THROUGHPUT_CHART_ID = "instances-traffic-throughput-chart";
 
         this.NETWORKING_GRAPH_ID = "networking-graph";
         this.GRAPH_CONNECTED_ELEMENTS_ID = "graph-connected-elements";
@@ -341,6 +344,9 @@ define([
         this.TITLE_GRAPH_ELEMENT_VIRTUAL_MACHINE = 'virtual machine';
         this.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK = 'link';
 
+        this.TITLE_GRAPH_ELEMENT_INTERFACE = 'interface';
+        this.TITLE_NO_INTERFACES_AVAIL= 'No Interfaces Available.';
+
         //Underlay labels
         this.UNDERLAY_TOPOLOGY_PAGE_ID = 'underlay-topology-page';
         this.UNDERLAY_TOPOLOGY_ID = 'underlay-topology';
@@ -362,7 +368,7 @@ define([
 
         //Monitor Infra common
         this.MONITOR_INFRA_VIEW_PATH = 'monitor/infrastructure/common/ui/js/views/';
-
+        this.CPU_SHARE_PERCENTAGE = "CPU Share % (in 3 mins)";
         this.VROUTER_DASHBOARD_CHART_ID = 'vrouter-dashboard-chart';
         this.VROUTER_DASHBOARD_SPARKLINE_ID = 'vrouter-dashboard-sparkline';
         this.VROUTER_DASHBOARD_SECTION_ID = 'vrouter-dashboard-section';
@@ -445,7 +451,7 @@ define([
         this.CONFIG_NODE_PROJECT_WISE_USAGE = 'Project Wise Usage';
         this.CONFIG_NODE_SCHEMA_CPU_SHARE = 'Schema CPU Share (%)';
         this.CONFIG_NODE_API_CPU_SHARE = 'API CPU Share (%)';
-        this.CONFIG_NODE_SERVICE_MONITOR_CPU_SHARE = 'Service Monitor CPU Share (%)';
+        this.CONFIG_NODE_SERVICE_MONITOR_CPU_SHARE = 'ServiceMon CPU Share (%)';
         this.CONFIG_NODE_DEVICE_MANAGER_CPU_SHARE = 'Device Manager CPU Share (%)';
         this.CONFIG_NODE_IFMAP_CPU_SHARE = 'IFMAP CPU Share (%)';
 
@@ -521,7 +527,7 @@ define([
         this.CONTROL_NODE_CONTROL_CPU_SHARE = 'BGP CPU Share (%)';
         this.CONTROL_NODE_NODE_MANAGER_CPU_SHARE = 'Node Manager CPU Share (%)';
         this.CONTROL_DNS_CPU_SHARE = 'DNS CPU Share (%)';
-        this.CONTROL_NAMED_CPU_SHARE = "Named CPU Share (%)";
+        this.CONTROL_NAMED_CPU_SHARE = "'Named' CPU Share (%)";
         //vRouter summary page labels
         this.VROUTER_VIEWPATH_PREFIX =
             'monitor/infrastructure/vrouter/ui/js/views/';
@@ -614,17 +620,19 @@ define([
         this.VROUTER_FLOWS_PREFIX = 'vrouter_flows';
         this.VROUTER_FLOWS_GRID_ID = this.VROUTER_FLOWS_PREFIX + '-results';
         this.VROUTER_FLOWS_TAB_IDX = 4;
-        this.VROUTER_ACTIVE_FLOWS_DROP_STATS = "Active Flows & Drop Stats";
+        this.VROUTER_ACTIVE_FLOWS_DROP_STATS = "Active Flows";
+        this.VROUTER_DROP_PACKETS = "Packet Drops";
         this.VROUTER_CPU_MEM_UTILIZATION = "Cpu Memory Utilization";
         this.VROUTER_BANDWIDTH_PERCENTILE = "Bandwidth Percentiles";
         this.VROUTER_SYSTEM_CPU_PERCENTILES = "System CPU Percentiles";
         this.VROUTER_SYSTEM_MEMORY_PERCENTILES = "System Memory Percentiles";
+        this.VROUTER_MIN_MAX_CPU_UTILIZATION = "Max Avg Min CPU Utilization";
         this.VROUTER_SYSTEM_CPU_MEMORY = "System CPU Memory Usage";
         this.VROUTER_VN_INTF_INST = "VNs / Interfaces / Instances";
         this.VROUTER_AGENT_CPU_PERCENTILES = "VRouter Agent CPU Share Percentiles";
         this.VROUTER_AGENT_MEMORY_PERCENTILES = "VRouter Agent Memory Usage Percentiles";
         this.VROUTER_ACTIVE_FLOWS_PERCENTILES = "Active Flows Percentiles";
-        this.VROUTER_ACTIVE_FLOWS_DROPS_LABEL = "Active Flows / Drops";
+        this.VROUTER_ACTIVE_FLOWS_DROPS_LABEL = "Active Flows";
         this.VROUTER_AGENT_CPU_PERCENTILES = "Agent CPU Percentiles";
         this.VROUTER_AGENT_MEMORY_PERCENTILES = "Agent Memory Percentiles";
 
@@ -709,10 +717,10 @@ define([
         this.ANALYTICS_NODE_NODE_MANAGER_CPU_SHARE = 'Node Manager CPU Share (%)';
         this.ANALYTICS_NODE_SNMP_COLLECTOR_CPU_SHARE = 'SNMP Collector CPU Share (%)';
         this.ANALYTICS_NODE_TOPOLOGY_CPU_SHARE = 'Topology CPU Share (%)';
-        this.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE = 'Alarm Generator CPU Share (%)';
+        this.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE = 'alarmgen CPU Share (%)';
         this.ANALYTICS_NODE_COLLECTOR_CPU_SHARE = 'Collector CPU Share (%)';
-        this.ANALYTICS_NODE_QE_CPU_SHARE = 'QE CPU Share (%)';
-        this.ANALYTICS_NODE_API_CPU_SHARE = 'Api CPU Share (%)';
+        this.ANALYTICS_NODE_QE_CPU_SHARE = 'Query Engine CPU Share (%)';
+        this.ANALYTICS_NODE_API_CPU_SHARE = 'API CPU Share (%)';
         this.ANALYTICS_NODE_TOP_GENERATORS = 'Generators';
         this.ANALYTICS_NODE_TOP_MESSAGE_TYPES = 'Message Types';
         this.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE = 'Sandesh Messages Size & Count Percentile';
