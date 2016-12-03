@@ -4,10 +4,11 @@
 
 define([
     'underscore',
+    'moment',
     "protocol",
     'contrail-view-model',
     'core-basedir/reports/qe/ui/js/common/qe.utils'
-], function (_, protocolUtils, ContrailViewModel, qeUtils) {
+], function (_, moment, protocolUtils, ContrailViewModel, qeUtils) {
     var CTViewConfig = function () {
         var self = this;
 
@@ -46,75 +47,6 @@ define([
             var instanceUUID = viewConfig['instanceUUID'];
             var networkFQN = viewConfig['networkFQN'];
             var instanceDetailsUrl = ctwc.get(ctwc.URL_INSTANCE_DETAIL, instanceUUID);
-
-            var CPUMemChartMetadata = {
-                "cpu_one_min_avg" : {
-                    color: cowc.D3_COLOR_CATEGORY5[1],
-                    label: 'CPU 1min Avg',
-                    min : 0,
-                    enable: true,
-                    y: 1,
-                    chartType: "line",
-                    possibleChartTypes: [{ name: "line", label: "Line" }, { name: "bar", label: "Grouped Bar" }, { name: "stackedBar", label: "Stacked Bar"}],
-                    tooltip : {
-                        nameFormatter: function(name) {
-                            return "CPU average";
-                        },
-                        valueFormatter: function(value) {
-                            return d3.round(value, 1) + " %";
-                        }
-                    }
-                },
-                "cpu_five_min_avg" : {
-                    color: cowc.D3_COLOR_CATEGORY5[2],
-                    label: 'CPU 5 minute Avg',
-                    min : 0,
-                    enable: true,
-                    y: 1,
-                    chartType: "line",
-                    possibleChartTypes: [{ name: "line", label: "Line" }, { name: "bar", label: "Grouped Bar" }, { name: "stackedBar", label: "Stacked Bar"}],
-                    tooltip : {
-                        nameFormatter: function(name) {
-                            return "CPU 5min average";
-                        },
-                        valueFormatter: function(value) {
-                            return d3.round(value, 1) + " %";
-                        }
-                    }
-                },
-                "rss": {
-                    color: cowc.D3_COLOR_CATEGORY5[3],
-                    label: 'Memory Usage',
-                    enable: true,
-                    y: 2,
-                    chartType: "bar",
-                    possibleChartTypes: [{ name: "line", label: "Line" }, { name: "bar", label: "Grouped Bar" }, { name: "stackedBar", label: "Stacked Bar"}],
-                    tooltip : {
-                        nameFormatter: function(name) {
-                            return "Memory Usage";
-                        },
-                        valueFormatter: function(value) {
-                            return formatBytes(value * 1024, false, 2, 3);
-                        }
-                    }
-                },
-                "rss_buffer": {
-                    color: cowc.D3_COLOR_CATEGORY5[4],
-                    label: 'Buffer Memory Usage',
-                    enable: true,
-                    y: 2,
-                    chartType: "bar",
-                    possibleChartTypes: [{ name: "line", label: "Line" }, { name: "bar", label: "Grouped Bar" }, { name: "stackedBar", label: "Stacked Bar"}],
-                    tooltip : {
-                        nameFormatter: function(name) {
-                            return "Buffer Memory Usage";
-                        },
-                        valueFormatter: function(value) {
-                            return formatBytes(value * 1024, false, 2, 3);
-                        }
-                    }
-                }
-            };
 
             return [
                     {
@@ -223,54 +155,6 @@ define([
                             }
                         }
                     },
-                    //This is the new LineBar chart view config. Enabled following for testing.
-                    // {
-                    //     elementId: ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new",
-                    //     title: ctwl.TITLE_CPU_MEMORY,
-                    //     view: "LineBarChartView",
-                    //     tabConfig: {
-                    //         renderOnActivate: true,
-                    //         // activate: function(event, ui) {
-                    //         //     $('#' + ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new").find('.coCharts-container').data('chart').refreshView();
-                    //         // }
-                    //     },
-                    //     viewConfig: {
-                    //         widgetConfig: {
-                    //             elementId: 'aa' + '-widget',
-                    //             view: "WidgetView",
-                    //             viewConfig: {
-                    //                 header: false,
-                    //                 controls: {
-                    //                     top: false,
-                    //                     right: {
-                    //                         custom: {
-                    //                             filterY: {
-                    //                                 enable: true
-                    //                             }
-                    //                         },
-                    //                         expandedContainerWidth: 350,
-                    //                         expandedContainerHeight: 280
-                    //                     }
-                    //                 }
-                    //             }
-                    //         },
-                    //         modelConfig: getInstanceCPUMemModelConfig(networkFQN, instanceUUID),
-                    //         parseFn: ctwp.parseCPUMemLineChartData,
-                    //         chartOptions: {
-                    //             forceY1: [0, undefined],
-                    //             forceY2: [0, undefined],
-                    //             xAccessor: 'x',
-                    //             xFormatter: function(value) {
-                    //                 return d3.time.format("%H:%M")(value);
-                    //             },
-                    //             y1Formatter: d3.format(".01f"),
-                    //             y2Formatter: function (y2Value) {
-                    //                 return formatBytes(y2Value * 1024, true);
-                    //             },
-                    //             metaData : CPUMemChartMetadata
-                    //         }
-                    //     }
-                    // },
                     {
                         elementId: ctwl.INSTANCE_CPU_MEM_STATS_ID + "-new2",
                         title: ctwl.TITLE_CPU_MEMORY,
@@ -284,7 +168,7 @@ define([
                             chartOptions: {
                                 chartId: "cpumem",
                                 type: "XYChartView",
-                                height: 600,
+                                chartHeight: 600,
                                 handlers: [
                                     {
                                         type: 'dataProvider',
@@ -321,7 +205,7 @@ define([
                                             axis: {
                                                 x: {
                                                     formatter: function(value) {
-                                                        return d3.time.format("%H:%M")(value);
+                                                        return moment(value).format("HH:m");
                                                     }
                                                 },
                                                 y1: {
@@ -375,12 +259,12 @@ define([
                                         config: {
                                             dataConfig: [
                                                 {
-                                                    accessor: "x",
+                                                    accessor: "ts",
                                                     labelFormatter: function (key) {
                                                         return 'Time'
                                                     },
                                                     valueFormatter: function(value) {
-                                                        //return d3.time.format("%H:%M")(value);
+                                                        return moment(value).format("HH:m:s");
                                                     }
                                                 },
                                                 {
@@ -435,7 +319,7 @@ define([
                                             chartWidthDelta: -40,
                                             marginInner: 5,
                                             chartHeight: 200,
-                                            // selection: [],
+                                            selection: [75, 100],
                                             axis: {
                                                 x: {
                                                     formatter: function(value) {
@@ -481,6 +365,20 @@ define([
 
                                                 ]
                                             }
+                                        }
+                                    },
+                                    {
+                                        type: 'legend',
+                                        config: {
+                                            el: '#cpumem-legend',
+                                            sourceComponent: 'compositeY'
+                                        }
+                                    },
+                                    {
+                                        type: 'crosshair',
+                                        config: {
+                                            el: '#cpumem-xyChart',
+                                            sourceComponent: 'compositeY'
                                         }
                                     }
                                 ]
