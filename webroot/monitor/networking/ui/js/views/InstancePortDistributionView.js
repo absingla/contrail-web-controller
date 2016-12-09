@@ -5,9 +5,9 @@
 define([
     'underscore',
     'contrail-view',
-    'core-basedir/js/charts/ZoomScatterChart',
+    // 'core-basedir/js/charts/ZoomScatterChart',
     'core-basedir/js/charts/ChartView'
-], function (_, ContrailView, ZoomScatterChart, ChartView) {
+], function (_, ContrailView, ChartView) {
     var InstancePortDistributionView = ContrailView.extend({
         render: function () {
             var instanceTrafficStatsTemplate = contrail.getTemplate4Id(ctwc.TMPL_TRAFFIC_STATS_TAB),
@@ -87,7 +87,8 @@ define([
                             ucid: ctwc.get(ctwc.UCID_PROJECT_VM_PORT_STATS_LIST, networkFQN, interfaceIP)
                         }
                     },
-                    chartOptions: ctwvc.getPortDistChartOptions()
+                    // chartOptions: ctwvc.getPortDistChartOptions()
+                    chartOptions: ctwvc.getNewPortDistChartOptions("portDist")
                 };
 
             // var zoomScatterChartView = new ZoomScatterChartView({
@@ -111,7 +112,31 @@ define([
                 attributes: {viewConfig: chartViewConfig}
             });
             chartView.render();
-
+            chartView.model.onAllRequestsComplete.subscribe(function() {
+                if (chartView.model.error) {
+                    chartView.chartView.eventObject.trigger("message", {
+                        componentId: "XYChartView",
+                        action: "update",
+                        messages: [
+                            {
+                                message: "Failed to load."
+                            }
+                        ]
+                    });
+                } else {
+                    chartView.chartView.eventObject.trigger("clearMessage", "XYChartView");
+                }
+            });
+            chartView.chartView.eventObject.trigger("message", {
+                componentId: "XYChartView",
+                action: "new",
+                messages: [
+                    {
+                        // title: "New Message",
+                        message: "Loading...."
+                    }
+                ]
+            });
         }
     };
 

@@ -8,6 +8,25 @@ define([
     'contrail-list-model',
     'core-basedir/reports/qe/ui/js/common/qe.utils'
 ], function (_, ContrailView, ContrailListModel, qeUtils) {
+    function getChildView(rootView, subViewID) {
+        if (rootView === null || rootView.childViewMap === null || rootView.childViewMap === undefined) {
+            return null;
+        } else {
+            var childViewMap = rootView.childViewMap,
+                subView = childViewMap[subViewID] || null;
+
+            if (!subView) {
+                _.forEach(childViewMap, function(view, viewID) {
+                    if (!subView) {
+                        subView = getChildView(view, subViewID);
+                    }
+                });
+            }
+
+            return subView;
+        }
+    }
+
     var InstanceListView = ContrailView.extend({
         el: $(contentContainer),
 
@@ -31,12 +50,70 @@ define([
 
                 contrailListModel = new ContrailListModel(getInstanceListModelConfig(parentUUID, parentFQN));
 
-                self.renderView4Config(self.$el, contrailListModel, getInstanceListViewConfig(parentUUID, parentType, parentFQN));
+                self.renderView4Config(self.$el, contrailListModel, getInstanceListViewConfig(parentUUID, parentType, parentFQN), null, null, null, function(view) {
+                    var scatterBubbleChartDemoView = getChildView(view, ctwl.INSTANCES_CPU_MEM_CHART_ID + "_demo");
+                    if (scatterBubbleChartDemoView !== null) {
+                        scatterBubbleChartDemoView.model.onAllRequestsComplete.subscribe(function() {
+                            if (scatterBubbleChartDemoView.model.error) {
+                                scatterBubbleChartDemoView.chartView.eventObject.trigger("message", {
+                                    componentId: "XYChartView",
+                                    action: "update",
+                                    messages: [
+                                        {
+                                            message: "Failed to load."
+                                        }
+                                    ]
+                                });
+                            } else {
+                                scatterBubbleChartDemoView.chartView.eventObject.trigger("clearMessage", "XYChartView");
+                            }
+                        });
+                        scatterBubbleChartDemoView.chartView.eventObject.trigger("message", {
+                            componentId: "XYChartView",
+                            action: "new",
+                            messages: [
+                                {
+                                    // title: "New Message",
+                                    message: "Loading...."
+                                }
+                            ]
+                        });
+                    }
+                });
                 extendedHashOb[parentHashtype] = parentFQN;
                 ctwu.setNetwork4InstanceListURLHashParams(extendedHashOb);
             } else {
                 contrailListModel = new ContrailListModel(getInstanceListModelConfig(null, null));
-                self.renderView4Config(self.$el, contrailListModel, getInstanceListViewConfig(null, null, null));
+                self.renderView4Config(self.$el, contrailListModel, getInstanceListViewConfig(null, null, null), null, null, null, function(view) {
+                    var scatterBubbleChartDemoView = getChildView(view, ctwl.INSTANCES_CPU_MEM_CHART_ID + "_demo");
+                    if (scatterBubbleChartDemoView !== null) {
+                        scatterBubbleChartDemoView.model.onAllRequestsComplete.subscribe(function() {
+                            if (scatterBubbleChartDemoView.model.error) {
+                                scatterBubbleChartDemoView.chartView.eventObject.trigger("message", {
+                                    componentId: "XYChartView",
+                                    action: "update",
+                                    messages: [
+                                        {
+                                            message: "Failed to load."
+                                        }
+                                    ]
+                                });
+                            } else {
+                                scatterBubbleChartDemoView.chartView.eventObject.trigger("clearMessage", "XYChartView");
+                            }
+                        });
+                        scatterBubbleChartDemoView.chartView.eventObject.trigger("message", {
+                            componentId: "XYChartView",
+                            action: "new",
+                            messages: [
+                                {
+                                    // title: "New Message",
+                                    message: "Loading...."
+                                }
+                            ]
+                        });
+                    }
+                });
                 ctwu.setNetwork4InstanceListURLHashParams({});
             }
         }
@@ -234,6 +311,20 @@ define([
                                         margin: {left: 60},
                                         noDataMessage: "No virtual machine available."
                                     }
+                                }
+                            },
+                        ]
+                    },
+                    {
+                        columns: [
+                            {
+                                elementId: ctwl.INSTANCES_CPU_MEM_CHART_ID + "_demo",
+                                title: ctwl.TITLE_INSTANCES + " demo",
+                                view: "ChartView",
+                                viewPathPrefix: "js/charts/",
+                                viewConfig: {
+                                    // loadChartInChunks: true,
+                                    chartOptions: ctwvc.getNewCPUMemoryChartOptions("CPUMemoryUsage")
                                 }
                             },
                         ]

@@ -8,6 +8,25 @@ define([
     "contrail-list-model",
     "core-basedir/reports/qe/ui/js/common/qe.utils"
 ], function (_, ContrailView, ContrailListModel, qeUtils) {
+    function getChildView(rootView, subViewID) {
+        if (rootView === null || rootView.childViewMap === null || rootView.childViewMap === undefined) {
+            return null;
+        } else {
+            var childViewMap = rootView.childViewMap,
+                subView = childViewMap[subViewID] || null;
+
+            if (!subView) {
+                _.forEach(childViewMap, function(view, viewID) {
+                    if (!subView) {
+                        subView = getChildView(view, subViewID);
+                    }
+                });
+            }
+
+            return subView;
+        }
+    }
+
     var ProjectListView = ContrailView.extend({
         el: $(contentContainer),
 
@@ -15,7 +34,36 @@ define([
             var self = this, viewConfig = this.attributes.viewConfig,
                 contrailListModel = new ContrailListModel(getProjectListModelConfig());
 
-            self.renderView4Config(self.$el, contrailListModel, getProjectListViewConfig());
+            self.renderView4Config(self.$el, contrailListModel, getProjectListViewConfig(), null, null, null, function(view) {
+                var scatterBubbleChartDemoView = getChildView(view, ctwl.PROJECTS_SCATTER_CHART_ID + "_demo");
+                if (scatterBubbleChartDemoView !== null) {
+                    scatterBubbleChartDemoView.model.onAllRequestsComplete.subscribe(function() {
+                        if (scatterBubbleChartDemoView.model.error) {
+                            scatterBubbleChartDemoView.chartView.eventObject.trigger("message", {
+                                componentId: "XYChartView",
+                                action: "update",
+                                messages: [
+                                    {
+                                        message: "Failed to load."
+                                    }
+                                ]
+                            });
+                        } else {
+                            scatterBubbleChartDemoView.chartView.eventObject.trigger("clearMessage", "XYChartView");
+                        }
+                    });
+                    scatterBubbleChartDemoView.chartView.eventObject.trigger("message", {
+                        componentId: "XYChartView",
+                        action: "new",
+                        messages: [
+                            {
+                                // title: "New Message",
+                                message: "Loading...."
+                            }
+                        ]
+                    });
+                }
+            });
         }
     });
 
@@ -65,6 +113,20 @@ define([
                                     }
                                 }
                             },
+                        ]
+                    },
+                    {
+                        columns: [
+                            {
+                                elementId: ctwl.PROJECTS_SCATTER_CHART_ID + "_demo",
+                                title: ctwl.TITLE_PROJECTS + " demo",
+                                view: "ChartView",
+                                viewPathPrefix: "js/charts/",
+                                viewConfig: {
+                                    // loadChartInChunks: true,
+                                    chartOptions: ctwvc.getNewNetworkInterfaceChartOptions("networkInterface")
+                                }
+                            }
                         ]
                     },
                     {

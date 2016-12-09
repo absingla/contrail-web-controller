@@ -892,6 +892,949 @@ define([
             }
         };
 
+        self.getNewPortDistChartOptions = function(chartId) {
+            function numberFormatFunction (number) {
+                return _.isUndefined(number) ? NaN : number.toFixed(2);
+            }
+
+            function byteFormatFunction(bytes) {
+                return window.formatBytes(bytes * 1024, false, false, 2);
+            }
+
+            return {
+                containerClassNames: "zoom-scatter-chart-container colmask rightmenu",
+                chartId: chartId,
+                type: "XYChartView",
+                components: [
+                    {
+                        type: "compositeY",
+                        config: {
+                            el: "#" + chartId + "-xyChart",
+                            yTicks: 6,
+                            marginInner: 20,
+                            marginLeft: 75,
+                            marginRight: 75,
+                            marginBottom: 50,
+                            chartHeight: 450,
+                            plot: {
+                                x: {
+                                    accessor: "x",
+                                    axis: "x"
+                                },
+                                y: [
+                                    {
+                                        accessor: "y",
+                                        label: "Bandwidth (Last 5 Mins)",
+                                        enabled: true,
+                                        axis: "y1",
+                                        chart: "scatterBubble",
+                                        sizeAccessor: "flowCnt",
+                                        sizeAxis: "rAxis",
+                                        shape: "circle",
+                                    }, {
+                                        accessor: "y2",
+                                        label: "Bandwidth (Last 10 Mins)",
+                                        enabled: true,
+                                        axis: "y2",
+                                        chart: "scatterBubble",
+                                        sizeAccessor: "flowCnt",
+                                        sizeAxis: "rAxis",
+                                        shape: "circle",
+                                    }
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    position: "bottom",
+                                    formatter: window.d3.format(".0f"),
+                                    label: "Port",
+                                    scale: "scaleLinear",
+                                    nice: true,
+                                    labelMargin: 15
+                                },
+                                y1: {
+                                    position: "left",
+                                    formatter: byteFormatFunction,
+
+                                    labelMargin: 10
+                                },
+                                y2: {
+                                    position: "right",
+                                    formatter: byteFormatFunction,
+                                    labelMargin: 10
+                                },
+                                rAxis: {
+                                    range: [5, 20]
+                                }
+                            }
+                        },
+                    }, {
+                        type: "tooltip",
+                        config: {
+                            title: "BUBBLE",
+                            dataConfig: [
+                                {
+                                    accessor: "x",
+                                    labelFormatter: function () {
+                                        return "Port";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }, {
+                                    accessor: "y",
+                                    labelFormatter: function () {
+                                        return "Bandwidth (Last 5 Mins)";
+                                    },
+                                    valueFormatter: byteFormatFunction
+                                }, {
+                                    accessor: "y2",
+                                    labelFormatter: function () {
+                                        return "Bandwidth (Last 10 Mins)";
+                                    },
+                                    valueFormatter: byteFormatFunction
+                                }, {
+                                    accessor: "flowCnt",
+                                    labelFormatter: function () {
+                                        return "Flow Count";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }
+                            ],
+                        },
+                    }, {
+                        type: "navigation",
+                        config: {
+                            el: "#" + chartId + "-navigation",
+                            marginInner: 10,
+                            marginLeft: 75,
+                            marginRight: 75,
+                            marginBottom: 50,
+                            chartHeight: 250,
+                            yTicks: 6,
+                            plot: {
+                                x: {
+                                    accessor: "x",
+                                    axis: "x"
+                                },
+                                y: [
+                                    {
+                                        accessor: "y",
+                                        chart: "line",
+                                        enabled: true,
+                                        label: "Bandwidth (Last 5 Mins)",
+                                        axis: "y1"
+                                    }, {
+                                        accessor: "y2",
+                                        chart: "line",
+                                        enabled: true,
+                                        label: "Bandwidth (Last 10 Mins)",
+                                        axis: "y2"
+                                    },
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    position: "bottom",
+                                    formatter: window.d3.format(".2f"),
+                                    label: "Port",
+                                    scale: "scaleLinear",
+                                    nice: true,
+                                    labelMargin: 15
+                                },
+                                y1: {
+                                    position: "left",
+                                    formatter: byteFormatFunction,
+                                    labelMargin: 10
+                                },
+                                y2: {
+                                    position: "right",
+                                    formatter: byteFormatFunction,
+                                    labelMargin: 10
+                                }
+                            }
+                        }
+                    }, {
+                        type: "controlPanel",
+                        config: {
+                            el: "#" + chartId + "-controlPanel",
+                            enabled: true,
+                            buttons: [
+                                {
+                                    name: "zoomIn",
+                                    title: "Zoom In",
+                                    iconClass: "fa fa-search-plus",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomOut",
+                                    title: "Zoom Out",
+                                    iconClass: "fa fa-search-minus",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomReset",
+                                    title: "Zoom Reset",
+                                    iconClass: "fa fa-times-circle-o",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomSelection",
+                                    title: "Zoom by Selection",
+                                    iconClass: "fa fa-crop",
+                                    events: {
+                                        click: ""
+                                    }
+                                }
+                            ]
+                        }
+                    }, {
+                        type: "message",
+                        config: {
+                            el: "#" + chartId + "-statusMsg",
+                            enable: true,
+                        }
+                    }
+                ],
+                dataConfig: {
+                    dataParser: function(data) {
+                        console.count("chart option - data parser");
+                        console.log(data);
+                        return data;
+                    }
+                }
+            };
+        };
+
+        self.getNewNetworkInterfaceChartOptions = function(chartId) {
+            function numberFormatFunction (number) {
+                return _.isUndefined(number) ? NaN : number.toFixed(2);
+            }
+
+            return {
+                containerClassNames: "zoom-scatter-chart-container colmask rightmenu",
+                chartId: chartId,
+                type: "XYChartView",
+                components: [
+                    {
+                        type: "compositeY",
+                        config: {
+                            el: "#" + chartId + "-xyChart",
+                            yTicks: 4,
+                            marginInner: 20,
+                            marginLeft: 75,
+                            marginRight: 75,
+                            marginBottom: 50,
+                            chartHeight: 250,
+                            plot: {
+                                x: {
+                                    accessor: "x",
+                                    axis: "x"
+                                },
+                                y: [
+                                    {
+                                        accessor: "y",
+                                        label: "Networks",
+                                        enabled: true,
+                                        axis: "y1",
+                                        chart: "scatterBubble",
+                                        sizeAccessor: "throughput",
+                                        sizeAxis: "rAxis",
+                                        shape: "circle",
+                                    }
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    position: "bottom",
+                                    formatter: window.d3.format(".0f"),
+                                    label: "Interfaces",
+                                    scale: "scaleLinear",
+                                    nice: true,
+                                    labelMargin: 15
+                                },
+                                y1: {
+                                    position: "left",
+                                    formatter: window.d3.format(".0f"),
+                                    labelMargin: 10
+                                },
+                                rAxis: {
+                                    range: [5, 20]
+                                }
+                            }
+                        },
+                    }, {
+                        type: "tooltip",
+                        config: {
+                            title: "BUBBLE",
+                            dataConfig: [
+                                {
+                                    accessor: "x",
+                                    labelFormatter: function () {
+                                        return "Interfaces";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }, {
+                                    accessor: "y",
+                                    labelFormatter: function () {
+                                        return "Networks";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }, {
+                                    accessor: "throughput",
+                                    labelFormatter: function () {
+                                        return "Throughput";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }
+                            ],
+                        },
+                    }, {
+                        type: "navigation",
+                        config: {
+                            el: "#" + chartId + "-navigation",
+                            marginInner: 10,
+                            marginLeft: 75,
+                            marginRight: 75,
+                            marginBottom: 50,
+                            chartHeight: 180,
+                            yTicks: 4,
+                            plot: {
+                                x: {
+                                    accessor: "x",
+                                    axis: "x"
+                                },
+                                y: [
+                                    {
+                                        accessor: "y",
+                                        chart: "line",
+                                        enabled: true,
+                                        label: "Networks",
+                                        axis: "y1"
+                                    }
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    position: "bottom",
+                                    formatter: window.d3.format(".0f"),
+                                    scale: "scaleLinear",
+                                    label: "Interfaces",
+                                    nice: true,
+                                    labelMargin: 15
+                                },
+                                y1: {
+                                    position: "left",
+                                    formatter: window.d3.format(".0f"),
+                                    labelMargin: 10
+                                }
+                            }
+                        }
+                    }, {
+                        type: "controlPanel",
+                        config: {
+                            el: "#" + chartId + "-controlPanel",
+                            enabled: true,
+                            buttons: [
+                                {
+                                    name: "zoomIn",
+                                    title: "Zoom In",
+                                    iconClass: "fa fa-search-plus",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomOut",
+                                    title: "Zoom Out",
+                                    iconClass: "fa fa-search-minus",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomReset",
+                                    title: "Zoom Reset",
+                                    iconClass: "fa fa-times-circle-o",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomSelection",
+                                    title: "Zoom by Selection",
+                                    iconClass: "fa fa-crop",
+                                    events: {
+                                        click: ""
+                                    }
+                                }
+                            ]
+                        }
+                    }, {
+                        type: "message",
+                        config: {
+                            el: "#" + chartId + "-statusMsg",
+                            enable: true,
+                        }
+                    }
+                ],
+                dataConfig: {
+                    dataParser: function(data) {
+                        console.count("chart option - data parser");
+                        console.log(data);
+                        return data;
+                    }
+                }
+            };
+        };
+
+        self.getNewConnectedNetworkInterfaceChartOptions = function(chartId) {
+            function numberFormatFunction (number) {
+                return _.isUndefined(number) ? NaN : number.toFixed(2);
+            }
+
+            return {
+                containerClassNames: "zoom-scatter-chart-container colmask rightmenu",
+                chartId: chartId,
+                type: "XYChartView",
+                components: [
+                    {
+                        type: "compositeY",
+                        config: {
+                            el: "#" + chartId + "-xyChart",
+                            yTicks: 4,
+                            marginInner: 20,
+                            marginLeft: 75,
+                            marginRight: 75,
+                            marginBottom: 50,
+                            chartHeight: 250,
+                            plot: {
+                                x: {
+                                    accessor: "x",
+                                    axis: "x"
+                                },
+                                y: [
+                                    {
+                                        accessor: "y",
+                                        label: "Connected Networks",
+                                        enabled: true,
+                                        axis: "y1",
+                                        chart: "scatterBubble",
+                                        sizeAccessor: "throughput",
+                                        sizeAxis: "rAxis",
+                                        shape: "circle",
+                                    }
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    position: "bottom",
+                                    formatter: window.d3.format(".0f"),
+                                    label: "Interfaces",
+                                    scale: "scaleLinear",
+                                    nice: true,
+                                    labelMargin: 15
+                                },
+                                y1: {
+                                    position: "left",
+                                    formatter: window.d3.format(".0f"),
+                                    labelMargin: 10
+                                },
+                                rAxis: {
+                                    range: [5, 20]
+                                }
+                            }
+                        },
+                    }, {
+                        type: "tooltip",
+                        config: {
+                            title: "BUBBLE",
+                            dataConfig: [
+                                {
+                                    accessor: "x",
+                                    labelFormatter: function () {
+                                        return "Interfaces";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }, {
+                                    accessor: "y",
+                                    labelFormatter: function () {
+                                        return "Connected Networks";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }, {
+                                    accessor: "throughput",
+                                    labelFormatter: function () {
+                                        return "Throughput";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }
+                            ],
+                        },
+                    }, {
+                        type: "navigation",
+                        config: {
+                            el: "#" + chartId + "-navigation",
+                            marginInner: 10,
+                            marginLeft: 75,
+                            marginRight: 75,
+                            marginBottom: 50,
+                            chartHeight: 180,
+                            yTicks: 4,
+                            plot: {
+                                x: {
+                                    accessor: "x",
+                                    axis: "x"
+                                },
+                                y: [
+                                    {
+                                        accessor: "y",
+                                        chart: "line",
+                                        enabled: true,
+                                        label: "Connected Networks",
+                                        axis: "y1"
+                                    }
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    position: "bottom",
+                                    formatter: window.d3.format(".0f"),
+                                    scale: "scaleLinear",
+                                    label: "Interfaces",
+                                    nice: true,
+                                    labelMargin: 15
+                                },
+                                y1: {
+                                    position: "left",
+                                    formatter: window.d3.format(".0f"),
+                                    labelMargin: 10
+                                }
+                            }
+                        }
+                    }, {
+                        type: "controlPanel",
+                        config: {
+                            el: "#" + chartId + "-controlPanel",
+                            enabled: true,
+                            buttons: [
+                                {
+                                    name: "zoomIn",
+                                    title: "Zoom In",
+                                    iconClass: "fa fa-search-plus",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomOut",
+                                    title: "Zoom Out",
+                                    iconClass: "fa fa-search-minus",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomReset",
+                                    title: "Zoom Reset",
+                                    iconClass: "fa fa-times-circle-o",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomSelection",
+                                    title: "Zoom by Selection",
+                                    iconClass: "fa fa-crop",
+                                    events: {
+                                        click: ""
+                                    }
+                                }
+                            ]
+                        }
+                    }, {
+                        type: "message",
+                        config: {
+                            el: "#" + chartId + "-statusMsg",
+                            enable: true,
+                        }
+                    }
+                ],
+                dataConfig: {
+                    dataParser: function(data) {
+                        console.count("chart option - data parser");
+                        console.log(data);
+                        return data;
+                    }
+                }
+            };
+        };
+
+        self.getNewCPUMemoryChartOptions = function(chartId) {
+            function numberFormatFunction (number) {
+                return _.isUndefined(number) ? NaN : number.toFixed(2);
+            }
+
+            return {
+                containerClassNames: "zoom-scatter-chart-container colmask rightmenu",
+                chartId: chartId,
+                type: "XYChartView",
+                components: [
+                    {
+                        type: "compositeY",
+                        config: {
+                            el: "#" + chartId + "-xyChart",
+                            yTicks: 4,
+                            marginInner: 20,
+                            marginLeft: 75,
+                            marginRight: 75,
+                            marginBottom: 50,
+                            chartHeight: 250,
+                            plot: {
+                                x: {
+                                    accessor: "x",
+                                    axis: "x"
+                                },
+                                y: [
+                                    {
+                                        accessor: "y",
+                                        label: "Memory Usage",
+                                        enabled: true,
+                                        axis: "y1",
+                                        chart: "scatterBubble",
+                                        sizeAccessor: "throughput",
+                                        sizeAxis: "rAxis",
+                                        shape: "circle",
+                                    }
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    position: "bottom",
+                                    formatter: window.d3.format(".0f"),
+                                    label: "CPU Utilization (%)",
+                                    scale: "scaleLinear",
+                                    nice: true,
+                                    labelMargin: 15
+                                },
+                                y1: {
+                                    position: "left",
+                                    formatter: window.d3.format(".0f"),
+                                    labelMargin: 10
+                                },
+                                rAxis: {
+                                    range: [5, 20]
+                                }
+                            }
+                        },
+                    }, {
+                        type: "tooltip",
+                        config: {
+                            title: "BUBBLE",
+                            dataConfig: [
+                                {
+                                    accessor: "x",
+                                    labelFormatter: function () {
+                                        return "CPU Utilization (%)";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }, {
+                                    accessor: "y",
+                                    labelFormatter: function () {
+                                        return "Memory Usage";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }, {
+                                    accessor: "throughput",
+                                    labelFormatter: function () {
+                                        return "Throughput";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }
+                            ],
+                        },
+                    }, {
+                        type: "navigation",
+                        config: {
+                            el: "#" + chartId + "-navigation",
+                            marginInner: 10,
+                            marginLeft: 75,
+                            marginRight: 75,
+                            marginBottom: 50,
+                            chartHeight: 180,
+                            yTicks: 4,
+                            plot: {
+                                x: {
+                                    accessor: "x",
+                                    axis: "x"
+                                },
+                                y: [
+                                    {
+                                        accessor: "y",
+                                        chart: "line",
+                                        enabled: true,
+                                        label: "Memory Usage",
+                                        axis: "y1"
+                                    }
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    position: "bottom",
+                                    formatter: window.d3.format(".0f"),
+                                    scale: "scaleLinear",
+                                    label: "CPU Utilization (%)",
+                                    nice: true,
+                                    labelMargin: 15
+                                },
+                                y1: {
+                                    position: "left",
+                                    formatter: window.d3.format(".0f"),
+                                    labelMargin: 10
+                                }
+                            }
+                        }
+                    }, {
+                        type: "controlPanel",
+                        config: {
+                            el: "#" + chartId + "-controlPanel",
+                            enabled: true,
+                            buttons: [
+                                {
+                                    name: "zoomIn",
+                                    title: "Zoom In",
+                                    iconClass: "fa fa-search-plus",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomOut",
+                                    title: "Zoom Out",
+                                    iconClass: "fa fa-search-minus",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomReset",
+                                    title: "Zoom Reset",
+                                    iconClass: "fa fa-times-circle-o",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomSelection",
+                                    title: "Zoom by Selection",
+                                    iconClass: "fa fa-crop",
+                                    events: {
+                                        click: ""
+                                    }
+                                }
+                            ]
+                        }
+                    }, {
+                        type: "message",
+                        config: {
+                            el: "#" + chartId + "-statusMsg",
+                            enable: true,
+                        }
+                    }
+                ],
+                dataConfig: {
+                    dataParser: function(data) {
+                        console.count("chart option - data parser");
+                        console.log(data);
+                        return data;
+                    }
+                }
+            };
+        };
+
+        self.getNewThroughputInOutChartOptions = function(chartId) {
+            function numberFormatFunction (number) {
+                return _.isUndefined(number) ? NaN : number.toFixed(2);
+            }
+
+            return {
+                containerClassNames: "zoom-scatter-chart-container colmask rightmenu",
+                chartId: chartId,
+                type: "XYChartView",
+                components: [
+                    {
+                        type: "compositeY",
+                        config: {
+                            el: "#" + chartId + "-xyChart",
+                            yTicks: 4,
+                            marginInner: 20,
+                            marginLeft: 75,
+                            marginRight: 75,
+                            marginBottom: 50,
+                            chartHeight: 250,
+                            plot: {
+                                x: {
+                                    accessor: "in_bw_usage",
+                                    axis: "x"
+                                },
+                                y: [
+                                    {
+                                        accessor: "out_bw_usage",
+                                        label: "Throughput In",
+                                        enabled: true,
+                                        axis: "y1",
+                                        chart: "scatterBubble",
+                                        sizeAccessor: "throughput",
+                                        sizeAxis: "rAxis",
+                                        shape: "circle",
+                                    }
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    position: "bottom",
+                                    formatter: function(value) {
+                                        return window.formatThroughput(value, true);
+                                    },
+                                    label: "Throughput Out",
+                                    scale: "scaleLinear",
+                                    nice: true,
+                                    labelMargin: 15
+                                },
+                                y1: {
+                                    position: "left",
+                                    formatter: function(value) {
+                                        return window.formatThroughput(value, true);
+                                    },
+                                    labelMargin: 10
+                                },
+                                rAxis: {
+                                    range: [5, 20]
+                                }
+                            }
+                        },
+                    }, {
+                        type: "tooltip",
+                        config: {
+                            title: "BUBBLE",
+                            dataConfig: [
+                                {
+                                    accessor: "in_bw_usage",
+                                    labelFormatter: function () {
+                                        return "Throughput Out";
+                                    },
+                                    valueFormatter: function(value) {
+                                        return window.formatThroughput(value, true);
+                                    }
+                                }, {
+                                    accessor: "out_bw_usage",
+                                    labelFormatter: function () {
+                                        return "Throughput In";
+                                    },
+                                    valueFormatter: function(value) {
+                                        return window.formatThroughput(value, true);
+                                    }
+                                }, {
+                                    accessor: "throughput",
+                                    labelFormatter: function () {
+                                        return "Throughput";
+                                    },
+                                    valueFormatter: numberFormatFunction
+                                }
+                            ],
+                        },
+                    }, {
+                        type: "navigation",
+                        config: {
+                            el: "#" + chartId + "-navigation",
+                            marginInner: 10,
+                            marginLeft: 75,
+                            marginRight: 75,
+                            marginBottom: 50,
+                            chartHeight: 180,
+                            yTicks: 4,
+                            plot: {
+                                x: {
+                                    accessor: "in_bw_usage",
+                                    axis: "x"
+                                },
+                                y: [
+                                    {
+                                        accessor: "out_bw_usage",
+                                        chart: "line",
+                                        enabled: true,
+                                        label: "Throughput In",
+                                        axis: "y1"
+                                    }
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    position: "bottom",
+                                    formatter: function(value) {
+                                        return window.formatThroughput(value, true);
+                                    },
+                                    scale: "scaleLinear",
+                                    label: "Throughput Out",
+                                    nice: true,
+                                    labelMargin: 15
+                                },
+                                y1: {
+                                    position: "left",
+                                    formatter: function(value) {
+                                        return window.formatThroughput(value, true);
+                                    },
+                                    labelMargin: 10
+                                }
+                            }
+                        }
+                    }, {
+                        type: "controlPanel",
+                        config: {
+                            el: "#" + chartId + "-controlPanel",
+                            enabled: true,
+                            buttons: [
+                                {
+                                    name: "zoomIn",
+                                    title: "Zoom In",
+                                    iconClass: "fa fa-search-plus",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomOut",
+                                    title: "Zoom Out",
+                                    iconClass: "fa fa-search-minus",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomReset",
+                                    title: "Zoom Reset",
+                                    iconClass: "fa fa-times-circle-o",
+                                    events: {
+                                        click: ""
+                                    }
+                                }, {
+                                    name: "zoomSelection",
+                                    title: "Zoom by Selection",
+                                    iconClass: "fa fa-crop",
+                                    events: {
+                                        click: ""
+                                    }
+                                }
+                            ]
+                        }
+                    }, {
+                        type: "message",
+                        config: {
+                            el: "#" + chartId + "-statusMsg",
+                            enable: true,
+                        }
+                    }
+                ],
+                dataConfig: {
+                    dataParser: function(data) {
+                        console.count("chart option - data parser");
+                        console.log(data);
+                        return data;
+                    }
+                }
+            };
+        };
+
         self.getVRouterDetailsPageTabs = function (viewConfig) {
             var tabViewConfig = [
                 {

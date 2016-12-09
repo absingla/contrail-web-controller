@@ -6,6 +6,25 @@ define([
     'underscore',
     'contrail-view'
 ], function (_, ContrailView) {
+    function getChildView(rootView, subViewID) {
+        if (rootView === null || rootView.childViewMap === null || rootView.childViewMap === undefined) {
+            return null;
+        } else {
+            var childViewMap = rootView.childViewMap,
+                subView = childViewMap[subViewID] || null;
+
+            if (!subView) {
+                _.forEach(childViewMap, function(view, viewID) {
+                    if (!subView) {
+                        subView = getChildView(view, subViewID);
+                    }
+                });
+            }
+
+            return subView;
+        }
+    }
+
     var NetworkTabView = ContrailView.extend({
         el: $(contentContainer),
 
@@ -13,14 +32,46 @@ define([
             var self = this,
                 viewConfig = this.attributes.viewConfig;
 
-            self.renderView4Config(self.$el, null, getNetworkViewConfig(viewConfig));
+            self.renderView4Config(self.$el, null, getNetworkViewConfig(viewConfig), null, null, null, function(view) {
+                var scatterBubbleChartDemoView = getChildView(view, ctwl.NETWORK_PORT_DIST_ID + "_demo");
+                if (scatterBubbleChartDemoView !== null) {
+                    scatterBubbleChartDemoView.model.onAllRequestsComplete.subscribe(function() {
+                        if (scatterBubbleChartDemoView.model.error) {
+                            scatterBubbleChartDemoView.chartView.eventObject.trigger("message", {
+                                componentId: "XYChartView",
+                                action: "update",
+                                messages: [
+                                    {
+                                        message: "Failed to load."
+                                    }
+                                ]
+                            });
+                        } else {
+                            scatterBubbleChartDemoView.chartView.eventObject.trigger("clearMessage", "XYChartView");
+                        }
+                    });
+                    scatterBubbleChartDemoView.chartView.eventObject.trigger("message", {
+                        componentId: "XYChartView",
+                        action: "new",
+                        messages: [
+                            {
+                                // title: "New Message",
+                                message: "Loading...."
+                            }
+                        ]
+                    });
+                }
+            });
         }
     });
 
     var getNetworkViewConfig = function (viewConfig) {
         var networkFQN = viewConfig['networkFQN'],
             networkUUID = viewConfig['networkUUID'],
-            networkDetailsUrl = ctwc.get(ctwc.URL_NETWORK_SUMMARY, networkFQN);
+            networkDetailsUrl = ctwc.get(ctwc.URL_NETWORK_SUMMARY, networkFQN),
+            chartIds = {
+                PortDist: "portDist"
+            };
 
         return {
             elementId: ctwl.NETWORK_TABS_ID,
@@ -134,6 +185,36 @@ define([
                                 }
                             },
                             chartOptions: ctwvc.getPortDistChartOptions()
+                        }
+                    },
+                    {
+                        elementId: ctwl.NETWORK_PORT_DIST_ID + "_demo",
+                        title: ctwl.TITLE_PORT_DISTRIBUTION + " demo",
+                        view: "ChartView",
+                        viewPathPrefix: "js/charts/",
+                        tabConfig: {
+                            activate: function() {
+                                // TODO use new chart lib's API (not implemented) to refresh the chart
+                                $("#" + ctwl.PROJECT_PORTS_SCATTER_CHART_ID + "_demo").trigger("refresh");
+                            },
+                            renderOnActivate: true
+                        },
+                        viewConfig: {
+                            modelConfig: {
+                                remote: {
+                                    ajaxConfig: {
+                                        url: ctwc.get(ctwc.URL_NETWORK_PORT_DISTRIBUTION, networkFQN),
+                                        type: 'GET'
+                                    },
+                                    dataParser: function (response) {
+                                        return ctwp.parseNetwork4PortDistribution(response, networkFQN);
+                                    }
+                                },
+                                cacheConfig: {
+                                    ucid: ctwc.get(ctwc.UCID_PROJECT_VN_PORT_STATS_LIST, networkFQN)
+                                }
+                            },
+                            chartOptions: ctwvc.getNewPortDistChartOptions(chartIds.PortDist)
                         }
                     },
                     {

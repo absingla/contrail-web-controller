@@ -174,6 +174,20 @@ define([
                     {
                         columns: [
                             {
+                                elementId: ctwl.INTERFACES_TRAFFIC_THROUGHPUT_CHART_ID + "_demo",
+                                title: ctwl.TITLE_INTERFACES + " demo",
+                                view: "ChartView",
+                                viewPathPrefix: "js/charts/",
+                                viewConfig: {
+                                    // loadChartInChunks: true,
+                                    chartOptions: ctwvc.getNewThroughputInOutChartOptions("throughputInOut")
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        columns: [
+                            {
                                 elementId: ctwl.PROJECT_INTERFACES_ID,
                                 title: ctwl.TITLE_INTERFACES,
                                 view: "InterfaceGridView",

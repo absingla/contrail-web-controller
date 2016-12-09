@@ -19,7 +19,10 @@ define([
 
     var getProjectViewConfig = function (viewConfig) {
         var projectFQN = viewConfig['projectFQN'],
-            projectUUID = viewConfig['projectUUID'];
+            projectUUID = viewConfig['projectUUID'],
+            chartIds = {
+                PortDist: "portDist"
+            };
 
         return {
             elementId: ctwl.PROJECT_TABS_ID,
@@ -111,6 +114,37 @@ define([
                                 }
                             },
                             chartOptions: ctwvc.getPortDistChartOptions()
+                        }
+                    },
+                    {
+                        elementId: ctwl.PROJECT_PORTS_SCATTER_CHART_ID + "_demo",
+                        title: ctwl.TITLE_PORT_DISTRIBUTION + " demo",
+                        view: "ChartView",
+                        viewPathPrefix: "js/charts/",
+                        tabConfig: {
+                            activate: function() {
+                                // TODO use new chart lib's API (not implemented) to refresh the chart
+                                $("#" + ctwl.PROJECT_PORTS_SCATTER_CHART_ID + "_demo").trigger("refresh");
+                            },
+                            renderOnActivate: true
+                        },
+                        viewConfig: {
+                            modelKey: "",
+                            modelConfig: {
+                                remote: {
+                                    ajaxConfig: {
+                                        url: ctwc.get(ctwc.URL_NETWORK_PORT_DISTRIBUTION, projectFQN),
+                                        type: "GET"
+                                    },
+                                    dataParser: function (response) {
+                                        return nmwp.parseProject4PortDistribution(response, projectFQN);
+                                    }
+                                },
+                                cacheConfig: {
+                                    ucid: ctwc.get(ctwc.UCID_PROJECT_VN_PORT_STATS_LIST, projectFQN)
+                                }
+                            },
+                            chartOptions: ctwvc.getNewPortDistChartOptions(chartIds.PortDist)
                         }
                     }
                 ]
