@@ -139,11 +139,16 @@ define([
 
                         $.each(params, function(key, value) {
                             if (value !== null) {
-                                encodedParams[key] = encodeURIComponent(value);
+                                if (true === loadIntrospectViaProxy) {
+                                    encodedParams[key] = encodeURIComponent(value);
+                                } else {
+                                    encodedParams[key] = value;
+                                }
                             }
                         });
 
                         self.renderIntrospectResult(moduleRequest, encodedParams);
+                        self.primary.model.model().gridRendered = true;
                     });
 
                     $(introspectResultId)
@@ -157,16 +162,23 @@ define([
                 });
         },
 
-        removeIntrospectSecondaryForm: function() {
+        removeIntrospectForm: function(formType) {
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 hashParams = layoutHandler.getURLHashParams(),
                 introspectNode = hashParams.node,
-                introspectType = viewConfig.type,
-                introspectSecondaryFormId = "#introspect-" + introspectNode + "-" + introspectType + "-secondary-form";
+                introspectType = viewConfig.type;
 
-            $(introspectSecondaryFormId).empty();
+            if (!contrail.checkIfExist(formType)) {
+                formType = ctwc.INTROSPECT_FORM_TYPE_RESULTS;
+            }
+            var introspectSecondaryFormId = "#introspect-" + introspectNode + "-" + introspectType +
+                "-" + formType;
 
+            if (self.primary.model.model().gridRendered) {
+                $(introspectSecondaryFormId).empty();
+                self.primary.model.model().gridRendered = false;
+            }
         },
 
         renderIntrospectResult: function(moduleRequest, params) {
@@ -194,6 +206,8 @@ define([
     });
 
     function getIntrospectPrimaryFormViewConfig() {
+        var ipAddresFormView = (true !== loadIntrospectViaProxy) ? "FormComboboxView" :
+            "FormDropdownView";
         return {
             view: "SectionView",
             viewConfig: {
@@ -201,14 +215,15 @@ define([
                     {
                         columns: [
                             {
-                                elementId: "ip_address", view: "FormDropdownView",
+                                elementId: "ip_address",
+                                view: ipAddresFormView,
                                 viewConfig: {
                                     path: "ip_address", class: "col-xs-4",
                                     dataBindValue: "ip_address",
                                     dataBindOptionList: "ip_address_option_list()",
                                     elementConfig: {
                                         dataTextField: "text", dataValueField: "id",
-                                        placeholder: "Select IP Address"
+                                        placeholder: "Select Or Enter IP Address"
                                     }}
                             },
                             {

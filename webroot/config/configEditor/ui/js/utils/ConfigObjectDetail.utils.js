@@ -16,6 +16,7 @@ define([
         self.formJson = undefined;
         self.jsoneditor = undefined;
         self.keep_value = undefined;
+        self.resetTextAreaModel = undefined;
         self.modelLayout = '<div id="config-error-container" class="alert-error clearfix">'+
                            '<div id="config-msg-container"><span class="error-font-weight">Error : </span><span id="config-error-msg-container"></span></div>'+
                            '<div id="error-remove-icon"><button id="remove-error-popup" class="btn btn-mini"><i class="fa fa-remove"></i></button></div></div>'+
@@ -103,6 +104,7 @@ define([
                 self.oldFormData = $.extend(true, {}, jsoneditor.getValue());
                 var rawJson = $.extend(true, {}, jsoneditor.getValue());
                 document.getElementById('rawJsonTextArea').value = '';
+                self.resetTextAreaModel = rawJson;
                 self.oldAreaModel = rawJson;
                 document.getElementById('rawJsonTextArea').value = JSON.stringify(rawJson,null,2);
             }else{
@@ -123,6 +125,7 @@ define([
                 self.formJson = self.updateModelForSchema(self.formJson);
                 self.loadSchemaBasedForm(self.formJson, self.schema, false);
                 self.oldFormData = $.extend(true, self.formJson, jsoneditor.getValue());
+                self.resetTextAreaModel = self.updateModelForSchema(jsoneditor.getValue());
                 var newFormData = $.extend(true,{},self.formJson);
                 document.getElementById('rawJsonTextArea').value = '';
                 var rawJson = self.updateRefForTextArea(newFormData, refs);
@@ -222,7 +225,7 @@ define([
             for(var i in model){
                 if(i.substring(i.length-5,i.length) === '_refs' && schemaProp[i].format == undefined){
                     for(var m = 0; m < model[i].length; m++){
-                        if(typeof model[i][m].to != 'string'){
+                        if(model[i][m].to != undefined && typeof model[i][m].to != 'string'){
                             model[i][m].to = model[i][m].to.join(':');
                         }
                     }
@@ -407,13 +410,13 @@ define([
                         for(var j = 0; j < model[i].length; j++){
                             self.updateModelForSchema(model[i][j]);
                         }
-                    }else if(i === 'fq_name'){
-                            var fqName = model[i].join(':');
-                            model[i] = fqName;
-                    }else if(i === 'to'){
-                        var to = model[i].join(':');
-                        model[i] = to;
+                    }else if(i === 'fq_name' || i === 'to'){
+                        var item = model[i].join(':');
+                        model[i] = item;
                     }
+                }else if((i === 'fq_name' || i === 'to') && typeof model[i] == 'string'){
+                    var item = model[i].split(':');
+                    model[i] = item;
                 }
             }
           return model;
@@ -498,7 +501,7 @@ define([
         }
         self.resetTextArea = function(){
             document.getElementById('rawJsonTextArea').value = '';
-            document.getElementById('rawJsonTextArea').value = JSON.stringify(self.textAreaModel,null,2);
+            document.getElementById('rawJsonTextArea').value = JSON.stringify(self.resetTextAreaModel,null,2);
             self.hideErrorPopup();
         }
         self.checkExistingRefs = function(model){

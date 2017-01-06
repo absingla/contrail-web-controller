@@ -6,8 +6,9 @@
 define([
     "underscore",
     "contrail-view",
-    "xml2json"
-], function (_, ContrailView, Xml2json) {
+    "xml2json",
+    "controller-basedir/setting/introspect/ui/js/introspect.utils"
+], function (_, ContrailView, Xml2json, iUtils) {
     var IntrospectResultTabsView = ContrailView.extend({
         el: $(window.contentContainer),
 
@@ -18,8 +19,8 @@ define([
                 port = viewConfig.port,
                 moduleRequest = viewConfig.module_request,
                 params = viewConfig.params,
-                url = "/proxy" + ($.isEmptyObject(params) ? "?" : ("?" + $.param(params) + "&")) + "proxyURL=http://" + ipAddress + ":" + port + "/Snh_" + moduleRequest;
-
+                url = iUtils.getProxyURL(ipAddress, port,
+                                         {params: params, moduleRequest: moduleRequest});
             self.fetchIntrospect(url);
         },
 
@@ -37,10 +38,19 @@ define([
 
                 self.renderIntrospectTabs(data);
             }, function(error) {
-                if (error.status === 404) {
+                if (null != error) {
+                    var viewConfig = getValueByJsonPath(self, "attributes;viewConfig", {});
+                    var remoteIP = viewConfig.ip_address;
+                    var remotePort = viewConfig.port;
+                    var defaultErrorStr = "Request could not be established";
+                    if ((null != remoteIP) && (null != remotePort)) {
+                        defaultErrorStr += " with " + remoteIP + ":" + remotePort;
+                    }
+                    var errorText = (null != error.responseText) ? error.responseText :
+                        defaultErrorStr;
                     self.$el.html('<div class="alert alert-error">' +
                         '<button type="button" class="close" data-dismiss="alert"></button> ' +
-                        "<strong>Error: </strong> <span> " + error.responseText + " </span>" +
+                        "<strong>Error: </strong> <span> " + errorText + " </span>" +
                         "</div>");
                 }
             }, null);
@@ -48,7 +58,7 @@ define([
 
         renderIntrospectTabs: function(data) {
             var self = this,
-                viewConfig = self.attributes.viewConfig,
+                viewConfig = (self.attributes) ? self.attributes.viewConfig : {},
                 node = viewConfig.node,
                 ipAddress = viewConfig.ip_address,
                 port = viewConfig.port,
@@ -78,9 +88,9 @@ define([
                         .parent("li").show()
                         .off("click")
                         .on("click", function() {
-                            var url = "/proxy?proxyURL=http://" + ipAddress + ":" + port + "/Snh_" +
-                                link + "?x=" + text;
-
+                            var url = iUtils.getProxyURL(ipAddress, port,
+                                                         {moduleRequest: moduleRequest,
+                                                          params: {x: text}});
                             self.fetchIntrospect(url);
                         });
                 } else {
