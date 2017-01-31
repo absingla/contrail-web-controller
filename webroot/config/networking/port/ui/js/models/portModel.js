@@ -469,12 +469,9 @@ define([
                     modelConfig["disable_sub_interface"] = true;
                 }
             }
-            if(vlanTag == ""){
-                var vmiRefTo = getValueByJsonPath(modelConfig,
-                                    "virtual_machine_interface_refs",[]);
-                if (vmiRefTo.length > 0) {
-                    modelConfig['isParent'] = true;
-                }
+            var portUUID = getValueByJsonPath(modelConfig, "uuid", null);
+            if(vlanTag == "" && portUUID != null) {
+                modelConfig['isParent'] = true;
             }
             modelConfig['deviceOwnerValue'] = deviceOwnerValue;
 
@@ -625,8 +622,9 @@ define([
                     if(finalObj.is_mirror == true) {
                         if(value !== "" && value !== null) {
                             var vlanVal = Number(String(value).trim());
-                            if (vlanVal < 1 || vlanVal > 65535) {
-                                return "Enter UDP port between 1 to 65535";
+                            if (isNaN(vlanVal) ||
+                                    (vlanVal < 1 || vlanVal > 65535)) {
+                                return "Enter UDP Port between 1 to 65535";
                             }
                         }
                     }
