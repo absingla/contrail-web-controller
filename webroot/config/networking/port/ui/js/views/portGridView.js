@@ -81,7 +81,6 @@ define([
             var gridDataItem =
                 $(gridElId).data('contrailGrid')._dataView.getItem(rowIndex);
             var dataItem = {};
-            dataItem.virtual_network_refs = gridDataItem.virtual_network_refs;
             var vmiData = {};
             vmiData.uuid = gridDataItem.uuid;
             vmiData.to = gridDataItem.fq_name;
@@ -475,6 +474,15 @@ define([
         }, {
             keyClass:'col-xs-3',
             valueClass:'col-xs-9',
+            key: 'bridge_domain_refs',
+            label:"Bridge Domain",
+            templateGenerator: 'TextGenerator',
+            templateGeneratorConfig:{
+                formatter: "BridgeDomainFormatter"
+            }
+        }, {
+            keyClass:'col-xs-3',
+            valueClass:'col-xs-9',
             key: 'ecmp_hashing_include_fields',
             name:"ecmp_hashing_include_fields",
             label:"ECMP Hashing Fields",
@@ -516,7 +524,7 @@ define([
             keyClass:'col-xs-3',
             valueClass:'col-xs-9',
             key: 'uuid',
-            label:"Mirror to",
+            label:"Mirroring",
             templateGenerator: 'TextGenerator',
             templateGeneratorConfig:{
                 formatter: "mirrorFormatter"
@@ -692,6 +700,10 @@ define([
     };
     this.QoSFormatter = function (v, dc) {
         return portFormatters.qosExpansionFormatter(null,
+                                        null, null, null, dc);
+    };
+    this.BridgeDomainFormatter = function (v, dc) {
+        return portFormatters.bridgeDomainExpFormatter(null,
                                         null, null, null, dc);
     };
     return portGridView;

@@ -578,7 +578,22 @@ define([
             text: 'Go to configure network page',
             href: '/#p=config_net_vn'
         };
-
+        //GLOBALCONTROLLER Constants
+        this.GLOBAL_CONTROLER_LIST_VIEW_SECTION_ID = "global-controller-listview-sectionid";
+        this.GLOBAL_CONTROLLER_REGION_BAR_SECTION_ID = "global_controller_region_bar_section_id";
+        this.GLOBAL_CONTROLLER_REGION_SECTION_ID = "global_controller_region_section_id";
+        this.GLOBAL_CONTROLLER_CHARTVIEW_CPU_MAX_SECTION_ID = "globalcontroller_chartview_cpu_max_section_id";
+        this.GLOBAL_CONTROLLER_CHARTVIEW_MEMORY_MAX_SECTION_ID = "globalcontroller_chartview_memory_max_section_id";
+        this.GLOBAL_CONTROLLER_CHARTVIEW_DISK_USAGE_SECTION_ID= "globalcontroller_chartview_disk_usage_section_id";
+        this.GLOBAL_CONTROLLER_CHARTVIEW_BANDWDTH_PERCENTILE_SECTION_ID= "globalcontroller_chartview_bandwdth_percentile_section_id";
+        this.GLOBAL_CONTROLLER_CHARTVIEW_CPU_MAX = "globalcontroller_chartview_cpu_max";
+        this.GLOBAL_CONTROLLER_CHARTVIEW_MEMORY_MAX = "globalcontroller_chartview_memory_max";
+        this.GLOBAL_CONTROLLER_CHARTVIEW_DISK_USAGE= "globalcontroller_chartview_disk_usage";
+        //this.GLOBAL_CONTROLLER_NODESCOUNT = "global_controller_nodescnt";
+        this.GLOBAL_CONTROLLER_CHARTVIEW_BANDWDTH_PERCENTILE = "globalcontroller_chartview_bandwdth_percentile";
+        this.GLOBALCONTROLLER_REGIONS_SUMMARY_URL =
+            '/api/tenant/networking/global-controller-overview?reqRegion=';
+        this.GLOBAL_CONTROLLER_CHARTS_URL = "/api/qe/query/?reqRegion=";
         /* Global Config Constants*/
         this.GLOBAL_CONFIG_TAB_ID = "global-config-tab";
         this.GLOBAL_BGP_OPTIONS_MAP = [
@@ -624,6 +639,19 @@ define([
         this.GLOBAL_USER_DEFINED_COUNTRER_SECTION_ID = "user_defined_counters_section";
         this.USER_DEFINED_COUNTRER_CREATE_SECTION_ID = "user_defined_counters_create_section";
 
+        //MAC Learning
+        this.GLOBAL_MAC_LEARNING_MAP =
+            [{"key": "mac_limit_control;mac_limit", "name": "MAC Limit"},
+            {"key": "mac_limit_control;mac_limit_action", "name": "MAC Limit Action"},
+            {"key": "mac_move_control;mac_move_limit", "name": "Mac Move Limit"},
+            {"key": "mac_move_control;mac_move_limit_action", "name": "MAC Move Limit Action"},
+            {"key": "mac_move_control;mac_move_time_window", "name": "MAC Move Time Window (secs)"},
+            {"key": "mac_aging_time", "name": "MAC Aging Time (secs)"}];
+        this.GLOBAL_MAC_LEARNING_SECTION_ID = "global-mac-learning-section";
+        this.GLOBAL_MAC_LEARNING_ID = "global-mac-learning";
+        this.GLOBAL_MAC_LEARNING_GRID_ID = "global-mac-learning-grid";
+        this.GLOBAL_MAC_LEARNING_PREFIX_ID = "global_mac_learning";
+        this.GLOBAL_MAC_LEARNING_LIST_VIEW_ID = "global-mac-learning-list-view";
 
         //BGP
         this.URL_GET_BGP = '/api/tenants/config/bgp/get-bgp-routers';
@@ -734,6 +762,7 @@ define([
         // IPAM Config Constants
         this.URL_CFG_IPAM_DETAILS =
             '/api/tenants/config/ipam-details';
+        this.USER_DEFINED_SUBNET = 'user-defined-subnet';
 
         // FIP Config Constants
         this.URL_CFG_FIP_DETAILS =
@@ -781,6 +810,9 @@ define([
         /* Policy */
         this.VN_SUBNET_DELIMITER = ":";
         this.SUBNET_ONLY = "subnet_only";
+        this.ANALYZER_INSTANCE = "analyzer_instance";
+        this.NIC_ASSISTED = "nic_assisted";
+        this.ANALYZER_IP = "analyzer_ip";
 
         /* BGP as a Service */
         this.CONFIG_BGP_AS_A_SERVICE_LIST_ID = "config-bgp-as-a-service-list";
@@ -950,6 +982,36 @@ define([
             "config-forwarding-class-list-view";
         this.FORWARDING_CLASS_PREFIX_ID = "forwarding_class";
 
+        /* Analytics Node Config Constants */
+        this.CONFIG_ANALYTICS_NODE_LIST_ID = "config-analytics-node-list";
+        this.ANALYTICS_NODE_GRID_ID = "analytics-node-grid";
+        this.CONFIG_ANALYTICS_NODE_SECTION_ID = "config-analytics-node-section";
+        this.CONFIG_ANALYTICS_NODE_ID = "config-analytics-node";
+        this.CONFIG_ANALYTICS_NODE_LIST_VIEW_ID = "config-analytics-node-list-view";
+        this.ANALYTICS_NODE_PREFIX_ID = "analytics_node";
+        this.URL_CREATE_ANALYTICS_NODE = "/analytics-nodes";
+        this.URL_UPDATE_ANALYTICS_NODE = "/analytics-node/";
+
+        /* Config Node Cfg Constants */
+        this.CFG_CONFIG_NODE_LIST_ID = "cfg-config-node-list";
+        this.CONFIG_NODE_GRID_ID = "config-node-grid";
+        this.CFG_CONFIG_NODE_SECTION_ID = "config-config-node-section";
+        this.CFG_CONFIG_NODE_ID = "config-config-node";
+        this.CFG_CONFIG_NODE_LIST_VIEW_ID = "config-config-node-list-view";
+        this.CONFIG_NODE_PREFIX_ID = "config_node";
+        this.URL_CREATE_CONFIG_NODE = "/config-nodes";
+        this.URL_UPDATE_CONFIG_NODE = "/config-node/";
+
+        /* Database Node Config Constants */
+        this.CONFIG_DATABASE_NODE_LIST_ID = "config-database-node-list";
+        this.DATABASE_NODE_GRID_ID = "database-node-grid";
+        this.CONFIG_DATABASE_NODE_SECTION_ID = "config-database-node-section";
+        this.CONFIG_DATABASE_NODE_ID = "config-database-node";
+        this.CONFIG_DATABASE_NODE_LIST_VIEW_ID = "config-database-node-list-view";
+        this.DATABASE_NODE_PREFIX_ID = "database_node";
+        this.URL_CREATE_DATABASE_NODE = "/database-nodes";
+        this.URL_UPDATE_DATABASE_NODE = "/database-node/";
+
         /* Packet Capture Constants */
         this.PACKET_CAPTURE_LIST_ID = "packet-capture-list";
         this.PACKET_CAPTURE_GRID_ID = "packet-capture-grid";
@@ -977,6 +1039,8 @@ define([
         this.CONFIG_HASH_PATH = '/#p=setting_config_editor&q[objName]=';
         this.TEXT_AREA_PLACEHOLDER = 'Copy / Paste JSON data for ';
         this.MODAL_CONFIG_EDITOR_CONTAINER = 'json-editor-form-view';
+        //Gohan Constants
+        this.GOHAN_HASH_LIST = ['config_gc_location','config_gc_heatInstance','config_gc_image','config_gc_flavor','config_gc_server','config_gc_idPool','config_gc_association'];
 
         this.MULTISELECT_VALUE_SEPARATOR = ";;";
     };

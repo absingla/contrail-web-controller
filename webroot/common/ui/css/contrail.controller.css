@@ -31,13 +31,13 @@
 #PolicyRules #simple_action .select2-container-disabled .select2-choice,
 #PolicyRules #simple_action .select2-container,
 #PolicyRules #protocol .custom-combobox .input-group-addon,
+#PolicyRules .data-cell-protocol input,
 #PolicyRules #src_address .select2-container,
 #PolicyRules #direction .select2-container,
 #PolicyRules #direction .select2-container-disabled .select2-choice,
 #PolicyRules #dst_address .select2-container,
-#PolicyRules #dst_ports_text,
-#PolicyRules #src_ports_text,
-#PolicyRules input{
+#PolicyRules .data-cell-src_ports_text input,
+#PolicyRules .data-cell-dst_ports_text input {
     border: 0px !important;
     color: #3182bd;
 }
@@ -54,6 +54,33 @@
 #PolicyRules #dst_address .select2-arrow
 {
     display: none !important;
+}
+#PolicyRules td.data-cell-mirroringOptions .custom-combobox-input+span i.fa-caret-down{
+   display:block;
+ }
+#PolicyRules td.data-cell-mirroringOptions .custom-combobox>span.input-group-addon
+{
+    padding-left: 7px;
+    padding-right: 15px;
+    background-color: #fff;
+    position: absolute;
+    right: 0;
+    z-index: 1040;
+    border: 1px solid #dadada;
+    top:0px;
+}
+#PolicyRules td.data-cell-mirroringOptions .custom-combobox-input+span i.fa-caret-down{
+   display:block;
+ }
+#PolicyRules td.data-cell-mirroringOptions .custom-combobox>span.input-group-addon
+{
+    padding-left: 7px;
+    border: 1px solid #dadada;
+    top:0px;
+}
+#PolicyRules .radio-group {
+    padding-left: 83px;
+    padding-bottom: 10px;
 }
 
 #windowCreatePolicy .rule-item .select2-chosen {
@@ -243,7 +270,7 @@ div.vis-network canvas{
     width:23.08% !important;
 }
 #bgp-grid ul.item-list .value{
-    width:57.26%; !important;
+    width:57.26% !important;
 }
 
 
@@ -275,10 +302,11 @@ div.vis-network canvas{
     border-top:none;}
 #peer_selection .item-list table tr:first-child td{
     background-color:gray;}
-#bgp-grid .value th, #config-vn-list .value th, #service-instances-grid .value th, #global-bgp-options-grid th{
+#bgp-grid .value th, #config-vn-list .value th, #config-ipam-list .value th, #service-instances-grid .value th, #global-bgp-options-grid th{
     font-weight:600;
     border-bottom:#777 solid 1px;
-    padding-bottom:2px;}
+    padding-bottom:2px;
+    word-break:break-word;}
 #global-bgp-options-grid th, #global-bgp-options-grid td{
     color:#777;
     font-size:12px;
@@ -287,11 +315,12 @@ div.vis-network canvas{
 #bgp-grid .value tr td{
     border-bottom:#f5f5f5 solid 1px;
     vertical-align:top;}
-#config-vn-list .value td, #service-instances-grid .value td{
+#config-vn-list .value td, #config-ipam-list .value td, #service-instances-grid .value td{
     vertical-align:top;}
 #service-instances-grid .value td a{
     color:#3182bd;
-    text-decoration:underline;}
+    text-decoration:underline;
+    word-break:break-word;}
 #bgp-grid .value .addressFamily {
     padding: 5px 20px 20px 20px;
 }
@@ -311,14 +340,14 @@ div.vis-network canvas{
     width:250px;
     padding-top:0px;}
 #prefix_limit{width:213px}
-#bgp-grid ul.item-list .key, #config-vn-list ul.item-list .key, #service-instances-grid ul.item-list .key{
-    width:23.08% !important;
+#bgp-grid ul.item-list .key, #config-vn-list ul.item-list .key, #config-ipam-list ul.item-list .key, #service-instances-grid ul.item-list .key{
+    width:23% !important;
 }
 #bgp-grid ul.item-list .value, #service-instances-grid ul.item-list .value{
-    width:57.26% !important;
+    width:77% !important;
     vertical-align:top;
 }
-#config-vn-list ul.item-list .value{
+#config-vn-list ul.item-list .value, #config-ipam-list ul.item-list .value{
     width:76.26%!important;
     vertical-align:top;}
 div#peer_selection_section {
@@ -517,3 +546,23 @@ table td[class*="col-xs-"], table th[class*="col-xs-"], .row-fluid table td[clas
 #configalarm_edit_alarm_rule #description .textarea-input-group{
     width:100%;}
 #configalarm_edit_alarm_rule .collection-table .data-cell>div.row{margin:0px;}
+
+.vn_key{
+    font-weight:600;
+}
+.vn_seperator{
+    padding-right:8px;}
+.data-cell-mirroringOptions .form-label{
+    text-align:left;
+    padding-left:6px;}
+.data-cell-QoS .form-label{
+    text-align:left;
+    padding-left:21px;}
+.data-cell-mirroringOptions .form-element{
+    padding-left:10px;}
+ .data-cell-QoS .form-element{
+     padding-left:8px;}
+.data-cell-mirroringOptions .form-element .help-block{
+    text-align:left;}
+.data-cell-mirroringOptions{
+    padding-bottom:0px;}

@@ -5,13 +5,14 @@
 define([
     'underscore',
     'contrail-config-model',
+    'config/networking/networks/ui/js/models/bridgeDomainModel',
     'config/networking/networks/ui/js/models/subnetModel',
     'config/networking/networks/ui/js/models/hostRouteModel',
     'config/networking/networks/ui/js/models/routeTargetModel',
     'config/networking/networks/ui/js/models/fipPoolModel',
     'config/networking/networks/ui/js/models/subnetDNSModel',
     'config/networking/networks/ui/js/views/vnCfgFormatters'
-], function (_, ContrailConfigModel, SubnetModel, HostRouteModel,
+], function (_, ContrailConfigModel, BridgeDomainModel, SubnetModel, HostRouteModel,
             RouteTargetModel, FipPoolModel,SubnetDNSModel, VNCfgFormatters) {
     var formatVNCfg = new VNCfgFormatters();
 
@@ -29,6 +30,7 @@ define([
                 'vxlan_network_identifier': null, //delete if it is null
                 'mirror_destination': false
             },
+            'user_created_forwarding_mode': 'default',
             'external_ipam': false, // set only when vcenter is enabled
             'virtual_network_network_id': 0, // never set at post / put
             'network_policy_refs': [], //ordered collection attr.major,minor
@@ -64,6 +66,21 @@ define([
                 'destination_port': false
                 */
             },
+            'pbb_evpn_enable': false,
+            'pbb_etree_enable': false,
+            'layer2_control_word': false,
+            'mac_learning_enabled': false,
+            'mac_limit_control' : {
+                'mac_limit': 0, //unlimited
+                'mac_limit_action': 'log'
+            },
+            'mac_move_control': {
+                'mac_move_limit': 0, //unlimited
+                'mac_move_time_window': 10, //secs
+                'mac_move_limit_action': 'log'
+            },
+            'mac_aging_time': 300, //secs
+            'bridge_domains': [],
             'route_table_refs': [],
             'user_created_host_routes': [],//fake created for host routes under each subnet
             'user_created_route_targets': [], //fake created for rt_list.rt collection
@@ -76,6 +93,8 @@ define([
             'qos_config_refs': [],
             'user_created_vxlan_mode': false,
             'disable': false,
+            'address_allocation_mode': 'user-defined-subnet-only',
+            'user_created_flat_subnet_ipam': []
         },
 
         formatModelConfig: function (modelConfig) {
@@ -102,6 +121,11 @@ define([
 
             modelConfig['display_name'] = ctwu.getDisplayNameOrName(modelConfig);
 
+            //populate user_created_forwarding_mode
+            modelConfig['user_created_forwarding_mode'] =
+                getValueByJsonPath(modelConfig,
+                'virtual_network_properties;forwarding_mode', 'default', false)
+
             this.readSubnetHostRoutes(modelConfig);
             this.readRouteTargetList(modelConfig, 'user_created_route_targets');
             this.readRouteTargetList(modelConfig, 'user_created_import_route_targets');
@@ -113,13 +137,97 @@ define([
             this.readEcmpHashing(modelConfig);
             this.readProperties(modelConfig);
             this.readQoS(modelConfig);
+            this.readBridgeDomains(modelConfig);
 
             //permissions
             this.formatRBACPermsModelConfig(modelConfig);
-
             return modelConfig;
         },
 
+        readBridgeDomains: function(modelConfig) {
+            var bridgeDomainModels = [],
+                bridgeDomainList = getValueByJsonPath(modelConfig,
+                        'bridge_domains', [], false);
+            _.each(bridgeDomainList, function(bridgeDomain){
+                if(!bridgeDomain.name) {
+                    bridgeDomain.name = getValueByJsonPath(bridgeDomain,
+                            'fq_name;3', '', false);
+                }
+                bridgeDomain = _.extend(bridgeDomain, {"disable": true});
+                bridgeDomainModels.push(new BridgeDomainModel(bridgeDomain));
+            });
+            modelConfig['bridge_domains'] =
+                new Backbone.Collection(bridgeDomainModels);
+        },
+
+        addBridgeDomain: function() {
+            var bridgeDomains = this.model().attributes['bridge_domains'],
+                newBridgeDomain = new BridgeDomainModel();
+            if(bridgeDomains.length > 0) {
+                return;
+            }
+            bridgeDomains.add([newBridgeDomain]);
+        },
+        addBridgeDomainByIndex: function(data, kbHostRoute) {
+          var selectedRuleIndex = data.model().collection.indexOf(kbHostRoute.model());
+            var bridgeDomains = this.model().attributes['bridge_domains'],
+                newBridgeDomain = new BridgeDomainModel();
+            if(bridgeDomains.length > 0) {
+                return;
+            }
+            bridgeDomains.add([newBridgeDomain],{at: selectedRuleIndex+1});
+        },
+        deleteBridgeDomain: function(data, kbHostRoute) {
+            var bridgeDomainCollection = data.model().collection,
+                bridgeDomain = kbHostRoute.model();
+
+            bridgeDomainCollection.remove(bridgeDomain);
+        },
+
+        getBridgeDomains: function(attr) {
+            var bridgeDomains = attr.bridge_domains.toJSON(),
+                postData = {}, postDataArray = []
+                vnFQN = getValueByJsonPath(attr, 'fq_name', []);;
+            _.each(bridgeDomains, function(bridgeDomain){
+                var bdAttrs = $.extend(true, {}, bridgeDomain.model().attributes),
+                    bridgeDomainData = {};
+                if(bdAttrs.uuid){
+                    bridgeDomainData.uuid = bdAttrs.uuid;
+                }
+                bridgeDomainData.to = vnFQN.concat(bdAttrs.name);
+                bridgeDomainData.isid = Number(bdAttrs.isid);
+                bridgeDomainData.mac_learning_enabled = bdAttrs.mac_learning_enabled;
+                //if(bdAttrs.mac_learning_enabled) {
+                    bridgeDomainData.mac_limit_control = {};
+                    bridgeDomainData.mac_limit_control.mac_limit =
+                        Number(bdAttrs.mac_limit_control.mac_limit);
+                    bridgeDomainData.mac_limit_control.mac_limit_action =
+                        bdAttrs.mac_limit_control.mac_limit_action;
+                    bridgeDomainData.mac_move_control = {};
+                    bridgeDomainData.mac_move_control.mac_move_limit =
+                        Number(bdAttrs.mac_move_control.mac_move_limit);
+                    bridgeDomainData.mac_move_control.mac_move_limit_action =
+                        bdAttrs.mac_move_control.mac_move_limit_action;
+                    bridgeDomainData.mac_move_control.mac_move_time_window =
+                        Number(bdAttrs.mac_move_control.mac_move_time_window);
+                    bridgeDomainData.mac_aging_time = Number(bdAttrs.mac_aging_time);
+                //}
+                postDataArray.push(bridgeDomainData);
+            });
+            attr['bridge_domains'] = postDataArray;
+            attr.mac_limit_control.mac_limit =
+                Number(attr.mac_limit_control.mac_limit);
+            attr.mac_move_control.mac_move_limit =
+                Number(attr.mac_move_control.mac_move_limit);
+            attr.mac_move_control.mac_move_time_window =
+                Number(attr.mac_move_control.mac_move_time_window);
+            attr.mac_aging_time = Number(attr.mac_aging_time);
+            if(!attr.mac_learning_enabled) {
+                delete attr.mac_limit_control;
+                delete attr.mac_move_control;
+                delete attr.mac_aging_time;
+            }
+        },
         readQoS: function(modelConfig) {
             var qosToArry = getValueByJsonPath(modelConfig,
                     "qos_config_refs;0;to", []);
@@ -154,7 +262,14 @@ define([
                                                    });
             hostRoute.add([newHostRoute]);
         },
-
+        addHostRouteByIndex: function(data, kbHostRoute) {
+          var selectedRuleIndex = data.model().collection.indexOf(kbHostRoute.model());
+          var hostRoute = this.model().attributes['user_created_host_routes'],
+              newHostRoute = new HostRouteModel({'prefix': null,
+                                                  'next_hop': null,
+                                                 });
+          hostRoute.add([newHostRoute],{at: selectedRuleIndex+1});
+        },
         deleteHostRoute: function(data, kbHostRoute) {
             var hostRouteCollection = data.model().collection,
                 hostRoute = kbHostRoute.model();
@@ -217,6 +332,15 @@ define([
 
             routeTarget.add([newRouteTarget]);
         },
+        addRouteTargetByIndex: function(type, kbRouteTarget) {
+            var selectedRuleIndex = type.model().collection.indexOf(kbRouteTarget.model());
+            var routeTarget = this.model().attributes[type],
+                newRouteTarget = new RouteTargetModel({'asn': null,
+                                                    'target': null,
+                                                      });
+
+            routeTarget.add([newRouteTarget],{at: selectedRuleIndex+1});
+        },
 
         deleteRouteTarget: function(data, kbRouteTarget) {
             var routeTargetCollection = data.model().collection,
@@ -262,7 +386,14 @@ define([
                                                 'disable': false});
             fipPool.add([newFipPool]);
         },
-
+        addFipPoolByIndex: function(data, kbFipPool) {
+            var selectedRuleIndex = data.model().collection.indexOf(kbFipPool.model());
+            var fipPool = this.model().attributes['floating_ip_pools'],
+                newFipPool = new FipPoolModel({'name': null,
+                                               'projects': null,
+                                                'disable': false});
+            fipPool.add([newFipPool],{at: selectedRuleIndex+1});
+        },
         deleteFipPool: function(data, kbFipPool) {
             var fipPoolCollection = data.model().collection,
                 fipPool = kbFipPool.model();
@@ -328,7 +459,13 @@ define([
 
             subnetDNS.add([newSubnetDNS]);
         },
+        addSubnetDNSByIndex: function(data, kbSubnetDNS) {
+            var selectedRuleIndex = data.model().collection.indexOf(kbSubnetDNS.model());
+            var subnetDNS = this.model().attributes['user_created_dns_servers'],
+                newSubnetDNS = new SubnetDNSModel({'ip_address': null});
 
+            subnetDNS.add([newSubnetDNS],{at: selectedRuleIndex+1});
+        },
         deleteSubnetDNS: function(data, kbSubnetDNS) {
             var subnetDNSCollection = data.model().collection,
                 subnetDNS = kbSubnetDNS.model();
@@ -365,6 +502,13 @@ define([
                 subnetModels.push(subnetModel);
             }
 
+            //flat subnet
+            var flatIPAMList = formatVNCfg.flatSubnetModelFormatter(null,
+                    null, null, -1, modelConfig);
+            modelConfig["user_created_flat_subnet_ipam"] =
+                flatIPAMList.join(ctwc.MULTISELECT_VALUE_SEPARATOR);
+
+            //user defined subnet
             modelConfig['network_ipam_refs'] =
                                     new Backbone.Collection(subnetModels);
         },
@@ -388,7 +532,13 @@ define([
             self.setSubnetChangeEvent(subnetModel);
             subnet.add([subnetModel]);
         },
-
+        addSubnetByIndex: function(data, kbSubnet) {
+          var selectedRuleIndex = data.model().collection.indexOf(kbSubnet.model());
+          var subnet = this.model().attributes['network_ipam_refs'],
+              subnetModel = new SubnetModel();
+          self.setSubnetChangeEvent(subnetModel);
+          subnet.add([subnetModel],{at: selectedRuleIndex+1});
+        },
         deleteSubnet: function(data, kbSubnet) {
             var subnetCollection = data.model().collection,
                 subnet = kbSubnet.model();
@@ -554,17 +704,29 @@ define([
                                   {'ipam_subnets': ipamAssocArr[ipam]}
                                   });
             }
+            //add flat subnet ipams
+            var flatIpams = attr.user_created_flat_subnet_ipam ?
+                attr.user_created_flat_subnet_ipam.split(ctwc.MULTISELECT_VALUE_SEPARATOR) : [];
+            _.each(flatIpams, function(flatIpam){
+                subnetArray.push({'to':
+                    flatIpam.split(cowc.DROPDOWN_VALUE_SEPARATOR), 'attr': {'ipam_subnets':[]}});
+            });
+            delete attr.user_created_flat_subnet_ipam;
             attr['network_ipam_refs'] = subnetArray;
         },
 
 
         getProperties: function(attr) {
             var forwardingMode = getValueByJsonPath(attr,
-                        'virtual_network_properties;forwarding_mode', null);
+                        'user_created_forwarding_mode', null);
 
             if (forwardingMode == null || forwardingMode == 'default') {
                 delete attr['virtual_network_properties']['forwarding_mode'];
+            } else {
+                attr["virtual_network_properties"]["forwarding_mode"] =
+                    forwardingMode;
             }
+            delete attr.user_created_forwarding_mode;
 
             var vxLANId = getValueByJsonPath(attr,
                         'virtual_network_properties;vxlan_network_identifier', null);
@@ -677,6 +839,25 @@ define([
             }
         },
 
+        updateModelAttrsForCurrentAllocMode: function(value) {
+            //update forwarding mode
+            if(value !== 'user-defined-subnet-only') {
+                this.user_created_forwarding_mode("l3");
+            } else {
+                this.user_created_forwarding_mode("default");
+            }
+
+            //reset user defined ipam_subnets for flat subnet only case
+            if(value === 'flat-subnet-only') {
+                this.model().attributes.network_ipam_refs.reset();
+            }
+
+            //clear flat_subnets for user defined subnet only case
+            if(value === 'user-defined-subnet-only') {
+                this.user_created_flat_subnet_ipam('');
+            }
+        },
+
         readSRIOV: function (modelConfig) {
             var segment_id   = getValueByJsonPath(modelConfig,
                                 'provider_properties;segmentation_id', null);
@@ -765,6 +946,13 @@ define([
                     required: true,
                     msg: 'Enter Name'
                 },
+                'user_created_flat_subnet_ipam':
+                function(value, attr, finalObj) {
+                    if(finalObj.address_allocation_mode ===
+                        'flat-subnet-only' && !value) {
+                        return "Select Flat Subnet IPAM(s)";
+                    }
+                },
                 'virtual_network_properties.vxlan_network_identifier' :
                 function (value, attr, finalObj) {
                     var vxMode =
@@ -846,6 +1034,36 @@ define([
                         }
                     }
                 },
+                'mac_limit_control.mac_limit':
+                    function (value, attr, finalObj) {
+                    var macLimit = Number(value);
+                    if (finalObj.mac_learning_enabled && isNaN(macLimit)) {
+                        return "MAC Limit should be a number";
+                    }
+                },
+                'mac_move_control.mac_move_limit':
+                    function (value, attr, finalObj) {
+                    var macMoveLimit = Number(value);
+                    if (finalObj.mac_learning_enabled && isNaN(macMoveLimit)) {
+                        return "MAC Move Limit should be a number";
+                    }
+                },
+                'mac_move_control.mac_move_time_window':
+                    function (value, attr, finalObj) {
+                    var timeWindow = Number(value);
+                    if (finalObj.mac_learning_enabled && (isNaN(timeWindow) ||
+                        (timeWindow < 1) || (timeWindow > 60))) {
+                        return "Enter MAC Move Time Window between 1 - 60";
+                    }
+                },
+                'mac_aging_time':
+                    function (value, attr, finalObj) {
+                    var agingTime = Number(value);
+                    if (finalObj.mac_learning_enabled && (isNaN(agingTime) ||
+                        (agingTime < 0) || (agingTime > 86400))) {
+                        return "Enter MAC Aging Time between 0 - 86400";
+                    }
+                }
             }
         },
 
@@ -893,6 +1111,11 @@ define([
                                 type: cowc.OBJECT_TYPE_COLLECTION,
                                 getValidation: 'routeTargetModelConfigValidations'
                               },
+                              {
+                                  key: 'bridge_domains',
+                                  type: cowc.OBJECT_TYPE_COLLECTION,
+                                  getValidation: 'bridgeDomainModelConfigValidations'
+                              },
                               //permissions
                               ctwu.getPermissionsValidation()
                              ];
@@ -928,6 +1151,7 @@ define([
                 this.getSRIOV(newVNCfgData);
                 this.getEcmpHashing(newVNCfgData);
                 this.getQoS(newVNCfgData);
+                this.getBridgeDomains(newVNCfgData);
 
                 //permissions
                 this.updateRBACPermsAttrs(newVNCfgData);

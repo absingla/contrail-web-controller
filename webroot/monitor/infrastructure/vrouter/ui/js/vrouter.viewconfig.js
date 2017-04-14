@@ -6,8 +6,17 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
         function(_, ContrailView, ContrailListModel, CFDataSource, LegendView, VRouterListModel){
     var VRouterViewConfig = function () {
         var self = this;
-        var vRouterListModel,vRouterUIListModel;   
-
+        var vRouterListModel,vRouterUIListModel;
+        self.currentRegion = null;
+        self.isRegionChanged = function() {
+            var currentRegionFromCookie = contrail.getCookie('region');
+            if (self.currentRegion != currentRegionFromCookie) {
+                self.currentRegion = currentRegionFromCookie;
+                return true;
+            } else {
+                return false;
+            }
+        }
         self.populateVRouterListModels = function() {
             vRouterListModel = new VRouterListModel();
             self.vRouterListModel = vRouterListModel;
@@ -124,13 +133,14 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                     itemAttr: {
                         title: ctwl.VROUTER_ACTIVE_FLOWS_DROP_STATS,
                         height: 1,
-                        width:0.7
+                        width: 1.4
                     }
                 }
              },
              "vrouter-cpu-mem-scatter-chart" : function(){
-                 if(self.vRouterListModel == null)
+                 if(self.vRouterListModel == null || self.isRegionChanged()) {
                     self.populateVRouterListModels();
+                 }
                  return {
                      modelCfg: {listModel:vRouterUIListModel},
                      viewCfg: {
@@ -157,7 +167,58 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                      itemAttr: {
                          title: ctwl.VROUTER_CPU_MEM_UTILIZATION,
                          height: 1,
-                         width:0.4
+                         width: 0.7
+                     }
+                 }
+             },
+             "vrouter-summary-cpu-mem-scatter-chart" : function(cfg,i){
+                 if(self.vRouterListModel == null || self.isRegionChanged() || i == 0) {
+                    self.populateVRouterListModels();
+                 }
+                 return {
+                     modelCfg: {listModel:vRouterUIListModel},
+                     viewCfg: {
+                         elementId : 'vrouter-cpu-mem-chart',
+                         view:"ZoomScatterChartView",
+                         viewConfig: {
+                             widgetConfig: {
+                                 elementId: ctwl.VROUTER_SUMMARY_CHART_ID + '-widget',
+                                 view: "WidgetView",
+                                 viewConfig: {
+                                     header: {
+                                         title: ctwl.VROUTER_SUMMARY_TITLE,
+                                         // iconClass: "icon-search"
+                                     },
+                                     controls: {
+                                         top: {
+                                             default: {
+                                                 collapseable: false
+                                             }
+                                         }
+                                     }
+                                 }
+                             },
+                             chartOptions: {
+                                 xLabel: 'CPU Share (%)',
+                                 yLabel: 'Memory (MB)',
+                                 xFormatter: function(x) {
+                                     return cowu.numberFormatter(x,0);
+                                 },
+                                 bubbleCfg : {
+                                     defaultMaxValue : monitorInfraConstants.VROUTER_DEFAULT_MAX_THROUGHPUT
+                                 },
+                                 showColorFilter:true,
+                                 bucketTooltipFn: monitorInfraUtils.vRouterBucketTooltipFn,
+                                 clickCB: monitorInfraUtils.onvRouterDrillDown,
+                                 tooltipConfigCB: monitorInfraUtils.vRouterTooltipFn
+                             },
+                             cfDataSource : self.cfDataSource,
+                         }
+                     },
+                     itemAttr: {
+                         title: ctwl.VROUTER_CPU_MEM_UTILIZATION,
+                         height: 1.5,
+                         width: 2
                      }
                  }
              },
@@ -194,7 +255,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                      itemAttr: {
                          title: ctwl.VROUTER_DROP_PACKETS,
                          height: 0.7,
-                         width:0.4
+                         width: 0.7
                      }
                  }
              },
@@ -236,7 +297,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                     itemAttr: {
                       title: ctwl.VROUTER_BANDWIDTH_PERCENTILE,
                       height: 0.7,
-                      width:0.4
+                      width: 0.7
                     }
                  }
              },
@@ -285,14 +346,15 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
 //                                 yField: 'percentileValue',
                                  yAxisLabel: ctwl.VROUTER_SYSTEM_CPU_PERCENTILES,
 //                                 groupBy:'Source',
-                                 yFields: getYFieldsForPercentile('system_cpu_usage.cpu_share')
+                                 yFields: getYFieldsForPercentile('system_cpu_usage.cpu_share'),
+                                 yFormatter: d3.format('.2f')
                              }
                          }
                      },
                      itemAttr: {
                          title: ctwl.VROUTER_SYSTEM_CPU_PERCENTILES,
                          height: 0.7,
-                         width:0.4
+                         width: 0.7
                      }
                  }
              },
@@ -352,13 +414,14 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                      itemAttr: {
                          title: ctwl.VROUTER_SYSTEM_MEMORY_PERCENTILES,
                          height: 0.7,
-                         width:0.4
+                         width: 0.7
                      }
                  }
              },
-             "vrouter-summary-grid" : function() {
-                 if(self.vRouterListModel == null)
+             "vrouter-summary-grid" : function(cfg,i) {
+                 if(self.vRouterListModel == null || self.isRegionChanged() || i == 0) {
                     self.populateVRouterListModels();
+                 }
                  return {
                      modelCfg: {listModel: vRouterUIListModel},
                      viewCfg: {
@@ -374,12 +437,13 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                              cssClass:"y-overflow-scroll"
                          }
                      },itemAttr: {
-                        height: 10
+                        height: 10,
+                        width: 2
                      }
                  }
              },
-             "vrouter-crossfilters-chart" : function() {
-                 if(self.vRouterListModel == null) {
+             "vrouter-crossfilters-chart" : function(cfg,i) {
+                 if(self.vRouterListModel == null || self.isRegionChanged() || i == 0) {
                     self.populateVRouterListModels();
                  }
                  return {
@@ -409,13 +473,15 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                      },itemAttr: {
                          title: ctwl.VROUTER_CROSSFILTERS,
                          height: 0.5,
+                         width: 2
 //                         width:0.4
                      }
                  }
              },
              "vrouter-system-cpu-mem-chart" : function() {
-                 if(self.vRouterListModel == null)
+                 if(self.vRouterListModel == null || self.isRegionChanged()) {
                     self.populateVRouterListModels();
+                 }
                  return {
                      modelCfg: {
                          modelId:'VROUTER_LIST_MODEL',
@@ -470,13 +536,13 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                      itemAttr: {
                          title: ctwl.VROUTER_SYSTEM_CPU_MEMORY,
                          height: 1,
-                         width:0.5
                      }
                  }
              },
              "vrouter-vn-int-inst-chart" : function() {
-                 if(self.vRouterListModel == null)
+                 if(self.vRouterListModel == null || self.isRegionChanged()) {
                     self.populateVRouterListModels();
+                 }
                  return {
                      modelCfg: {listModel:vRouterUIListModel},
                      viewCfg: {
@@ -513,7 +579,6 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                      itemAttr: {
                          title: ctwl.VROUTER_VN_INTF_INST,
                          height: 1,
-                         width:0.5
                      }
                  }
              },
@@ -540,16 +605,14 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                                  xAxisLabel: '',
                                  yAxisLabel: ctwl.VROUTER_AGENT_CPU_PERCENTILES,
                                  yFields: getYFieldsForPercentile('process_mem_cpu_usage.cpu_share'),
-                                 yFormatter: function(y) {
-                                     return y;
-                                 }
+                                 yFormatter: d3.format('.2f')
                              }
                          }
                      },
                      itemAttr: {
                          title: ctwl.VROUTER_AGENT_CPU_PERCENTILES,
                          height: 0.7,
-                         width:0.4
+                         width: 0.7
                      }
                  }
              },
@@ -586,7 +649,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                      itemAttr: {
                          title: ctwl.VROUTER_AGENT_MEMORY_PERCENTILES,
                          height: 0.7,
-                         width: 0.4
+                         width: 0.7
                      }
                  }
              },
@@ -618,7 +681,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                      itemAttr: {
                          title: ctwl.VROUTER_ACTIVE_FLOWS_PERCENTILES,
                          height: 0.7,
-                         width:0.4
+                         width: 0.7
                      }
                  }
              }

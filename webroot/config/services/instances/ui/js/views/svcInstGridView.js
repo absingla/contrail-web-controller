@@ -204,7 +204,7 @@ define([
                                         }
                                     },
                                     {
-                                        key: 'service_instance_properties',
+                                        key: 'service_instance_properties.ha_mode',
                                         label: 'HA Mode',
                                         templateGenerator: 'TextGenerator',
                                         templateGeneratorConfig: {
@@ -220,7 +220,8 @@ define([
                                         }
                                     },
                                     {
-                                        key: 'svcTmplDetails',
+                                        key: 'svcTmplDetails[0].' +
+                                        'service_template_properties.image_name',
                                         label: 'Image',
                                         templateGenerator: 'TextGenerator',
                                         templateGeneratorConfig: {
@@ -268,7 +269,8 @@ define([
                                         }
                                     },
                                     {
-                                        key: 'svcTmplDetails',
+                                        key: 'svcTmplDetails[0].' +
+                                           'service_template_properties.flavor',
                                         label: 'Flavor',
                                         templateGenerator: 'TextGenerator',
                                         templateGeneratorConfig: {
@@ -276,7 +278,9 @@ define([
                                         }
                                     },
                                     {
-                                        key: 'service_instance_properties',
+                                        key: 'svcTmplDetails[0].' +
+                                            'service_template_properties.' +
+                                            'availability_zone_enable',
                                         label: 'Availability Zone',
                                         templateGenerator: 'TextGenerator',
                                         templateGeneratorConfig: {
@@ -500,8 +504,8 @@ define([
 
     function imagesFormatter (row, col, val, d, rowData) {
         if (null != val) {
-            return getValueByJsonPath(val[0],
-                                      'service_template_properties;image_name',
+            return getValueByJsonPath(rowData,
+                                      'svcTmplDetails;0;service_template_properties;image_name',
                                       '-');
         } else {
             return "-";
@@ -510,8 +514,8 @@ define([
 
     function flavorsFormatter (row, col, val, d, rowData) {
         if (null != val) {
-            return getValueByJsonPath(val[0],
-                                      'service_template_properties;flavor',
+            return getValueByJsonPath(rowData,
+                                      'svcTmplDetails;0;service_template_properties;flavor',
                                       '-');
         } else {
             return "-";
@@ -790,9 +794,11 @@ define([
             var addr = getValueByJsonPath(vmDetails[i], 'server;addresses', {});
             var addrStr = "";
             for (key in addr) {
+                addrStr +='<span class="vn_key">';
                 addrStr += key.toString();
+                addrStr +='</span>';
                 if (addr[key].length > 0) {
-                    addrStr += ':';
+                    addrStr += '<span class="vn_seperator">:</span>';
                     addrStr += (null != addr[key][0]['addr']) ?
                         addr[key][0]['addr'] : '-';
                     addrStr += ' <br>';
@@ -857,7 +863,7 @@ define([
                 '\');"> View Console </a></td>';
             returnHtml += '</tr>';
         }
-        returnHtml = "<table style='width:1000px !important;'>" + returnHtml + "</table>";
+        returnHtml = "<table width='100%'>" + returnHtml + "</table>";
         return returnHtml;
     }
 

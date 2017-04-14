@@ -72,6 +72,8 @@ define([
                     {collection: self.model.model().attributes.user_created_import_route_targets});
                 kbValidation.bind(self,
                     {collection: self.model.model().attributes.user_created_export_route_targets});
+                kbValidation.bind(self,
+                        {collection: self.model.model().attributes.bridge_domains});
                 //permissions
                 ctwu.bindPermissionsValidation(self);
                                     }, null, true);
@@ -133,6 +135,8 @@ define([
                     {collection: self.model.model().attributes.user_created_dns_servers});
                 kbValidation.bind(self,
                     {collection: self.model.model().attributes.user_created_route_targets});
+                kbValidation.bind(self,
+                        {collection: self.model.model().attributes.bridge_domains});
                 //permissions
                 ctwu.bindPermissionsValidation(self);
                                     }, null, true);
@@ -181,7 +185,10 @@ define([
     });
 
     function getVNCfgViewConfig (disableOnEdit, selectedProjId) {
-        var prefixId = ctwl.CFG_VN_PREFIX_ID;
+        var prefixId = ctwl.CFG_VN_PREFIX_ID,
+            ipamPostData = {};
+        ipamPostData.data = [];
+        ipamPostData.data[0] = {'type':'network-ipams', 'fields':''};
         var vnCfgViewConfig = {
             elementId: cowu.formatElementId([prefixId,
                                             ctwl.CFG_VN_TITLE_CREATE]),
@@ -268,13 +275,58 @@ define([
                             view: "SectionView",
                             active:false,
                             viewConfig: {
-                                    rows: [
+                                    rows: [{
+                                        columns:[{
+                                            elementId: 'address_allocation_mode',
+                                            view: "FormRadioButtonView",
+                                            viewConfig: {
+                                                label: 'Allocation Mode',
+                                                path: 'address_allocation_mode',
+                                                class: 'col-xs-12',
+                                                dataBindValue: 'address_allocation_mode',
+                                                templateId: cowc.TMPL_FOUR_OPTNS_RADIO_BUTTON_VIEW,
+                                                elementConfig: {
+                                                    dataObj: [{
+                                                        value: 'user-defined-subnet-only', label:'User Defined'},
+                                                        {value: 'flat-subnet-only', label:'Flat'},
+                                                        {value: 'user-defined-subnet-preferred', label:'User Defined Hybrid'},
+                                                        {value: 'flat-subnet-preferred', label:'Flat Hybrid'}]
+                                                }
+                                            }
+                                        }]
+                                    }, {
+                                        columns:[{
+                                            elementId: 'user_created_flat_subnet_ipam',
+                                            view: "FormMultiselectView",
+                                            viewConfig: {
+                                                visible: 'address_allocation_mode() !== "user-defined-subnet-only"',
+                                                label: 'Flat Subnet IPAM(s)',
+                                                path : 'user_created_flat_subnet_ipam',
+                                                class: 'col-xs-11',
+                                                dataBindValue : 'user_created_flat_subnet_ipam',
+                                                elementConfig : {
+                                                    dataTextField : "text",
+                                                    dataValueField : "id",
+                                                    placeholder : 'Select IPAM(s)',
+                                                    separator: ctwc.MULTISELECT_VALUE_SEPARATOR,
+                                                    dataSource : {
+                                                        type: "remote",
+                                                        requestType: 'post',
+                                                        url:'/api/tenants/config/get-config-details',
+                                                        postData: JSON.stringify(ipamPostData),
+                                                        parse: formatVNCfg.ipamFlatSubnetDropDownFormatter
+                                                    }
+                                                }
+                                            }
+                                        }]
+                                    },
                                     {
                                         columns: [
                                         {
                                              elementId: 'network_ipam_refs',
                                              view: "FormEditableGridView",
                                              viewConfig: {
+                                                 visible: 'address_allocation_mode() !== "flat-subnet-only"',
                                                  path : 'network_ipam_refs',
                                                  class: 'col-xs-12',
                                                  validation:
@@ -292,7 +344,7 @@ define([
                                                  rowActions: [
                                                      {onClick: "function() {\
                                                          if (!isVCenter())\
-                                                             $root.addSubnet();\
+                                                             $root.addSubnetByIndex($data, this);\
                                                          }",
                                                       iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
@@ -319,8 +371,10 @@ define([
                                                                 dataValueField : "id",
                                                                 defaultValueId : 0,
                                                                 dataSource : {
-                                                                    type: 'remote',
-                                                                    url: '/api/tenants/config/ipams',
+                                                                    type: "remote",
+                                                                    requestType: 'post',
+                                                                    url:'/api/tenants/config/get-config-details',
+                                                                    postData: JSON.stringify(ipamPostData),
                                                                     parse: formatVNCfg.ipamDropDownFormatter
                                                                 }
                                                             }
@@ -452,6 +506,7 @@ define([
                         view: "AccordianView",
                         viewConfig: [
                             {
+                            visible: 'address_allocation_mode() !== "flat-subnet-only"',
                             elementId: 'hostRoutes',
                             title: 'Host Route(s)',
                             view: "SectionView",
@@ -505,7 +560,7 @@ define([
                                                  ],
                                                  rowActions: [
                                                      {onClick: "function() {\
-                                                         $root.addHostRoute();\
+                                                         $root.addHostRouteByIndex($data, this);\
                                                          }",
                                                       iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
@@ -687,14 +742,14 @@ define([
                                     {
                                         columns: [
                                         {
-                                            elementId: 'forwarding_mode',
+                                            elementId: 'user_created_forwarding_mode',
                                             view: "FormDropdownView",
                                             viewConfig: {
                                                 label: 'Forwarding Mode',
-                                                path : 'virtual_network_properties.forwarding_mode',
+                                                path : 'user_created_forwarding_mode',
                                                 class: 'col-xs-6',
                                                 dataBindValue :
-                                                    'virtual_network_properties().forwarding_mode',
+                                                    'user_created_forwarding_mode',
                                                 elementConfig : {
                                                     dataTextField : "text",
                                                     dataValueField : "id",
@@ -757,7 +812,7 @@ define([
                                                         placeholder: 'Select Static Route(s)',
                                                         dataTextField: "text",
                                                         dataValueField: "id",
-                                                        separator: cowc.DROPDOWN_VALUE_SEPARATOR,
+                                                        separator: ctwc.DROPDOWN_VALUE_SEPARATOR,
                                                         dataSource : {
                                                             type: 'remote',
                                                             requestType: 'POST',
@@ -781,7 +836,7 @@ define([
                                                 viewConfig: {
                                                     label: 'ECMP Hashing Fields',
                                                     path: 'ecmp_hashing_include_fields',
-                                                    class: 'col-xs-12',
+                                                    class: 'col-xs-6',
                                                     dataBindValue: 'ecmp_hashing_include_fields',
                                                     elementConfig: {
                                                         placeholder: 'Select ECMP Hashing Fields',
@@ -824,6 +879,100 @@ define([
                                                         parse: formatVNCfg.qosDropDownFormatter
                                                     }
                                                 }
+                                            }
+                                        }]
+                                    },
+                                    {
+                                      columns: [{
+                                          elementId: 'pbb_evpn_enable',
+                                          view: "FormCheckboxView",
+                                          viewConfig : {
+                                              path : 'pbb_evpn_enable',
+                                              class : "col-xs-4",
+                                              label:'PBB Encapsulation',
+                                              templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
+                                              dataBindValue : 'pbb_evpn_enable'
+                                          }
+                                      },{
+                                          elementId: 'pbb_etree_enable',
+                                          view: "FormCheckboxView",
+                                          viewConfig : {
+                                              path : 'pbb_etree_enable',
+                                              class : "col-xs-4 no-padding",
+                                              label:'PBB ETree',
+                                              templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
+                                              dataBindValue : 'pbb_etree_enable'
+                                          }
+                                      },{
+                                          elementId: 'layer2_control_word',
+                                          view: "FormCheckboxView",
+                                          viewConfig : {
+                                              path : 'layer2_control_word',
+                                              class : "col-xs-4 no-padding",
+                                              label:'Layer2 Control Word',
+                                              templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
+                                              dataBindValue : 'layer2_control_word'
+                                          }
+                                      }]
+                                    },
+                                    {
+                                        columns:[{
+                                            elementId: 'mac_learning_enabled',
+                                            view: "FormCheckboxView",
+                                            viewConfig : {
+                                                path : 'mac_learning_enabled',
+                                                class : "col-xs-4",
+                                                label:'MAC Learning',
+                                                templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
+                                                dataBindValue : 'mac_learning_enabled'
+                                            }
+                                        }]
+                                    },{
+                                        columns:[{
+                                            elementId: 'mac_limit',
+                                            view: 'FormInputView',
+                                            viewConfig: {
+                                                placeholder: 'Enter MAC Limit',
+                                                label: 'MAC Limit',
+                                                path: 'mac_limit_control.mac_limit',
+                                                class: 'col-xs-6',
+                                                dataBindValue: 'mac_limit_control().mac_limit',
+                                                visible: 'mac_learning_enabled()',
+                                            }
+                                        },{
+                                            elementId: 'mac_move_limit',
+                                            view: 'FormInputView',
+                                            viewConfig: {
+                                                placeholder: 'Enter MAC Move Limit',
+                                                label: 'MAC Move Limit',
+                                                path: 'mac_move_control.mac_move_limit',
+                                                class: 'col-xs-6',
+                                                dataBindValue: 'mac_move_control().mac_move_limit',
+                                                visible: 'mac_learning_enabled()',
+                                            }
+                                        }]
+                                    },{
+                                        columns:[{
+                                            elementId: 'mac_move_time_window',
+                                            view: 'FormInputView',
+                                            viewConfig: {
+                                                placeholder: '1 - 60',
+                                                label: 'MAC Move Time Window (secs)',
+                                                path: 'mac_move_control.mac_move_time_window',
+                                                class: 'col-xs-6',
+                                                dataBindValue: 'mac_move_control().mac_move_time_window',
+                                                visible: 'mac_learning_enabled()',
+                                            }
+                                        },{
+                                            elementId: 'mac_aging_time',
+                                            view: 'FormInputView',
+                                            viewConfig: {
+                                                placeholder: '0 - 86400',
+                                                label: 'MAC Aging Time (secs)',
+                                                path: 'mac_aging_time',
+                                                class: 'col-xs-6',
+                                                dataBindValue: 'mac_aging_time',
+                                                visible: 'mac_learning_enabled()',
                                             }
                                         }]
                                     },
@@ -884,6 +1033,7 @@ define([
                         view: "AccordianView",
                         viewConfig: [
                             {
+                            visible: 'address_allocation_mode() !== "flat-subnet-only"',
                             elementId: 'dnsServers',
                             title: 'DNS Server(s)',
                             view: "SectionView",
@@ -922,7 +1072,7 @@ define([
                                                  ],
                                                  rowActions: [
                                                      {onClick: "function() {\
-                                                         $root.addSubnetDNS();\
+                                                         $root.addSubnetDNSByIndex($data, this);\
                                                          }",
                                                       iconClass: 'fa fa-plus'},
                                                     {onClick: "function() {\
@@ -1018,7 +1168,7 @@ define([
                                                 ],
                                                  rowActions: [
                                                      {onClick: "function() {\
-                                                         $root.addFipPool();\
+                                                         $root.addFipPoolByIndex($data, this);\
                                                          }",
                                                       iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
@@ -1101,7 +1251,7 @@ define([
                                                  ],
                                                  rowActions: [
                                                      {onClick: "function() {\
-                                                         $root.addRouteTarget('user_created_route_targets');\
+                                                         $root.addRouteTargetByIndex('user_created_route_targets',this);\
                                                          }",
                                                       iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
@@ -1184,7 +1334,7 @@ define([
                                                  ],
                                                  rowActions: [
                                                      {onClick: "function() {\
-                                                         $root.addRouteTarget('user_created_export_route_targets');\
+                                                         $root.addRouteTargetByIndex('user_created_export_route_targets',this);\
                                                          }",
                                                       iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
@@ -1267,7 +1417,7 @@ define([
                                                  ],
                                                  rowActions: [
                                                      {onClick: "function() {\
-                                                         $root.addRouteTarget('user_created_import_route_targets');\
+                                                         $root.addRouteTargetByIndex('user_created_import_route_targets',this);\
                                                          }",
                                                       iconClass: 'fa fa-plus'},
                                                      {onClick: "function() {\
@@ -1288,6 +1438,142 @@ define([
                                     ]
                                 }
                             }]
+                        }]
+                    },
+                    {
+                        columns: [{
+                            elementId: 'bridge_domains_accordion',
+                            view: "AccordianView",
+                            viewConfig: [{
+                                elementId: 'bridge_domains_section',
+                                title: 'Bridge Domains',
+                                view: "SectionView",
+                                active:false,
+                                viewConfig: {
+                                    rows: [{
+                                        columns: [{
+                                            elementId: 'bridge_domains',
+                                             view: "FormEditableGridView",
+                                             viewConfig: {
+                                                 path : 'bridge_domains',
+                                                 class: 'col-xs-12',
+                                                 validation:
+                                                'bridgeDomainModelConfigValidations',
+                                                templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
+                                                 collection:
+                                                     'bridge_domains',
+                                                 columns: [{
+                                                     elementId: 'name',
+                                                     name: 'Name',
+                                                     view: "FormInputView",
+                                                     viewConfig: {
+                                                         disabled: "disable()",
+                                                         width: 150,
+                                                         placeholder: 'Enter Name',
+                                                         templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                                         path: "name",
+                                                         dataBindValue:
+                                                             'name()'
+                                                       }
+                                                 },{
+                                                     elementId: 'isid',
+                                                     name: 'I-SID',
+                                                     view: "FormInputView",
+                                                     viewConfig: {
+                                                         width: 150,
+                                                         placeholder: '1 - 16777215',
+                                                         templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                                         path: "isid",
+                                                         dataBindValue:
+                                                             'isid()'
+                                                       }
+                                                 },{
+                                                     elementId: 'mac_learning_enabled',
+                                                     name: 'MAC Learning',
+                                                     view: "FormCheckboxView",
+                                                     viewConfig: {
+                                                         width: 100,
+                                                         templateId: cowc.TMPL_EDITABLE_GRID_CHECKBOX_VIEW,
+                                                         path: "mac_learning_enabled",
+                                                         dataBindValue:
+                                                             'mac_learning_enabled()'
+                                                       }
+                                                 },{
+                                                     elementId: 'mac_limit',
+                                                     name: 'MAC Limit',
+                                                     view: "FormInputView",
+                                                     viewConfig: {
+                                                         //disabled: "!mac_learning_enabled()()",
+                                                         width: 150,
+                                                         placeholder: 'MAC Limit',
+                                                         templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                                         path: "mac_limit_control.mac_limit",
+                                                         dataBindValue:
+                                                             'mac_limit_control()().mac_limit'
+                                                       }
+                                                 },{
+                                                     elementId: 'mac_move_limit',
+                                                     name: 'MAC Move Limit',
+                                                     view: "FormInputView",
+                                                     viewConfig: {
+                                                         //disabled: "!mac_learning_enabled()()",
+                                                         width: 150,
+                                                         placeholder: 'MAC Move Limit',
+                                                         templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                                         path: "mac_move_control.mac_move_limit",
+                                                         dataBindValue:
+                                                             'mac_move_control()().mac_move_limit'
+                                                       }
+                                                 },{
+                                                     elementId: 'mac_move_time_window',
+                                                     name: 'Time Window (secs)',
+                                                     view: "FormInputView",
+                                                     viewConfig: {
+                                                         //disabled: "!mac_learning_enabled()()",
+                                                         width: 150,
+                                                         placeholder: '1 - 60',
+                                                         templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                                         path: "mac_move_control.mac_move_time_window",
+                                                         dataBindValue:
+                                                             'mac_move_control()().mac_move_time_window'
+                                                       }
+                                                 },{
+                                                     elementId: 'mac_aging_time',
+                                                     name: 'Aging Time (secs)',
+                                                     view: "FormInputView",
+                                                     viewConfig: {
+                                                         //disabled: "!mac_learning_enabled()()",
+                                                         width: 150,
+                                                         placeholder: '0 -  86400',
+                                                         templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                                         path: "mac_aging_time",
+                                                         dataBindValue:
+                                                             'mac_aging_time()'
+                                                       }
+                                                 }],
+                                                 rowActions: [
+                                                     {onClick: "function() {\
+                                                         $root.addBridgeDomainByIndex($data, this);\
+                                                         }",
+                                                      iconClass: 'fa fa-plus'},
+                                                    {onClick: "function() {\
+                                                         $root.deleteBridgeDomain($data, this);\
+                                                        }",
+                                                      iconClass: 'fa fa-minus'
+                                                    }
+                                                 ],
+                                                 gridActions: [
+                                                    {onClick: "function() {\
+                                                         addBridgeDomain();\
+                                                         }",
+                                                      buttonTitle: ""
+                                                    }
+                                                 ]
+                                             }
+                                         }]
+                                     }]
+                                 }
+                             }]
                         }]
                     }
                 ]  // End Rows

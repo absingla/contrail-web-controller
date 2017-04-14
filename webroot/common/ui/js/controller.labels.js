@@ -202,6 +202,15 @@ define([
         this.MONITOR_INSTANCE_VIEW_ID = "monitor-instance-view";
         this.MONITOR_FLOW_LIST_ID = "monitor-flow-list";
         this.MONITOR_FLOWS_PAGE_ID = "monitor-flows-page";
+        //GLOBALCONTROLLER Labels
+        this.GLOBAL_CONTROLLER_SYSTEM_CPU_TITLE= "System CPU across all nodes (%)";
+        this.GLOBAL_CONTROLLER_SYSTEM_MAX_CPU_UTILIZATION= "Max CPU Utilization";
+        this.GLOBAL_CONTROLLER_SYSTEM_MEMORY_TITLE= "System Memory across all nodes";
+        this.GLOBAL_CONTROLLER_SYSTEM_MAX_MEMORY_UTILIZATION= "Max Memory Utilization";
+        this.GLOBAL_CONTROLLER_BANDWIDTH_IN_TITLE= "Bandwidth across all vRouters";
+        this.GLOBAL_CONTROLLER_SYSTEM_MAX_BANDWIDTH_IN= "Max Bandwidth In";
+        this.GLOBAL_CONTROLLER_DISK_USAGE_TITLE= "Disk Usage across all nodes";
+        this.GLOBAL_CONTROLLER_SYSTEM_CPU_UTILIZATION= "Max Disk Utilization";
 
         this.DOMAINS_BREADCRUMB_DROPDOWN = "domains-breadcrumb-dropdown";
         this.SASET_BREADCRUMB_DROPDOWN = "service-appliance-set-breadcrumb-dropdown";
@@ -942,6 +951,9 @@ define([
         this.TITLE_FLOW_AGING = "Flow Aging";
         this.TITLE_EDIT_FLOW_AGING = "Edit Flow Aging ";
 
+        this.TITLE_MAC_LEARNING = "MAC Learning Options";
+        this.TITLE_EDIT_MAC_LEARNING = "Edit MAC Learning Options";
+
         /* Security Group */
         this.CONFIG_SEC_GRP_PAGE_ID = 'config-sec—grppage';
         this.CONFIG_SEC_GRP_LIST_VIEW_ID = 'config-sec—grplist';
@@ -1054,6 +1066,7 @@ define([
         //Policy Labels
         this.CONFIG_POLICIES_PAGE_ID = "config-policies-page";
         this.CONFIG_POLICIES_TITLE = "Policies";
+        this.GC_POLICIES_TITLE = "Network Policies";
         this.TITLE_POLICY_RULE = "Policy Rules";
         this.TITLE_ADD_POLICY = "Create Policy";
         this.CONFIG_POLICIES_LIST_VIEW_ID = "config-policies-list-view";
@@ -1247,6 +1260,30 @@ define([
         this.TITLE_ROUTE_AGGREGATE_DELETE = 'Delete Route Aggregate';
         this.TITLE_ROUTE_AGGREGATE_MULTI_DELETE = 'Delete Route Aggregate(s)';
         this.TITLE_ADD_ROUTE_AGGREGATE = 'Create Route Aggregate';
+
+        /* Analytics Node Config Labels */
+        this.TITLE_ANALYTICS_NODE = 'Analytics Nodes';
+        this.TITLE_EDIT_ANALYTICS_NODE = 'Edit Analytics Node';
+        this.TITLE_ANALYTICS_NODE_DELETE = 'Delete Analytics Node';
+        this.TITLE_ANALYTICS_NODE_MULTI_DELETE = 'Delete Analytics Node(s)';
+        this.TITLE_ADD_ANALYTICS_NODE = 'Create Analytics Node';
+        this.TITLE_ANALYTICS_NODE_DETAILS = 'Analytics Node Details';
+
+        /* Config Node Cfg Labels */
+        this.TITLE_CONFIG_NODE = 'Config Nodes';
+        this.TITLE_EDIT_CONFIG_NODE = 'Edit Config Node';
+        this.TITLE_CONFIG_NODE_DELETE = 'Delete Config Node';
+        this.TITLE_CONFIG_NODE_MULTI_DELETE = 'Delete Config Node(s)';
+        this.TITLE_ADD_CONFIG_NODE = 'Create Config Node';
+        this.TITLE_CONFIG_NODE_DETAILS = 'Config Node Details';
+
+        /* Database Node Config Labels */
+        this.TITLE_DATABASE_NODE = 'Database Nodes';
+        this.TITLE_EDIT_DATABASE_NODE = 'Edit Database Node';
+        this.TITLE_DATABASE_NODE_DELETE = 'Delete Database Node';
+        this.TITLE_DATABASE_NODE_MULTI_DELETE = 'Delete Database Node(s)';
+        this.TITLE_ADD_DATABASE_NODE = 'Create Database Node';
+        this.TITLE_DATABASE_NODE_DETAILS = 'Database Node Details';
 
         /* QOS labels */
         this.TITLE_QOS = 'QoS';

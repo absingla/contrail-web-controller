@@ -7,7 +7,8 @@
          var self = this,
              staticRoutArr = {},
              routingInstance = {},
-             healthCheck = {};
+             healthCheck = {},
+             bridgeDomain  = {};
 
          staticRoutArr.data = [];
          staticRoutArr.data[0] = {'type':'interface-route-tables', 'fields':''
@@ -18,6 +19,8 @@
          healthCheck.data = [];
          healthCheck.data[0] = {'type':'service-health-checks', 'fields':''};
 
+         bridgeDomain.data = [];
+         bridgeDomain.data[0] =  {'type' : 'bridge-domains', 'fields': ''};
          self.virtualNetworkSection = function(portEditView, portFormatter, mode, isDisable) {
              return {
                  columns: [{
@@ -112,7 +115,7 @@
                          }
                      }],
                      rowActions: [{
-                         onClick: "function() { $root.addFixedIP(); }",
+                         onClick: "function() { $root.addFixedIPByIndex($data, this); }",
                          iconClass: 'fa fa-plus',
                      },
                      {
@@ -168,7 +171,7 @@
                              }
                          }],
                          rowActions: [{
-                          onClick: "function() { $root.addAAP(); }",
+                          onClick: "function() { $root.addAAPByIndex($data, this); }",
                          iconClass: 'fa fa-plus',
                          },
                          {
@@ -322,21 +325,33 @@
                                  columns: [{
                                      elementId: 'local_preference',
                                      name: "Local Preference",
-                                     view: "FormComboboxView",
+                                     view: "FormInputView",
                                      viewConfig: {
                                          path: 'virtual_machine_interface_properties.local_preference',
                                          label: 'Local Preference',
+                                         placeholder: '0 - 4294967295',
                                          dataBindValue: 'virtual_machine_interface_properties().local_preference',
-                                         class: 'col-xs-12',
+                                         class: "col-xs-6"
+                                     }
+                                 }, {
+                                     elementId: 'bridge_domain_refs',
+                                     view: "FormDropdownView",
+                                     viewConfig: {
+                                         class: "col-xs-6",
+                                         path: 'bridge_domain_refs',
+                                         dataBindValue: 'bridge_domain_refs',
+                                         label: 'Bridge Domain',
                                          elementConfig: {
+                                             placeholder: 'Select Bridge Domain',
                                              dataTextField: "text",
-                                             dataValueField: "value",
-                                             placeholder: "Select Local Preference",
-                                             dataSource:{
-                                                 type: "local",
-                                                 data: [
-                                                    {text: "100", value: "100"},
-                                                    {text: "200", value: "200"}]
+                                             dataValueField: "id",
+                                             dropdownAutoWidth : false,
+                                             dataSource : {
+                                                 type: 'remote',
+                                                 requestType: 'post',
+                                                 postData: JSON.stringify(bridgeDomain),
+                                                 url:'/api/tenants/config/get-config-list',
+                                                 parse: portFormatter.bridgeDomainDDFormatter
                                              }
                                          }
                                      }
@@ -506,7 +521,7 @@
                                          }
                                      }],
                                      rowActions: [{
-                                         onClick: "function() { $root.addPortBinding(); }",
+                                         onClick: "function() { $root.addPortBindingByIndex($data, this); }",
                                          iconClass: 'fa fa-plus',
                                          },
                                          {
@@ -657,31 +672,6 @@
                              visible: "is_mirror",
                              rows: [{
                                  columns: [{
-                                     elementId: 'analyzer_ip_address',
-                                     view: "FormInputView",
-                                     viewConfig: {
-                                         visible: "is_mirror",
-                                         class: "col-xs-6",
-                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.analyzer_ip_address',
-                                         placeholder: 'xxx.xxx.xxx.xxx',
-                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.analyzer_ip_address',
-                                         label: 'Analyzer IP Address'
-                                     }
-                                 }, {
-                                     elementId: 'udp_port',
-                                     name: "UDP Port",
-                                     view: "FormInputView",
-                                     viewConfig: {
-                                         visible: "is_mirror",
-                                         class: "col-xs-6",
-                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.udp_port',
-                                         placeholder: '1 to 65535',
-                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.udp_port',
-                                         label: 'UDP Port'
-                                     }
-                                 }]
-                             }, {
-                                 columns: [{
                                      elementId: 'analyzer_name',
                                      view: "FormInputView",
                                      viewConfig: {
@@ -692,11 +682,116 @@
                                          placeholder: 'Enter Analyzer Name',
                                          label: 'Analyzer Name'
                                      }
-                                 },{
+                                 }]
+                             }, {
+                                 columns: [{
+                                     elementId: 'user_created_nic_assisted',
+                                     view: "FormCheckboxView",
+                                     viewConfig: {
+                                         visible: "is_mirror",
+                                         class: "col-xs-6",
+                                         path: 'user_created_nic_assisted',
+                                         dataBindValue: 'user_created_nic_assisted',
+                                         templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
+                                         label: 'NIC Assisted Mirroring'
+                                     }
+                                 }, {
+                                     elementId: 'nic_assisted_mirroring_vlan',
+                                     view: "FormInputView",
+                                     viewConfig: {
+                                         visible: "is_mirror() && (user_created_nic_assisted() == true)",
+                                         class: "col-xs-6",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.nic_assisted_mirroring_vlan',
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.nic_assisted_mirroring_vlan',
+                                         placeholder: 'Enter NIC Assisted VLAN ID',
+                                         label: 'NIC Assisted VLAN ID'
+                                     }
+                                 }]
+                             }, {
+                                 columns: [{
+                                     elementId: 'analyzer_ip_address',
+                                     view: "FormInputView",
+                                     viewConfig: {
+                                         visible: "is_mirror()  && (user_created_nic_assisted() === false)",
+                                         class: "col-xs-6",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.analyzer_ip_address',
+                                         placeholder: 'xxx.xxx.xxx.xxx',
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.analyzer_ip_address',
+                                         label: 'Analyzer IP Address'
+                                     }
+                                 }, {
+                                     elementId: 'analyzer_mac_address',
+                                     view: "FormInputView",
+                                     viewConfig: {
+                                         visible: "is_mirror() && (user_created_nic_assisted() === false)",
+                                         class: "col-xs-6",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.analyzer_mac_address',
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.analyzer_mac_address',
+                                         placeholder: 'Enter Analyzer MAC',
+                                         label: 'Analyzer MAC Address'
+                                     }
+                                 }]
+                             }, {
+                                 columns: [{
+                                     elementId: 'udp_port',
+                                     name: "UDP Port",
+                                     view: "FormInputView",
+                                     viewConfig: {
+                                         visible: "is_mirror() && (user_created_nic_assisted() === false)",
+                                         class: "col-xs-6",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.udp_port',
+                                         placeholder: '1 to 65535',
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.udp_port',
+                                         label: 'UDP Port'
+                                     }
+                                 }, {
+                                     elementId: 'traffic_direction',
+                                     name: "Traffic Direction",
+                                     view: "FormDropdownView",
+                                     viewConfig: {
+                                         class: "col-xs-6",
+                                         visible: "is_mirror() && user_created_nic_assisted() === false",
+                                         path: 'virtual_machine_interface_properties.interface_mirror.traffic_direction',
+                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.traffic_direction',
+                                         placeholder: 'Direction',
+                                         label: 'Direction',
+                                         elementConfig: {
+                                             placeholder: "Select Direction",
+                                             dataTextField: "text",
+                                             dataValueField: "value",
+                                             data : [
+                                                 {'text':'Ingress', 'value':'ingress'},
+                                                 {'text':'Egress', 'value':'egress'},
+                                                 {'text':'Both', 'value':'both'}
+                                             ]
+                                         }
+                                     }
+                                 }]
+                             }, {
+                                 columns: [{
+                                     elementId: 'user_created_juniper_header',
+                                     view: "FormDropdownView",
+                                     viewConfig: {
+                                         visible: "is_mirror() && (user_created_nic_assisted() === false)",
+                                         class: "col-xs-6",
+                                         path: 'user_created_juniper_header',
+                                         dataBindValue: 'user_created_juniper_header',
+                                         label: 'Juniper Header',
+                                         elementConfig: {
+                                             dataTextField: "text",
+                                             dataValueField: "value",
+                                             data : [
+                                                 {'text':'Enabled', 'value':'enabled'},
+                                                 {'text':'Disabled', 'value':'disabled'}]
+                                         }
+                                     }
+                                 }, {
                                      elementId: 'mirrorToRoutingInstance',
                                      view: "FormDropdownView",
                                      viewConfig: {
-                                         visible: "is_mirror",
+                                         visible: "is_mirror() && " +
+                                             "(user_created_juniper_header() == 'disabled') &&" +
+                                             "(user_created_nic_assisted() === false)",
                                          class: "col-xs-6",
                                          path: 'mirrorToRoutingInstance',
                                          dataBindValue: 'mirrorToRoutingInstance',
@@ -721,64 +816,10 @@
                                  }]
                              }, {
                                  columns: [{
-                                     elementId: 'juniper_header',
-                                     view: "FormDropdownView",
-                                     viewConfig: {
-                                         visible: "is_mirror",
-                                         class: "col-xs-6",
-                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.juniper_header',
-                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.juniper_header',
-                                         label: 'Juniper Header',
-                                         elementConfig: {
-                                             dataTextField: "text",
-                                             dataValueField: "value",
-                                             data : [
-                                                 {'text':'Enabled', 'value':'enabled'},
-                                                 {'text':'Disabled', 'value':'disabled'}]
-                                         }
-                                     }
-                                 },{
-                                     elementId: 'analyzer_mac_address',
-                                     view: "FormInputView",
-                                     viewConfig: {
-                                         visible: "is_mirror",
-                                         class: "col-xs-6",
-                                         path: 'virtual_machine_interface_properties.interface_mirror.mirror_to.analyzer_mac_address',
-                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.mirror_to.analyzer_mac_address',
-                                         placeholder: 'Enter Analyzer MAC',
-                                         label: 'Analyzer MAC Address'
-                                     }
-                                 }]
-                             },{
-                                 columns: [{
-                                     elementId: 'traffic_direction',
-                                     name: "Traffic Direction",
-                                     view: "FormDropdownView",
-                                     viewConfig: {
-                                         class: "col-xs-6",
-                                         visible: "is_mirror",
-                                         path: 'virtual_machine_interface_properties.interface_mirror.traffic_direction',
-                                         dataBindValue: 'virtual_machine_interface_properties().interface_mirror.traffic_direction',
-                                         placeholder: 'Direction',
-                                         label: 'Direction',
-                                         elementConfig: {
-                                             placeholder: "Select Direction",
-                                             dataTextField: "text",
-                                             dataValueField: "value",
-                                             data : [
-                                                 {'text':'Ingress', 'value':'ingress'},
-                                                 {'text':'Egress', 'value':'egress'},
-                                                 {'text':'Both', 'value':'both'}
-                                             ]
-                                         }
-                                     }
-                                 }]
-                             }, {
-                                 columns: [{
                                  elementId: 'mirrorToNHMode',
                                  view: "FormDropdownView",
                                  viewConfig: {
-                                     visible: "is_mirror",
+                                     visible: "is_mirror() && (user_created_nic_assisted() === false)",
                                      class: "col-xs-6",
                                      path: 'mirrorToNHMode',
                                      dataBindValue: 'mirrorToNHMode',
@@ -799,7 +840,7 @@
                                   elementId: 'staticNHHeaderSection',
                                   view: "SectionView",
                                   viewConfig: {
-                                      visible: "is_mirror() && (mirrorToNHMode() == 'static')",
+                                      visible: "is_mirror() && (mirrorToNHMode() == 'static') && (user_created_nic_assisted() === false)",
                                       rows: [{
                                           columns:[{
                                               elementId: 'vtep_dst_ip_address',
@@ -899,7 +940,7 @@
                                              }
                                          }],
                                          rowActions: [{
-                                             onClick: "function() { $root.addDHCP(); }",
+                                             onClick: "function() { $root.addDHCPByIndex($data, this); }",
                                              iconClass: 'fa fa-plus',
                                              },
                                              {
@@ -980,7 +1021,7 @@
                                              }
                                          }],
                                          rowActions: [{
-                                             onClick: "function() { $root.addFatFlow(); }",
+                                             onClick: "function() { $root.addFatFlowByIndex($data, this); }",
                                              iconClass: 'fa fa-plus',
                                              },
                                              {

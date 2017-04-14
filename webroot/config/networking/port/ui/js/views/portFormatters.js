@@ -143,7 +143,7 @@ define([
             var localPrefValue = getValueByJsonPath(dc,
                                 "virtual_machine_interface_properties;local_preference",
                                 "")
-            if(localPrefValue != ""){
+            if(localPrefValue !== ""){
                 localPref = localPrefValue;
             }
             return localPref;
@@ -408,6 +408,12 @@ define([
         //Grid column expand label: Mirror//
         self.mirrorFormatter = function(d, c, v, cd, dc) {
             var mirror = "",
+                nicAssistedMirroring = getValueByJsonPath(dc,
+                        "virtual_machine_interface_properties;" +
+                        "interface_mirror;mirror_to;nic_assisted_mirroring", false),
+                nicAssistedVLAN = getValueByJsonPath(dc,
+                        "virtual_machine_interface_properties;" +
+                        "interface_mirror;mirror_to;nic_assisted_mirroring_vlan", false),
                 analyzerIP = getValueByJsonPath(dc,
                         "virtual_machine_interface_properties;" +
                         "interface_mirror;mirror_to;analyzer_ip_address", null),
@@ -433,44 +439,54 @@ define([
                         "virtual_machine_interface_properties;" +
                         "interface_mirror;mirror_to;nh_mode", null),
                 vtepDestIP, vtepDestMAC, VxLANId;
-            if(analyzerIP) {
-                mirror += self.addTableRow(["Analyzer IP", " : ", analyzerIP]);
+            if(analyzerName) {
+                mirror += self.addTableRow("Analyzer Name", analyzerName);
             } else {
                 return "-";
             }
 
-            if(udpPort) {
-                mirror += self.addTableRow(["UDP Port", " : ", udpPort]);
+            if(nicAssistedMirroring) {
+                nicAssistedMirroring = nicAssistedMirroring ? "Enabled" : "Disabled";
+                mirror += self.addTableRow("NIC Assisted Mirroring", nicAssistedMirroring);
+                mirror += self.addTableRow("NIC Assisted VLAN", nicAssistedVLAN);
+                return "<table style='width:100%'><tbody>" + mirror + "</tbody></table>";
             } else {
-                mirror += self.addTableRow(["UDP Port", " : ", "-"]);
+                nicAssistedMirroring = nicAssistedMirroring ? "Enabled" : "Disabled";
+                //mirror += self.addTableRow("NIC Assisted Mirroring", nicAssistedMirroring);
             }
 
-            if(analyzerName) {
-                mirror += self.addTableRow(["Analyzer Name", " : ", analyzerName]);
+            if(analyzerIP) {
+                mirror += self.addTableRow("Analyzer IP", analyzerIP);
             } else {
-                mirror += self.addTableRow(["Analyzer Name", " : ", "-"]);
+                mirror += self.addTableRow("Analyzer IP", "-");
+            }
+
+            if(analyzerMAC) {
+                mirror += self.addTableRow("Analyzer MAC", analyzerMAC);
+            } else {
+                mirror += self.addTableRow("Analyzer MAC", "-");
+            }
+
+            if(udpPort) {
+                mirror += self.addTableRow("UDP Port", udpPort);
+            } else {
+                mirror += self.addTableRow("UDP Port", "-");
+            }
+
+            if(jnprHeader !== null) {
+                jnprHeader = jnprHeader === true ? "Enabled" : "Disabled";
+                mirror += self.addTableRow("Juniper Header", jnprHeader);
+            } else {
+                mirror += self.addTableRow("Juniper Header", "-");
             }
 
             if(routingInst) {
                 var ri = routingInst.split(":");
                 routingInst = ctwu.formatCurrentFQName(ri,
                         ctwu.getCurrentDomainProject());
-                mirror += self.addTableRow(["Routing Instance", " : ", routingInst]);
+                mirror += self.addTableRow("Routing Instance", routingInst);
             } else {
-                mirror += self.addTableRow(["Routing Instance", " : ", "-"]);
-            }
-
-            if(jnprHeader !== null) {
-                jnprHeader = jnprHeader === true ? "Enabled" : "Disabled";
-                mirror += self.addTableRow(["Juniper Header", " : ", jnprHeader]);
-            } else {
-                mirror += self.addTableRow(["Juniper Header", " : ", "-"]);
-            }
-
-            if(analyzerMAC) {
-                mirror += self.addTableRow(["Analyzer MAC", " : ", analyzerMAC]);
-            } else {
-                mirror += self.addTableRow(["Analyzer MAC", " : ", "-"]);
+                mirror += self.addTableRow("Routing Instance", "-");
             }
 
             if(mirrorDirection) {
@@ -480,9 +496,9 @@ define([
                 } else if(mirrorDirection  === "egress") {
                     dir = "Egress";
                 }
-                mirror += self.addTableRow(["Traffic Direction", " : ", dir]);
+                mirror += self.addTableRow("Traffic Direction", dir);
             } else {
-                mirror += self.addTableRow(["Traffic Direction", " : ", "-"]);
+                mirror += self.addTableRow("Traffic Direction", "-");
             }
 
             if(nhMode) {
@@ -490,9 +506,9 @@ define([
                 if(nhMode === ctwc.MIRROR_STATIC) {
                     mode = "Static"
                 }
-                mirror += self.addTableRow(["Nexthop Mode", " : ", mode]);
+                mirror += self.addTableRow("Nexthop Mode", mode);
             } else {
-                mirror += self.addTableRow(["Nexthop Mode", " : ", "-"]);
+                mirror += self.addTableRow("Nexthop Mode", "-");
             }
 
             if(nhMode === ctwc.MIRROR_STATIC) {
@@ -509,39 +525,35 @@ define([
                         "interface_mirror;mirror_to;static_nh_header;" +
                         "vni", null);
                 if(vtepDestIP) {
-                    mirror += self.addTableRow(["VTEP Dest IP", " : ", vtepDestIP]);
+                    mirror += self.addTableRow("VTEP Dest IP", vtepDestIP);
                 } else {
-                    mirror += self.addTableRow(["VTEP Dest IP", " : ", "-"]);
+                    mirror += self.addTableRow("VTEP Dest IP", "-");
                 }
                 if(vtepDestMAC) {
-                    mirror += self.addTableRow(["VTEP Dest MAC", " : ", vtepDestMAC]);
+                    mirror += self.addTableRow("VTEP Dest MAC", vtepDestMAC);
                 } else {
-                    mirror += self.addTableRow(["VTEP Dest MAC", " : ", "-"]);
+                    mirror += self.addTableRow("VTEP Dest MAC", "-");
                 }
                 if(VxLANId) {
-                    mirror += self.addTableRow(["VxLAN ID", " : ", VxLANId]);
+                    mirror += self.addTableRow("VxLAN ID", VxLANId);
                 } else {
-                    mirror += self.addTableRow(["VxLAN ID", " : ", "-"]);
+                    mirror += self.addTableRow("VxLAN ID", "-");
                 }
             }
 
             if (mirror == "") {
                 mirror = "-";
             } else {
-                mirror = "<table><tbody>" + mirror + "</tbody></table>";
+                mirror = "<table style='width:100%'><tbody>" + mirror + "</tbody></table>";
             }
             return mirror;
         };
-        self.addTableRow = function(arr) {
-            var arrLen = arr.length;
-            if (arrLen > 0) {
-                var str = "<tr>";
-                for (var i = 0; i < arr.length; i++) {
-                    str += "<td>"+arr[i]+"</td>";
-                }
-                str += "</tr>";
-            }
-            return str;
+        self.addTableRow = function(key, value) {
+            var formattedStr = "<tr>";
+            formattedStr += "<td style='width:25%'>" + key + "</td>";
+            formattedStr += "<td style='font-weight:bold'>" + value + "</td>";
+            formattedStr += "</tr>";
+            return formattedStr;
         }
         //Grid column expand label: Device ID//
         self.deviceUUIDFormatter = function(d, c, v, cd, dc) {
@@ -1077,6 +1089,47 @@ define([
          */
         self.qosExpansionFormatter = function(d, c, v, cd, dc) {
             return getValueByJsonPath(dc, "qos_config_refs;0;to;2", "-");
+        };
+
+        /*
+         * @bridgeDomainDDFormatter
+         */
+        self.bridgeDomainDDFormatter = function(response) {
+            var bdDataSource = [{text: "None", id: "none"}], bdFqName,
+                 bridgeDomains = getValueByJsonPath(response,
+                                      "0;bridge-domains", [], false);
+            _.each(bridgeDomains, function(bd) {
+                bdFqName = (bd.fq_name && bd.fq_name.length === 4) ?
+                        bd.fq_name : null;
+                if(bdFqName) {
+                    bdDataSource.push({
+                        text: bdFqName[3] + " (" + bdFqName[1] + ":" + bdFqName[2] + ")",
+                        id: bdFqName[0] +
+                            cowc.DROPDOWN_VALUE_SEPARATOR + bdFqName[1]
+                            + cowc.DROPDOWN_VALUE_SEPARATOR +
+                            bdFqName[2] + cowc.DROPDOWN_VALUE_SEPARATOR +
+                            bdFqName[3]
+                    });
+                }
+            });
+            return bdDataSource;
+        }
+
+        /*
+         * @bridgeDomainExpFormatter
+         */
+        self.bridgeDomainExpFormatter = function(d, c, v, cd, dc) {
+            var bdToArray = getValueByJsonPath(dc,
+                    'bridge_domain_refs;0;to', null, false),
+                bdFqName = (bdToArray && bdToArray.length === 4) ?
+                        bdToArray: null, formattedStr;
+            if(bdFqName) {
+                formattedStr =
+                    bdFqName[3] + " (" + bdFqName[1] + ":" + bdFqName[2] + ")";
+            } else {
+                formattedStr = "-";
+            }
+            return formattedStr;
         };
     }
     return PortFormatters;

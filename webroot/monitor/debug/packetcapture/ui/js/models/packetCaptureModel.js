@@ -55,7 +55,7 @@ define([
                     protocol: rule.protocol,
                     src_network: srcNetwork,
                     src_port: packetCaptureFormatter.formatPortAddress(rule["src_ports"]),
-                    direction: rule["direction"],
+                    direction: cowu.deSanitize(rule["direction"]),
                     dst_network: dstNetwork,
                     dst_port: packetCaptureFormatter.formatPortAddress(rule["dst_ports"])
                 });
@@ -84,7 +84,7 @@ define([
                 rule["rule_sequence"]["major"] = -1;
                 rule["rule_sequence"]["minor"] = -1;
                 rule["direction"] = r.direction();
-                rule["protocol"] = r.protocol();
+                rule["protocol"] = r.protocol().toLowerCase();
 
                 rule["action_list"] = {};
                 rule["action_list"]["simple_action"] = null;
